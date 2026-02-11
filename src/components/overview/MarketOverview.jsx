@@ -1,49 +1,62 @@
 import { FiDollarSign, FiTruck } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import { useEffect, useState } from "react";
-import { DashboardOverviewShipping } from "../../services/DashboardService.jsx";
+import {
+  DashboardOverviewExchange,
+  DashboardOverviewShipping,
+} from "../../services/DashboardService.jsx";
+import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 
 const MarketOverview = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [shippingData, setShippingData] = useState([]);
-  const rates = [
-    {
-      symbol: "$",
-      pair: "USD/NGN",
-      value: "₦1,547.23",
-      change: "+0.12%",
-      type: "up",
-    },
-    {
-      symbol: "£",
-      pair: "GBP/NGN",
-      value: "₦1,956.45",
-      change: "+0.25%",
-      type: "up",
-    },
-    {
-      symbol: "€",
-      pair: "EUR/NGN",
-      value: "₦1,678.90",
-      change: "-0.08%",
-      type: "down",
-    },
-    {
-      symbol: "¥",
-      pair: "CNY/NGN",
-      value: "₦214.56",
-      change: "+0.15%",
-      type: "up",
-    },
-    {
-      symbol: "CFA",
-      pair: "XOF/NGN",
-      value: "₦2.48",
-      change: "0.00%",
-      type: "neutral",
-    },
-  ];
+  const [OverviewData, setOverviewData] = useState({
+    shippingData: [],
+    exchangeRates: [],
+  });
+
+  // COUNTRY CODE FOR API CALLING
+  const [base, setBase] = useState("EUR");
+
+  // const [shippingData, setShippingData] = useState([]);
+
+  // const rates = [
+  //   {
+  //     symbol: "$",
+  //     pair: "USD/NGN",
+  //     value: "₦1,547.23",
+  //     change: "+0.12%",
+  //     type: "up",
+  //   },
+  //   {
+  //     symbol: "£",
+  //     pair: "GBP/NGN",
+  //     value: "₦1,956.45",
+  //     change: "+0.25%",
+  //     type: "up",
+  //   },
+  //   {
+  //     symbol: "€",
+  //     pair: "EUR/NGN",
+  //     value: "₦1,678.90",
+  //     change: "-0.08%",
+  //     type: "down",
+  //   },
+  //   {
+  //     symbol: "¥",
+  //     pair: "CNY/NGN",
+  //     value: "₦214.56",
+  //     change: "+0.15%",
+  //     type: "up",
+  //   },
+  //   {
+  //     symbol: "CFA",
+  //     pair: "XOF/NGN",
+  //     value: "₦2.48",
+  //     change: "0.00%",
+  //     type: "neutral",
+  //   },
+  // ];
 
   // const shipping = [
   //   {
@@ -79,25 +92,36 @@ const MarketOverview = () => {
   //     type: "up",
   //   },
   // ];
+
   useEffect(() => {
-      const fetchData = async () => {
-        setIsLoading(true);
-        setError("");
-        try {
-          const res = await DashboardOverviewShipping();
-  
-          if (res?.success === true || res?.data?.status === 200) {
-            setShippingData(res?.data);
-          }
-        } catch (err) {
-          setError(GetApiErrorMessage(err));
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchData();
-    }, []);
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const results = await Promise.allSettled([
+          DashboardOverviewShipping(),
+          DashboardOverviewExchange(base),
+        ]);
+        const [shippingRes, exchangeRes] = results;
+        setOverviewData({
+          shippingData:
+            shippingRes.status === "fulfilled" ? shippingRes.value.data : [],
+          exchangeRates:
+            exchangeRes.status === "fulfilled"
+              ? exchangeRes.value.data.data.rates
+              : [],
+        });
+      } catch (err) {
+        setError(GetApiErrorMessage(err));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, [base]);
+
   return (
     <section className="tp-section">
       <div className="tp-container tp-grid-stack">
@@ -111,7 +135,7 @@ const MarketOverview = () => {
           }
         >
           <div className="tp-grid tp-rates-grid">
-            {rates.map((r, i) => (
+            {/* {rates.map((r, i) => (
               <div key={i} className="tp-rate-card">
                 <div className="tp-rate-header">
                   <span className="tp-rate-symbol">{r.symbol}</span>
@@ -130,6 +154,28 @@ const MarketOverview = () => {
 
                 <span className="tp-rate-pair">{r.pair}</span>
                 <strong className="tp-rate-value">{r.value}</strong>
+              </div>
+            ))} */}
+            {OverviewData?.exchangeRates?.slice(0, 5)?.map((r, i) => (
+              <div key={i} className="tp-rate-card">
+                <div className="tp-rate-header">
+                  <span className="tp-rate-symbol">{r.baseCurrency}</span>
+                  <span
+                    className={`tp-rate-change ${
+                      r.trend === "UP"
+                        ? "tp-text-up"
+                        : r.trend === "DOWN"
+                          ? "tp-text-down"
+                          : "tp-text-neutral"
+                    }`}
+                  >
+                    {r.changePercent}
+                    {"%"}
+                  </span>
+                </div>
+
+                <span className="tp-rate-pair">{r.pair}</span>
+                <strong className="tp-rate-value">{r.currentRate}</strong>
               </div>
             ))}
           </div>
@@ -168,25 +214,38 @@ const MarketOverview = () => {
                 </div>
               </div>
             ))} */}
-            {shippingData?.map((s, i) => (
+            {OverviewData?.shippingData?.map((s, i) => (
               <div key={i} className="tp-ship-card">
                 <div className="tp-ship-header">
                   <div>
                     <h4 className="tp-ship-route">{s.route}</h4>
-                    <span className="tp-ship-port">{s.port_name ? s.port_name : "Apapa Port"}</span>
+                    {/* <span className="tp-ship-port">{s.port_name ? s.port_name : "Apapa Port"}</span> */}
+                    <span className="tp-ship-port">
+                      {s.port_name ? s.port_name : "0 Apapa Port"}
+                    </span>
                   </div>
 
-                  <span className="tp-ship-days">{s.transit_days? `${s.transit_days} Days`: "10 Days"}</span>
+                  <span className="tp-ship-days">
+                    {s.transit_days ? `${s.transit_days} Days` : "0 Days"}
+                  </span>
                 </div>
 
                 <div className="tp-ship-footer">
-                  <strong className="tp-ship-price">{"£"}{s.price_usd}</strong>
+                  <strong className="tp-ship-price">
+                    {"£"}
+                    {s.price_usd}
+                  </strong>
                   <span
                     className={`tp-ship-change text-pill-primary ${
-                      s.change != 0 ? ((s.change) > 0 ? "tp-text-up" : "tp-text-down") : "tp-muted"
+                      s.change != 0
+                        ? s.change > 0
+                          ? "tp-text-up"
+                          : "tp-text-down"
+                        : "tp-muted"
                     }`}
                   >
-                    {s.change}{"%"}
+                    {s.change}
+                    {"%"}
                   </span>
                 </div>
               </div>

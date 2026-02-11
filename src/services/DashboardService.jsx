@@ -1,16 +1,18 @@
 import Api from "../api/Api";
 
-
-
 /* ===============================
    DASHBOARD OVERVIEW
 ================================ */
 
-    /*    SHIPPING API        */
+/*    SHIPPING API        */
 export const DashboardOverviewShipping = async () => {
   return Api.get("/shipping/latest");
 };
-
+/*  Exchange Rates vs NGN   */
+export const DashboardOverviewExchange = async (base) => {
+  // return Api.get("/api/exchange?base=EUR");
+  return Api.get(`/exchange?base=${base}`);
+};
 
 /* ===============================
    DASHBOARD PRODUCT LIST

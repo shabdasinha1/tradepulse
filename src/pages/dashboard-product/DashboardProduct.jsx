@@ -98,7 +98,7 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
-console.log(productData)
+
   // ===============================
   // RENDER
   // ===============================
@@ -147,7 +147,7 @@ console.log(productData)
                 <p className="tp-muted">Top Gainer</p>
                 <h3 className="tp-text-up">
                   {
-                    productData?.productOverview?.data?.topGainer?.split(
+                    productData?.productOverview?.data?.topValueProduct?.split(
                       ",",
                     )?.[0]
                   }
@@ -158,7 +158,7 @@ console.log(productData)
                 <p className="tp-muted">Top Loser</p>
                 <h3 className="tp-text-down">
                   {
-                    productData?.productOverview?.data?.topLoser?.split(
+                    productData?.productOverview?.data?.lowestValueProduct?.split(
                       ",",
                     )?.[0]
                   }
@@ -191,7 +191,7 @@ console.log(productData)
                           : "tp-text-down text-center"
                       }
                     >
-                      {item.change}
+                      {item.change ?? "0"}
                     </span>
                     <span className="text-center">
                       <span
@@ -226,7 +226,7 @@ console.log(productData)
                 <p className="tp-muted">Highest Volatility</p>
                 <h3 className="tp-overview-text">
                   {
-                    productData?.productInsight?.data?.highest_volatility?.split(
+                    productData?.productInsight?.data?.largest_product?.split(
                       ",",
                     )?.[0]
                   }
