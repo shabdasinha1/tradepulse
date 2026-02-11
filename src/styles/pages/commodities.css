@@ -1,0 +1,121 @@
+/* ===============================
+   TOP COMMODITIES
+================================ */
+
+.tp-commodity-card {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.01)
+  );
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  transition: background var(--transition-base);
+}
+
+.tp-commodity-card:hover {
+  background: var(--bg-card-hover);
+}
+
+.tp-commodity-name {
+  font-size: var(--fs-heading-sm);
+  font-weight: var(--fw-semibold);
+}
+.tp-commodity-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-body);
+}
+
+/* ===============================
+   ALL COMMODITIES
+================================ */
+
+.tp-commodities-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+/* Tabs */
+.tp-tabs {
+  display: flex;
+  gap: 6px;
+  background: rgba(255,255,255,0.03);
+  padding: 6px;
+  border-radius: var(--radius-md);
+}
+
+.tp-tab {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-label);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.tp-tab.active {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+/* Table */
+.tp-table-head,
+.tp-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 40px;
+}
+
+.tp-table-head {
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+  font-size: var(--fs-caption);
+}
+
+.tp-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-table-row {
+  align-items: center;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-body);
+}
+
+.tp-demand-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Star */
+.tp-star-btn svg {
+  opacity: 0.4;
+}
+
+.tp-star-btn svg.active {
+  opacity: 1;
+  color: var(--clr-primary);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .tp-table-head,
+  .tp-table-row {
+    grid-template-columns: 2fr 1fr 1fr;
+    row-gap: 8px;
+  }
+
+  .tp-table-head span:nth-child(n+4),
+  .tp-table-row > *:nth-child(n+4) {
+    display: none;
+  }
+}

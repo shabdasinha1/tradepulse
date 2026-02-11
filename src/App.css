@@ -1,0 +1,63 @@
+/* ===============================
+   1. RESET (lowest level)
+================================ */
+@import "./styles/reset.css";
+
+/* ===============================
+   2. VARIABLES & TOKENS
+================================ */
+@import "./styles/variables.css";
+
+/* ===============================
+   3. BASE ELEMENT STYLES
+================================ */
+@import "./styles/base.css";
+
+/* ===============================
+   4. LAYOUT SYSTEM
+================================ */
+@import "./styles/layout.css";
+
+/* ===============================
+   5. CORE COMPONENTS
+================================ */
+@import "./styles/components.css";
+
+/* ===============================
+   6. UTILITIES (highest priority helpers)
+================================ */
+@import "./styles/utilities.css";
+
+/* ===============================
+   7. GLOBAL STRUCTURE
+================================ */
+@import "./styles/header.css";
+@import "./styles/footer.css";
+
+/* ===============================
+   8. PAGE-SPECIFIC STYLES
+================================ */
+@import "./styles/pages/home.css";
+@import "./styles/pages/auth.css";
+@import "./styles/pages/overview.css";
+@import "./styles/pages/commodities.css";
+@import "./styles/pages/watchlist.css";
+@import "./styles/pages/suppliers.css";
+@import "./styles/pages/assistant.css";
+@import "./styles/pages/settings.css";
+@import "./styles/pages/not-found.css";
+@import "./styles/pages/dashboard-products.css";
+@import "./styles/pages/forecast.css";
+@import "./styles/pages/report.css";
+@import "./styles/pages/about.css";
+@import "./styles/pages/contact.css";
+@import "./styles/pages/coming-soon.css";
+@import "./styles/pages/pricing.css";
+
+
+
+
+
+
+
+

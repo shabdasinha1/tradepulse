@@ -1,0 +1,19 @@
+.tp-text-up {
+  color: var(--clr-success);
+  font-size: var(--fs-body);
+}
+
+.tp-text-down {
+  color: var(--clr-danger);
+  font-size: var(--fs-body);
+}
+
+.tp-text-neutral {
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+}
+
+.tp-muted {
+  color: var(--text-secondary);
+  font-size: var(--fs-caption);
+}

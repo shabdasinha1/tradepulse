@@ -1,0 +1,231 @@
+/* ===============================
+   FOOTER — PREMIUM REDESIGN
+================================ */
+
+.tp-footer {
+  position: relative;
+  background:
+    radial-gradient(
+      120% 120% at 10% 0%,
+      rgba(79,124,255,0.08), /* softer than --clr-primary-soft */
+      transparent 65%
+    ),
+    linear-gradient(
+      180deg,
+      var(--bg-app),
+      var(--bg-app)
+    );
+
+  border-top: 1px solid var(--border-soft);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03);
+
+  padding-top: calc(var(--space-xl) * 1.4);
+  padding-bottom: var(--space-lg);
+}
+/* ===============================
+   FOOTER TOP
+================================ */
+
+.tp-footer-top {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr;
+  gap: calc(var(--space-xl) * 1.4);
+  align-items: flex-start;
+}
+
+/* ===============================
+   BRAND BLOCK
+================================ */
+
+.tp-footer-brand {
+  max-width: 380px;
+}
+
+.tp-footer-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.tp-footer-logo:hover {
+  transform: translateY(-1px);
+}
+
+.tp-footer-desc {
+ font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-top: var(--space-sm);
+}
+
+/* ===============================
+   LINKS GRID
+================================ */
+
+.tp-footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--space-lg) * 1.2);
+}
+
+/* Column */
+.tp-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Title */
+.tp-footer-title {
+    font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.3px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+/* Links */
+.tp-footer-col button {
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+
+    font-size: var(--fs-label);
+  color: var(--text-secondary);
+
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tp-footer-col button:hover {
+  color: var(--clr-primary);
+  transform: translateX(4px);
+}
+
+/* ===============================
+   DIVIDER
+================================ */
+
+.tp-footer-divider {
+  margin: calc(var(--space-xl) * 1.2) 0 var(--space-lg);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--border-medium),
+    transparent
+  );
+}
+
+/* ===============================
+   FOOTER BOTTOM
+================================ */
+
+.tp-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* Copyright */
+.tp-footer-copy {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* Socials */
+.tp-footer-socials {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.tp-footer-socials a {
+ font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  position: relative;
+
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tp-footer-socials a:hover {
+  color: var(--clr-primary);
+  transform: translateY(-1px);
+}
+
+
+/* ===============================
+   FOOTER — COMING SOON CURSOR FIX
+================================ */
+
+.tp-footer-col button:disabled {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.tp-footer-col button:disabled:hover {
+  transform: translateX(4px);
+  color: var(--clr-primary);
+}
+
+
+/* ===============================
+   RESPONSIVE — TABLET
+================================ */
+
+@media (max-width: 900px) {
+
+  .tp-footer {
+    padding-left: var(--space-lg);
+    padding-right: var(--space-lg);
+  }
+
+  .tp-footer-top {
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+  }
+
+  .tp-footer-links {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .tp-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+}
+
+/* ===============================
+   RESPONSIVE — MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+  .tp-footer {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+
+  .tp-footer-links {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-footer-bottom {
+    align-items: center;
+    text-align: center;
+  }
+
+  .tp-footer-socials {
+    justify-content: center;
+  }
+}

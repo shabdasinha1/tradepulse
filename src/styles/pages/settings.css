@@ -1,0 +1,59 @@
+/* ===============================
+   SETTINGS
+================================ */
+
+.tp-data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tp-pref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tp-form {
+    max-width: 100%;
+  }
+}
+
+
+/* Tighten form width for better balance */
+.settings-form {
+  max-width: 520px;
+}
+
+/* Action alignment */
+.settings-actions {
+  margin-top: var(--space-md);
+}
+
+/* Shared list styling */
+.settings-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Row layout */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-soft);
+  gap: var(--space-md);
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+/* Preference rows */
+.settings-pref {
+  align-items: flex-start;
+}

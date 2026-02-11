@@ -1,0 +1,58 @@
+/* ===============================
+   404 – PAGE NOT FOUND
+================================ */
+
+.tp-404 {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+}
+
+.tp-404-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Card */
+.tp-404-card {
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* Icon */
+.tp-404-icon {
+   font-size: var(--fs-3xl);
+  color: var(--clr-warning);
+  opacity: 0.9;
+}
+
+/* Title */
+.tp-404-title {
+  font-size: clamp(
+    var(--fs-3xl),
+    8vw,
+    calc(var(--fs-3xl) * 1.8)
+  );
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+/* Subtext */
+.tp-404-sub {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+}
+/* Button */
+.tp-404-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-sm);
+}
+

@@ -1,0 +1,47 @@
+stages:
+  - build_uat
+  - deploy_uat
+
+# ------------------------
+# BUILD REACT (UAT)
+# ------------------------
+build_react_uat:
+  stage: build_uat
+  tags:
+    - staging
+  when: manual
+  allow_failure: false
+  only:
+    - main
+
+  script:
+    - echo "Building Vite + React app"
+    - pwd
+    - ls -la
+    - npm ci
+    - npm run build
+
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+
+# ------------------------
+# DEPLOY REACT (UAT)
+# ------------------------
+deploy_react_uat:
+  stage: deploy_uat
+  tags:
+    - staging
+  when: manual
+  needs:
+    - build_react_uat
+  only:
+    - main
+
+  script:
+    - echo "Deploying React build to UAT"
+    - test -d dist || (echo "dist folder missing" && exit 1)
+    - sudo rsync -av --delete dist/ /var/www/trade-pulse-frontend/
+    - sudo systemctl reload nginx

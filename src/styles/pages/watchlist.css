@@ -1,0 +1,77 @@
+/* ===============================
+   WATCHLIST
+================================ */
+
+.tp-watchlist-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-md);
+}
+
+/* Card */
+.tp-watchlist-card {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.01)
+  );
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Top */
+.tp-watchlist-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tp-watchlist-top svg {
+  opacity: 0.4;
+}
+
+.tp-watchlist-top svg.active {
+  opacity: 1;
+  color: var(--clr-primary);
+}
+
+/* Price */
+.tp-watchlist-price {
+  font-size: var(--fs-heading-sm);
+  font-weight: var(--fw-semibold);
+}
+
+/* Meta */
+.tp-watchlist-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* Score pill */
+.tp-score {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(34,197,94,0.15);
+  color: var(--clr-success);
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+}
+
+/* Verified */
+.tp-verified {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--clr-success);
+  font-size: var(--fs-label);
+}
+
+/* Bottom */
+.tp-watchlist-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

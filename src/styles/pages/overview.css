@@ -1,0 +1,260 @@
+/* ======================================
+   LATEST TRADE NEWS
+====================================== */
+/* ===============================
+   HEADER
+================================ */
+
+.tp-news-header {
+  display: flex;
+  align-items: center;
+}
+
+.tp-news-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.tp-news-title-wrap svg {
+  color: var(--text-secondary);
+} 
+
+/* ===============================
+   NEWS LIST
+================================ */
+
+.tp-news-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Individual news row */
+.tp-news-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+
+  padding: var(--space-md);              /* ✅ uniform padding */
+  margin-inline: calc(var(--space-md) * -1); /* ✅ extend hover area cleanly */
+
+  border-bottom: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);       /* ✅ smooth hover */
+
+  transition: background var(--transition-fast);
+}
+
+.tp-news-item:last-child {
+  border-bottom: none;
+}
+
+.tp-news-item:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ===============================
+   CONTENT
+================================ */
+
+.tp-news-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 520px;
+}
+
+.tp-news-title {
+ font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  line-height: 1.4;
+}
+
+.tp-news-time {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .tp-news-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+}
+
+/* ===============================
+   EXCHANGE RATES
+================================ */
+
+.tp-rates-grid {
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+}
+
+.tp-rate-card {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tp-rate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tp-rate-symbol {
+    font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+}
+
+.tp-rate-change {
+font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+}
+
+.tp-rate-pair {
+    font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.tp-rate-value {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+
+}
+
+/* ===============================
+   SHIPPING COSTS
+================================ */
+
+.tp-ship-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.tp-ship-card {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.tp-ship-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.tp-ship-route {
+   font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+}
+
+.tp-ship-port {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.tp-ship-days {
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.tp-ship-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tp-ship-price {
+ font-size: var(--fs-heading-sm);
+  font-weight: var(--fw-semibold);
+}
+
+.tp-ship-change {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .tp-rate-card,
+  .tp-ship-card {
+    padding: var(--space-lg);
+  }
+}
+
+
+/* ===============================
+   CUSTOM DUTY RATES
+================================ */
+/* ===============================
+   DUTY GRID
+================================ */
+
+.tp-duty-grid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* ===============================
+   DUTY CARD
+================================ */
+
+.tp-duty-card {
+  padding: var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+/* Category */
+.tp-duty-title {
+    font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+}
+
+/* Rate */
+.tp-duty-rate {
+    font-size: var(--fs-heading-sm);
+  font-weight: var(--fw-semibold);
+  line-height: 1.2;
+}
+
+/* Context note */
+.tp-duty-note {
+ font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .tp-duty-card {
+    padding: var(--space-xl);
+  }
+}

@@ -1,0 +1,233 @@
+/* ===============================
+   AUTH SECTION (SHARED)
+================================ */
+
+.tp-auth {
+  position: relative;
+}
+
+/* ===============================
+   GRID
+================================ */
+
+.tp-auth-grid {
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+/* ===============================
+   LEFT INFO
+================================ */
+
+.tp-auth-info {
+  max-width: 440px;
+}
+
+.tp-auth-title {
+  font-size: clamp(28px, 3vw, 36px);
+  font-weight: var(--fw-bold);
+  line-height: 1.2;
+  margin-bottom: var(--space-sm);
+}
+
+.tp-auth-title span {
+  color: var(--clr-primary);
+}
+
+.tp-auth-sub {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ===============================
+   AUTH CARD
+================================ */
+
+.tp-auth-card {
+  max-width: 520px;
+  margin-left: auto;
+}
+
+/* ===============================
+   FORM GRID
+================================ */
+
+.tp-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.tp-form-span-2 {
+  grid-column: span 2;
+}
+
+/* ===============================
+   PRIVACY
+================================ */
+
+.tp-privacy {
+  margin-top: var(--space-sm);
+}
+
+.tp-privacy-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  font-size: var(--fs-label);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.tp-privacy-label input {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.tp-privacy-label a {
+  color: var(--clr-primary);
+  font-weight: var(--fw-medium);
+}
+
+.tp-privacy-label a:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   ERROR
+================================ */
+
+.tp-auth-error {
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+}
+
+/* ===============================
+   BUTTON
+================================ */
+
+.tp-auth-btn {
+  margin-top: var(--space-sm);
+}
+
+/* ===============================
+   FOOTER
+================================ */
+
+.tp-auth-footer {
+  margin-top: var(--space-md);
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* ===============================
+   BUTTON
+================================ */
+
+.tp-auth-btn {
+  margin-top: var(--space-sm);
+}
+
+/* ===============================
+   RESEND OTP BUTTON
+================================ */
+
+.tp-auth-link {
+  margin-top: var(--space-xs);
+  align-self: flex-end;
+  background: none;
+  border: none;
+  padding: 0;
+ font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  color: var(--clr-primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.tp-auth-link:hover {
+  opacity: 0.85;
+}
+
+.tp-auth-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* ===============================
+   COUNTRY CODE DROPDOWN (CLEAN)
+================================ */
+
+.tp-country-code-select {
+  height: 44px;
+  padding: 0 14px;
+   font-size: var(--fs-body);
+  font-family: var(--font-main);
+
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-control);
+
+  cursor: pointer;
+}
+
+/* Dropdown list */
+.tp-country-code-select option {
+  padding: 8px 12px;
+   font-size: var(--fs-body);
+  color: #000; /* native dropdown needs solid text */
+}
+
+/* Hover & focus */
+.tp-country-code-select:focus {
+  outline: none;
+  border-color: var(--clr-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Prevent huge dropdown on desktop */
+.tp-country-code-select {
+  max-height: 180px;     /* ✅ smaller on desktop */
+  overflow-y: auto;     /* ✅ allow scrolling */
+}
+
+.tp-btn-primary:disabled {
+  cursor: not-allowed;  /* Cross or 'not-allowed' cursor */
+}
+
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+  .tp-auth-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-auth-card {
+  margin-left: auto;
+  margin-right: auto; /* ✅ centers the card */
+}
+
+  .tp-auth-info {
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  .tp-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-form-span-2 {
+    grid-column: span 1;
+  }
+ .tp-country-code-select {
+    max-height: 140px;   /* ✅ compact on mobile */
+  }
+}

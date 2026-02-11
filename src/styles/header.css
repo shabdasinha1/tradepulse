@@ -1,0 +1,495 @@
+/* ===============================
+   PUBLIC HEADER
+================================ */
+
+.tp-header--public {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+
+  background: color-mix(
+    in srgb,
+    var(--bg-app) 88%,
+    transparent
+  );
+
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+
+  border-bottom: 1px solid var(--border-soft);
+box-shadow:
+  0 1px 0 rgba(255, 255, 255, 0.06),
+  0 8px 20px rgba(0, 0, 0, 0.18);
+
+}
+
+/* ===============================
+   HEADER INNER
+================================ */
+
+.tp-nav-link.is-coming {
+  opacity: 0.85;
+}
+
+
+.tp-header-inner {
+  min-height: var(--header-height);
+  padding-inline: var(--space-lg);
+  padding-block: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ===============================
+   LOGO
+================================ */
+
+.tp-header-logo,
+.tp-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.tp-header-logo:hover,
+.tp-logo:hover {
+  transform: translateY(-1px);
+}
+
+.tp-logo-text {
+  font-size: var(--fs-heading-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.01em;
+}
+
+/* ===============================
+   NAV
+================================ */
+
+.tp-header-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.tp-nav-link {
+  position: relative;
+  padding: 6px 4px;
+   font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tp-nav-link:hover {
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+/* Underline */
+.tp-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--clr-primary),
+    transparent
+  );
+  opacity: 0;
+  transform: scaleX(0.6);
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.tp-nav-link:hover::after,
+.tp-nav-link.active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.tp-nav-link.active {
+  color: var(--clr-primary);
+}
+
+/* ===============================
+   ACTIONS
+================================ */
+
+.tp-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.tp-btn-outline {
+  padding: 8px 16px;
+  font-size: var(--fs-label);
+}
+
+.tp-header-toggle {
+  display: none;
+}
+
+/* ===============================
+   PRODUCTS DROPDOWN
+================================ */
+
+.tp-nav-dropdown {
+  position: relative;
+}
+
+.tp-nav-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-nav-dropdown-menu {
+  position: absolute;
+    top: 100%;
+  left: 0;
+  min-width: 280px;
+
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+
+  padding: var(--space-sm);
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+
+  box-shadow:
+    var(--shadow-card),
+    0 20px 60px rgba(0,0,0,0.55);
+
+  transform: translateY(6px);
+  opacity: 0;
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+.tp-nav-dropdown::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 14px;
+}
+
+
+.tp-nav-dropdown.open .tp-nav-dropdown-menu {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Dropdown item */
+.tp-dropdown-item {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+    font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  color: var(--text-primary);
+
+  background: transparent;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tp-dropdown-item:hover {
+  background: var(--bg-card-hover);
+  transform: translateX(4px);
+}
+
+.tp-dropdown-item.is-disabled {
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+.tp-nav-soon {
+  margin-left: 6px;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* ===============================
+   MOBILE — PUBLIC HEADER
+================================ */
+
+@media (max-width: 900px) {
+
+  .tp-header-inner {
+    padding-inline: var(--space-md);
+    padding-block: var(--space-md);
+  }
+
+  .tp-header-nav {
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    background: var(--bg-panel);
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    display: none;
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+
+  .tp-header-nav.open {
+    display: flex;
+  }
+
+  .tp-header-toggle {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+  }
+
+  .tp-nav-dropdown {
+    text-align: center;
+  }
+
+  .tp-nav-dropdown-trigger {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .tp-nav-dropdown-menu {
+    position: static;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    align-items: center;
+    opacity: 1;
+    transform: none;
+  }
+
+  .tp-dropdown-item {
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .tp-dropdown-item:hover {
+    transform: none;
+  }
+}
+
+/* ===============================
+   DASHBOARD HEADER
+================================ */
+
+
+.tp-header--dashboard {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 100;
+
+  height: var(--header-height);
+
+  background: color-mix(
+    in srgb,
+    var(--bg-app) 88%,
+    transparent
+  );
+
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+
+  border-bottom: 1px solid var(--border-soft);
+
+/* box-shadow:
+  0 1px 0 rgba(255, 255, 255, 0.06),
+  0 8px 20px rgba(0, 0, 0, 0.18); */
+
+}
+
+.tp-dashboard-nav {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.tp-dashboard-link {
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+   font-size: var(--fs-label);
+  color: var(--text-secondary);
+}
+
+.tp-dashboard-link.active {
+  background: color-mix(
+    in srgb,
+    var(--border-medium) 70%,
+    transparent
+  );
+  color: var(--text-primary);
+}
+
+.tp-dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* Avatar */
+.tp-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--clr-primary),
+    color-mix(in srgb, var(--clr-primary) 65%, black)
+  );
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hide dashboard menu button on desktop */
+.tp-menu-btn {
+  display: none;
+}
+
+
+/* ===============================
+   FIX PROFILE DROPDOWN VISIBILITY
+================================ */
+
+/* Ensure header does NOT clip dropdown */
+.tp-header--dashboard {
+  overflow: visible;
+}
+
+/* Profile wrapper */
+.tp-profile {
+  position: relative;
+}
+
+/* Dropdown menu */
+.tp-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+
+  min-width: 180px;
+
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+
+  box-shadow:
+    var(--shadow-card),
+    0 20px 50px rgba(0,0,0,0.5);
+
+  z-index: 9999; /* 🔥 critical */
+
+  overflow: hidden;
+}
+
+/* Dropdown button */
+.tp-profile-dropdown button {
+  width: 100%;
+  padding: 12px 16px;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  background: transparent;
+  border: none;
+
+ font-size: var(--fs-label);
+  color: var(--text-primary);
+
+  cursor: pointer;
+}
+
+.tp-profile-dropdown button:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ===============================
+   MOBILE — DASHBOARD
+================================ */
+
+@media (max-width: 768px) {
+
+  .tp-dashboard-nav {
+    position: absolute;
+    top: var(--header-height);
+    inset-inline: 0;
+    background: var(--bg-app);
+    flex-direction: column;
+    padding: var(--space-md);
+    display: none;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .tp-dashboard-nav.open {
+    display: flex;
+  }
+
+  .tp-menu-btn {
+    display: flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+
+    transition:
+      background var(--transition-fast),
+      color var(--transition-fast);
+  }
+
+  .tp-menu-btn:hover {
+    background: var(--border-soft);
+    color: var(--text-primary);
+  }
+}
+
+.tp-nav-signin-mobile {
+  display: none;
+}
+
+/* Hide Sign In button on very small screens */
+@media (max-width: 468px) {
+  .tp-header-actions .tp-btn-outline {
+    display: none;
+  }
+  .tp-nav-signin-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;   /* ✅ center horizontally */
+    text-align: center;        /* ✅ text center */
+    width: 100%;
+  }
+}
+

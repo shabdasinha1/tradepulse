@@ -1,0 +1,55 @@
+import axios from "axios";
+
+/* ===============================
+   ENV CONFIG
+================================ */
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000;
+const ENABLE_MOCK = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
+
+/* ===============================
+   AXIOS INSTANCE
+================================ */
+const Api = axios.create({
+  baseURL: BASE_URL,
+  timeout: TIMEOUT,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+/* ===============================
+   REQUEST INTERCEPTOR
+================================ */
+Api.interceptors.request.use(
+  (config) => {
+    // Attach token if exists
+    const token = localStorage.getItem("auth_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Debug log (optional)
+    if (import.meta.env.DEV) {
+      console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
+    }
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+/* ===============================
+   RESPONSE INTERCEPTOR
+================================ */
+Api.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+/* ===============================
+   EXPORTS
+================================ */
+export { Api, ENABLE_MOCK };
+export default Api;

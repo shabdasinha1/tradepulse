@@ -1,0 +1,126 @@
+/* ===============================
+   AI ASSISTANT HEADER
+================================ */
+
+.tp-ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tp-ai-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.tp-ai-title svg {
+  color: var(--clr-primary);
+}
+
+/* ===============================
+   AI BODY (EMPTY STATE)
+================================ */
+
+.tp-ai-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-md);
+  padding: var(--space-xl) 0;
+}
+
+.tp-ai-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--clr-primary-soft);
+  color: var(--clr-primary);
+}
+
+.tp-ai-icon-wrap svg {
+  width: 28px;
+  height: 28px;
+}
+
+.tp-ai-text {
+  max-width: 420px;
+  color: var(--text-secondary);
+  font-size: var(--fs-body);
+}
+
+/* ===============================
+   SUGGESTION CHIPS
+================================ */
+
+.tp-ai-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.tp-ai-chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.tp-ai-chip:hover {
+  background: var(--clr-primary-soft);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+}
+
+/* ===============================
+   INPUT AREA
+================================ */
+
+.tp-ai-input {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+  margin-top: var(--space-lg);
+}
+
+.tp-ai-input .tp-input {
+  flex: 1;
+}
+
+.tp-ai-send {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding-inline: var(--space-md);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .tp-ai-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tp-ai-send {
+    justify-content: center;
+  }
+}

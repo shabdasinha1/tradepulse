@@ -1,0 +1,133 @@
+/* ===============================
+   COMING SOON — HOLDING STATE
+================================ */
+
+.tp-coming {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.tp-coming-section {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Horizon glow — same DNA as Final CTA */
+.tp-coming-section::before {
+  content: "";
+  position: absolute;
+  inset: -45%;
+
+  background:
+    radial-gradient(
+      45% 45% at 50% 40%,
+      var(--clr-primary-soft),
+      transparent 65%
+    );
+
+  filter: blur(120px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* ===============================
+   LAYOUT
+================================ */
+
+.tp-coming-layout {
+  max-width: 820px;
+  margin-inline: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+
+.tp-coming--visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===============================
+   TITLE
+================================ */
+
+.tp-coming-title {
+  font-size: clamp(44px, 6vw, 68px);
+  font-weight: var(--fw-bold);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.tp-coming-title span {
+  color: var(--clr-primary);
+}
+
+/* ===============================
+   SUBTEXT
+================================ */
+
+.tp-coming-sub {
+  max-width: 700px;
+  margin-top: var(--space-xs);
+
+  font-size: calc(var(--fs-body) * 1.05);
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ===============================
+   ACTIONS
+================================ */
+
+.tp-coming-actions {
+  margin-top: var(--space-sm);
+
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tp-coming-primary {
+  min-width: 260px;
+  padding: 16px 28px;
+
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  border-radius: 999px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .tp-coming-title {
+    font-size: clamp(34px, 9vw, 42px);
+    line-height: 1.12;
+  }
+
+  .tp-coming-sub {
+    font-size: var(--fs-body);
+  }
+
+  .tp-coming-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tp-coming-actions button {
+    width: 100%;
+  }
+}

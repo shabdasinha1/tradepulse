@@ -1,0 +1,110 @@
+/* ===============================
+   HEADER
+================================ */
+
+.tp-supplier-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ===============================
+   TABLE LAYOUT
+================================ */
+
+.tp-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-table-head,
+.tp-table-row {
+  display: grid;
+  grid-template-columns:
+    1.6fr
+    1fr
+    0.8fr
+    0.9fr
+    0.7fr
+    1fr
+    40px;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.tp-table-head {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.tp-table-row {
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--border-soft);
+   font-size: var(--fs-body);
+}
+
+.tp-table-row:last-child {
+  border-bottom: none;
+}
+
+/* ===============================
+   SUPPLIER CELL
+================================ */
+
+.supplier-name strong {
+  font-weight: var(--fw-semibold);
+}
+
+/* Catalog link */
+.supplier-link {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-medium);
+  color: var(--clr-primary);
+}
+/* Star icon */
+.tp-star {
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.tp-star:hover {
+  color: var(--clr-primary);
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1024px) {
+  .tp-table-head,
+  .tp-table-row {
+    grid-template-columns:
+      1.4fr
+      1fr
+      0.8fr
+      0.9fr
+      0.7fr
+      0.9fr
+      32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .tp-table-head {
+    display: none;
+  }
+
+  .tp-table-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-sm);
+    padding: var(--space-lg) 0;
+  }
+
+  .tp-star {
+    align-self: flex-end;
+  }
+}

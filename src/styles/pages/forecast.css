@@ -1,0 +1,52 @@
+.forecast-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.forecast-chart {
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+}
+
+.forecast-bar {
+  height: 100%;
+  background: var(--clr-primary);
+  border-radius: 999px;
+}
+
+.forecast-note {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+
+.forecast-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.forecast-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-body);
+}
+
+.forecast-row:last-child {
+  border-bottom: none;
+}
+
+.forecast-head {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  color: var(--text-secondary);
+}
