@@ -28,5 +28,3 @@ export const GetApiErrorMessage = (error) => {
   // Network / unknown
   return "Network error. Please check your connection.";
 };
-
-

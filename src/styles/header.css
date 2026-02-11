@@ -474,6 +474,12 @@ box-shadow:
     color: var(--text-primary);
   }
 }
+@media (max-width:  426px) {
+  .tp-notification{
+    display: none;
+  }
+  
+}
 
 .tp-nav-signin-mobile {
   display: none;

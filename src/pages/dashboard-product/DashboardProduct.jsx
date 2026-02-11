@@ -1,142 +1,242 @@
-const products = [
-  {
-    name: "Crude Oil",
-    category: "Commodity",
-    price: "$78.45",
-    change: "+1.8%",
-    trend: "up",
-    status: "Active",
-  },
-  {
-    name: "Gold",
-    category: "Commodity",
-    price: "$2,032.10",
-    change: "-0.6%",
-    trend: "down",
-    status: "Active",
-  },
-  {
-    name: "EUR / USD",
-    category: "Forex",
-    price: "1.0842",
-    change: "+0.3%",
-    trend: "up",
-    status: "Active",
-  },
-  {
-    name: "Bitcoin",
-    category: "Crypto",
-    price: "$42,180",
-    change: "-2.1%",
-    trend: "down",
-    status: "Inactive",
-  },
-];
+import { useEffect, useMemo, useState } from "react";
+import {
+  DashboardProductInsights,
+  DashboardProductList,
+  DashboardProductOverview,
+} from "../../services/DashboardService";
+import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 
-const DashboardProduct = () => {
+/* ===============================
+    SKELETON COMPONENTS
+================================ */
+const Skeleton = ({ className = "" }) => (
+  <div className={`tp-skeleton ${className}`} />
+);
+
+const ProductOverviewSkeleton = () => {
   return (
-    
-      <section className="tp-section">
-        <div className="tp-container tp-grid-stack">
-          
-          {/* ===============================
-              PAGE HEADER
+    <section className="tp-section">
+      <div className="tp-container tp-grid-stack tp-skeleton-opacity">
+        {/* KPI Cards */}
+        <div className="tp-grid tp-grid-2">
+          {[...Array(4)].map((_, i) => (
+            <div className="tp-card" key={i}>
+              <Skeleton className="sk-text-sm" />
+              <Skeleton className="sk-text-lg" />
+            </div>
+          ))}
+        </div>
+
+        {/* Table */}
+        <div className="tp-card">
+          {[...Array(6)].map((_, i) => (
+            <div className="product-row" key={i}>
+              {[...Array(6)].map((_, j) => (
+                <Skeleton key={j} className="sk-table-cell" />
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Insights */}
+        <div className="tp-grid tp-grid-2">
+          {[...Array(2)].map((_, i) => (
+            <div className="tp-card" key={i}>
+              <Skeleton className="sk-text-sm" />
+              <Skeleton className="sk-text-lg" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/* ===============================
+    MAIN COMPONENT
+================================ */
+const DashboardProduct = () => {
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [productData, setProductData] = useState({
+    productOverview: [],
+    productList: [],
+    productInsight: [],
+  });
+
+  // ===============================
+  // Fetch data
+  // ===============================
+  useEffect(() => {
+    const fetchAllData = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const results = await Promise.allSettled([
+          DashboardProductOverview(),
+          DashboardProductList(),
+          DashboardProductInsights(),
+        ]);
+
+        const [overviewRes, listRes, insightRes] = results;
+
+        setProductData({
+          productOverview:
+            overviewRes.status === "fulfilled" ? overviewRes.value.data : [],
+          productList: listRes.status === "fulfilled" ? listRes.value.data : [],
+          productInsight:
+            insightRes.status === "fulfilled" ? insightRes.value.data : [],
+        });
+      } catch (err) {
+        setError(GetApiErrorMessage(err));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+console.log(productData)
+  // ===============================
+  // RENDER
+  // ===============================
+  return (
+    <section className="tp-section">
+      <div className="tp-container tp-grid-stack">
+        {/* ===============================
+              HEADER (ALWAYS VISIBLE)
           =============================== */}
-          <header>
-            <h1 className="tp-section-title">
-              Products <span>Overview</span>
-            </h1>
-            <p className="tp-section-sub">
-              Tradable instruments and current market snapshot
-            </p>
-          </header>
+        <header>
+          <h1 className="tp-section-title">
+            Products <span>Overview</span>
+          </h1>
+          <p className="tp-section-sub">
+            Tradable instruments and current market snapshot
+          </p>
+        </header>
 
-          {/* ===============================
-              KPI CARDS
+        {/* ===============================
+              SKELETON
           =============================== */}
-          <div className="tp-grid tp-grid-2">
-            <div className="tp-card">
-              <p className="tp-muted">Total Products</p>
-              <h3>24</h3>
-            </div>
+        {isLoading && <ProductOverviewSkeleton />}
 
-            <div className="tp-card">
-              <p className="tp-muted">Active Products</p>
-              <h3>18</h3>
-            </div>
-
-            <div className="tp-card">
-              <p className="tp-muted">Top Gainer</p>
-              <h3 className="tp-text-up">Crude Oil</h3>
-            </div>
-
-            <div className="tp-card">
-              <p className="tp-muted">Top Loser</p>
-              <h3 className="tp-text-down">Bitcoin</h3>
-            </div>
-          </div>
-
-          {/* ===============================
-              PRODUCT TABLE
+        {/* ===============================
+              MAIN CONTENT
           =============================== */}
-          <div className="tp-card">
-            <div className="product-table">
-
-              <div className="product-row product-head">
-                <span>Product</span>
-                <span>Category</span>
-                <span>Price</span>
-                <span>Change</span>
-                <span>Status</span>
+        {!isLoading && (
+          <>
+            {/* KPI CARDS */}
+            <div className="tp-grid tp-grid-2">
+              <div className="tp-card">
+                <p className="tp-muted">Total Products</p>
+                <h3 className="tp-overview-text">
+                  {productData?.productOverview?.data?.totalProducts}
+                </h3>
               </div>
 
-              {products.map((item, index) => (
-                <div className="product-row" key={index}>
-                  <span>{item.name}</span>
-                  <span className="tp-muted">{item.category}</span>
-                  <span>{item.price}</span>
-                  <span
-                    className={
-                      item.trend === "up"
-                        ? "tp-text-up"
-                        : "tp-text-down"
-                    }
-                  >
-                    {item.change}
-                  </span>
-                  <span
-                    className={`tp-pill ${
-                      item.status === "Active"
-                        ? "tp-pill-success"
-                        : "tp-pill-warning"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
+              <div className="tp-card">
+                <p className="tp-muted">Active Products</p>
+                <h3 className="tp-overview-text">
+                  {productData?.productOverview?.data?.activeProducts}
+                </h3>
+              </div>
+
+              <div className="tp-card">
+                <p className="tp-muted">Top Gainer</p>
+                <h3 className="tp-text-up">
+                  {
+                    productData?.productOverview?.data?.topGainer?.split(
+                      ",",
+                    )?.[0]
+                  }
+                </h3>
+              </div>
+
+              <div className="tp-card">
+                <p className="tp-muted">Top Loser</p>
+                <h3 className="tp-text-down">
+                  {
+                    productData?.productOverview?.data?.topLoser?.split(
+                      ",",
+                    )?.[0]
+                  }
+                </h3>
+              </div>
+            </div>
+
+            {/* PRODUCT TABLE */}
+            <div className="tp-card">
+              <div className="product-table">
+                <div className="product-row product-head">
+                  <span>Product</span>
+                  <span className="text-center">Category</span>
+                  <span className="text-center">Price</span>
+                  <span className="text-center">Change</span>
+                  <span className="text-center">Status</span>
                 </div>
-              ))}
 
+                {productData?.productList?.data?.map((item, index) => (
+                  <div className="product-row" key={index}>
+                    <span>{item.product_name.split(/[,\s]/)[0]}</span>
+                    <span className="tp-muted text-center">
+                      {item.category}
+                    </span>
+                    <span className="text-center">{item.price ?? "0"}</span>
+                    <span
+                      className={
+                        item.trend === "up"
+                          ? "tp-text-up text-center"
+                          : "tp-text-down text-center"
+                      }
+                    >
+                      {item.change}
+                    </span>
+                    <span className="text-center">
+                      <span
+                        className={`tp-pill ${
+                          item.status === "Active"
+                            ? "tp-pill-success"
+                            : "tp-pill-warning"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* ===============================
-              INSIGHTS
-          =============================== */}
-          <div className="tp-grid tp-grid-2">
-            <div className="tp-card">
-              <p className="tp-muted">Most Traded Product</p>
-              <h3>Gold</h3>
+            {/* INSIGHTS */}
+            <div className="tp-grid tp-grid-2" style={{ marginTop: "1rem" }}>
+              <div className="tp-card">
+                <p className="tp-muted">Most Traded Product</p>
+                <h3 className="tp-overview-text">
+                  {
+                    productData?.productInsight?.data?.most_traded?.split(
+                      ",",
+                    )?.[0]
+                  }
+                </h3>
+              </div>
+
+              <div className="tp-card">
+                <p className="tp-muted">Highest Volatility</p>
+                <h3 className="tp-overview-text">
+                  {
+                    productData?.productInsight?.data?.highest_volatility?.split(
+                      ",",
+                    )?.[0]
+                  }
+                </h3>
+              </div>
             </div>
-
-            <div className="tp-card">
-              <p className="tp-muted">Highest Volatility</p>
-              <h3>Bitcoin</h3>
-            </div>
-          </div>
-
-        </div>
-      </section>
-   
+          </>
+        )}
+      </div>
+    </section>
   );
 };
 

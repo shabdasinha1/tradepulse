@@ -6,7 +6,6 @@ import { lazy } from "react";
 
 const About = lazy(() => import("../pages/public/about/About.jsx"));
 const Contact = lazy(() => import("../pages/public/contact/Contact.jsx"));
-const Pricing = lazy(() => import("../pages/public/pricing/Pricing.jsx"));
 const ComingSoon = lazy(() =>
   import("../pages/coming-soon/ComingSoon.jsx")
 );
@@ -39,12 +38,6 @@ export const PUBLIC_ROUTES = [
   },
 
   /* ---------- HEADER LINKS ---------- */
-   {
-    label: "Pricing",
-    path: "/pricing",
-    component: Pricing,
-    showInHeader: true,
-  },
   {
     label: "About",
     path: "/about",

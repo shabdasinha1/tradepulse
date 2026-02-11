@@ -8,7 +8,6 @@ import { SetCookie } from "../../utils/CookieManager.jsx";
 const USER_FIRST_NAME_KEY = "tp_user_first_name";
 const USER_LAST_NAME_KEY = "tp_user_last_name";
 
-
 const Login = () => {
   const navigate = useNavigate();
 
@@ -77,13 +76,11 @@ const Login = () => {
       setLoading(false);
     }
   };
-
-
+  
   return (
     <section className="tp-section tp-section--auth tp-auth">
       <div className="tp-container">
         <div className="tp-grid tp-grid-2 tp-auth-grid">
-
           {/* ================= LEFT ================= */}
           <div className="tp-auth-info">
             <h1 className="tp-auth-title">
@@ -91,8 +88,8 @@ const Login = () => {
             </h1>
 
             <p className="tp-auth-sub">
-              Access AI-powered trade intelligence, commodities,
-              suppliers, and analytics — all in one secure platform.
+              Access AI-powered trade intelligence, commodities, suppliers, and
+              analytics — all in one secure platform.
             </p>
           </div>
 
@@ -102,11 +99,7 @@ const Login = () => {
               <h3 className="tp-card-title">Account Login</h3>
             </div>
 
-            <form
-              onSubmit={handleSubmit}
-              className="tp-form tp-auth-form"
-            >
-
+            <form onSubmit={handleSubmit} className="tp-form tp-auth-form">
               <div className="tp-form-group">
                 <label>Email</label>
                 <input
@@ -135,9 +128,7 @@ const Login = () => {
 
               {/* ERROR */}
               {errorMsg && (
-                <div className="tp-auth-error tp-text-down">
-                  {errorMsg}
-                </div>
+                <div className="tp-auth-error tp-text-down">{errorMsg}</div>
               )}
 
               {/* LINKS */}
@@ -150,13 +141,14 @@ const Login = () => {
                 </span>
               </div>
 
-             <button
-  type="submit"
-  className="tp-btn-primary tp-auth-btn"
-  disabled={loading}  // DISABLE the button when loading is true
->
-  {loading ? "Logging in..." : "Login"}  {/* Button text changes based on loading */}
-</button>
+              <button
+                type="submit"
+                className="tp-btn-primary tp-auth-btn"
+                disabled={loading} // DISABLE the button when loading is true
+              >
+                {loading ? "Logging in..." : "Login"}{" "}
+                {/* Button text changes based on loading */}
+              </button>
 
               {/* FOOTER */}
               <p className="tp-auth-footer">
@@ -168,14 +160,11 @@ const Login = () => {
                   Create one
                 </span>
               </p>
-
             </form>
           </div>
-
         </div>
       </div>
     </section>
-
   );
 };
 

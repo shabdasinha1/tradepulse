@@ -114,8 +114,17 @@
     row-gap: 8px;
   }
 
+  .tp-table-head span:nth-child(n+5),
+  .tp-table-row > *:nth-child(n+5) {
+    display: none;
+  }
+}
+@media (max-width: 426px) {
   .tp-table-head span:nth-child(n+4),
   .tp-table-row > *:nth-child(n+4) {
+    display: none;
+  }
+  .product-row span:nth-child(n+4){
     display: none;
   }
 }

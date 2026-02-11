@@ -81,7 +81,7 @@ const Footer = () => {
             </div>
 
             <p className="tp-footer-desc">
-              AI powered cross-border trade intelligence helping businesses
+              AI powered global trade intelligence helping businesses
               make smarter, data-backed cross border decisions.
             </p>
           </div>

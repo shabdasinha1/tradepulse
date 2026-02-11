@@ -26,12 +26,12 @@ const About = () => {
       <h1 className="tp-about-hero-title">
         Building <span>Decision Intelligence</span>
         <br />
-        for Cross-border Trade
+        for Global Trade
       </h1>
 
       {/* Lead */}
       <p className="tp-about-hero-lead">
-        TradePulse AI exists to help businesses navigate cross-border trade
+        TradePulse AI exists to help businesses navigate global trade
         complexity with clarity transforming fragmented data into
         intelligence that supports better decisions.
       </p>
@@ -77,7 +77,7 @@ const About = () => {
     {/* Header */}
     <div className="tp-audience-header">
       <h2 className="tp-audience-title">
-        Built for <span>Teams Operating in cross-border Trade</span>
+        Built for <span>Teams Operating in Global Trade</span>
       </h2>
 
       <p className="tp-audience-sub">
@@ -125,8 +125,8 @@ const About = () => {
 
         <p className="tp-diff-lead">
           TradePulse AI is designed to help businesses
-          <strong> understand, evaluate, and act {" "}</strong>
-          on cross-border trade signals before execution.
+          <strong> understand, evaluate, and act</strong>
+          on global trade signals before execution.
         </p>
       </div>
 
@@ -150,7 +150,7 @@ const About = () => {
             Structured intelligence that explains
             <strong> what matters, why it matters,</strong>
             and <strong>where risk or opportunity is emerging</strong>
-            {" "}across cross-border trade activity.
+            {" "}across global trade activity.
           </p>
         </div>
 
@@ -208,13 +208,13 @@ const About = () => {
       <h2 className="tp-vision-title">
         A Scalable Intelligence Platform
         <br />
-        <span>for Smarter cross-border Trade</span>
+        <span>for Smarter Global Trade</span>
       </h2>
 
       {/* Lead */}
       <p className="tp-vision-lead">
         TradePulse AI is designed to scale across industries,
-        regions, and cross-border trade corridors providing
+        regions, and global trade corridors providing
         consistent intelligence as trade complexity grows.
       </p>
 
@@ -228,7 +228,7 @@ const About = () => {
       {/* Horizon statement */}
       <p className="tp-vision-horizon">
         Our long term vision is to become a trusted intelligence layer
-        for cross-border trade helping businesses make smarter, safer,
+        for global trade helping businesses make smarter, safer,
         and more confident cross border decisions worldwide.
       </p>
 
@@ -267,7 +267,7 @@ const About = () => {
         <p className="tp-about-emphasis">
           TradePulse AI brings together technology, data, and real-world
           trade understanding into an intelligence platform designed to
-          support better decisions in today’s cross-border economy.
+          support better decisions in today’s global economy.
         </p>
       </div>
 

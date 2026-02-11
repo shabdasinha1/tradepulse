@@ -208,7 +208,6 @@
   margin-bottom: var(--space-xl);
 }
 
-
 /* ===============================
    INDIVIDUAL CARD
 ================================ */
@@ -312,11 +311,6 @@
   }
 }
 
-@media (max-width: 480px) {
-  .tp-problem-cards {
-    grid-template-columns: 1fr;
-  }
-}
 
 /* ===============================
    REPORTS VISUAL SECTION
@@ -466,7 +460,7 @@
 /* Dot */
 .tp-flow-dot {
   position: absolute;
-  left: 4px;
+  left: 5px;
   top: 4px;
 
   width: 16px;
@@ -529,7 +523,12 @@
     padding-left: calc(var(--space-lg) * 1.2);
   }
 }
-
+@media (max-width : 426px) {
+  .tp-flow-dot{
+    left: 3px;
+  }
+  
+}
 /* ===============================
    FORECAST VISUAL SECTION
 ================================ */

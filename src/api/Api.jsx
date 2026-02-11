@@ -1,4 +1,5 @@
 import axios from "axios";
+import  { GetToken } from "../utils/AuthHelper";
 
 /* ===============================
    ENV CONFIG
@@ -6,6 +7,7 @@ import axios from "axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000;
 const ENABLE_MOCK = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
+const token = GetToken()
 
 /* ===============================
    AXIOS INSTANCE
@@ -15,6 +17,7 @@ const Api = axios.create({
   timeout: TIMEOUT,
   headers: {
     "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`
   },
 });
 

@@ -60,7 +60,7 @@ useEffect(() => {
 
   return (
    <header className="tp-header tp-header--dashboard">
-  <div className="tp-header-inner tp-container">
+  <div className="tp-header-inner">
 
     {/* LOGO */}
     <div
@@ -90,7 +90,7 @@ useEffect(() => {
     {/* ACTIONS */}
     <div className="tp-dashboard-actions">
 
-      <FiBell />
+      <FiBell className="tp-notification" />
       <FiSettings onClick={() => navigate("/settings")} />
 
       <button className="tp-theme-toggle" onClick={toggleTheme}>

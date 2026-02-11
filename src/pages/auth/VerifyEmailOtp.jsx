@@ -166,5 +166,3 @@ const VerifyEmailOtp = () => {
 };
 
 export default VerifyEmailOtp;
-
-

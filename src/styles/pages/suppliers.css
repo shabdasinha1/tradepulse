@@ -1,6 +1,9 @@
 /* ===============================
    HEADER
 ================================ */
+.text-center {
+  text-align: center;
+}
 
 .tp-supplier-header {
   display: flex;
@@ -43,7 +46,7 @@
 .tp-table-row {
   padding: var(--space-md) 0;
   border-bottom: 1px solid var(--border-soft);
-   font-size: var(--fs-body);
+  font-size: var(--fs-body);
 }
 
 .tp-table-row:last-child {
@@ -94,17 +97,114 @@
 }
 
 @media (max-width: 768px) {
+  .tp-table-row,
   .tp-table-head {
-    display: none;
-  }
-
-  .tp-table-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: 2fr 0.8fr 0.8fr 0.8fr;
     gap: var(--space-sm);
     padding: var(--space-lg) 0;
   }
 
   .tp-star {
-    align-self: flex-end;
+    /* align-self: flex-end; */
+  }
+}
+@media (max-width: 426px) {
+  .tp-table-row,
+  .tp-table-head {
+    grid-template-columns: 2fr 0.8fr 0.8fr;
+  }
+  .supplier-name strong {
+    font-weight: var(--fw-regular);
+  }
+}
+/* =======================================
+      PAGINATION
+======================================= */
+
+.tp-pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.tp-pagination-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+
+.tp-pagination-btn.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}
+
+.tp-pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tp-table-scroll {
+  max-height: 320px; /* adjust as needed */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* CUSTOM SCROLLBAR */
+.tp-table-scroll::-webkit-scrollbar {
+  width: 8px; /* scrollbar width */
+}
+
+.tp-table-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--clr-primary), #355dff);
+  border-radius: var(--radius-control);
+}
+
+.tp-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #2563eb; /* hover color */
+}
+
+/* ======================================
+      SKELETON CSS
+====================================== */
+
+.skeleton-wrapper {
+  opacity: 0.6;
+}
+
+.skeleton {
+  background: var(--bg-card-surface);
+  background-size: 400% 100%;
+  border-radius: 4px;
+  height: 20px;
+  opacity: 0.5;
+}
+
+.skeleton-text {
+  width: 100%;
+  height: 20px;
+}
+
+.skeleton-pill {
+  width: 50px;
+  height: 22px;
+  border-radius: 12px;
+}
+
+.skeleton-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
   }
 }

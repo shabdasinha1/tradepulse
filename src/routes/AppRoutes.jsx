@@ -26,50 +26,48 @@ const PageLoader = () => (
 const AppRoutes = () => {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ScrollToTop/>
+      <ScrollToTop />
       <ToastContainer/>
       <Routes>
-
         {/* 🌍 PUBLIC + AUTH — BLOCKED AFTER LOGIN */}
-<Route
-  path="/"
-  element={
-    <PublicOnlyRoute>
-      <PublicLayout>
-        <Home />
-      </PublicLayout>
-    </PublicOnlyRoute>
-  }
-/>
+        <Route
+          path="/"
+          element={
+            <PublicOnlyRoute>
+              <PublicLayout>
+                <Home />
+              </PublicLayout>
+            </PublicOnlyRoute>
+          }
+        />
 
-{AUTH_ROUTES.map(({ path, component: Component }) => (
-  <Route
-    key={path}
-    path={path}
-    element={
-      <PublicOnlyRoute>
-        <PublicLayout>
-          <Component />
-        </PublicLayout>
-      </PublicOnlyRoute>
-    }
-  />
-))}
+        {AUTH_ROUTES.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <PublicOnlyRoute>
+                <PublicLayout>
+                  <Component />
+                </PublicLayout>
+              </PublicOnlyRoute>
+            }
+          />
+        ))}
 
-{PUBLIC_ROUTES.map(({ path, component: Component }) => (
-  <Route
-    key={path}
-    path={path}
-    element={
-      <PublicOnlyRoute>
-        <PublicLayout>
-          <Component />
-        </PublicLayout>
-      </PublicOnlyRoute>
-    }
-  />
-))}
-
+        {PUBLIC_ROUTES.map(({ path, component: Component }) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <PublicOnlyRoute>
+                <PublicLayout>
+                  <Component />
+                </PublicLayout>
+              </PublicOnlyRoute>
+            }
+          />
+        ))}
 
         {/* 🔒 DASHBOARD ROUTES */}
         {DASHBOARD_ROUTES.map(({ path, component: Component }) => (
@@ -95,7 +93,6 @@ const AppRoutes = () => {
             </PublicLayout>
           }
         />
-
       </Routes>
     </Suspense>
   );

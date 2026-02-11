@@ -9,7 +9,7 @@
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
   margin-bottom: var(--space-sm);
 }
@@ -25,7 +25,6 @@
   color: var(--text-muted);
 }
 
-
 .forecast-table {
   display: flex;
   flex-direction: column;
@@ -34,7 +33,7 @@
 
 .forecast-row {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-columns: 1.8fr 1fr 1fr;
   align-items: center;
   padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--border-soft);
@@ -49,4 +48,49 @@
   font-size: var(--fs-caption);
   font-weight: var(--fw-semibold);
   color: var(--text-secondary);
+}
+
+/* ===============================================
+    SKELETON CODE
+=============================================== */
+
+/* Skeleton base */
+.skeleton {
+  background-size: 400% 100%;
+  border-radius: 6px;
+}
+.forecast-skeleton {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* Sizes */
+.skeleton-text {
+  height: 20px;
+  width: 100%;
+}
+
+.skeleton-title {
+  height: 28px;
+  width: 220px;
+}
+
+.skeleton-card-value {
+  height: 32px;
+  width: 80px;
+}
+
+.skeleton-bar {
+  height: 12px;
+  width: 100%;
+  border-radius: 999px;
+}
+
+.skeleton-pill {
+  height: 20px;
+  width: 70%;
+  border-radius: 999px;
 }

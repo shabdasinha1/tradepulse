@@ -24,7 +24,7 @@ const news = [
   },
 ];
 
-const  LatestTradeNews = () => {
+const LatestTradeNews = () => {
   return (
     <section className="tp-section">
       <div className="tp-container">

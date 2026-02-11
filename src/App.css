@@ -52,12 +52,10 @@
 @import "./styles/pages/about.css";
 @import "./styles/pages/contact.css";
 @import "./styles/pages/coming-soon.css";
-@import "./styles/pages/pricing.css";
 
 
 
-
-
+@import "react-toastify/dist/ReactToastify.css";
 
 
 
