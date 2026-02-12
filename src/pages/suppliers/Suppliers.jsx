@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiPlus, FiStar } from "react-icons/fi";
@@ -12,7 +13,7 @@ const LIMIT = 5;
 
 const SupplierRowSkeleton = () => {
   return (
-    <div className="tp-table-row tp-table-suppliers skeleton-wrapper">
+    <div className="tp-table-row tp-table-suppliers skeleton">
       <div className="skeleton skeleton-text" />
       <div className="skeleton skeleton-text" />
       <div className="skeleton skeleton-pill" />

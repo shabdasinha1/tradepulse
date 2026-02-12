@@ -10,7 +10,7 @@
   align-items: center;
   padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--border-soft);
-   font-size: var(--fs-body);
+  font-size: var(--fs-body);
 }
 
 .product-row:last-child {
@@ -22,54 +22,55 @@
   font-weight: var(--fw-semibold);
   color: var(--text-secondary);
 }
-.tp-overview-text{
+.tp-overview-text {
   font-size: var(--fs-body);
 }
 
-@media (max-width : 426px) {
-  .product-row{
+@media (max-width: 426px) {
+  .product-row {
     /* font-size: var(--fs-xs);  */
-    grid-template-columns: 1.4fr 1fr 1fr ;
+    grid-template-columns: 1.4fr 1fr 1fr;
   }
-  .product-row .vr-center{
+  .product-row .vr-center {
     place-self: center;
   }
-  
 }
 
-/*==============================
-    SKELETON
-================================*/
 
 
-.tp-skeleton {
-  background-size: 400% 100%;
-  animation: shimmer 1.4s ease infinite;
-  border-radius: 6px;
-}
-.tp-skeleton-opacity{
-  opacity: 0.5;
-}
-@keyframes shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
+
+/*=======================================================
+            SKELETON CSS 
+ =========================================================*/
+
 
 /* Sizes */
-.sk-title { height: 32px; width: 220px; margin-bottom: 8px; }
-.sk-subtitle { height: 16px; width: 320px; }
+.sk-title {
+  height: 32px;
+  width: 220px;
+  margin-bottom: 8px;
+}
+.sk-subtitle {
+  height: 16px;
+  width: 320px;
+}
 
-.sk-text-sm { height: 14px; width: 120px; margin-bottom: 8px; }
-.sk-text-lg { height: 28px; width: 100%; }
+.sk-text-sm {
+  height: 14px;
+  width: 120px;
+  margin-bottom: 8px;
+}
+.sk-text-lg {
+  height: 28px;
+  width: 100%;
+}
 
 .sk-table-cell {
   height: 16px;
   width: 100%;
 }
 
-
 .tp-fade {
-  
   transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tp-fade.show {

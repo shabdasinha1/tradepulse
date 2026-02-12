@@ -10,13 +10,13 @@ import { GetApiErrorMessage } from "../../utils/ErrorHandler";
     SKELETON COMPONENTS
 ================================ */
 const Skeleton = ({ className = "" }) => (
-  <div className={`tp-skeleton ${className}`} />
+  <div className={`tp-skeleton skeleton ${className}`} />
 );
 
 const ProductOverviewSkeleton = () => {
   return (
     <section className="tp-section">
-      <div className="tp-container tp-grid-stack tp-skeleton-opacity">
+      <div className="tp-container tp-grid-stack tp-skeleton-opacity skeleton">
         {/* KPI Cards */}
         <div className="tp-grid tp-grid-2">
           {[...Array(4)].map((_, i) => (
@@ -28,7 +28,7 @@ const ProductOverviewSkeleton = () => {
         </div>
 
         {/* Table */}
-        <div className="tp-card">
+        <div className="tp-card tp-skeleton">
           {[...Array(6)].map((_, i) => (
             <div className="product-row" key={i}>
               {[...Array(6)].map((_, j) => (
@@ -98,7 +98,7 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
-
+console.log(productData)
   // ===============================
   // RENDER
   // ===============================
@@ -183,7 +183,7 @@ const DashboardProduct = () => {
                     <span className="tp-muted text-center">
                       {item.category}
                     </span>
-                    <span className="text-center">{item.price ?? "0"}</span>
+                    <span className="text-center">{item.unit_price ?? "0"}</span>
                     <span
                       className={
                         item.trend === "up"

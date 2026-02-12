@@ -30,8 +30,7 @@ import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 // ];
 const ForecastSkeleton = () => {
   return (
-    <div className="forecast-skeleton">
-      {/* KPI Cards */}
+    <div className="forecast-skeleton skeleton">
       <div className="tp-grid tp-grid-2">
         {[...Array(4)].map((_, i) => (
           <div className="tp-card" key={i}>
@@ -44,7 +43,6 @@ const ForecastSkeleton = () => {
         ))}
       </div>
 
-      {/* Trend Projection */}
       <div className="tp-card">
         <div className="forecast-chart-header">
           <div className="skeleton skeleton-text" style={{ width: 160 }} />
@@ -56,7 +54,6 @@ const ForecastSkeleton = () => {
         </div>
       </div>
 
-      {/* Signal Table */}
       <div className="tp-card">
         <div className="forecast-table">
           <div className="forecast-row forecast-head">
@@ -75,13 +72,13 @@ const ForecastSkeleton = () => {
         </div>
       </div>
 
-      {/* Disclaimer */}
       <div className="tp-card">
         <div className="skeleton skeleton-text" />
       </div>
     </div>
   );
 };
+
 
 const Forecast = () => {
   const [error, setError] = useState("");
