@@ -36,11 +36,11 @@
   justify-content: space-between;
   gap: var(--space-md);
 
-  padding: var(--space-md);              /* ✅ uniform padding */
+  padding: var(--space-md); /* ✅ uniform padding */
   margin-inline: calc(var(--space-md) * -1); /* ✅ extend hover area cleanly */
 
   border-bottom: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);       /* ✅ smooth hover */
+  border-radius: var(--radius-md); /* ✅ smooth hover */
 
   transition: background var(--transition-fast);
 }
@@ -65,7 +65,7 @@
 }
 
 .tp-news-title {
- font-size: var(--fs-body);
+  font-size: var(--fs-body);
   font-weight: var(--fw-medium);
   line-height: 1.4;
 }
@@ -90,7 +90,6 @@
    OVERVIEW CHARTS 
 ====================================== */
 
-
 .tp-overview-charts {
   display: grid;
   gap: var(--space-lg);
@@ -107,6 +106,9 @@
 
 .tp-rates-grid {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 .tp-rate-card {
@@ -127,25 +129,84 @@
 }
 
 .tp-rate-symbol {
-    font-size: var(--fs-label);
+  font-size: var(--fs-label);
   font-weight: var(--fw-semibold);
   color: var(--text-secondary);
 }
 
 .tp-rate-change {
-font-size: var(--fs-caption);
+  font-size: var(--fs-caption);
   font-weight: var(--fw-medium);
 }
 
 .tp-rate-pair {
-    font-size: var(--fs-caption);
+  font-size: var(--fs-caption);
   color: var(--text-muted);
 }
 
 .tp-rate-value {
   font-size: var(--fs-caption);
   font-weight: var(--fw-medium);
+}
 
+.rtx-verical-scroll {
+  max-height: 20vh; /* set your desired height */
+  overflow-y: auto; /* enable vertical scroll */
+  overflow-x: hidden; /* prevent horizontal scroll */
+  padding-right: 6px; /* optional: space for scrollbar */
+
+  /* smooth scroll on mobile */
+  -webkit-overflow-scrolling: touch;
+
+  /* smooth scroll behavior */
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--clr-primary) transparent;
+}
+.rtx-tp-rate-card-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.rtx-verical-scroll {
+  overflow-y: auto;
+}
+
+/* Scrollbar width */
+.rtx-verical-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track (background) */
+.rtx-verical-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Scroll thumb */
+.rtx-verical-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--clr-primary), #355dff);
+  border-radius: 20px;
+  transition: background 0.3s ease;
+}
+
+/* Hover effect */
+.rtx-verical-scroll::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 900px) {
+  .rtx-tp-rate-card-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  .rtx-verical-scroll {
+    max-height: 35vh;
+  }
+}
+@media (max-width: 426px) {
+  .rtx-tp-rate-card-container {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ===============================
@@ -153,7 +214,8 @@ font-size: var(--fs-caption);
 ================================ */
 
 .tp-ship-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); */
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .tp-ship-card {
@@ -175,7 +237,7 @@ font-size: var(--fs-caption);
 }
 
 .tp-ship-route {
-   font-size: var(--fs-label);
+  font-size: var(--fs-label);
   font-weight: var(--fw-semibold);
 }
 
@@ -197,7 +259,7 @@ font-size: var(--fs-caption);
 }
 
 .tp-ship-price {
- font-size: var(--fs-heading-sm);
+  font-size: var(--fs-heading-sm);
   font-weight: var(--fw-semibold);
 }
 
@@ -216,8 +278,16 @@ font-size: var(--fs-caption);
     padding: var(--space-lg);
   }
 }
-
-
+@media (max-width: 900px) {
+  .tp-ship-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 426px) {
+  .tp-ship-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 /* ===============================
    CUSTOM DUTY RATES
 ================================ */
@@ -246,21 +316,21 @@ font-size: var(--fs-caption);
 
 /* Category */
 .tp-duty-title {
-    font-size: var(--fs-label);
+  font-size: var(--fs-label);
   font-weight: var(--fw-medium);
   color: var(--text-secondary);
 }
 
 /* Rate */
 .tp-duty-rate {
-    font-size: var(--fs-heading-sm);
+  font-size: var(--fs-heading-sm);
   font-weight: var(--fw-semibold);
   line-height: 1.2;
 }
 
 /* Context note */
 .tp-duty-note {
- font-size: var(--fs-caption);
+  font-size: var(--fs-caption);
   color: var(--text-muted);
 }
 
@@ -271,5 +341,18 @@ font-size: var(--fs-caption);
 @media (max-width: 640px) {
   .tp-duty-card {
     padding: var(--space-xl);
+  }
+}
+/* =======================================
+        RESPONSIVE
+======================================= */
+@media (max-width: 900px) {
+  .tp-duty-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 426px) {
+  .tp-duty-grid {
+    grid-template-columns: repeat(1, 1fr);
   }
 }

@@ -2,6 +2,9 @@
 .product-table-wrapper {
   width: 100%;
   overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Fixed table width */
