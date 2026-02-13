@@ -176,6 +176,7 @@
 /* Scrollbar width */
 .rtx-verical-scroll::-webkit-scrollbar {
   width: 8px;
+  
 }
 
 /* Track (background) */

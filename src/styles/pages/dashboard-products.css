@@ -48,6 +48,9 @@
 .tp-insight-grid {
   grid-template-columns: 1fr 1fr;
 }
+.product-table::-webkit-scrollbar {
+  display: none;
+}
 @media (max-width: 768px) {
   .tp-product-overview-grid {
     grid-template-columns: repeat(2, 1fr);
