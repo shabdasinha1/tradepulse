@@ -8,6 +8,7 @@
   max-width: 100%;
   width: 100%;
   min-width: 0;
+  
 }
 
 /* Card header */
@@ -346,4 +347,29 @@
   .tp-input__placeholder {
     font-size: 12px;
   }
+}
+
+
+/* recharts */
+.tp-chart-wrapper {
+  width: 100%;
+  height: 280px; /* consistent rhythm */
+}
+
+/* Recharts theme alignment */
+.recharts-cartesian-grid line {
+  stroke: var(--border-soft);
+}
+
+.recharts-text {
+  fill: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-legend-item-text {
+  font-size: var(--fs-caption) !important;
+  color: var(--text-secondary) !important;
 }
