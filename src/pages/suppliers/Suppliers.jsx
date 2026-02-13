@@ -145,7 +145,7 @@ const Suppliers = () => {
             </div>
           }
         >
-          <div className="tp-table-wrapper-suppliers">
+          <div className="tp-table-wrapper-suppliers" ref={tableScrollRef}>
             <div className="tp-table-hr-scroll">
               {/* TABLE HEADER */}
               <div className="tp-table-head tp-table-suppliers">
@@ -159,7 +159,7 @@ const Suppliers = () => {
               </div>
 
               {/* TABLE BODY */}
-              <div className="tp-table-scroll" ref={tableScrollRef}>
+              {/* <div className="tp-table-scroll" ref={tableScrollRef}> */}
                 <div className="tp-table">
                   {suppliers?.map((s, i) => (
                     <div key={i} className="tp-table-row tp-table-suppliers">
@@ -209,7 +209,7 @@ const Suppliers = () => {
                 </div>
                 {/* ===============================
                 LOADING / SCROLL MARKER
-            =============================== */}
+                =============================== */}
                 {hasMore && (
                   <div
                     ref={observerRef}
@@ -227,7 +227,7 @@ const Suppliers = () => {
                     ✅ No more suppliers
                   </div>
                 )}
-              </div>
+              {/* </div> */}
 
               {/* ERROR MESSAGE */}
               {error && (
