@@ -87,6 +87,55 @@
 }
 
 /* ======================================
+   AUTO + MANUAL SCROLL NEWS
+====================================== */
+
+.tp-news-viewport {
+  position: relative;
+  height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scroll-behavior: smooth;
+
+  /* Hide scrollbar */
+  scrollbar-width: none; /* Firefox */
+}
+
+.tp-news-viewport::-webkit-scrollbar {
+  display: none; /* Chrome */
+}
+
+/* Auto scrolling container */
+.tp-news-scroll {
+  display: flex;
+  flex-direction: column;
+
+  animation: tp-news-scroll 24s linear infinite;
+}
+
+/* Pause animation on hover */
+.tp-news-viewport:hover .tp-news-scroll {
+  animation-play-state: paused;
+}
+
+/* Stop animation during manual scroll */
+.tp-news-manual .tp-news-scroll {
+  animation-play-state: paused;
+}
+
+/* Infinite loop */
+@keyframes tp-news-scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+
+/* ======================================
    OVERVIEW CHARTS 
 ====================================== */
 

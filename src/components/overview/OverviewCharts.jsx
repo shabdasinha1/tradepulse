@@ -22,68 +22,66 @@ const OverviewCharts = () => {
     ];
 
     return (
-        <section className="tp-section tp-section--tight">
-            <div className="tp-container">
-                <div className="tp-overview-charts">
+  <section className="tp-section tp-section--tight">
+  <div className="tp-container">
 
-                    <TPMetricCard
-                        title="Currency Exchange Tracker"
-                        value="1.05"
-                        unit="USD/NGN (x100)"
-                        footerLabel="Naira strengthening"
-                        trend={2.3}
-                        trendDirection="up"
-                    />
+    {/* METRICS ROW */}
+    <div className="tp-metrics-row">
+      <TPMetricCard
+        title="Currency Exchange Tracker"
+        value="1.05"
+        unit="USD/NGN (x100)"
+        footerLabel="Naira strengthening"
+        trend={2.3}
+        trendDirection="up"
+      />
 
-                    <TPMetricCard
-                        title="Shipping Cost Trend"
-                        value="$2,450"
-                        unit="per container"
-                        footerLabel="Down from last month"
-                        trend={5.2}
-                        trendDirection="down"
-                    />
+      <TPMetricCard
+        title="Shipping Cost Trend"
+        value="$2,450"
+        unit="per container"
+        footerLabel="Down from last month"
+        trend={5.2}
+        trendDirection="down"
+      />
 
-                    <TPMetricCard
-                        title="Product Demand Signal"
-                        value="72%"
-                        footerLabel="Electronics category"
-                        trend={14}
-                        trendDirection="up"
-                    />
+      <TPMetricCard
+        title="Product Demand Signal"
+        value="72%"
+        footerLabel="Electronics category"
+        trend={14}
+        trendDirection="up"
+      />
 
-                    <TPMetricCard
-                        title="Supplier Trust Score"
-                        value="8.7/10"
-                        footerLabel="Verified suppliers"
-                        trend={1.2}
-                        trendDirection="up"
-                    />
+      <TPMetricCard
+        title="Supplier Trust Score"
+        value="8.7/10"
+        footerLabel="Verified suppliers"
+        trend={1.2}
+        trendDirection="up"
+      />
+    </div>
 
+    {/* CHARTS */}
+    <div className="tp-grid tp-grid-2">
+      <TPChart
+        title="Product Price Trend"
+        type="line"
+        data={priceData}
+        series={[{ key: "value", label: "Price" }]}
+      />
 
-                    {/* Product Price Trend */}
-                    <TPChart
-                        title="Product Price Trend"
-                        type="line"
-                        data={priceData}
-                        series={[
-                            { key: "value", label: "Price" }
-                        ]}
-                    />
+      <TPChart
+        title="Demand Growth Forecast"
+        type="area"
+        data={demandData}
+        series={[{ key: "value", label: "Demand" }]}
+      />
+    </div>
 
-                    {/* Demand Growth Forecast */}
-                    <TPChart
-                        title="Demand Growth Forecast"
-                        type="area"
-                        data={demandData}
-                        series={[
-                            { key: "value", label: "Demand" }
-                        ]}
-                    />
+  </div>
+</section>
 
-                </div>
-            </div>
-        </section>
     );
 };
 

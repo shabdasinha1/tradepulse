@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { DashboardForcast } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
+import TPChart from "../../components/common/TPChart.jsx";
+import TPMetricCard from "../../components/common/TPMetricCard.jsx";
 
 // const signals = [
 //   {
@@ -79,6 +81,30 @@ const ForecastSkeleton = () => {
   );
 };
 
+  const historicalData = [
+    { month: "Jan", historical: 45, predicted: 45 },
+    { month: "Feb", historical: 52, predicted: 52 },
+    { month: "Mar", historical: 48, predicted: 48 },
+    { month: "Apr", historical: 61, predicted: 61 },
+    { month: "May", historical: 55, predicted: 58 },
+    { month: "Jun", historical: 68, predicted: 74 },
+    { month: "Jul", predicted: 77 },
+    { month: "Aug", predicted: 80 },
+    { month: "Sep", predicted: 82 },
+  ];
+
+  const confidenceData = [
+    { month: "Jan", value: 95 },
+    { month: "Feb", value: 94 },
+    { month: "Mar", value: 92 },
+    { month: "Apr", value: 90 },
+    { month: "May", value: 85 },
+    { month: "Jun", value: 78 },
+    { month: "Jul", value: 70 },
+    { month: "Aug", value: 66 },
+    { month: "Sep", value: 62 },
+  ];
+
 
 const Forecast = () => {
   const [error, setError] = useState("");
@@ -127,6 +153,69 @@ const Forecast = () => {
             Predictive signals and trend confidence indicators
           </p>
         </header>
+
+        {/* ================= METRICS ROW ================= */}
+        <div className="tp-metrics-row">
+
+          <TPMetricCard
+            title="Price Movement Prediction"
+            value="+8.5%"
+            unit="next 3 months"
+            footerLabel="Upward trend expected"
+            trend={8.5}
+            trendDirection="up"
+          />
+
+          <TPMetricCard
+            title="Demand Direction Signal"
+            value="Strong"
+            unit="growth signal"
+            footerLabel="Confidence: 78%"
+            trendDirection="up"
+          />
+
+          <TPMetricCard
+            title="Shipping Cost Forecast"
+            value="$2,380"
+            unit="predicted average"
+            footerLabel="Slight decline expected"
+            trend={3.2}
+            trendDirection="down"
+          />
+
+          <TPMetricCard
+            title="Currency Volatility Alert"
+            value="Medium"
+            unit="risk level"
+            footerLabel="Monitor closely"
+            trendDirection="neutral"
+          />
+
+        </div>
+
+        {/* ================= CHARTS ROW ================= */}
+        <div className="tp-grid tp-grid-2">
+
+          <TPChart
+            title="Price Prediction - Historical vs Forecast"
+            type="line"
+            data={historicalData}
+            series={[
+              { key: "historical", label: "Historical" },
+              { key: "predicted", label: "Predicted", dashed: true }
+            ]}
+          />
+
+          <TPChart
+            title="AI Confidence Score by Month"
+            type="bar"
+            data={confidenceData}
+            series={[
+              { key: "value", label: "Confidence" }
+            ]}
+          />
+
+        </div>
         {/* ===============================
               KPI CARDS
               =============================== */}

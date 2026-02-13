@@ -1,77 +1,89 @@
 /* ===============================
-   WATCHLIST
+   WATCHLIST PAGE
 ================================ */
 
-.tp-watchlist-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+.tp-watchlist-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* Header */
+.tp-watchlist-header h1 {
+  margin-bottom: var(--space-xs);
+}
+
+/* Section */
+.tp-watchlist-section {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-md);
 }
 
-/* Card */
-.tp-watchlist-card {
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.03),
-    rgba(255,255,255,0.01)
-  );
+/* Section Head */
+.tp-watchlist-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* List Container */
+.tp-watchlist-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
 }
 
-/* Top */
-.tp-watchlist-top {
+/* Row */
+.tp-watchlist-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-md);
+
+  padding: var(--space-md);
+  margin-inline: calc(var(--space-md) * -1);
+
+  border-bottom: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+
+  transition: background var(--transition-fast);
 }
 
-.tp-watchlist-top svg {
-  opacity: 0.4;
+.tp-watchlist-row:last-child {
+  border-bottom: none;
 }
 
-.tp-watchlist-top svg.active {
+.tp-watchlist-row:hover {
+  background: var(--bg-card-hover);
+}
+
+/* Actions */
+.tp-watchlist-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.tp-watchlist-actions svg {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.tp-watchlist-actions svg:hover {
   opacity: 1;
-  color: var(--clr-primary);
 }
 
-/* Price */
-.tp-watchlist-price {
-  font-size: var(--fs-heading-sm);
-  font-weight: var(--fw-semibold);
-}
+/* Responsive */
+@media (max-width: 640px) {
+  .tp-watchlist-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
 
-/* Meta */
-.tp-watchlist-meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-/* Score pill */
-.tp-score {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(34,197,94,0.15);
-  color: var(--clr-success);
-  font-size: var(--fs-label);
-  font-weight: var(--fw-medium);
-}
-
-/* Verified */
-.tp-verified {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--clr-success);
-  font-size: var(--fs-label);
-}
-
-/* Bottom */
-.tp-watchlist-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  .tp-watchlist-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }

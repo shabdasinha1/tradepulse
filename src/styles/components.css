@@ -485,3 +485,26 @@
   align-items: center;
   font-size: var(--fs-caption);
 }
+
+.tp-metrics-row {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+
+  /* 4 in one row on large screens */
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Large Tablets */
+@media (max-width: 1200px) {
+  .tp-metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .tp-metrics-row {
+    grid-template-columns: 1fr;
+  }
+}
