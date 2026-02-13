@@ -44,25 +44,62 @@ const LatestTradeNews = () => {
   const viewportRef = useRef(null);
   const [isInteracting, setIsInteracting] = useState(false);
 
-  useEffect(() => {
-    const el = viewportRef.current;
-    if (!el) return;
+ useEffect(() => {
+  const el = viewportRef.current;
+  if (!el) return;
 
-    const handleScroll = () => {
-      setIsInteracting(true);
+  let animationFrame;
+  let isPaused = false;
+  let manualTimeout;
 
-      clearTimeout(el._scrollTimeout);
-      el._scrollTimeout = setTimeout(() => {
-        setIsInteracting(false);
-      }, 1500);
-    };
+  const speed = 0.5; // try 0.4–0.7
 
-    el.addEventListener("scroll", handleScroll);
+  const autoScroll = () => {
+    if (!isPaused) {
+      el.scrollTop += speed;
 
-    return () => {
-      el.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+      // Seamless reset
+      if (el.scrollTop >= el.scrollHeight / 2) {
+        el.scrollTop = 0;
+      }
+    }
+
+    animationFrame = requestAnimationFrame(autoScroll);
+  };
+
+  animationFrame = requestAnimationFrame(autoScroll);
+
+  /* -------- Pause on Hover -------- */
+  const handleMouseEnter = () => {
+    isPaused = true;
+  };
+
+  const handleMouseLeave = () => {
+    isPaused = false;
+  };
+
+  /* -------- Pause on Manual Scroll -------- */
+  const handleScroll = () => {
+    isPaused = true;
+
+    clearTimeout(manualTimeout);
+    manualTimeout = setTimeout(() => {
+      isPaused = false;
+    }, 1200); // resume after idle
+  };
+
+  el.addEventListener("mouseenter", handleMouseEnter);
+  el.addEventListener("mouseleave", handleMouseLeave);
+  el.addEventListener("scroll", handleScroll);
+
+  return () => {
+    cancelAnimationFrame(animationFrame);
+    el.removeEventListener("mouseenter", handleMouseEnter);
+    el.removeEventListener("mouseleave", handleMouseLeave);
+    el.removeEventListener("scroll", handleScroll);
+  };
+}, []);
+
 
   return (
     <section className="tp-section">
