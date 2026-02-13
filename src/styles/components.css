@@ -5,6 +5,9 @@
   background: var(--bg-card-surface);
   border: 1px solid var(--border-soft);
   box-shadow: var(--shadow-card);
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
 }
 
 /* Card header */
@@ -297,8 +300,6 @@
   color: var(--text-primary);
 }
 
-
-
 /* ===============================
      REACT-SELECT CUSTOMIZATION (COUNTRY CODE DROPDOWN)
   ================================ */
@@ -315,33 +316,33 @@
   background-color: var(--bg-card) !important;
   color: var(--text-primary) !important;
 }
-.tp-input__value-container{
+.tp-input__value-container {
   padding: 0 !important;
 }
-.tp-input__single-value{
+.tp-input__single-value {
   color: var(--text-primary) !important;
 }
-.tp-input__input-container{
+.tp-input__input-container {
   color: var(--text-primary) !important;
 }
-.tp-input__indicators{
+.tp-input__indicators {
   display: none !important;
 }
-.tp-input__option{
+.tp-input__option {
   background-color: var(--bg-panel) !important;
-    color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
 }
-.tp-input__option:hover{
+.tp-input__option:hover {
   background-color: #355dff !important;
   /* background-color: var(--bg-panel);
   color: var(--text-primary); */
 }
-.tp-input__menu-list{
+.tp-input__menu-list {
   background-color: var(--bg-panel) !important;
-    /* color: var(--text-primary) !important; */
+  /* color: var(--text-primary) !important; */
 }
 
-@media (min-width: 769px) AND (max-width:861px) {
+@media (min-width: 769px) AND (max-width: 861px) {
   .tp-input__placeholder {
     font-size: 12px;
   }

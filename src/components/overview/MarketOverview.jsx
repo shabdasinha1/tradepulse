@@ -6,6 +6,7 @@ import {
   DashboardOverviewShipping,
 } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
+import VerticalScrool from "../common/VerticalScroll.jsx";
 
 const MarketOverview = () => {
   const [error, setError] = useState("");
@@ -156,7 +157,7 @@ const MarketOverview = () => {
                 <strong className="tp-rate-value">{r.value}</strong>
               </div>
             ))} */}
-            {OverviewData?.exchangeRates?.slice(0, 5)?.map((r, i) => (
+            {/* {OverviewData?.exchangeRates?.slice(0, 5)?.map((r, i) => (
               <div key={i} className="tp-rate-card">
                 <div className="tp-rate-header">
                   <span className="tp-rate-symbol">{r.baseCurrency}</span>
@@ -177,7 +178,32 @@ const MarketOverview = () => {
                 <span className="tp-rate-pair">{r.pair}</span>
                 <strong className="tp-rate-value">{r.currentRate}</strong>
               </div>
-            ))}
+            ))} */}
+            <VerticalScrool className="rtx-verical-scroll">
+              <div className="rtx-tp-rate-card-container">
+                {OverviewData?.exchangeRates?.map((r, index) => (
+                  <div key={index} className="tp-rate-card">
+                    <div className="tp-rate-header">
+                      <span className="tp-rate-symbol">{r.baseCurrency}</span>
+                      <span
+                        className={`tp-rate-change ${
+                          r.trend === "UP"
+                            ? "tp-text-up"
+                            : r.trend === "DOWN"
+                              ? "tp-text-down"
+                              : "tp-text-neutral"
+                        }`}
+                      >
+                        {r.changePercent}%
+                      </span>
+                    </div>
+
+                    <span className="tp-rate-pair">{r.pair}</span>
+                    <strong className="tp-rate-value">{r.currentRate}</strong>
+                  </div>
+                ))}
+              </div>
+            </VerticalScrool>
           </div>
         </TradePulseCard>
 

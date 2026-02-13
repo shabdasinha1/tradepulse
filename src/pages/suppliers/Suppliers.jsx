@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiPlus, FiStar } from "react-icons/fi";
@@ -146,86 +145,96 @@ const Suppliers = () => {
             </div>
           }
         >
-          {/* TABLE HEADER */}
-          <div className="tp-table-head tp-table-suppliers">
-            <span>Supplier</span>
-            <span className="text-center">Country</span>
-            <span className="text-center">Trust</span>
-            <span className="text-center">Status</span>
-            <span className="text-center">Trades</span>
-            <span className="text-center">Catalog</span>
-            <span />
-          </div>
+          <div className="tp-table-wrapper-suppliers">
+            <div className="tp-table-hr-scroll">
+              {/* TABLE HEADER */}
+              <div className="tp-table-head tp-table-suppliers">
+                <span>Supplier</span>
+                <span className="text-center">Country</span>
+                <span className="text-center">Trust</span>
+                <span className="text-center">Status</span>
+                <span className="text-center">Trades</span>
+                <span className="text-center">Catalog</span>
+                <span />
+              </div>
 
-          {/* TABLE BODY */}
-          <div className="tp-table-scroll" ref={tableScrollRef}>
-            <div className="tp-table">
-              {suppliers?.map((s, i) => (
-                <div key={i} className="tp-table-row tp-table-suppliers">
-                  <div className="supplier-name">
-                    <strong>{s.supplier_name}</strong>
-                  </div>
+              {/* TABLE BODY */}
+              <div className="tp-table-scroll" ref={tableScrollRef}>
+                <div className="tp-table">
+                  {suppliers?.map((s, i) => (
+                    <div key={i} className="tp-table-row tp-table-suppliers">
+                      <div className="supplier-name">
+                        <strong>{s.supplier_name}</strong>
+                      </div>
 
-                  <span className="tp-muted text-center">{s.country}</span>
-                  <span className="text-center">
-                    <span
-                      className={`tp-pill ${
-                        s.trust_score >= 85
-                          ? "tp-pill-success"
-                          : "tp-pill-warning"
-                      }`}
-                    >
-                      {s.trust_score}
-                    </span>
-                  </span>
-                  <span className="text-center">
-                    <span
-                      className={`tp-pill ${
-                        s.status === "Verified"
-                          ? "tp-pill-success"
-                          : "tp-pill-warning"
-                      }`}
-                    >
-                      {s.status}
-                    </span>
-                  </span>
+                      <span className="tp-muted text-center">{s.country}</span>
+                      <span className="text-center">
+                        <span
+                          className={`tp-pill ${
+                            s.trust_score >= 85
+                              ? "tp-pill-success"
+                              : "tp-pill-warning"
+                          }`}
+                        >
+                          {s.trust_score}
+                        </span>
+                      </span>
+                      <span className="text-center">
+                        <span
+                          className={`tp-pill ${
+                            s.status === "Verified"
+                              ? "tp-pill-success"
+                              : "tp-pill-warning"
+                          }`}
+                        >
+                          {s.status}
+                        </span>
+                      </span>
 
-                  <strong className="text-center">{s.trade_count}</strong>
+                      <strong className="text-center">{s.trade_count}</strong>
 
-                  <a className="supplier-link text-center">{s.catalog_size}</a>
+                      <a className="supplier-link text-center">
+                        {s.catalog_size}
+                      </a>
 
-                  <FiStar className="tp-star" />
+                      <FiStar className="tp-star" />
+                    </div>
+                  ))}
+
+                  {/* SKELETON WHILE LOADING NEXT PAGE */}
+                  {isLoading &&
+                    [...Array(5)].map((_, i) => (
+                      <SupplierRowSkeleton key={`skeleton-${i}`} />
+                    ))}
                 </div>
-              ))}
-
-              {/* SKELETON WHILE LOADING NEXT PAGE */}
-              {isLoading &&
-                [...Array(5)].map((_, i) => (
-                  <SupplierRowSkeleton key={`skeleton-${i}`} />
-                ))}
-            </div>
-            {/* ===============================
+                {/* ===============================
                 LOADING / SCROLL MARKER
             =============================== */}
-            {hasMore && (
-              <div
-                ref={observerRef}
-                className="text-center tp-muted"
-                style={{ padding: 16 }}
-              >
-                {isLoading ? "Loading more suppliers..." : "Scroll for more"}
+                {hasMore && (
+                  <div
+                    ref={observerRef}
+                    className="text-center tp-muted"
+                    style={{ padding: 16 }}
+                  >
+                    {isLoading
+                      ? "Loading more suppliers..."
+                      : "Scroll for more"}
+                  </div>
+                )}
+                {/* END OF DATA MESSAGE */}
+                {!hasMore && (
+                  <div className="text-center tp-muted" style={{ padding: 20 }}>
+                    ✅ No more suppliers
+                  </div>
+                )}
               </div>
-            )}
-            {/* END OF DATA MESSAGE */}
-            {!hasMore && (
-              <div className="text-center tp-muted" style={{ padding: 20 }}>
-                ✅ No more suppliers
-              </div>
-            )}
-          </div>
 
-          {/* ERROR MESSAGE */}
-          {error && <div className="text-center tp-text-danger">{error}</div>}
+              {/* ERROR MESSAGE */}
+              {error && (
+                <div className="text-center tp-text-danger">{error}</div>
+              )}
+            </div>
+          </div>
         </TradePulseCard>
       </div>
     </section>
