@@ -1,0 +1,86 @@
+/* ==============================
+   WRAPPER
+============================== */
+
+.tp-toast-wrapper {
+  position: fixed;
+
+  top: calc(var(--header-height) + var(--space-md));
+  right: var(--space-lg);
+
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+
+  width: 100%;
+  max-width: 380px;
+}
+
+/* ==============================
+   TOAST CARD
+============================== */
+
+.tp-toast {
+  background: var(--bg-card);
+  color: var(--text-primary);
+
+  border: 1px solid var(--border-soft);
+  border-left: 4px solid var(--clr-primary);
+
+  padding: var(--space-md);
+  border-radius: var(--radius-control);
+
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+
+  box-shadow: var(--shadow-card);
+
+  backdrop-filter: blur(12px);
+
+  cursor: pointer;
+
+  animation: tp-toast-slide 0.35s ease;
+  transition: var(--transition-base);
+}
+
+/* Hover subtle lift */
+.tp-toast:hover {
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   TYPES
+============================== */
+
+.tp-toast--success {
+  border-left-color: var(--clr-success);
+}
+
+.tp-toast--error {
+  border-left-color: var(--clr-danger);
+}
+
+.tp-toast--warning {
+  border-left-color: var(--clr-warning);
+}
+
+.tp-toast--default {
+  border-left-color: var(--clr-primary);
+}
+
+/* ==============================
+   ANIMATION
+============================== */
+
+@keyframes tp-toast-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

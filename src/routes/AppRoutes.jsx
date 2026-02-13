@@ -15,6 +15,7 @@ import PrivateLayout from "../layouts/PrivateLayout.jsx";
 import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import PublicOnlyRoute from "./PublicOnlyRoute.jsx";
 import { ToastContainer } from "react-toastify";
+import { ToastProvider } from "../components/common/toast/ToastProvider.jsx";
 
 /* Simple loader */
 const PageLoader = () => (
@@ -26,74 +27,76 @@ const PageLoader = () => (
 const AppRoutes = () => {
   return (
     <Suspense fallback={<PageLoader />}>
-      <ScrollToTop />
-      <ToastContainer/>
-      <Routes>
-        {/* 🌍 PUBLIC + AUTH — BLOCKED AFTER LOGIN */}
-        <Route
-          path="/"
-          element={
-            <PublicOnlyRoute>
+      <ToastProvider>
+        <ScrollToTop />
+        <ToastContainer />
+        <Routes>
+          {/* 🌍 PUBLIC + AUTH — BLOCKED AFTER LOGIN */}
+          <Route
+            path="/"
+            element={
+              <PublicOnlyRoute>
+                <PublicLayout>
+                  <Home />
+                </PublicLayout>
+              </PublicOnlyRoute>
+            }
+          />
+
+          {AUTH_ROUTES.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <PublicOnlyRoute>
+                  <PublicLayout>
+                    <Component />
+                  </PublicLayout>
+                </PublicOnlyRoute>
+              }
+            />
+          ))}
+
+          {PUBLIC_ROUTES.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <PublicOnlyRoute>
+                  <PublicLayout>
+                    <Component />
+                  </PublicLayout>
+                </PublicOnlyRoute>
+              }
+            />
+          ))}
+
+          {/* 🔒 DASHBOARD ROUTES */}
+          {DASHBOARD_ROUTES.map(({ path, component: Component }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ProtectedRoute>
+                  <PrivateLayout>
+                    <Component />
+                  </PrivateLayout>
+                </ProtectedRoute>
+              }
+            />
+          ))}
+
+          {/* 🚫 404 */}
+          <Route
+            path="*"
+            element={
               <PublicLayout>
-                <Home />
+                <NotFound />
               </PublicLayout>
-            </PublicOnlyRoute>
-          }
-        />
-
-        {AUTH_ROUTES.map(({ path, component: Component }) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <PublicOnlyRoute>
-                <PublicLayout>
-                  <Component />
-                </PublicLayout>
-              </PublicOnlyRoute>
             }
           />
-        ))}
-
-        {PUBLIC_ROUTES.map(({ path, component: Component }) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <PublicOnlyRoute>
-                <PublicLayout>
-                  <Component />
-                </PublicLayout>
-              </PublicOnlyRoute>
-            }
-          />
-        ))}
-
-        {/* 🔒 DASHBOARD ROUTES */}
-        {DASHBOARD_ROUTES.map(({ path, component: Component }) => (
-          <Route
-            key={path}
-            path={path}
-            element={
-              <ProtectedRoute>
-                <PrivateLayout>
-                  <Component />
-                </PrivateLayout>
-              </ProtectedRoute>
-            }
-          />
-        ))}
-
-        {/* 🚫 404 */}
-        <Route
-          path="*"
-          element={
-            <PublicLayout>
-              <NotFound />
-            </PublicLayout>
-          }
-        />
-      </Routes>
+        </Routes>
+      </ToastProvider>
     </Suspense>
   );
 };

@@ -1,6 +1,8 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useToast } from "./toast/ToastProvider";
 
 const EarlyFeedbackWidget = () => {
+  const { addToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     role: "",
@@ -11,7 +13,9 @@ const EarlyFeedbackWidget = () => {
     intent: "",
     email: "",
   });
-
+  const isFormValid = () => {
+    return Object.values(formData).every((value) => value.trim() !== "");
+  };
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -21,6 +25,11 @@ const EarlyFeedbackWidget = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isFormValid()) {
+      addToast("All fields are required", "error");
+      return;
+    }
+    addToast("Thank you your feedback", "success");
 
     console.log("Form Submitted:", formData);
 
@@ -30,28 +39,25 @@ const EarlyFeedbackWidget = () => {
   };
 
   useEffect(() => {
-  if (isOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "auto";
-  }
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
 
-  return () => {
-    document.body.style.overflow = "auto";
-  };
-}, [isOpen]);
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
 
   return (
     <>
       {/* Floating Button */}
-{!isOpen && (
-  <button
-    className="tp-feedback-btn"
-    onClick={() => setIsOpen(true)}
-  >
-    Feedback
-  </button>
-)}
+      {!isOpen && (
+        <button className="tp-feedback-btn" onClick={() => setIsOpen(true)}>
+          Feedback
+        </button>
+      )}
 
       {/* Modal */}
       {isOpen && (
@@ -68,7 +74,6 @@ const EarlyFeedbackWidget = () => {
             </div>
 
             <form className="tp-form" onSubmit={handleSubmit}>
-              
               {/* Role */}
               <div className="tp-form-group">
                 <label>Your Role</label>
@@ -76,7 +81,6 @@ const EarlyFeedbackWidget = () => {
                   name="role"
                   className="tp-input tp-select"
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Select role</option>
                   <option>Importer</option>
@@ -94,7 +98,6 @@ const EarlyFeedbackWidget = () => {
                   name="companySize"
                   className="tp-input tp-select"
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Select size</option>
                   <option>1–10</option>
@@ -113,7 +116,6 @@ const EarlyFeedbackWidget = () => {
                   className="tp-input"
                   placeholder="Enter country"
                   onChange={handleChange}
-                  required
                 />
               </div>
 
@@ -124,7 +126,6 @@ const EarlyFeedbackWidget = () => {
                   name="challenge"
                   className="tp-input tp-select"
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Select challenge</option>
                   <option>Shipping Costs</option>
@@ -142,7 +143,6 @@ const EarlyFeedbackWidget = () => {
                   name="dataNeed"
                   className="tp-input tp-select"
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Select option</option>
                   <option>FX Insights</option>
@@ -160,7 +160,6 @@ const EarlyFeedbackWidget = () => {
                   name="intent"
                   className="tp-input tp-select"
                   onChange={handleChange}
-                  required
                 >
                   <option value="">Select</option>
                   <option>Yes</option>
