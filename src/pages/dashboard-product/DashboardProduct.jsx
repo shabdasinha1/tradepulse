@@ -19,7 +19,7 @@ const ProductOverviewSkeleton = () => {
     <section className="tp-section">
       <div className="tp-container tp-grid-stack tp-skeleton-opacity ">
         {/* KPI Cards */}
-        <div className="tp-grid tp-grid-2">
+        <div className="tp-grid tp-product-overview-grid">
           {[...Array(4)].map((_, i) => (
             <div className="tp-card" key={i}>
               <Skeleton className="sk-text-sm" />

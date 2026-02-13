@@ -6,7 +6,7 @@ import {
   DashboardOverviewShipping,
 } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
-import VerticalScrool from "../common/VerticalScroll.jsx";
+import VerticalScroll from "../common/VerticalScroll.jsx";
 
 const MarketOverview = () => {
   const [error, setError] = useState("");
@@ -179,7 +179,7 @@ const MarketOverview = () => {
                 <strong className="tp-rate-value">{r.currentRate}</strong>
               </div>
             ))} */}
-            <VerticalScrool className="rtx-verical-scroll">
+            <VerticalScroll className="rtx-vertical-scroll">
               <div className="rtx-tp-rate-card-container">
                 {OverviewData?.exchangeRates?.map((r, index) => (
                   <div key={index} className="tp-rate-card">
@@ -203,7 +203,7 @@ const MarketOverview = () => {
                   </div>
                 ))}
               </div>
-            </VerticalScrool>
+            </VerticalScroll>
           </div>
         </TradePulseCard>
 

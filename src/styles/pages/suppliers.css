@@ -23,12 +23,24 @@
 
   overscroll-behavior: contain;
 
-  scrollbar-width: none;
+  /* scrollbar-width: none; */
   -ms-overflow-style: none;
 }
 
 .tp-table-wrapper-suppliers::-webkit-scrollbar {
-  height: 0px; /* 🔥 hides horizontal scrollbar */
+  width: 10px;
+  height: 0;
+}
+
+.tp-table-wrapper-suppliers::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tp-table-wrapper-suppliers::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--clr-primary), #355dff);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
 
 .tp-table {

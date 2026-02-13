@@ -33,7 +33,7 @@ import TPMetricCard from "../../components/common/TPMetricCard.jsx";
 const ForecastSkeleton = () => {
   return (
     <div className="forecast-skeleton skeleton">
-      <div className="tp-grid tp-grid-2">
+      <div className="tp-grid tp-product-overview-grid">
         {[...Array(4)].map((_, i) => (
           <div className="tp-card" key={i}>
             <div className="skeleton skeleton-text" />

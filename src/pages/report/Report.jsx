@@ -54,7 +54,7 @@ const Report = () => {
           {/* ===============================
               KPI CARDS
           =============================== */}
-          <div className="tp-grid tp-grid-2">
+          <div className="tp-grid tp-product-overview-grid">
             <div className="tp-card">
               <p className="tp-muted">Total Trades</p>
               <h3>126</h3>
