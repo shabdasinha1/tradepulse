@@ -86,6 +86,21 @@
   }
 }
 
+/* ======================================
+   OVERVIEW CHARTS 
+====================================== */
+
+
+.tp-overview-charts {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 1024px) {
+  .tp-overview-charts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 /* ===============================
    EXCHANGE RATES
 ================================ */

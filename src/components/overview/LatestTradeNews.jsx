@@ -27,6 +27,7 @@ const news = [
 const LatestTradeNews = () => {
   return (
     <section className="tp-section">
+      
       <div className="tp-container">
 
         <TradePulseCard
