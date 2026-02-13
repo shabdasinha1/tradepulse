@@ -1,5 +1,5 @@
 import axios from "axios";
-import  { GetToken } from "../utils/AuthHelper";
+import { GetToken } from "../utils/AuthHelper";
 
 /* ===============================
    ENV CONFIG
@@ -7,7 +7,7 @@ import  { GetToken } from "../utils/AuthHelper";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000;
 const ENABLE_MOCK = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
-const token = GetToken()
+// const token = GetToken()
 
 /* ===============================
    AXIOS INSTANCE
@@ -17,7 +17,7 @@ const Api = axios.create({
   timeout: TIMEOUT,
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`
+    // Authorization: `Bearer ${token}`
   },
 });
 
@@ -26,8 +26,10 @@ const Api = axios.create({
 ================================ */
 Api.interceptors.request.use(
   (config) => {
+    const token = GetToken();
+
     // Attach token if exists
-    const token = localStorage.getItem("auth_token");
+    // const token = localStorage.getItem("auth_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -39,7 +41,7 @@ Api.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 /* ===============================
@@ -49,7 +51,7 @@ Api.interceptors.response.use(
   (response) => response.data,
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 /* ===============================
    EXPORTS
