@@ -1,5 +1,5 @@
 import { FiGlobe } from "react-icons/fi";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 
 const news = [
@@ -41,65 +41,47 @@ const news = [
 ];
 
 const LatestTradeNews = () => {
-  const viewportRef = useRef(null);
-  const [isInteracting, setIsInteracting] = useState(false);
+  const scrollRef = useRef(null);
 
- useEffect(() => {
-  const el = viewportRef.current;
-  if (!el) return;
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
 
-  let animationFrame;
-  let isPaused = false;
-  let manualTimeout;
+    let animationFrame;
+    let position = 0;
+    let isPaused = false;
+    const speed = 0.6; // adjust 0.4 – 1 for speed
 
-  const speed = 0.5; // try 0.4–0.7
+    const contentHeight = el.scrollHeight / 2;
 
-  const autoScroll = () => {
-    if (!isPaused) {
-      el.scrollTop += speed;
+    const animate = () => {
+      if (!isPaused) {
+        position += speed;
 
-      // Seamless reset
-      if (el.scrollTop >= el.scrollHeight / 2) {
-        el.scrollTop = 0;
+        if (position >= contentHeight) {
+          position = 0;
+        }
+
+        el.style.transform = `translateY(-${position}px)`;
       }
-    }
 
-    animationFrame = requestAnimationFrame(autoScroll);
-  };
+      animationFrame = requestAnimationFrame(animate);
+    };
 
-  animationFrame = requestAnimationFrame(autoScroll);
+    animationFrame = requestAnimationFrame(animate);
 
-  /* -------- Pause on Hover -------- */
-  const handleMouseEnter = () => {
-    isPaused = true;
-  };
+    const pause = () => (isPaused = true);
+    const resume = () => (isPaused = false);
 
-  const handleMouseLeave = () => {
-    isPaused = false;
-  };
+    el.addEventListener("mouseenter", pause);
+    el.addEventListener("mouseleave", resume);
 
-  /* -------- Pause on Manual Scroll -------- */
-  const handleScroll = () => {
-    isPaused = true;
-
-    clearTimeout(manualTimeout);
-    manualTimeout = setTimeout(() => {
-      isPaused = false;
-    }, 1200); // resume after idle
-  };
-
-  el.addEventListener("mouseenter", handleMouseEnter);
-  el.addEventListener("mouseleave", handleMouseLeave);
-  el.addEventListener("scroll", handleScroll);
-
-  return () => {
-    cancelAnimationFrame(animationFrame);
-    el.removeEventListener("mouseenter", handleMouseEnter);
-    el.removeEventListener("mouseleave", handleMouseLeave);
-    el.removeEventListener("scroll", handleScroll);
-  };
-}, []);
-
+    return () => {
+      cancelAnimationFrame(animationFrame);
+      el.removeEventListener("mouseenter", pause);
+      el.removeEventListener("mouseleave", resume);
+    };
+  }, []);
 
   return (
     <section className="tp-section">
@@ -114,13 +96,8 @@ const LatestTradeNews = () => {
             </div>
           }
         >
-          <div
-            ref={viewportRef}
-            className={`tp-news-viewport ${
-              isInteracting ? "tp-news-manual" : ""
-            }`}
-          >
-            <div className="tp-news-scroll">
+          <div className="tp-news-viewport">
+            <div ref={scrollRef} className="tp-news-scroll">
               {[...news, ...news].map((item, i) => (
                 <div key={i} className="tp-news-item">
                   <div className="tp-news-content">
@@ -140,4 +117,5 @@ const LatestTradeNews = () => {
     </section>
   );
 };
+
 export default LatestTradeNews;

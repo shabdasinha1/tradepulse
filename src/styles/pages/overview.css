@@ -94,20 +94,16 @@
 .tp-news-viewport {
   position: relative;
   height: 320px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: auto;
-  scrollbar-width: none;
+  overflow: hidden; /* IMPORTANT */
 }
 
-.tp-news-viewport::-webkit-scrollbar {
-  display: none;
-}
 
 .tp-news-scroll {
   display: flex;
   flex-direction: column;
   padding: var(--space-md);
+
+  will-change: transform; /* IMPORTANT for smooth GPU animation */
 }
 
 
