@@ -7,20 +7,15 @@
   inset: 0 0 auto 0;
   z-index: 100;
 
-  background: color-mix(
-    in srgb,
-    var(--bg-app) 88%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--bg-app) 88%, transparent);
 
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
 
   border-bottom: 1px solid var(--border-soft);
-box-shadow:
-  0 1px 0 rgba(255, 255, 255, 0.06),
-  0 8px 20px rgba(0, 0, 0, 0.18);
-
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06),
+    0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
 /* ===============================
@@ -30,7 +25,6 @@ box-shadow:
 .tp-nav-link.is-coming {
   opacity: 0.85;
 }
-
 
 .tp-header-inner {
   min-height: var(--header-height);
@@ -78,7 +72,7 @@ box-shadow:
 .tp-nav-link {
   position: relative;
   padding: 6px 4px;
-   font-size: var(--fs-label);
+  font-size: var(--fs-label);
   font-weight: var(--fw-medium);
   color: var(--text-secondary);
 
@@ -108,7 +102,9 @@ box-shadow:
   );
   opacity: 0;
   transform: scaleX(0.6);
-  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .tp-nav-link:hover::after,
@@ -156,7 +152,7 @@ box-shadow:
 
 .tp-nav-dropdown-menu {
   position: absolute;
-    top: 100%;
+  top: 100%;
   left: 0;
   min-width: 280px;
 
@@ -171,7 +167,7 @@ box-shadow:
 
   box-shadow:
     var(--shadow-card),
-    0 20px 60px rgba(0,0,0,0.55);
+    0 20px 60px rgba(0, 0, 0, 0.55);
 
   transform: translateY(6px);
   opacity: 0;
@@ -188,7 +184,6 @@ box-shadow:
   height: 14px;
 }
 
-
 .tp-nav-dropdown.open .tp-nav-dropdown-menu {
   display: flex;
   opacity: 1;
@@ -204,7 +199,7 @@ box-shadow:
   align-items: center;
   justify-content: space-between;
 
-    font-size: var(--fs-label);
+  font-size: var(--fs-label);
   font-weight: var(--fw-medium);
   color: var(--text-primary);
 
@@ -235,7 +230,6 @@ box-shadow:
 ================================ */
 
 @media (max-width: 900px) {
-
   .tp-header-inner {
     padding-inline: var(--space-md);
     padding-block: var(--space-md);
@@ -251,7 +245,7 @@ box-shadow:
     padding: var(--space-lg);
     display: none;
     border-bottom: 1px solid var(--border-soft);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
   }
 
   .tp-header-nav.open {
@@ -302,7 +296,6 @@ box-shadow:
    DASHBOARD HEADER
 ================================ */
 
-
 .tp-header--dashboard {
   position: fixed;
   inset: 0 0 auto 0;
@@ -310,21 +303,16 @@ box-shadow:
 
   height: var(--header-height);
 
-  background: color-mix(
-    in srgb,
-    var(--bg-app) 88%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--bg-app) 88%, transparent);
 
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
 
   border-bottom: 1px solid var(--border-soft);
 
-/* box-shadow:
+  /* box-shadow:
   0 1px 0 rgba(255, 255, 255, 0.06),
   0 8px 20px rgba(0, 0, 0, 0.18); */
-
 }
 
 .tp-dashboard-nav {
@@ -335,16 +323,12 @@ box-shadow:
 .tp-dashboard-link {
   padding: 8px 14px;
   border-radius: var(--radius-md);
-   font-size: var(--fs-label);
+  font-size: var(--fs-label);
   color: var(--text-secondary);
 }
 
 .tp-dashboard-link.active {
-  background: color-mix(
-    in srgb,
-    var(--border-medium) 70%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--border-medium) 70%, transparent);
   color: var(--text-primary);
 }
 
@@ -376,7 +360,6 @@ box-shadow:
   display: none;
 }
 
-
 /* ===============================
    FIX PROFILE DROPDOWN VISIBILITY
 ================================ */
@@ -405,7 +388,7 @@ box-shadow:
 
   box-shadow:
     var(--shadow-card),
-    0 20px 50px rgba(0,0,0,0.5);
+    0 20px 50px rgba(0, 0, 0, 0.5);
 
   z-index: 9999; /* 🔥 critical */
 
@@ -424,7 +407,7 @@ box-shadow:
   background: transparent;
   border: none;
 
- font-size: var(--fs-label);
+  font-size: var(--fs-label);
   color: var(--text-primary);
 
   cursor: pointer;
@@ -438,8 +421,7 @@ box-shadow:
    MOBILE — DASHBOARD
 ================================ */
 
-@media (max-width: 768px) {
-
+@media (max-width: 998px) {
   .tp-dashboard-nav {
     position: absolute;
     top: var(--header-height);
@@ -454,7 +436,6 @@ box-shadow:
   .tp-dashboard-nav.open {
     display: flex;
   }
-
   .tp-menu-btn {
     display: flex;
     width: 36px;
@@ -468,17 +449,18 @@ box-shadow:
       background var(--transition-fast),
       color var(--transition-fast);
   }
-
+  
   .tp-menu-btn:hover {
     background: var(--border-soft);
     color: var(--text-primary);
   }
 }
-@media (max-width:  426px) {
-  .tp-notification{
+
+
+@media (max-width: 340px) {
+  .tp-notification {
     display: none;
   }
-  
 }
 
 .tp-nav-signin-mobile {
@@ -493,9 +475,8 @@ box-shadow:
   .tp-nav-signin-mobile {
     display: flex;
     align-items: center;
-    justify-content: center;   /* ✅ center horizontally */
-    text-align: center;        /* ✅ text center */
+    justify-content: center; /* ✅ center horizontally */
+    text-align: center; /* ✅ text center */
     width: 100%;
   }
 }
-

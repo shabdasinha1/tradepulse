@@ -135,7 +135,7 @@ const Forecast = () => {
           <ForecastSkeleton />
         ) : (
           <>
-            <div className="tp-grid tp-grid-2">
+            <div className="tp-grid tp-grid-2 tp-product-overview-grid">
               <div className="tp-card">
                 <p className="tp-muted">Bullish Signals</p>
                 <h3 className="tp-text-up">{forecastData?.signals?.bullish}</h3>

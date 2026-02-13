@@ -1,7 +1,25 @@
+/* Wrapper handles scroll */
+.product-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Fixed table width */
 .product-table {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+/* Keep your existing grid */
+.product-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-body);
 }
 
 .product-row {
@@ -13,10 +31,6 @@
   font-size: var(--fs-body);
 }
 
-.product-row:last-child {
-  border-bottom: none;
-}
-
 .product-head {
   font-size: var(--fs-caption);
   font-weight: var(--fw-semibold);
@@ -25,24 +39,43 @@
 .tp-overview-text {
   font-size: var(--fs-body);
 }
-
+.tp-product-overview-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+.tp-insight-grid {
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 768px) {
+  .tp-product-overview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 @media (max-width: 426px) {
-  .product-row {
-    /* font-size: var(--fs-xs);  */
+  .tp-product-overview-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .tp-insight-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .product-table {
+    width: 520px;
+  }
+}
+/* .product-row { */
+/* font-size: var(--fs-xs);  
     grid-template-columns: 1.4fr 1fr 1fr;
   }
   .product-row .vr-center {
     place-self: center;
   }
-}
-
-
-
+} */
 
 /*=======================================================
             SKELETON CSS 
  =========================================================*/
-
 
 /* Sizes */
 .sk-title {

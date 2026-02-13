@@ -5,6 +5,7 @@ import {
   DashboardProductOverview,
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
+import VerticalScroll from "../../components/common/VerticalScroll";
 
 /* ===============================
     SKELETON COMPONENTS
@@ -16,7 +17,7 @@ const Skeleton = ({ className = "" }) => (
 const ProductOverviewSkeleton = () => {
   return (
     <section className="tp-section">
-      <div className="tp-container tp-grid-stack tp-skeleton-opacity skeleton">
+      <div className="tp-container tp-grid-stack tp-skeleton-opacity ">
         {/* KPI Cards */}
         <div className="tp-grid tp-grid-2">
           {[...Array(4)].map((_, i) => (
@@ -98,7 +99,7 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
-console.log(productData)
+  console.log(productData);
   // ===============================
   // RENDER
   // ===============================
@@ -128,7 +129,7 @@ console.log(productData)
         {!isLoading && (
           <>
             {/* KPI CARDS */}
-            <div className="tp-grid tp-grid-2">
+            <div className="tp-grid tp-product-overview-grid">
               <div className="tp-card">
                 <p className="tp-muted">Total Products</p>
                 <h3 className="tp-overview-text">
@@ -168,49 +169,57 @@ console.log(productData)
 
             {/* PRODUCT TABLE */}
             <div className="tp-card">
-              <div className="product-table">
-                <div className="product-row product-head">
-                  <span>Product</span>
-                  <span className="text-center">Category</span>
-                  <span className="text-center">Price</span>
-                  <span className="text-center">Change</span>
-                  <span className="text-center">Status</span>
-                </div>
-
-                {productData?.productList?.data?.map((item, index) => (
-                  <div className="product-row" key={index}>
-                    <span>{item.product_name.split(/[,\s]/)[0]}</span>
-                    <span className="tp-muted text-center">
-                      {item.category}
-                    </span>
-                    <span className="text-center">{item.unit_price ?? "0"}</span>
-                    <span
-                      className={
-                        item.trend === "up"
-                          ? "tp-text-up text-center"
-                          : "tp-text-down text-center"
-                      }
-                    >
-                      {item.change ?? "0"}
-                    </span>
-                    <span className="text-center">
-                      <span
-                        className={`tp-pill ${
-                          item.status === "Active"
-                            ? "tp-pill-success"
-                            : "tp-pill-warning"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </span>
+              <div className="product-table-wrapper">
+                <div className="product-table">
+                  <div className="product-row product-head">
+                    <span>Product</span>
+                    <span className="text-center">Category</span>
+                    <span className="text-center">Price</span>
+                    <span className="text-center">Change</span>
+                    <span className="text-center">Status</span>
                   </div>
-                ))}
+                  <VerticalScroll>
+                    {productData?.productList?.data?.map((item, index) => (
+                      <div className="product-row" key={index}>
+                        <span>{item.product_name.split(/[,\s]/)[0]}</span>
+                        <span className="tp-muted text-center">
+                          {item.category}
+                        </span>
+                        <span className="text-center">
+                          {item.unit_price ?? "0"}
+                        </span>
+                        <span
+                          className={
+                            item.trend === "up"
+                              ? "tp-text-up text-center"
+                              : "tp-text-down text-center"
+                          }
+                        >
+                          {item.change ?? "0"}
+                        </span>
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${
+                              item.status === "Active"
+                                ? "tp-pill-success"
+                                : "tp-pill-warning"
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </span>
+                      </div>
+                    ))}
+                  </VerticalScroll>
+                </div>
               </div>
             </div>
 
             {/* INSIGHTS */}
-            <div className="tp-grid tp-grid-2" style={{ marginTop: "1rem" }}>
+            <div
+              className="tp-grid tp-insight-grid"
+              style={{ marginTop: "1rem" }}
+            >
               <div className="tp-card">
                 <p className="tp-muted">Most Traded Product</p>
                 <h3 className="tp-overview-text">
