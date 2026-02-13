@@ -371,3 +371,117 @@
   font-size: var(--fs-caption) !important;
   color: var(--text-secondary) !important;
 }
+
+
+/* Floating Button */
+.tp-feedback-btn {
+  position: fixed;
+  bottom: var(--space-lg);
+  right: var(--space-lg);
+  padding: 10px 16px;
+  border-radius: var(--radius-xl);
+  background: var(--clr-primary);
+  color: #fff;
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
+  box-shadow: var(--shadow-glow);
+  z-index: 200;
+}
+
+/* Overlay */
+.tp-feedback-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding: var(--space-lg);
+  z-index: 1000;
+}
+
+/* Modal */
+.tp-feedback-modal {
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Header */
+.tp-feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.tp-feedback-close {
+  font-size: var(--fs-lg);
+  color: var(--text-muted);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .tp-feedback-overlay {
+    align-items: flex-end;
+    justify-content: center;
+    padding: var(--space-md);
+  }
+
+  .tp-feedback-modal {
+    max-width: 100%;
+  }
+}
+
+
+/* ======================================
+   METRIC CARD
+====================================== */
+
+.tp-metric-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.tp-metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tp-metric-title {
+  font-size: var(--fs-label);
+  color: var(--text-secondary);
+}
+
+.tp-metric-icon {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+}
+
+.tp-metric-value-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.tp-metric-value {
+  font-size: var(--fs-3xl);
+  font-weight: var(--fw-semibold);
+  line-height: 1.1;
+}
+
+.tp-metric-unit {
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+}
+
+.tp-metric-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--fs-caption);
+}
