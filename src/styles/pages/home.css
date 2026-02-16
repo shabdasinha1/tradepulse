@@ -64,6 +64,7 @@
   transform: none;
 }
 
+
 /* ===============================
    TYPOGRAPHY
 ================================ */
@@ -72,7 +73,7 @@
   font-size: var(--fs-hero);
   font-weight: var(--fw-bold);
   line-height: 1.04;
-  margin: var(--space-sm) 0 var(--space-md);
+  margin: var(--space-md) 0 ;
 }
 
 .tp-hero-ai-title span {
@@ -308,6 +309,9 @@
 @media (max-width: 640px) {
   .tp-problem-card {
     padding: var(--space-md);
+  }
+  .tp-problem-cards{
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 

@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  /* gap: var(--space-sm); */
 
   opacity: 0;
   transform: translateY(18px);
@@ -55,6 +55,7 @@
   font-size: var(--fs-hero);
   font-weight: var(--fw-bold);
   line-height: 1.04;
+  margin: var(--space-md);
 }
 
 

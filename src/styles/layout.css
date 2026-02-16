@@ -44,7 +44,7 @@ main {
 
 /* Section spacing variants */
 .tp-section--hero {
-  padding-block: var(--space-xl); /* 32px */
+  /* padding-block: var(--space-xl); 32px */
 }
 .tp-section--tight {
   padding-block: var(--space-md); /* 16px */

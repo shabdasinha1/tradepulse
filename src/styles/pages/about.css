@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  /* gap: var(--space-sm); */
 
   opacity: 0;
   transform: translateY(18px);
@@ -45,7 +45,7 @@
 }
 
 .tp-about-hero-layout .tp-pill {
-  margin-bottom: var(--space-xs);
+  /* margin-bottom: var(--space-xs); */
 }
 
 /* Visible state */
@@ -59,7 +59,7 @@
   font-size: clamp(40px, 5.6vw, 64px);
   font-weight: var(--fw-bold);
   line-height: 1.04;
-  margin-bottom: var(--space-sm);
+  margin: var(--space-md);
 }
 
 .tp-about-hero-title span {
