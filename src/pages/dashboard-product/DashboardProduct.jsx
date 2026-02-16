@@ -99,7 +99,7 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
-  console.log(productData);
+  // console.log(productData);
   // ===============================
   // RENDER
   // ===============================
@@ -133,14 +133,14 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Total Products</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.data?.totalProducts}
+                  {productData?.productOverview?.totalProducts}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Active Products</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.data?.activeProducts}
+                  {productData?.productOverview?.activeProducts}
                 </h3>
               </div>
 
@@ -148,7 +148,7 @@ const DashboardProduct = () => {
                 <p className="tp-muted">Top Gainer</p>
                 <h3 className="tp-text-up">
                   {
-                    productData?.productOverview?.data?.topValueProduct?.split(
+                    productData?.productOverview?.topValueProduct?.split(
                       ",",
                     )?.[0]
                   }
@@ -159,7 +159,7 @@ const DashboardProduct = () => {
                 <p className="tp-muted">Top Loser</p>
                 <h3 className="tp-text-down">
                   {
-                    productData?.productOverview?.data?.lowestValueProduct?.split(
+                    productData?.productOverview?.lowestValueProduct?.split(
                       ",",
                     )?.[0]
                   }
@@ -168,7 +168,7 @@ const DashboardProduct = () => {
             </div>
 
             {/* PRODUCT TABLE */}
-            <div className="tp-card">
+            {/* <div className="tp-card">
               <div className="product-table-wrapper">
                 <div className="product-table">
                   <div className="product-row product-head">
@@ -213,6 +213,54 @@ const DashboardProduct = () => {
                   </VerticalScroll>
                 </div>
               </div>
+            </div> */}
+            <div className="tp-card">
+              <div className="product-table-wrapper">
+                <div className="product-table">
+                  <div className="product-row product-head">
+                    <span>Product</span>
+                    <span className="text-center">Price Range</span>
+                    <span className="text-center">Demand Trend</span>
+                    <span className="text-center">Supply</span>
+                    <span className="text-center">Risk</span>
+                    {/* <span className="text-center">Margin</span> */}
+                  </div>
+                  <VerticalScroll>
+                    {productData?.productList?.map((item, index) => (
+                      <div className="product-row" key={index}>
+                        {/* <span>{item.product_name.split(/[,\s]/)[0]}</span> */}
+                        <span>{item.product_name.split(",")[0]}</span>
+                        <span className="tp-muted text-center">
+                          {"0"}
+                        </span>
+                        <span className="text-center">
+                          {item.demand.level}
+                        </span>
+                        <span
+                          className={
+                            item.supply.availability === "Moderate"
+                              ? "tp-text-up text-center"
+                              : "tp-text-down text-center"
+                          }
+                        >
+                          {item.supply.availability}
+                        </span>
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${
+                              item.risk.level === "Low"
+                                ? "tp-pill-success"
+                                : "tp-pill-warning"
+                            }`}
+                          >
+                            {item.risk.score}
+                          </span>
+                        </span>
+                      </div>
+                    ))}
+                  </VerticalScroll>
+                </div>
+              </div>
             </div>
 
             {/* INSIGHTS */}
@@ -224,7 +272,7 @@ const DashboardProduct = () => {
                 <p className="tp-muted">Most Traded Product</p>
                 <h3 className="tp-overview-text">
                   {
-                    productData?.productInsight?.data?.most_traded?.split(
+                    productData?.productInsight?.most_traded?.split(
                       ",",
                     )?.[0]
                   }
@@ -235,7 +283,7 @@ const DashboardProduct = () => {
                 <p className="tp-muted">Highest Volatility</p>
                 <h3 className="tp-overview-text">
                   {
-                    productData?.productInsight?.data?.largest_product?.split(
+                    productData?.productInsight?.largest_product?.split(
                       ",",
                     )?.[0]
                   }

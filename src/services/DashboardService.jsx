@@ -17,8 +17,11 @@ export const DashboardOverviewExchange = async (base) => {
 /* ===============================
    DASHBOARD PRODUCT LIST
 ================================ */
+// export const DashboardProductList = async () => {
+//   return Api.get("/products/list");
+// };
 export const DashboardProductList = async () => {
-  return Api.get("/products/list");
+  return Api.get("/products/search");
 };
 
 /* ===============================

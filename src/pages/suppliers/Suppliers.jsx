@@ -115,7 +115,7 @@ const Suppliers = () => {
 
     return () => observer.disconnect();
   }, [isLoading, hasMore]);
-
+// console.log(suppliers)
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-container tp-grid-stack">

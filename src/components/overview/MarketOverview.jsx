@@ -122,6 +122,7 @@ const MarketOverview = () => {
 
     fetchAllData();
   }, [base]);
+// console.log(OverviewData)
 
   return (
     <section className="tp-section">

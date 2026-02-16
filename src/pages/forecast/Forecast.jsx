@@ -123,9 +123,9 @@ const Forecast = () => {
 
         if (res?.success === true || res?.data?.status === 200) {
           setforecastData({
-            signals: res.data.data.summary,
-            trendProjection: res.data.data.trendProjection,
-            asset: res.data.data.assets,
+            signals: res.data.summary,
+            trendProjection: res.data.trendProjection,
+            asset: res.data.assets,
           });
         }
       } catch (err) {
