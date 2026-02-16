@@ -242,26 +242,28 @@ const DashboardProduct = () => {
                           {item.demandTrend.percent}
                           {"%"}
                         </span>
-                        <span
-                          className={
-                            item.supply === "Stable"
-                              ? "tp-text-up text-center"
-                              : "tp-text-down text-center"
-                          }
-                        >
-                          {item.supply}
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill 
+                            ${
+                              item.supply === "Stable"
+                                ? "tp-pill-success text-center"
+                                : "tp-pill-warning text-center"
+                            }
+                          `}
+                          >
+                            {item.supply}
+                          </span>
                         </span>
                         <span className="text-center">
-                          <span className="tp-risk-cell">
-                            <span
-                              className={`tp-pill ${
-                                item.risk === "Low"
-                                  ? "tp-pill-success"
-                                  : "tp-pill-warning"
-                              }`}
-                            >
-                              {item.risk}
-                            </span>
+                          <span
+                            className={`tp-pill ${
+                              item.risk === "Low"
+                                ? "tp-pill-success"
+                                : "tp-pill-warning"
+                            }`}
+                          >
+                            {item.risk}
                           </span>
                         </span>
                       </div>
