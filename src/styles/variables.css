@@ -56,7 +56,7 @@
   --font-heading: "Space Grotesk", system-ui, sans-serif;
 
   /* Base size */
-  --fs-base: 16px;
+  --fs-base: 15px;
 
   /* Scale (1.25) */
   --fs-xs: calc(var(--fs-base) * 0.75);
