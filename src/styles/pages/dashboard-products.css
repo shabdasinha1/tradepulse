@@ -67,11 +67,10 @@
 }
 
 .tp-risk-cell {
-  width: 120px;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
-
 @media (max-width: 768px) {
   .tp-product-overview-grid {
     grid-template-columns: repeat(2, 1fr);

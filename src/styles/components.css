@@ -171,11 +171,20 @@
 /* Pills / status badges */
 .tp-pill {
   /* width: fit-content; */
-  width: 100%;
+  /* width: 100%; */
   padding: 4px 10px;
   border-radius: 999px;
   font-size: var(--fs-label);
   font-weight: var(--fw-medium);
+
+   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 90px;   /* makes all pills equal */
+  
+
+  white-space: nowrap;
 }
 
 .tp-pill-success {
