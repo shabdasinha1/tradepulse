@@ -235,7 +235,7 @@ const DashboardProduct = () => {
                         </span>
                         <span className="text-center">
                           {item.demandTrend.direction === "UP" ? (
-                            <IoIosTrendingUp  className="tp-trend-logo tp-text-up"/>
+                            <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
                           ) : (
                             <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
                           )}
@@ -251,15 +251,17 @@ const DashboardProduct = () => {
                         >
                           {item.supply}
                         </span>
-                        <span className="text-center tp-risk-cell">
-                          <span
-                            className={`tp-pill ${
-                              item.risk === "Low"
-                                ? "tp-pill-success"
-                                : "tp-pill-warning"
-                            }`}
-                          >
-                            {item.risk}
+                        <span className="text-center">
+                          <span className="tp-risk-cell">
+                            <span
+                              className={`tp-pill ${
+                                item.risk === "Low"
+                                  ? "tp-pill-success"
+                                  : "tp-pill-warning"
+                              }`}
+                            >
+                              {item.risk}
+                            </span>
                           </span>
                         </span>
                       </div>
