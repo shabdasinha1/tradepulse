@@ -122,7 +122,7 @@ const MarketOverview = () => {
 
     fetchAllData();
   }, [base]);
-// console.log(OverviewData)
+console.log(OverviewData)
 
   return (
     <section className="tp-section">
@@ -185,7 +185,7 @@ const MarketOverview = () => {
                 {OverviewData?.exchangeRates?.map((r, index) => (
                   <div key={index} className="tp-rate-card">
                     <div className="tp-rate-header">
-                      <span className="tp-rate-symbol">{r.baseCurrency}</span>
+                      <span className="tp-rate-symbol">{r.currency}</span>
                       <span
                         className={`tp-rate-change ${
                           r.trend === "UP"
@@ -200,7 +200,7 @@ const MarketOverview = () => {
                     </div>
 
                     <span className="tp-rate-pair">{r.pair}</span>
-                    <strong className="tp-rate-value">{r.currentRate}</strong>
+                    <strong className="tp-rate-value">{r.rate}</strong>
                   </div>
                 ))}
               </div>
@@ -241,26 +241,26 @@ const MarketOverview = () => {
                 </div>
               </div>
             ))} */}
-            {OverviewData?.shippingData?.map((s, i) => (
+            {OverviewData?.shippingData?.data?.map((s, i) => (
               <div key={i} className="tp-ship-card">
                 <div className="tp-ship-header">
                   <div>
                     <h4 className="tp-ship-route">{s.route}</h4>
                     {/* <span className="tp-ship-port">{s.port_name ? s.port_name : "Apapa Port"}</span> */}
                     <span className="tp-ship-port">
-                      {s.port_name ? s.port_name : "0 Apapa Port"}
+                      {s.portName ? s.portName : "0 Apapa Port"}
                     </span>
                   </div>
 
                   <span className="tp-ship-days">
-                    {s.transit_days ? `${s.transit_days} Days` : "0 Days"}
+                    {s.transitDays ? `${s.transitDays} Days` : "0 Days"}
                   </span>
                 </div>
 
                 <div className="tp-ship-footer">
                   <strong className="tp-ship-price">
-                    {"£"}
-                    {s.price_usd}
+                    
+                    {s.price}
                   </strong>
                   <span
                     className={`tp-ship-change text-pill-primary ${
@@ -271,7 +271,7 @@ const MarketOverview = () => {
                         : "tp-muted"
                     }`}
                   >
-                    {s.change}
+                    {s.changePercent}
                     {"%"}
                   </span>
                 </div>

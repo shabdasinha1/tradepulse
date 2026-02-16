@@ -6,7 +6,7 @@ import {
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import VerticalScroll from "../../components/common/VerticalScroll";
-
+import { IoIosTrendingDown, IoIosTrendingUp } from "react-icons/io";
 /* ===============================
     SKELETON COMPONENTS
 ================================ */
@@ -99,7 +99,7 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
-  // console.log(productData);
+  console.log(productData);
   // ===============================
   // RENDER
   // ===============================
@@ -226,34 +226,40 @@ const DashboardProduct = () => {
                     {/* <span className="text-center">Margin</span> */}
                   </div>
                   <VerticalScroll>
-                    {productData?.productList?.map((item, index) => (
+                    {productData?.productList?.data?.map((item, index) => (
                       <div className="product-row" key={index}>
                         {/* <span>{item.product_name.split(/[,\s]/)[0]}</span> */}
-                        <span>{item.product_name.split(",")[0]}</span>
+                        <span>{item.product.split(",")[0]}</span>
                         <span className="tp-muted text-center">
-                          {"0"}
+                          {item.priceRange}
                         </span>
                         <span className="text-center">
-                          {item.demand.level}
+                          {item.demandTrend.direction === "UP" ? (
+                            <IoIosTrendingUp  className="tp-trend-logo tp-text-up"/>
+                          ) : (
+                            <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
+                          )}
+                          {item.demandTrend.percent}
+                          {"%"}
                         </span>
                         <span
                           className={
-                            item.supply.availability === "Moderate"
+                            item.supply === "Stable"
                               ? "tp-text-up text-center"
                               : "tp-text-down text-center"
                           }
                         >
-                          {item.supply.availability}
+                          {item.supply}
                         </span>
-                        <span className="text-center">
+                        <span className="text-center tp-risk-cell">
                           <span
                             className={`tp-pill ${
-                              item.risk.level === "Low"
+                              item.risk === "Low"
                                 ? "tp-pill-success"
                                 : "tp-pill-warning"
                             }`}
                           >
-                            {item.risk.score}
+                            {item.risk}
                           </span>
                         </span>
                       </div>
@@ -271,11 +277,7 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Most Traded Product</p>
                 <h3 className="tp-overview-text">
-                  {
-                    productData?.productInsight?.most_traded?.split(
-                      ",",
-                    )?.[0]
-                  }
+                  {productData?.productInsight?.most_traded?.split(",")?.[0]}
                 </h3>
               </div>
 

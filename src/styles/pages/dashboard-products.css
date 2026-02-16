@@ -12,10 +12,9 @@
 
   /* IE / old Edge */
   -ms-overflow-style: none;
-
 }
 .product-table-wrapper::-webkit-scrollbar {
-  height: 0px;   /* 🔥 hides horizontal scrollbar */
+  height: 0px; /* 🔥 hides horizontal scrollbar */
 }
 
 /* Fixed table width */
@@ -60,6 +59,17 @@
 }
 .tp-insight-grid {
   grid-template-columns: 1fr 1fr;
+}
+
+.tp-trend-logo {
+  font-size: var(--fs-body);
+  margin-right: 2px;
+}
+
+.tp-risk-cell {
+  width: 120px;
+  display: flex;
+  justify-content: center;
 }
 
 @media (max-width: 768px) {
