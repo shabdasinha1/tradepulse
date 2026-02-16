@@ -104,14 +104,14 @@ const Home = () => {
 
           {/* Dark theme image */}
           <img
-            src="/images/products-dark.png"
+            src="/images/products-dark.webp"
             alt="TradePulse AI Dashboard"
             className="tp-product-image tp-product-image--dark"
           />
 
           {/* Light theme image */}
           <img
-            src="/images/products-light.png"
+            src="/images/products-light.webp"
             alt="TradePulse AI Dashboard"
             className="tp-product-image tp-product-image--light"
           />
@@ -203,14 +203,14 @@ const Home = () => {
 
           {/* Dark theme image */}
           <img
-            src="/images/reports-dark.png"
+            src="/images/reports-dark.webp"
             alt="TradePulse AI Reports & Analytics"
             className="tp-reports-image tp-reports-image--dark"
           />
 
           {/* Light theme image */}
           <img
-            src="/images/reports-light.png"
+            src="/images/reports-light.webp"
             alt="TradePulse AI Reports & Analytics"
             className="tp-reports-image tp-reports-image--light"
           />
@@ -316,14 +316,14 @@ const Home = () => {
 
           {/* Dark theme image */}
           <img
-            src="/images/forecast-dark.png"
+            src="/images/forecast-dark.webp"
             alt="TradePulse AI Forecast & Predictive Analytics"
             className="tp-forecast-image tp-forecast-image--dark"
           />
 
           {/* Light theme image */}
           <img
-            src="/images/forecast-light.png"
+            src="/images/forecast-light.webp"
             alt="TradePulse AI Forecast & Predictive Analytics"
             className="tp-forecast-image tp-forecast-image--light"
           />

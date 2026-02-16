@@ -52,14 +52,14 @@ const About = () => {
 
     {/* Dark theme image */}
     <img
-      src="/images/about1-dark.png"
+      src="/images/about1-dark.webp"
       alt="TradePulse AI Decision Intelligence Platform"
       className="tp-about-image tp-about-image--dark"
     />
 
     {/* Light theme image */}
     <img
-      src="/images/about1-light.png"
+      src="/images/about1-light.webp"
       alt="TradePulse AI Decision Intelligence Platform"
       className="tp-about-image tp-about-image--light"
     />
@@ -180,14 +180,14 @@ const About = () => {
 
     {/* Dark theme image */}
     <img
-      src="/images/about2-dark.png"
+      src="/images/about2-dark.webp"
       alt="TradePulse AI Decision Intelligence Overview"
       className="tp-about-context-image tp-about-context-image--dark"
     />
 
     {/* Light theme image */}
     <img
-      src="/images/about2-light.png"
+      src="/images/about2-light.webp"
       alt="TradePulse AI Decision Intelligence Overview"
       className="tp-about-context-image tp-about-context-image--light"
     />
