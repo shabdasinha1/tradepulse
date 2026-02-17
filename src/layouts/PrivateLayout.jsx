@@ -1,3 +1,4 @@
+import { DashboardFooter } from "../components/footer/DashboardFooter.jsx";
 import DashboardHeader from "../components/header/DashboardHeader.jsx";
 
 const PrivateLayout = ({ children }) => {
@@ -7,6 +8,7 @@ const PrivateLayout = ({ children }) => {
       <main>
         {children}
       </main>
+      <DashboardFooter/>
     </>
   );
 };
