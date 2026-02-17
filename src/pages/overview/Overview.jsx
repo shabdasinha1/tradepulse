@@ -9,8 +9,9 @@ function Overview() {
 
   return (
     <>
-      <LatestTradeNews />
       <OverviewCharts/>
+      <LatestTradeNews />
+
       <MarketOverview />
       <CustomsDutyRates />
     </>

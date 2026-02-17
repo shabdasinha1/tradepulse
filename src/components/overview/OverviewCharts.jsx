@@ -22,7 +22,9 @@ const OverviewCharts = () => {
     ];
 
     return (
+      
   <section className="tp-section tp-section--tight">
+    
   <div className="tp-container">
 
     {/* METRICS ROW */}
