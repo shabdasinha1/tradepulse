@@ -103,8 +103,12 @@ const DashboardHeader = () => {
 
         {/* ACTIONS */}
         <div className="tp-dashboard-actions">
-          <FiBell className="tp-notification" />
-          <FiSettings onClick={() => navigate("/settings")} />
+          <span className="tp-notification-wrapper">
+            <FiBell className="tp-notification" />
+          </span>
+          <span className="tp-setting-wrapper" onClick={() => navigate("/settings")}>
+            <FiSettings  />
+          </span>
 
           <button className="tp-theme-toggle" onClick={toggleTheme}>
             {theme === "dark" ? <FiSun /> : <FiMoon />}

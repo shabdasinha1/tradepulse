@@ -2,7 +2,7 @@ export const GetApiErrorMessage = (error) => {
   // Axios response error
   if (error?.response?.data) {
     const data = error.response.data;
-    console.log(data);
+    // console.log(data);
     // Common backend patterns
 
     if (data?.details?.newPassword) {

@@ -42,3 +42,12 @@ export const UserResetPassword = async (payload) => {
 export const UserResendPasswordOtp = async (payload) => {
   return Api.post("/auth/resend-password-otp", payload);
 };
+
+
+
+/*=============================================
+      FEEDBACK FORM API
+=============================================*/
+export const UserFeedbackForm = async (payload)=> {
+  return Api.post("/feedback/create", payload);
+};
