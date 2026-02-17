@@ -41,7 +41,16 @@ const EarlyFeedbackWidget = () => {
     setErrorMsg("");
 
     try {
-      const res = await UserFeedbackForm(formData);
+      const payload = {
+        role: formData.role,
+        company_size: formData.companySize,
+        country: formData.country,
+        challenge: formData.challenge,
+        help: formData.dataNeed,
+        this_platform: formData.intent,
+        email: formData.email,
+      };
+      const res = await UserFeedbackForm(payload);
 
     
       addToast("Thank you for your feedback!", "success");

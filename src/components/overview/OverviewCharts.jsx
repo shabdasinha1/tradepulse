@@ -14,30 +14,51 @@ const OverviewCharts = () => {
 
 
 
-  useEffect(() => {
-    if (!priceHsCode) return;
+ useEffect(() => {
+  if (!priceHsCode) return;
 
-    const fetchPriceTrend = async () => {
-      try {
-        const res = await DashboardPriceTrend(priceHsCode);
+  const fetchPriceTrend = async () => {
+    try {
+      const res = await DashboardPriceTrend(priceHsCode);
 
-        const history = res?.data?.history || [];
+      const history = res?.data?.history || [];
 
-        const formatted = history.map((item) => ({
+      let formatted = [];
+
+      if (history.length === 0) {
+        // 🔥 Default fallback years
+        const defaultYears = ["2019", "2020", "2021", "2022", "2023"];
+
+        formatted = defaultYears.map((year) => ({
+          month: year,
+          value: 0,
+        }));
+      } else {
+        formatted = history.map((item) => ({
           month: String(item.year),
           value: Number(Number(item.price).toFixed(2)) || 0,
         }));
-
-        setPriceData(formatted);
-
-      } catch (err) {
-        console.error("Price Trend Error:", err);
-        setPriceData([]);
       }
-    };
 
-    fetchPriceTrend();
-  }, [priceHsCode]);
+      setPriceData(formatted);
+
+    } catch (err) {
+      console.error("Price Trend Error:", err);
+
+      // 🔥 Also fallback on error
+      setPriceData([
+        { month: "2019", value: 0 },
+        { month: "2020", value: 0 },
+        { month: "2021", value: 0 },
+        { month: "2022", value: 0 },
+        { month: "2023", value: 0 },
+      ]);
+    }
+  };
+
+  fetchPriceTrend();
+}, [priceHsCode]);
+
 
 
   useEffect(() => {
