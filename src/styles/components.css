@@ -522,3 +522,89 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ======================================
+   CHART HEADER WITH SEARCH (FIXED)
+====================================== */
+
+.tp-chart-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* Title should take natural width */
+.tp-chart-header .tp-section-title {
+  margin: 0;
+}
+
+/* Push search fully to right */
+.tp-chart-search-wrapper {
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+/* Search container */
+.tp-chart-search {
+  position: relative;
+  width: 260px;
+  max-width: 100%;
+}
+
+.tp-chart-search-input {
+  padding: 8px 14px;
+  font-size: var(--fs-caption);
+}
+
+/* Dropdown */
+.tp-chart-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-xs));
+  right: 0; /* Align dropdown with right edge */
+  width: 100%;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  z-index: 50;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Options */
+.tp-chart-option {
+  padding: 10px 12px;
+  font-size: var(--fs-caption);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.tp-chart-option:hover {
+  background: var(--clr-primary-soft);
+  color: var(--clr-primary);
+}
+
+.tp-chart-option-muted {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tp-chart-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .tp-chart-search-wrapper {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .tp-chart-search {
+    width: 100%;
+  }
+}

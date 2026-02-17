@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState,useEffect, useMemo,useRef } from "react";
 import {
   LineChart,
   Line,
@@ -14,6 +14,9 @@ import {
   Legend,
 } from "recharts";
 import TradePulseCard from "../common/TradePulseCard";
+import { DashboardProductList, ProductDropdownSearch } from "../../services/DashboardService";
+
+
 
 const radiusSm = parseInt(
   getComputedStyle(document.documentElement)
@@ -27,6 +30,39 @@ const TPChart = ({
   xKey = "month",
   series = [],
 }) => {
+
+  
+  /* ===============================
+     STATIC DROPDOWN DATA
+  =============================== */
+  const [productOptions, setProductOptions] = useState([]);
+  const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
+const dropdownRef = useRef(null);
+
+
+const filteredOptions = useMemo(() => {
+  if (!search) return productOptions;
+  return productOptions.filter((item) =>
+    item.label.toLowerCase().includes(search.toLowerCase())
+  );
+}, [search, productOptions]);
+
+const handleSelect = async (item) => {
+  setSelected(item);
+  setSearch(item.label);
+  setIsOpen(false);
+
+  try {
+    const res = await ProductDropdownSearch(item.hsCode);
+    console.log("Dropdown API response:", res);
+  } catch (error) {
+    console.error("Dropdown API error:", error);
+  }
+};
+
+
   const renderTooltip = () => (
     <Tooltip
       contentStyle={{
@@ -54,7 +90,44 @@ const TPChart = ({
     axisLine: { stroke: "var(--border-soft)" },
     tickLine: { stroke: "var(--border-soft)" },
   };
+const fetchProducts = async () => {
+  try {
+    const res = await DashboardProductList();
+    const apiProducts = res?.data?.data || [];
 
+    const formatted = apiProducts.map((item) => ({
+      label: `${item.product} / ${item.hsCode}`,
+      value: item.hsCode,
+      product: item.product,
+      hsCode: item.hsCode,
+    }));
+
+    setProductOptions(formatted);
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
+
+  useEffect(() => {
+  fetchProducts();
+}, []);
   const renderChart = () => {
     switch (type) {
       case "area":
@@ -160,11 +233,49 @@ const TPChart = ({
 
   return (
     <TradePulseCard
-      header={
-        <h4 className="tp-section-title">
-          {title}
-        </h4>
-      }
+     header={
+  <div className="tp-chart-header">
+    <h4 className="tp-section-title">{title}</h4>
+
+   <div className="tp-chart-search-wrapper">
+  <div className="tp-chart-search" ref={dropdownRef}>
+    <input
+      type="text"
+      className="tp-input tp-chart-search-input"
+      placeholder="Search product..."
+      value={search}
+      onFocus={() => setIsOpen(true)}
+      onChange={(e) => {
+        setSearch(e.target.value);
+        setIsOpen(true);
+      }}
+    />
+
+    {isOpen && (
+      <div className="tp-chart-dropdown">
+        {filteredOptions.length > 0 ? (
+          filteredOptions.map((item) => (
+            <div
+              key={item.value}
+              className="tp-chart-option"
+              onClick={() => handleSelect(item)}
+            >
+              {item.label}
+            </div>
+          ))
+        ) : (
+          <div className="tp-chart-option tp-chart-option-muted">
+            No results
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+</div>
+
+  </div>
+}
+
     >
       <div className="tp-chart-wrapper">
         <ResponsiveContainer width="100%" height="100%">
