@@ -18,7 +18,7 @@ const ComingSoon = () => {
             </h1>
 
             <p className="tp-coming-sub">
-              We’re building a next-generation global trade intelligence
+              We’re building a next-generation cross border trade intelligence
               platform designed for clarity, confidence, and speed.
               <br />
               Early access is opening shortly.
