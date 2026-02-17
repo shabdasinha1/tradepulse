@@ -54,21 +54,19 @@ const Home = () => {
             <div className="tp-hero-ai-content">
 
               <span className="tp-pill tp-pill-primary">
-                Global Trade Intelligence Platform
+                Cross Border Trade Intelligence Platform
               </span>
 
               <h1 className="tp-hero-ai-title">
-                TradePulse AI
+                AI-Powered
                 <br />
-                <span>Smarter Global Trade Decisions</span>,
+                <span>Market Intelligence</span>
                 <br />
-                Powered by AI Intelligence
+                for UK-Africa Trade
               </h1>
 
               <p className="tp-hero-ai-sub">
-                Market insights, supplier intelligence, and risk signals
-                for importers, exporters, SMEs, and manufacturers operating
-                across global supply chains.
+                TradepulseAI is an AI-Powered trade intelligence and supplier verification platform for importers, exporters and SME’s.
               </p>
 
               <p className="tp-hero-ai-support">
@@ -131,13 +129,13 @@ const Home = () => {
           {/* Header */}
           <div className="tp-problem-header">
             <h2 className="tp-problem-title">
-              Global Trade Is Complex.
+              Cross Border Trade Is Complex.
               <br />
               <span>Decisions Shouldn’t Be.</span>
             </h2>
 
             <p className="tp-problem-intro">
-              Across global trade corridors, businesses face the same challenges
+              Across cross border trade corridors, businesses face the same challenges
               fragmented data, limited visibility, and growing risk regardless of
               geography, industry, or scale.
             </p>
@@ -232,12 +230,12 @@ const Home = () => {
             <h2 className="tp-solution-title">
               Intelligence Modules for
               <br />
-              <span>Smarter Global Trade Decisions</span>
+              <span>Smarter Cross Border Trade Decisions</span>
             </h2>
 
 
             <p className="tp-solution-sub">
-              TradePulse AI transforms fragmented global trade data
+              TradePulse AI transforms fragmented cross border trade data
               into actionable intelligence across markets, suppliers,
               and risk signals.
             </p>
@@ -256,7 +254,7 @@ const Home = () => {
                 </h4>
                 <p>
                   Pricing trends, demand signals, and trade flows
-                  consolidated into a unified global market view.
+                  consolidated into a unified cross border market view.
 
                 </p>
               </div>
@@ -303,7 +301,7 @@ const Home = () => {
           {/* Footer */}
           <p className="tp-solution-footer">
             All delivered through a unified decision-support platform
-            built for importers, exporters, and global trade operators.
+            built for importers, exporters, and cross border trade operators.
           </p>
 
 
@@ -475,7 +473,7 @@ const Home = () => {
             <h2 className="tp-final-cta-title">
               Explore the Future of
               <br />
-              <span>Global Trade Intelligence</span>
+              <span>Cross Border Trade Intelligence</span>
             </h2>
 
             <p className="tp-final-cta-sub">

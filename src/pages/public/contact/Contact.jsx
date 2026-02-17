@@ -78,7 +78,7 @@ const Contact = () => {
         <h4>Partnerships</h4>
         <p>
           Interested in data partnerships, integrations,
-          or collaborating on global trade intelligence?
+          or collaborating on cross border trade intelligence?
         </p>
         <button className="tp-btn-outline">
           Explore Partnerships
