@@ -43,8 +43,7 @@ const EarlyFeedbackWidget = () => {
     try {
       const res = await UserFeedbackForm(formData);
 
-      // console.log(res);
-
+    
       addToast("Thank you for your feedback!", "success");
 
       // Reset form after success
