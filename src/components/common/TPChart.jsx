@@ -14,7 +14,7 @@ import {
   Legend,
 } from "recharts";
 import TradePulseCard from "../common/TradePulseCard";
-import { DashboardProductList, ProductDropdownSearch } from "../../services/DashboardService";
+import { ProductDropdownSearch } from "../../services/DashboardService";
 
 
 
@@ -25,10 +25,11 @@ const radiusSm = parseInt(
 
 const TPChart = ({
   title,
-  type = "line", // line | area | bar
+  type = "line",
   data = [],
   xKey = "month",
   series = [],
+  onSelectProduct,   // 🔥 NEW PROP
 }) => {
 
   
@@ -37,30 +38,22 @@ const TPChart = ({
   =============================== */
   const [productOptions, setProductOptions] = useState([]);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState(null);
+
   const [isOpen, setIsOpen] = useState(false);
 const dropdownRef = useRef(null);
 
 
-const filteredOptions = useMemo(() => {
-  if (!search) return productOptions;
-  return productOptions.filter((item) =>
-    item.label.toLowerCase().includes(search.toLowerCase())
-  );
-}, [search, productOptions]);
+const filteredOptions = productOptions;
 
-const handleSelect = async (item) => {
-  setSelected(item);
+const handleSelect = (item) => {
   setSearch(item.label);
   setIsOpen(false);
 
-  try {
-    const res = await ProductDropdownSearch(item.hsCode);
-    console.log("Dropdown API response:", res);
-  } catch (error) {
-    console.error("Dropdown API error:", error);
+  if (onSelectProduct) {
+    onSelectProduct(item.value); // 🔥 Send only value
   }
 };
+
 
 
   const renderTooltip = () => (
@@ -90,24 +83,26 @@ const handleSelect = async (item) => {
     axisLine: { stroke: "var(--border-soft)" },
     tickLine: { stroke: "var(--border-soft)" },
   };
-const fetchProducts = async () => {
-  try {
-    const res = await DashboardProductList();
-    const apiProducts = res?.data?.data || [];
 
-    const formatted = apiProducts.map((item) => ({
-      label: `${item.product} / ${item.hsCode}`,
-      value: item.hsCode,
-      product: item.product,
-      hsCode: item.hsCode,
+const fetchDropdownData = async (query = "") => {
+  try {
+    const res = await ProductDropdownSearch(query);
+
+    const apiData = res?.data || [];
+
+    // 🔥 Aggregate label/value here
+    const formatted = apiData.map((item) => ({
+      ...item,
+      label: `${item.label} / ${item.value}`,
     }));
 
     setProductOptions(formatted);
 
   } catch (error) {
-    console.error(error);
+    console.error("Dropdown fetch error:", error);
   }
 };
+
 
 useEffect(() => {
   const handleClickOutside = (event) => {
@@ -125,9 +120,7 @@ useEffect(() => {
   };
 }, []);
 
-  useEffect(() => {
-  fetchProducts();
-}, []);
+
   const renderChart = () => {
     switch (type) {
       case "area":
@@ -239,17 +232,23 @@ useEffect(() => {
 
    <div className="tp-chart-search-wrapper">
   <div className="tp-chart-search" ref={dropdownRef}>
-    <input
-      type="text"
-      className="tp-input tp-chart-search-input"
-      placeholder="Search product..."
-      value={search}
-      onFocus={() => setIsOpen(true)}
-      onChange={(e) => {
-        setSearch(e.target.value);
-        setIsOpen(true);
-      }}
-    />
+   <input
+  type="text"
+  className="tp-input tp-chart-search-input"
+  placeholder="Search product..."
+  value={search}
+  onFocus={() => {
+    setIsOpen(true);
+    fetchDropdownData(""); // 🔥 load full list on click
+  }}
+  onChange={(e) => {
+    const value = e.target.value;
+    setSearch(value);
+    setIsOpen(true);
+    fetchDropdownData(value); // 🔥 live search API call
+  }}
+/>
+
 
     {isOpen && (
       <div className="tp-chart-dropdown">
