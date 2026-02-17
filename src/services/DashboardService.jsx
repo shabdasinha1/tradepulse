@@ -10,8 +10,16 @@ export const DashboardOverviewShipping = async () => {
 };
 /*  Exchange Rates vs NGN   */
 export const DashboardOverviewExchange = async (base) => {
-  // return Api.get("/api/exchange?base=EUR");
   return Api.get(`/exchange?base=${base}`);
+};
+
+// DASHBOARD PRICE TREND GRAPH
+export const DashboardPriceTrend = async (priceHsCode) => {
+  return Api.get(`/products/priceTrend?hs=${priceHsCode}`);
+};
+//  DASHBOARD FORCAST DEMANG GRAPH
+export const DemandGrowthForecast = async (demandHsCode) => {
+  return Api.get(`/forecast/demandForecast?hs=${demandHsCode}`);
 };
 
 /* ===============================

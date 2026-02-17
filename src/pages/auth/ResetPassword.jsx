@@ -72,7 +72,7 @@ const ResetPassword = () => {
       const res = await UserResendPasswordOtp({
         email,
       });
-      console.log(res);
+      // console.log(res);
       if (res?.success === true || res.data?.status === 200) {
         toast.success(res.data.message);
       }

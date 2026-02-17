@@ -416,11 +416,43 @@
 .tp-profile-dropdown button:hover {
   background: var(--bg-card-hover);
 }
+.tp-setting-wrapper,
+.tp-notification-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tp-setting-wrapper:hover,
+.tp-notification-wrapper:hover {
+  background: var(--border-soft);
+  color: var(--text-primary);
+
+  transform: rotate(12deg);
+  cursor: pointer;
+}
+.tp-avatar:hover {
+  /* transform: rotate(12deg); */
+  cursor: pointer;
+}
 
 /* ===============================
    MOBILE — DASHBOARD
 ================================ */
 
+@media (max-width: 1044px) {
+  .tp-dashboard-actions {
+  gap: 0;
+}
+}
 @media (max-width: 998px) {
   .tp-dashboard-nav {
     position: absolute;
@@ -449,13 +481,12 @@
       background var(--transition-fast),
       color var(--transition-fast);
   }
-  
+
   .tp-menu-btn:hover {
     background: var(--border-soft);
     color: var(--text-primary);
   }
 }
-
 
 @media (max-width: 340px) {
   .tp-notification {

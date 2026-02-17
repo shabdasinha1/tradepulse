@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useToast } from "./toast/ToastProvider";
+import { UserFeedbackForm } from "../../services/AuthenticationService";
+import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 
 const EarlyFeedbackWidget = () => {
   const { addToast } = useToast();
@@ -13,6 +15,10 @@ const EarlyFeedbackWidget = () => {
     intent: "",
     email: "",
   });
+
+  const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const isFormValid = () => {
     return Object.values(formData).every((value) => value.trim() !== "");
   };
@@ -23,19 +29,43 @@ const EarlyFeedbackWidget = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!isFormValid()) {
       addToast("All fields are required", "error");
       return;
     }
-    addToast("Thank you your feedback", "success");
 
-    console.log("Form Submitted:", formData);
+    setLoading(true);
+    setErrorMsg("");
 
-    // TODO: API call here
+    try {
+      const res = await UserFeedbackForm(formData);
 
-    setIsOpen(false);
+      // console.log(res);
+
+      addToast("Thank you for your feedback!", "success");
+
+      // Reset form after success
+      setFormData({
+        role: "",
+        companySize: "",
+        country: "",
+        challenge: "",
+        dataNeed: "",
+        intent: "",
+        email: "",
+      });
+
+      setIsOpen(false); // Close modal only on success
+    } catch (error) {
+      const message = GetApiErrorMessage(error);
+      setErrorMsg(message);
+      addToast(message || "Something went wrong", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {

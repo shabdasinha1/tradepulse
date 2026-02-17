@@ -99,7 +99,7 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
-  console.log(productData);
+  // console.log(productData);
   // ===============================
   // RENDER
   // ===============================
