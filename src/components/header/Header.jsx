@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMenu, FiX, FiSun, FiMoon, FiChevronDown } from "react-icons/fi";
 import { useTheme } from "../../hooks/useTheme.jsx";
@@ -11,6 +11,7 @@ const Header = () => {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
+  const headerRef = useRef(null); 
 
   const headerLinks = PUBLIC_ROUTES.filter((route) => route.showInHeader);
 
@@ -115,8 +116,27 @@ const Header = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, [location.pathname]);
 
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      open &&
+      headerRef.current &&
+      !headerRef.current.contains(event.target)
+    ) {
+      setOpen(false);
+      setProductsOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [open]);
+
+
   return (
-    <header className="tp-header tp-header--public">
+    <header ref={headerRef} className="tp-header tp-header--public">
       <div className="tp-header-inner tp-container">
         {/* LOGO */}
         <div className="tp-header-logo" onClick={handleLogoClick}>
