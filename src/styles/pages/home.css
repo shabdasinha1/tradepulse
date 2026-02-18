@@ -688,6 +688,7 @@
 
 /* Index */
 .tp-core-index {
+  visibility: hidden;
   font-size: var(--fs-heading-sm);
   font-weight: var(--fw-bold);
   color: rgba(255,255,255,0.08);

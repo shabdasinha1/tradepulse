@@ -42,7 +42,6 @@
   color: var(--text-primary);
 }
 
-
 .tp-input:focus {
   outline: none;
   border-color: var(--clr-primary);
@@ -352,7 +351,6 @@
   /* color: var(--text-primary) !important; */
 }
 
-
 @media (min-width: 769px) AND (max-width: 861px) {
   .tp-input__placeholder {
     font-size: 12px;
@@ -419,15 +417,10 @@
 }
 
 .tp-metric-value {
-  font-size: clamp(
-    var(--fs-xl),
-    2.5vw,
-    var(--fs-3xl)
-  );
+  font-size: clamp(var(--fs-xl), 2.5vw, var(--fs-3xl));
   font-weight: var(--fw-semibold);
   line-height: 1.1;
 }
-
 
 .tp-metric-unit {
   font-size: var(--fs-label);
@@ -490,7 +483,7 @@
 /* Search container */
 .tp-chart-search {
   position: relative;
-  width: clamp(180px, 22vw, 260px);
+  width: clamp(150px, 22vw, 260px);
   max-width: 100%;
 }
 
@@ -498,7 +491,6 @@
   padding: clamp(8px, 1vw, 10px) clamp(12px, 1.2vw, 14px);
   font-size: var(--fs-caption);
 }
-
 
 /* Dropdown */
 .tp-chart-dropdown {
@@ -514,6 +506,24 @@
   max-height: clamp(160px, 28vh, 220px);
   overflow-y: auto;
 }
+.tp-chart-dropdown::-webkit-scrollbar {
+  width: 8px; /* scrollbar width */
+  
+}
+
+.tp-chart-dropdown::-webkit-scrollbar-track {
+  background: transparent; /* track color */
+  border-radius: 10px;
+}
+
+.tp-chart-dropdown::-webkit-scrollbar-thumb {
+  background: var(--clr-primary); /* scrollbar color */
+  border-radius: 10px;
+}
+
+.tp-chart-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #357abd; /* hover color */
+}
 
 /* Options */
 .tp-chart-option {
@@ -526,6 +536,7 @@
 .tp-chart-option:hover {
   background: var(--clr-primary-soft);
   color: var(--clr-primary);
+      border-radius: 10px;
 }
 
 .tp-chart-option-muted {

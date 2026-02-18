@@ -101,29 +101,29 @@ const DashboardProduct = () => {
   }, []);
 
   const handleInputChange = async (e) => {
-  const value = e.target.value;
-  setSearchValue(value);
+    const value = e.target.value;
+    setSearchValue(value);
 
-  // If user clears the input (backspace/delete)
-  if (value.trim() === "" && !isTableLoading) {
-    setIsTableLoading(true);
-    setError("");
+    // If user clears the input (backspace/delete)
+    if (value.trim() === "" && !isTableLoading) {
+      setIsTableLoading(true);
+      setError("");
 
-    try {
-      // Call API without params → load initial full data
-      const listRes = await DashboardProductList();
+      try {
+        // Call API without params → load initial full data
+        const listRes = await DashboardProductList();
 
-      setProductData((prev) => ({
-        ...prev,
-        productList: listRes?.data || [],
-      }));
-    } catch (err) {
-      setError(GetApiErrorMessage(err));
-    } finally {
-      setIsTableLoading(false);
+        setProductData((prev) => ({
+          ...prev,
+          productList: listRes?.data || [],
+        }));
+      } catch (err) {
+        setError(GetApiErrorMessage(err));
+      } finally {
+        setIsTableLoading(false);
+      }
     }
-  }
-};
+  };
 
   /* ===============================
      TABLE SEARCH
@@ -160,7 +160,6 @@ const DashboardProduct = () => {
       setIsTableLoading(false);
     }
   };
-  
 
   return (
     <section className="tp-section">
@@ -321,10 +320,7 @@ const DashboardProduct = () => {
             </div>
 
             {/* INSIGHTS */}
-            <div
-              className="tp-grid tp-insight-grid"
-              style={{ marginTop: "1rem" }}
-            >
+            <div className="tp-grid tp-insight-grid">
               <div className="tp-card">
                 <p className="tp-muted">Most Traded Product</p>
                 <h3 className="tp-overview-text">
