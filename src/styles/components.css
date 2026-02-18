@@ -608,3 +608,9 @@
     width: 100%;
   }
 }
+
+/* Center feedback card */
+.tp-feedback-page-card {
+  max-width: 520px;
+  margin: var(--space-xl) auto 0 auto;
+}
