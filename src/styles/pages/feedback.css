@@ -1,0 +1,52 @@
+/* Center feedback card */
+.tp-feedback-page-card {
+  max-width: 80%;
+  margin: var(--space-xl) auto 0 auto;
+}
+
+.tp-section-title {
+  font-size: clamp(40px, 5.6vw, 64px);
+  font-weight: var(--fw-bold);
+  line-height: 1.04;
+  margin: var(--space-md);
+}
+
+.tp-feedback-form {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.form-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  padding: var(--space-xl);
+}
+.tp-form-group {
+  width: 48%;
+}
+
+.tp-feedback-btn {
+  width: 50%;
+  margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .tp-form-group {
+    width: 100%;
+  }
+  .tp-feedback-page-card {
+    max-width: 90%;
+  }
+  
+}
+@media (max-width: 426px) {
+  .tp-feedback-btn {
+    width: 100%;
+  }
+  .tp-feedback-page-card {
+    max-width: 100%;
+  }
+  .form-wrapper {
+    padding: var(--space-sm);
+  }
+}

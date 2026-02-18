@@ -73,24 +73,23 @@ const Feedback = () => {
   };
 
   return (
-    
-      <section className="tp-section tp-section--spacious">
-        <div className="tp-container">
+    <section className="tp-section tp-section--spacious">
+      <div className="tp-container">
+        {/* Section Header */}
+        <div className="tp-section-header">
+          <h2 className="tp-section-title">
+            Share Your <span>Trade Insights</span>
+          </h2>
+          <p className="tp-section-sub">
+            Help us build smarter global trade intelligence tailored for
+            businesses like yours.
+          </p>
+        </div>
 
-          {/* Section Header */}
-          <div className="tp-section-header">
-            <h2 className="tp-section-title">
-              Share Your <span>Trade Insights</span>
-            </h2>
-            <p className="tp-section-sub">
-              Help us build smarter global trade intelligence tailored for businesses like yours.
-            </p>
-          </div>
-
-          {/* Card */}
-          <div className="tp-card tp-feedback-page-card">
-            <form className="tp-form" onSubmit={handleSubmit}>
-
+        {/* Card */}
+        <div className="tp-card tp-feedback-page-card">
+          <form className="tp-form tp-feedback-form" onSubmit={handleSubmit}>
+            <div className="form-wrapper">
               {/* Role */}
               <div className="tp-form-group">
                 <label>Your Role</label>
@@ -203,21 +202,14 @@ const Feedback = () => {
                   onChange={handleChange}
                 />
               </div>
-
-              <button
-                type="submit"
-                className="tp-btn-primary"
-                disabled={loading}
-              >
-                {loading ? "Submitting..." : "Submit Feedback"}
-              </button>
-
-            </form>
-          </div>
-
+            </div>
+            <button type="submit" className="tp-btn-primary tp-feedback-btn" disabled={loading}>
+              {loading ? "Submitting..." : "Submit Feedback"}
+            </button>
+          </form>
         </div>
-      </section>
-
+      </div>
+    </section>
   );
 };
 
