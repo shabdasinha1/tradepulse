@@ -55,7 +55,8 @@
 
 
 
+/* TOAST  CSS */
 @import "react-toastify/dist/ReactToastify.css";
 
-
+@import "./styles/toast.css";
 

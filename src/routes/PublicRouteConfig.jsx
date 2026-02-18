@@ -9,6 +9,7 @@ const Contact = lazy(() => import("../pages/public/contact/Contact.jsx"));
 const ComingSoon = lazy(() =>
   import("../pages/coming-soon/ComingSoon.jsx")
 );
+const EarlyFeedbackWidget = lazy(()=> import('../components/common/EarlyFeedbackWidget.jsx'))
 
 export const PUBLIC_ROUTES = [
   /* ---------- PRODUCTS ---------- */
@@ -48,6 +49,12 @@ export const PUBLIC_ROUTES = [
     label: "Contact",
     path: "/contact",
     component: Contact,
+    showInHeader: true,
+  },
+  {
+    label: "Feedback",
+    path: "/feedback",
+    component: EarlyFeedbackWidget,
     showInHeader: true,
   },
 ];

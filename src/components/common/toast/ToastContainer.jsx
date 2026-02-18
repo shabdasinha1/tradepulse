@@ -1,5 +1,3 @@
-import "../../../styles/toast.css";
-
 const ToastContainer = ({ toasts, removeToast }) => {
   return (
     <div className="tp-toast-wrapper">

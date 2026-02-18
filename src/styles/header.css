@@ -450,8 +450,8 @@
 
 @media (max-width: 1044px) {
   .tp-dashboard-actions {
-  gap: 0;
-}
+    gap: 0;
+  }
 }
 @media (max-width: 998px) {
   .tp-dashboard-nav {
@@ -488,9 +488,21 @@
   }
 }
 
-@media (max-width: 340px) {
-  .tp-notification {
-    display: none;
+@media (max-width: 426px) {
+  
+  .tp-setting-wrapper,
+  .tp-notification-wrapper,
+  .tp-theme-toggle {
+    width: 25px;
+    padding: 0;
+    font-size: 14px;
+  }
+  .tp-setting-wrapper:hover,
+  .tp-notification-wrapper:hover, .tp-theme-toggle:hover {
+    background: none;
+    color: inherit;
+    transform: none;
+    cursor: default;
   }
 }
 

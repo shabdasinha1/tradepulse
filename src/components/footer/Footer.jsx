@@ -133,7 +133,7 @@ const Footer = () => {
                 Sign in
               </button>
 
-              <button onClick={() => navigate("/contact")}>
+              <button onClick={() => navigate("/register")}>
                 Early Access
               </button>
             </div>
