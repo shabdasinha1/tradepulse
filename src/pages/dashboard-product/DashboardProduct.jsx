@@ -86,8 +86,7 @@ const DashboardProduct = () => {
         setProductData({
           productOverview:
             overviewRes.status === "fulfilled" ? overviewRes.value.data : [],
-          productList:
-            listRes.status === "fulfilled" ? listRes.value.data : [],
+          productList: listRes.status === "fulfilled" ? listRes.value.data : [],
           productInsight:
             insightRes.status === "fulfilled" ? insightRes.value.data : [],
         });
@@ -105,6 +104,11 @@ const DashboardProduct = () => {
      TABLE SEARCH
   ================================= */
   const handleSearch = async () => {
+    if (isTableLoading) return; // ⛔ prevent duplicate calls
+
+    const trimmed = searchValue.trim();
+    if (!trimmed) return; // ⛔ prevent empty search
+
     setIsTableLoading(true);
     setError("");
 
@@ -132,6 +136,7 @@ const DashboardProduct = () => {
       setIsTableLoading(false);
     }
   };
+  
 
   return (
     <section className="tp-section">
@@ -170,14 +175,22 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Top Gainer</p>
                 <h3 className="tp-text-up">
-                  {productData?.productOverview?.topValueProduct?.split(",")?.[0]}
+                  {
+                    productData?.productOverview?.topValueProduct?.split(
+                      ",",
+                    )?.[0]
+                  }
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Top Loser</p>
                 <h3 className="tp-text-down">
-                  {productData?.productOverview?.lowestValueProduct?.split(",")?.[0]}
+                  {
+                    productData?.productOverview?.lowestValueProduct?.split(
+                      ",",
+                    )?.[0]
+                  }
                 </h3>
               </div>
             </div>
@@ -191,7 +204,7 @@ const DashboardProduct = () => {
                   <input
                     type="text"
                     className="tp-input"
-                  placeholder="Search by HS Code or Product"
+                    placeholder="Search by HS Code or Product"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                     onKeyDown={(e) => {
@@ -202,8 +215,9 @@ const DashboardProduct = () => {
                   <button
                     className="tp-btn tp-btn-primary"
                     onClick={handleSearch}
+                    disabled={!searchValue.trim() || isTableLoading}
                   >
-                    Search
+                    {isTableLoading ? "Searching..." : "Search"}
                   </button>
                 </div>
               </div>
@@ -218,67 +232,66 @@ const DashboardProduct = () => {
                     <span className="text-center">Risk</span>
                   </div>
 
-                 <VerticalScroll>
-  {isTableLoading ? (
-    [...Array(6)].map((_, i) => (
-      <div className="product-row" key={i}>
-        {[...Array(5)].map((_, j) => (
-          <Skeleton key={j} className="sk-table-cell" />
-        ))}
-      </div>
-    ))
-  ) : productData?.productList?.data?.length === 0 ? (
-    <div className="product-row tp-empty-row">
-      <span className="tp-muted tp-empty-text">
-        Product not found
-      </span>
-    </div>
-  ) : (
-    productData?.productList?.data?.map((item, index) => (
-      <div className="product-row" key={index}>
-        <span>{item.product?.split(",")[0]}</span>
+                  <VerticalScroll>
+                    {isTableLoading ? (
+                      [...Array(6)].map((_, i) => (
+                        <div className="product-row" key={i}>
+                          {[...Array(5)].map((_, j) => (
+                            <Skeleton key={j} className="sk-table-cell" />
+                          ))}
+                        </div>
+                      ))
+                    ) : productData?.productList?.data?.length === 0 ? (
+                      <div className="product-row tp-empty-row">
+                        <span className="tp-muted tp-empty-text">
+                          Product not found
+                        </span>
+                      </div>
+                    ) : (
+                      productData?.productList?.data?.map((item, index) => (
+                        <div className="product-row" key={index}>
+                          <span>{item.product?.split(",")[0]}</span>
 
-        <span className="tp-muted text-center">
-          {item.priceRange}
-        </span>
+                          <span className="tp-muted text-center">
+                            {item.priceRange}
+                          </span>
 
-        <span className="text-center">
-          {item.demandTrend?.direction === "UP" ? (
-            <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
-          ) : (
-            <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
-          )}
-          {item.demandTrend?.percent}%
-        </span>
+                          <span className="text-center">
+                            {item.demandTrend?.direction === "UP" ? (
+                              <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
+                            ) : (
+                              <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
+                            )}
+                            {item.demandTrend?.percent}%
+                          </span>
 
-        <span className="text-center">
-          <span
-            className={`tp-pill ${
-              item.supply === "Stable"
-                ? "tp-pill-success"
-                : "tp-pill-warning"
-            }`}
-          >
-            {item.supply}
-          </span>
-        </span>
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                item.supply === "Stable"
+                                  ? "tp-pill-success"
+                                  : "tp-pill-warning"
+                              }`}
+                            >
+                              {item.supply}
+                            </span>
+                          </span>
 
-        <span className="text-center">
-          <span
-            className={`tp-pill ${
-              item.risk === "Low"
-                ? "tp-pill-success"
-                : "tp-pill-warning"
-            }`}
-          >
-            {item.risk}
-          </span>
-        </span>
-      </div>
-    ))
-  )}
-</VerticalScroll>
-
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                item.risk === "Low"
+                                  ? "tp-pill-success"
+                                  : "tp-pill-warning"
+                              }`}
+                            >
+                              {item.risk}
+                            </span>
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </VerticalScroll>
                 </div>
               </div>
             </div>
@@ -298,7 +311,11 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Highest Volatility</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productInsight?.largest_product?.split(",")?.[0]}
+                  {
+                    productData?.productInsight?.largest_product?.split(
+                      ",",
+                    )?.[0]
+                  }
                 </h3>
               </div>
             </div>
