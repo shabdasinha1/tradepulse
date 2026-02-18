@@ -140,7 +140,7 @@
   background: none;
   border: none;
   padding: 0;
- font-size: var(--fs-label);
+  font-size: var(--fs-label);
   font-weight: var(--fw-medium);
   color: var(--clr-primary);
   cursor: pointer;
@@ -164,7 +164,7 @@
 .tp-country-code-select {
   height: 44px;
   padding: 0 14px;
-   font-size: var(--fs-body);
+  font-size: var(--fs-body);
   font-family: var(--font-main);
 
   background-color: rgba(255, 255, 255, 0.04);
@@ -179,7 +179,7 @@
 /* Dropdown list */
 .tp-country-code-select option {
   padding: 8px 12px;
-   font-size: var(--fs-body);
+  font-size: var(--fs-body);
   color: #000; /* native dropdown needs solid text */
 }
 
@@ -192,14 +192,13 @@
 
 /* Prevent huge dropdown on desktop */
 .tp-country-code-select {
-  max-height: 180px;     /* ✅ smaller on desktop */
-  overflow-y: auto;     /* ✅ allow scrolling */
+  max-height: 180px; /* ✅ smaller on desktop */
+  overflow-y: auto; /* ✅ allow scrolling */
 }
 
 .tp-btn-primary:disabled {
-  cursor: not-allowed;  /* Cross or 'not-allowed' cursor */
+  cursor: not-allowed; /* Cross or 'not-allowed' cursor */
 }
-
 
 /* ===============================
    RESPONSIVE
@@ -211,9 +210,10 @@
   }
 
   .tp-auth-card {
-  margin-left: auto;
-  margin-right: auto; /* ✅ centers the card */
-}
+    margin-left: auto;
+    margin-right: auto; /* ✅ centers the card */
+    width: 80%;
+  }
 
   .tp-auth-info {
     text-align: center;
@@ -227,7 +227,7 @@
   .tp-form-span-2 {
     grid-column: span 1;
   }
- .tp-country-code-select {
-    max-height: 140px;   /* ✅ compact on mobile */
+  .tp-country-code-select {
+    max-height: 140px; /* ✅ compact on mobile */
   }
 }

@@ -315,12 +315,7 @@ const Register = () => {
                 </label>
               </div>
 
-              {/* ERROR */}
-              {errorMsg && (
-                <div className="tp-auth-error tp-text-down tp-form-span-2">
-                  {errorMsg}
-                </div>
-              )}
+              
 
               {/* SUBMIT */}
               <button

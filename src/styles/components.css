@@ -6,7 +6,6 @@
   border: 1px solid var(--border-soft);
   box-shadow: var(--shadow-card);
   min-width: 0;
-  
 }
 
 /* Card header */
@@ -177,12 +176,11 @@
   font-size: var(--fs-label);
   font-weight: var(--fw-medium);
 
-   display: inline-flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  min-width: 90px;   /* makes all pills equal */
-  
+  min-width: 90px; /* makes all pills equal */
 
   white-space: nowrap;
 }
@@ -359,7 +357,6 @@
   }
 }
 
-
 /* recharts */
 .tp-chart-wrapper {
   width: 100%;
@@ -385,9 +382,6 @@
   font-size: var(--fs-caption) !important;
   color: var(--text-secondary) !important;
 }
-
-
-
 
 /* ======================================
    METRIC CARD
@@ -548,4 +542,14 @@
     width: 100%;
   }
 }
-
+@media (max-width: 768px) {
+  .tp-form {
+    max-width: 100%;
+    gap: 20px;
+    padding: var(--space-xl);
+  }
+  .tp-card-header {
+    gap: 20px;
+    padding: 0 var(--space-xl);
+  }
+}
