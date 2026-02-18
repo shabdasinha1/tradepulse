@@ -135,7 +135,9 @@ const OverviewCharts = () => {
             type="line"
             data={priceData}
             series={[{ key: "value", label: "Price" }]}
+            selectedProduct={priceHsCode}
             onSelectProduct={setPriceHsCode}
+            
           />
 
           <TPChart
@@ -143,7 +145,9 @@ const OverviewCharts = () => {
             type="area"
             data={demandData}
             series={[{ key: "value", label: "Demand" }]}
+            selectedProduct={demandHsCode}
             onSelectProduct={setDemandHsCode}
+            
           />
 
         </div>

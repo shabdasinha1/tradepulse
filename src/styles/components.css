@@ -33,7 +33,7 @@
 /* Inputs */
 .tp-input {
   width: 100%;
-  padding: 12px 14px;
+  padding: clamp(10px, 1vw, 12px) clamp(12px, 1.2vw, 14px);
   font-size: var(--fs-body);
   line-height: 1.4;
   border-radius: var(--radius-control);
@@ -41,6 +41,7 @@
   border: 1px solid var(--border-soft);
   color: var(--text-primary);
 }
+
 
 .tp-input:focus {
   outline: none;
@@ -351,6 +352,7 @@
   /* color: var(--text-primary) !important; */
 }
 
+
 @media (min-width: 769px) AND (max-width: 861px) {
   .tp-input__placeholder {
     font-size: 12px;
@@ -360,7 +362,7 @@
 /* recharts */
 .tp-chart-wrapper {
   width: 100%;
-  height: 280px;
+  height: clamp(220px, 32vw, 320px);
   min-width: 0;
   min-height: 0;
   position: relative;
@@ -417,10 +419,15 @@
 }
 
 .tp-metric-value {
-  font-size: var(--fs-3xl);
+  font-size: clamp(
+    var(--fs-xl),
+    2.5vw,
+    var(--fs-3xl)
+  );
   font-weight: var(--fw-semibold);
   line-height: 1.1;
 }
+
 
 .tp-metric-unit {
   font-size: var(--fs-label);
@@ -483,27 +490,28 @@
 /* Search container */
 .tp-chart-search {
   position: relative;
-  /* width: 260px; */
+  width: clamp(180px, 22vw, 260px);
   max-width: 100%;
 }
 
 .tp-chart-search-input {
-  padding: 8px 14px;
+  padding: clamp(8px, 1vw, 10px) clamp(12px, 1.2vw, 14px);
   font-size: var(--fs-caption);
 }
+
 
 /* Dropdown */
 .tp-chart-dropdown {
   position: absolute;
   top: calc(100% + var(--space-xs));
-  right: 0; /* Align dropdown with right edge */
+  right: 0;
   width: 100%;
   background: var(--bg-panel);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   z-index: 50;
-  max-height: 200px;
+  max-height: clamp(160px, 28vh, 220px);
   overflow-y: auto;
 }
 
@@ -525,11 +533,21 @@
   cursor: default;
 }
 
+/* Remove any focus/active border from chart */
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:active,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .tp-chart-header {
     flex-direction: column;
-    align-items: stretch;
     gap: var(--space-sm);
   }
 
