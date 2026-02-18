@@ -122,66 +122,67 @@ const Register = () => {
 
             <form
               onSubmit={handleSubmit}
-              className="tp-form tp-auth-form tp-form-grid"
+              className="tp-form tp-auth-form "
             >
-              {/* ROW 1 */}
-              <div className="tp-form-group">
-                <label>First Name</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={form.first_name}
-                  onChange={handleChange}
-                  required
-                  className="tp-input"
-                  placeholder="John"
-                />
-              </div>
+              <span className="tp-form-grid">
+                {/* ROW 1 */}
+                <div className="tp-form-group">
+                  <label>First Name</label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    value={form.first_name}
+                    onChange={handleChange}
+                    required
+                    className="tp-input"
+                    placeholder="John"
+                  />
+                </div>
 
-              <div className="tp-form-group">
-                <label>Last Name</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={form.last_name}
-                  onChange={handleChange}
-                  required
-                  className="tp-input"
-                  placeholder="Doe"
-                />
-              </div>
+                <div className="tp-form-group">
+                  <label>Last Name</label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    value={form.last_name}
+                    onChange={handleChange}
+                    required
+                    className="tp-input"
+                    placeholder="Doe"
+                  />
+                </div>
 
-              <div className="tp-form-group">
-                <label>Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  className="tp-input"
-                  placeholder="you@example.com"
-                />
-              </div>
+                <div className="tp-form-group">
+                  <label>Email Address</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                    className="tp-input"
+                    placeholder="you@example.com"
+                  />
+                </div>
 
-              {/* COUNTRY CODE DROPDOWN */}
-              <div className="tp-form-group">
-                <label>Country Code</label>
-                <Select
-                  classNamePrefix="tp-input"
-                  placeholder="Select country code"
-                  options={countryCodes}
-                  value={
-                    countryCodes.find(
-                      (opt) => opt.value === form.country_code,
-                    ) || null
-                  }
-                  isSearchable
-                  // menuIsOpen
-                  name="country_code"
-                  onChange={handleSelectChange}
-                />
-                {/* <input
+                {/* COUNTRY CODE DROPDOWN */}
+                <div className="tp-form-group">
+                  <label>Country Code</label>
+                  <Select
+                    classNamePrefix="tp-input"
+                    placeholder="Select country code"
+                    options={countryCodes}
+                    value={
+                      countryCodes.find(
+                        (opt) => opt.value === form.country_code,
+                      ) || null
+                    }
+                    isSearchable
+                    // menuIsOpen
+                    name="country_code"
+                    onChange={handleSelectChange}
+                  />
+                  {/* <input
                   list="countries"
                   placeholder="Select country code"
                   className="tp-input"
@@ -198,7 +199,7 @@ const Register = () => {
                   ))}
                 </datalist> */}
 
-                {/* <select
+                  {/* <select
                   name="country_code"
                   className="tp-input tp-select tp-country-code-select"
                   value={form.country_code}
@@ -217,81 +218,81 @@ const Register = () => {
                     </option>
                   ))}
                 </select> */}
-              </div>
+                </div>
 
-              {/* ROW 2 */}
-              <div className="tp-form-group">
-                <label>Mobile Number</label>
-                <input
-                  type="tel"
-                  name="mobile"
-                  value={form.mobile}
-                  onChange={handleChange}
-                  required
-                  className="tp-input"
-                  placeholder="9876543210"
-                />
-              </div>
+                {/* ROW 2 */}
+                <div className="tp-form-group">
+                  <label>Mobile Number</label>
+                  <input
+                    type="tel"
+                    name="mobile"
+                    value={form.mobile}
+                    onChange={handleChange}
+                    required
+                    className="tp-input"
+                    placeholder="9876543210"
+                  />
+                </div>
 
-              <div className="tp-form-group">
-                <label>Company Name</label>
-                <input
-                  type="text"
-                  name="company_name"
-                  value={form.company_name}
-                  onChange={handleChange}
-                  required
-                  className="tp-input"
-                  placeholder="Your Company"
-                />
-              </div>
+                <div className="tp-form-group">
+                  <label>Company Name</label>
+                  <input
+                    type="text"
+                    name="company_name"
+                    value={form.company_name}
+                    onChange={handleChange}
+                    required
+                    className="tp-input"
+                    placeholder="Your Company"
+                  />
+                </div>
 
-              {/* ROW 3 */}
-              <div className="tp-form-group">
-                <label>Business Type</label>
-                <select
-                  name="business_type"
-                  value={form.business_type}
-                  onChange={handleChange}
-                  className="tp-input tp-select"
-                  required
-                >
-                  <option value="TRADER">Trader</option>
-                  <option value="MANUFACTURER">Manufacturer</option>
-                  <option value="EXPORTER">Exporter</option>
-                </select>
-              </div>
+                {/* ROW 3 */}
+                <div className="tp-form-group">
+                  <label>Business Type</label>
+                  <select
+                    name="business_type"
+                    value={form.business_type}
+                    onChange={handleChange}
+                    className="tp-input tp-select"
+                    required
+                  >
+                    <option value="TRADER">Trader</option>
+                    <option value="MANUFACTURER">Manufacturer</option>
+                    <option value="EXPORTER">Exporter</option>
+                  </select>
+                </div>
 
-              <div className="tp-form-group">
-                <label>Country</label>
-                <select
-                  name="country"
-                  value={form.country}
-                  onChange={handleChange}
-                  className="tp-input tp-select"
-                  required
-                >
-                  <option value="india">India</option>
-                  <option value="uk">United Kingdom</option>
-                  <option value="uae">UAE</option>
-                  <option value="usa">United States</option>
-                </select>
-              </div>
+                <div className="tp-form-group">
+                  <label>Country</label>
+                  <select
+                    name="country"
+                    value={form.country}
+                    onChange={handleChange}
+                    className="tp-input tp-select"
+                    required
+                  >
+                    <option value="india">India</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="uae">UAE</option>
+                    <option value="usa">United States</option>
+                  </select>
+                </div>
 
-              {/* PASSWORD */}
-              <div className="tp-form-group tp-form-span-2">
-                <label>Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  className="tp-input"
-                  placeholder="Create a strong password"
-                />
-              </div>
-
+                {/* PASSWORD */}
+                <div className="tp-form-group tp-form-span-2">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                    className="tp-input"
+                    placeholder="Create a strong password"
+                  />
+                </div>
+              </span>
               {/* PRIVACY */}
               <div className="tp-form-group tp-form-span-2 tp-privacy">
                 <label className="tp-privacy-label">
@@ -314,8 +315,6 @@ const Register = () => {
                   </span>
                 </label>
               </div>
-
-              
 
               {/* SUBMIT */}
               <button

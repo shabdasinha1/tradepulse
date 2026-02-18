@@ -483,7 +483,7 @@
 /* Search container */
 .tp-chart-search {
   position: relative;
-  width: 260px;
+  /* width: 260px; */
   max-width: 100%;
 }
 
@@ -550,6 +550,6 @@
   }
   .tp-card-header {
     gap: 20px;
-    padding: 0 var(--space-xl);
+    /* padding: 0 var(--space-xl); */
   }
 }

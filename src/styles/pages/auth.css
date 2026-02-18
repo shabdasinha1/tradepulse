@@ -212,7 +212,9 @@
   .tp-auth-card {
     margin-left: auto;
     margin-right: auto; /* ✅ centers the card */
-    width: 80%;
+    width: 90%;
+    max-width: 100%;
+    padding: var(--space-xl);
   }
 
   .tp-auth-info {
@@ -230,9 +232,16 @@
   .tp-country-code-select {
     max-height: 140px; /* ✅ compact on mobile */
   }
+  .tp-auth-btn{
+    width: 50%;
+    margin: 0 auto;
+  }
 }
 @media (max-width: 426px) {
   .tp-auth-card{
+    width: 100%;
+  }
+  .tp-auth-btn{
     width: 100%;
   }
   
