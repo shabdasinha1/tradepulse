@@ -546,7 +546,7 @@
   .tp-form {
     max-width: 100%;
     gap: 20px;
-    padding: var(--space-xl);
+    /* padding: var(--space-xl); */
   }
   .tp-card-header {
     gap: 20px;

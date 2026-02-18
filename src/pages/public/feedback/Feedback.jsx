@@ -77,7 +77,7 @@ const Feedback = () => {
       <div className="tp-container">
         {/* Section Header */}
         <div className="tp-section-header">
-          <h2 className="tp-section-title">
+          <h2 className="tp-feedback-section-title">
             Share Your <span>Trade Insights</span>
           </h2>
           <p className="tp-section-sub">

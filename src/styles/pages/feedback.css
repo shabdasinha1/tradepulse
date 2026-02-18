@@ -4,11 +4,14 @@
   margin: var(--space-xl) auto 0 auto;
 }
 
-.tp-section-title {
+.tp-feedback-section-title {
   font-size: clamp(40px, 5.6vw, 64px);
   font-weight: var(--fw-bold);
   line-height: 1.04;
   margin: var(--space-md);
+}
+.tp-feedback-section-title span {
+  color: var(--clr-primary);
 }
 
 .tp-feedback-form {
@@ -37,7 +40,6 @@
   .tp-feedback-page-card {
     max-width: 90%;
   }
-  
 }
 @media (max-width: 426px) {
   .tp-feedback-btn {

@@ -231,3 +231,9 @@
     max-height: 140px; /* ✅ compact on mobile */
   }
 }
+@media (max-width: 426px) {
+  .tp-auth-card{
+    width: 100%;
+  }
+  
+}
