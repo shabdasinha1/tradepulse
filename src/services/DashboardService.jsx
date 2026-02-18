@@ -28,8 +28,8 @@ export const DemandGrowthForecast = async (demandHsCode) => {
 // export const DashboardProductList = async () => {
 //   return Api.get("/products/list");
 // };
-export const DashboardProductList = async () => {
-  return Api.get("/products/search");
+export const DashboardProductList = async (params = {}) => {
+  return Api.get("/products/search", { params });
 };
 
 /* ===============================

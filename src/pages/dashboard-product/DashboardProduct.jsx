@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DashboardProductInsights,
   DashboardProductList,
@@ -7,8 +7,9 @@ import {
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import VerticalScroll from "../../components/common/VerticalScroll";
 import { IoIosTrendingDown, IoIosTrendingUp } from "react-icons/io";
+
 /* ===============================
-    SKELETON COMPONENTS
+   SKELETON COMPONENTS
 ================================ */
 const Skeleton = ({ className = "" }) => (
   <div className={`tp-skeleton skeleton ${className}`} />
@@ -17,8 +18,7 @@ const Skeleton = ({ className = "" }) => (
 const ProductOverviewSkeleton = () => {
   return (
     <section className="tp-section">
-      <div className="tp-container tp-grid-stack tp-skeleton-opacity ">
-        {/* KPI Cards */}
+      <div className="tp-container tp-grid-stack tp-skeleton-opacity">
         <div className="tp-grid tp-product-overview-grid">
           {[...Array(4)].map((_, i) => (
             <div className="tp-card" key={i}>
@@ -28,7 +28,6 @@ const ProductOverviewSkeleton = () => {
           ))}
         </div>
 
-        {/* Table */}
         <div className="tp-card tp-skeleton">
           {[...Array(6)].map((_, i) => (
             <div className="product-row" key={i}>
@@ -39,7 +38,6 @@ const ProductOverviewSkeleton = () => {
           ))}
         </div>
 
-        {/* Insights */}
         <div className="tp-grid tp-grid-2">
           {[...Array(2)].map((_, i) => (
             <div className="tp-card" key={i}>
@@ -53,58 +51,14 @@ const ProductOverviewSkeleton = () => {
   );
 };
 
-/* =====================================================
-      SUGGESTION COMPONENT
-/* =====================================================
- */
-const SuggestionInput = ({
-  label,
-  value,
-  onChange,
-  suggestions,
-  name,
-  activeInput,
-  setActiveInput,
-}) => {
-  const filteredSuggestions = suggestions.filter((item) =>
-    item?.toLowerCase().includes(value.toLowerCase()),
-  );
-
-  return (
-    <div className="tp-filter-group">
-      <input
-        type="text"
-        placeholder={label}
-        value={value}
-        onChange={(e) => onChange(name, e.target.value)}
-        onFocus={() => setActiveInput(name)}
-        onBlur={() => setTimeout(() => setActiveInput(null), 200)}
-        className="tp-input"
-      />
-
-      {activeInput === name && value && filteredSuggestions.length > 0 && (
-        <div className="tp-suggestion-card">
-          {filteredSuggestions.map((item, index) => (
-            <div
-              key={index}
-              className="tp-suggestion-item"
-              onClick={() => onChange(name, item)}
-            >
-              {item}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
-
 /* ===============================
-    MAIN COMPONENT
+   MAIN COMPONENT
 ================================ */
 const DashboardProduct = () => {
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true); // page load
+  const [isTableLoading, setIsTableLoading] = useState(false); // table only
+  const [searchValue, setSearchValue] = useState("");
 
   const [productData, setProductData] = useState({
     productOverview: [],
@@ -112,36 +66,9 @@ const DashboardProduct = () => {
     productInsight: [],
   });
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [filters, setFilters] = useState({
-    hsCode: "",
-    product: "",
-    supply: "",
-    risk: "",
-  });
-  const [activeInput, setActiveInput] = useState(null);
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-  const suggestions = useMemo(() => {
-    const list = productData?.productList?.data || [];
-console.log("Debug :",productData.productList);
-    return {
-      hsCodes: [...new Set(list.map((item) => item.hsCode))],
-      products: [...new Set(list.map((item) => item.product))],
-      supplies: [...new Set(list.map((item) => item.supply))],
-      risks: [...new Set(list.map((item) => item.risk))],
-    };
-  }, [productData]);
-
-  // ===============================
-  // Fetch data
-  // ===============================
+  /* ===============================
+     INITIAL PAGE LOAD
+  ================================= */
   useEffect(() => {
     const fetchAllData = async () => {
       setIsLoading(true);
@@ -159,7 +86,8 @@ console.log("Debug :",productData.productList);
         setProductData({
           productOverview:
             overviewRes.status === "fulfilled" ? overviewRes.value.data : [],
-          productList: listRes.status === "fulfilled" ? listRes.value.data : [],
+          productList:
+            listRes.status === "fulfilled" ? listRes.value.data : [],
           productInsight:
             insightRes.status === "fulfilled" ? insightRes.value.data : [],
         });
@@ -173,51 +101,42 @@ console.log("Debug :",productData.productList);
     fetchAllData();
   }, []);
 
-  // Debounce search (300ms)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(searchTerm);
-    }, 300);
+  /* ===============================
+     TABLE SEARCH
+  ================================= */
+  const handleSearch = async () => {
+    setIsTableLoading(true);
+    setError("");
 
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
+    try {
+      let params = {};
+      const trimmed = searchValue.trim();
 
-  const filteredProducts = useMemo(() => {
-    const list = productData?.productList?.data || [];
+      if (trimmed) {
+        if (/^\d+$/.test(trimmed)) {
+          params.hs = trimmed;
+        } else {
+          params.q = trimmed;
+        }
+      }
 
-    return list.filter((item) => {
-      const matchHsCode =
-        !filters.hsCode ||
-        String(item.hsCode)
-          .toLowerCase()
-          .includes(filters.hsCode.toLowerCase());
+      const listRes = await DashboardProductList(params);
 
-      const matchProduct =
-        !filters.product ||
-        item.product?.toLowerCase().includes(filters.product.toLowerCase());
+      setProductData((prev) => ({
+        ...prev,
+        productList: listRes?.data || [],
+      }));
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
 
-      const matchSupply =
-        !filters.supply ||
-        item.supply?.toLowerCase().includes(filters.supply.toLowerCase());
-
-      const matchRisk =
-        !filters.risk ||
-        item.risk?.toLowerCase().includes(filters.risk.toLowerCase());
-
-      return matchHsCode && matchProduct && matchSupply && matchRisk;
-    });
-  }, [filters, productData]);
-
-  // console.log(productData);
-  // ===============================
-  // RENDER
-  // ===============================
   return (
     <section className="tp-section">
       <div className="tp-container tp-grid-stack">
-        {/* ===============================
-              HEADER (ALWAYS VISIBLE)
-          =============================== */}
+        {/* HEADER */}
         <header>
           <h1 className="tp-section-title">
             Products <span>Overview</span>
@@ -227,14 +146,9 @@ console.log("Debug :",productData.productList);
           </p>
         </header>
 
-        {/* ===============================
-              SKELETON
-          =============================== */}
+        {/* FULL PAGE SKELETON */}
         {isLoading && <ProductOverviewSkeleton />}
 
-        {/* ===============================
-              MAIN CONTENT
-          =============================== */}
         {!isLoading && (
           <>
             {/* KPI CARDS */}
@@ -256,116 +170,44 @@ console.log("Debug :",productData.productList);
               <div className="tp-card">
                 <p className="tp-muted">Top Gainer</p>
                 <h3 className="tp-text-up">
-                  {
-                    productData?.productOverview?.topValueProduct?.split(
-                      ",",
-                    )?.[0]
-                  }
+                  {productData?.productOverview?.topValueProduct?.split(",")?.[0]}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Top Loser</p>
                 <h3 className="tp-text-down">
-                  {
-                    productData?.productOverview?.lowestValueProduct?.split(
-                      ",",
-                    )?.[0]
-                  }
+                  {productData?.productOverview?.lowestValueProduct?.split(",")?.[0]}
                 </h3>
               </div>
             </div>
 
             {/* PRODUCT TABLE */}
-            {/* <div className="tp-card">
-              <div className="product-table-wrapper">
-                <div className="product-table">
-                  <div className="product-row product-head">
-                    <span>Product</span>
-                    <span className="text-center">Category</span>
-                    <span className="text-center">Price</span>
-                    <span className="text-center">Change</span>
-                    <span className="text-center">Status</span>
-                  </div>
-                  <VerticalScroll>
-                    {productData?.productList?.data?.map((item, index) => (
-                      <div className="product-row" key={index}>
-                        <span>{item.product_name.split(/[,\s]/)[0]}</span>
-                        <span className="tp-muted text-center">
-                          {item.category}
-                        </span>
-                        <span className="text-center">
-                          {item.unit_price ?? "0"}
-                        </span>
-                        <span
-                          className={
-                            item.trend === "up"
-                              ? "tp-text-up text-center"
-                              : "tp-text-down text-center"
-                          }
-                        >
-                          {item.change ?? "0"}
-                        </span>
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${
-                              item.status === "Active"
-                                ? "tp-pill-success"
-                                : "tp-pill-warning"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </span>
-                      </div>
-                    ))}
-                  </VerticalScroll>
+            <div className="tp-card">
+              <div className="tp-table-header">
+                <h3 className="tp-table-title">Product List</h3>
+
+                <div className="tp-table-search">
+                  <input
+                    type="text"
+                    className="tp-input"
+                  placeholder="Search by HS Code or Product"
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSearch();
+                    }}
+                  />
+
+                  <button
+                    className="tp-btn tp-btn-primary"
+                    onClick={handleSearch}
+                  >
+                    Search
+                  </button>
                 </div>
               </div>
-            </div> */}
-            <div className="tp-product-filters">
-              <SuggestionInput
-                label="HS Code"
-                name="hsCode"
-                value={filters.hsCode}
-                onChange={handleFilterChange}
-                suggestions={suggestions.hsCodes}
-                activeInput={activeInput}
-                setActiveInput={setActiveInput}
-              />
 
-              <SuggestionInput
-                label="Product"
-                name="product"
-                value={filters.product}
-                onChange={handleFilterChange}
-                suggestions={suggestions.products}
-                activeInput={activeInput}
-                setActiveInput={setActiveInput}
-              />
-
-              <SuggestionInput
-                label="Supply"
-                name="supply"
-                value={filters.supply}
-                onChange={handleFilterChange}
-                suggestions={suggestions.supplies}
-                activeInput={activeInput}
-                setActiveInput={setActiveInput}
-              />
-
-              <SuggestionInput
-                label="Risk"
-                name="risk"
-                value={filters.risk}
-                onChange={handleFilterChange}
-                suggestions={suggestions.risks}
-                activeInput={activeInput}
-                setActiveInput={setActiveInput}
-              />
-            </div>
-
-            <div className="tp-card">
               <div className="product-table-wrapper">
                 <div className="product-table">
                   <div className="product-row product-head">
@@ -374,53 +216,69 @@ console.log("Debug :",productData.productList);
                     <span className="text-center">Demand Trend</span>
                     <span className="text-center">Supply</span>
                     <span className="text-center">Risk</span>
-                    {/* <span className="text-center">Margin</span> */}
                   </div>
-                  <VerticalScroll>
-                    {/* {productData?.productList?.data?.map((item, index) => ( */}
-                    {filteredProducts.map((item, index) => (
-                      <div className="product-row" key={index}>
-                        {/* <span>{item.product_name.split(/[,\s]/)[0]}</span> */}
-                        <span>{item.product.split(",")[0]}</span>
-                        <span className="tp-muted text-center">
-                          {item.priceRange}
-                        </span>
-                        <span className="text-center">
-                          {item.demandTrend.direction === "UP" ? (
-                            <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
-                          ) : (
-                            <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
-                          )}
-                          {item.demandTrend.percent}
-                          {"%"}
-                        </span>
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill 
-                            ${
-                              item.supply === "Stable"
-                                ? "tp-pill-success text-center"
-                                : "tp-pill-warning text-center"
-                            }
-                          `}
-                          >
-                            {item.supply}
-                          </span>
-                        </span>
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${
-                              item.risk === "Low"
-                                ? "tp-pill-success"
-                                : "tp-pill-warning"
-                            }`}
-                          >
-                            {item.risk}
-                          </span>
-                        </span>
-                      </div>
-                    ))}
-                  </VerticalScroll>
+
+                 <VerticalScroll>
+  {isTableLoading ? (
+    [...Array(6)].map((_, i) => (
+      <div className="product-row" key={i}>
+        {[...Array(5)].map((_, j) => (
+          <Skeleton key={j} className="sk-table-cell" />
+        ))}
+      </div>
+    ))
+  ) : productData?.productList?.data?.length === 0 ? (
+    <div className="product-row tp-empty-row">
+      <span className="tp-muted tp-empty-text">
+        Product not found
+      </span>
+    </div>
+  ) : (
+    productData?.productList?.data?.map((item, index) => (
+      <div className="product-row" key={index}>
+        <span>{item.product?.split(",")[0]}</span>
+
+        <span className="tp-muted text-center">
+          {item.priceRange}
+        </span>
+
+        <span className="text-center">
+          {item.demandTrend?.direction === "UP" ? (
+            <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
+          ) : (
+            <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
+          )}
+          {item.demandTrend?.percent}%
+        </span>
+
+        <span className="text-center">
+          <span
+            className={`tp-pill ${
+              item.supply === "Stable"
+                ? "tp-pill-success"
+                : "tp-pill-warning"
+            }`}
+          >
+            {item.supply}
+          </span>
+        </span>
+
+        <span className="text-center">
+          <span
+            className={`tp-pill ${
+              item.risk === "Low"
+                ? "tp-pill-success"
+                : "tp-pill-warning"
+            }`}
+          >
+            {item.risk}
+          </span>
+        </span>
+      </div>
+    ))
+  )}
+</VerticalScroll>
+
                 </div>
               </div>
             </div>
@@ -440,11 +298,7 @@ console.log("Debug :",productData.productList);
               <div className="tp-card">
                 <p className="tp-muted">Highest Volatility</p>
                 <h3 className="tp-overview-text">
-                  {
-                    productData?.productInsight?.largest_product?.split(
-                      ",",
-                    )?.[0]
-                  }
+                  {productData?.productInsight?.largest_product?.split(",")?.[0]}
                 </h3>
               </div>
             </div>
