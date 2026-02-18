@@ -91,7 +91,7 @@ const Feedback = () => {
           <form className="tp-form tp-feedback-form" onSubmit={handleSubmit}>
             <div className="form-wrapper">
               {/* Role */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>Your Role</label>
                 <select
                   name="role"
@@ -109,7 +109,7 @@ const Feedback = () => {
               </div>
 
               {/* Company Size */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>Company Size</label>
                 <select
                   name="companySize"
@@ -126,7 +126,7 @@ const Feedback = () => {
               </div>
 
               {/* Country */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>Country</label>
                 <input
                   type="text"
@@ -139,7 +139,7 @@ const Feedback = () => {
               </div>
 
               {/* Challenge */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>Biggest Trade Challenge</label>
                 <select
                   name="challenge"
@@ -157,7 +157,7 @@ const Feedback = () => {
               </div>
 
               {/* Data Need */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>What Data Would Help Most?</label>
                 <select
                   name="dataNeed"
@@ -175,7 +175,7 @@ const Feedback = () => {
               </div>
 
               {/* Intent */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>Would You Use This Platform?</label>
                 <select
                   name="intent"
@@ -191,7 +191,7 @@ const Feedback = () => {
               </div>
 
               {/* Email */}
-              <div className="tp-form-group">
+              <div className="tp-form-group tp-feedback-form-group">
                 <label>Email</label>
                 <input
                   type="email"
