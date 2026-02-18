@@ -100,6 +100,31 @@ const DashboardProduct = () => {
     fetchAllData();
   }, []);
 
+  const handleInputChange = async (e) => {
+  const value = e.target.value;
+  setSearchValue(value);
+
+  // If user clears the input (backspace/delete)
+  if (value.trim() === "" && !isTableLoading) {
+    setIsTableLoading(true);
+    setError("");
+
+    try {
+      // Call API without params → load initial full data
+      const listRes = await DashboardProductList();
+
+      setProductData((prev) => ({
+        ...prev,
+        productList: listRes?.data || [],
+      }));
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    } finally {
+      setIsTableLoading(false);
+    }
+  }
+};
+
   /* ===============================
      TABLE SEARCH
   ================================= */
@@ -107,7 +132,6 @@ const DashboardProduct = () => {
     if (isTableLoading) return; // ⛔ prevent duplicate calls
 
     const trimmed = searchValue.trim();
-    if (!trimmed) return; // ⛔ prevent empty search
 
     setIsTableLoading(true);
     setError("");
@@ -206,7 +230,7 @@ const DashboardProduct = () => {
                     className="tp-input"
                     placeholder="Search by HS Code or Product"
                     value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
+                    onChange={(e) => handleInputChange(e)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSearch();
                     }}
