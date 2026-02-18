@@ -53,6 +53,52 @@ const ProductOverviewSkeleton = () => {
   );
 };
 
+/* =====================================================
+      SUGGESTION COMPONENT
+/* =====================================================
+ */
+const SuggestionInput = ({
+  label,
+  value,
+  onChange,
+  suggestions,
+  name,
+  activeInput,
+  setActiveInput,
+}) => {
+  const filteredSuggestions = suggestions.filter((item) =>
+    item?.toLowerCase().includes(value.toLowerCase()),
+  );
+
+  return (
+    <div className="tp-filter-group">
+      <input
+        type="text"
+        placeholder={label}
+        value={value}
+        onChange={(e) => onChange(name, e.target.value)}
+        onFocus={() => setActiveInput(name)}
+        onBlur={() => setTimeout(() => setActiveInput(null), 200)}
+        className="tp-input"
+      />
+
+      {activeInput === name && value && filteredSuggestions.length > 0 && (
+        <div className="tp-suggestion-card">
+          {filteredSuggestions.map((item, index) => (
+            <div
+              key={index}
+              className="tp-suggestion-item"
+              onClick={() => onChange(name, item)}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 /* ===============================
     MAIN COMPONENT
 ================================ */
@@ -65,6 +111,33 @@ const DashboardProduct = () => {
     productList: [],
     productInsight: [],
   });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [filters, setFilters] = useState({
+    hsCode: "",
+    product: "",
+    supply: "",
+    risk: "",
+  });
+  const [activeInput, setActiveInput] = useState(null);
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+  const suggestions = useMemo(() => {
+    const list = productData?.productList?.data || [];
+console.log("Debug :",productData.productList);
+    return {
+      hsCodes: [...new Set(list.map((item) => item.hsCode))],
+      products: [...new Set(list.map((item) => item.product))],
+      supplies: [...new Set(list.map((item) => item.supply))],
+      risks: [...new Set(list.map((item) => item.risk))],
+    };
+  }, [productData]);
 
   // ===============================
   // Fetch data
@@ -99,6 +172,42 @@ const DashboardProduct = () => {
 
     fetchAllData();
   }, []);
+
+  // Debounce search (300ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const filteredProducts = useMemo(() => {
+    const list = productData?.productList?.data || [];
+
+    return list.filter((item) => {
+      const matchHsCode =
+        !filters.hsCode ||
+        String(item.hsCode)
+          .toLowerCase()
+          .includes(filters.hsCode.toLowerCase());
+
+      const matchProduct =
+        !filters.product ||
+        item.product?.toLowerCase().includes(filters.product.toLowerCase());
+
+      const matchSupply =
+        !filters.supply ||
+        item.supply?.toLowerCase().includes(filters.supply.toLowerCase());
+
+      const matchRisk =
+        !filters.risk ||
+        item.risk?.toLowerCase().includes(filters.risk.toLowerCase());
+
+      return matchHsCode && matchProduct && matchSupply && matchRisk;
+    });
+  }, [filters, productData]);
+
   // console.log(productData);
   // ===============================
   // RENDER
@@ -214,6 +323,48 @@ const DashboardProduct = () => {
                 </div>
               </div>
             </div> */}
+            <div className="tp-product-filters">
+              <SuggestionInput
+                label="HS Code"
+                name="hsCode"
+                value={filters.hsCode}
+                onChange={handleFilterChange}
+                suggestions={suggestions.hsCodes}
+                activeInput={activeInput}
+                setActiveInput={setActiveInput}
+              />
+
+              <SuggestionInput
+                label="Product"
+                name="product"
+                value={filters.product}
+                onChange={handleFilterChange}
+                suggestions={suggestions.products}
+                activeInput={activeInput}
+                setActiveInput={setActiveInput}
+              />
+
+              <SuggestionInput
+                label="Supply"
+                name="supply"
+                value={filters.supply}
+                onChange={handleFilterChange}
+                suggestions={suggestions.supplies}
+                activeInput={activeInput}
+                setActiveInput={setActiveInput}
+              />
+
+              <SuggestionInput
+                label="Risk"
+                name="risk"
+                value={filters.risk}
+                onChange={handleFilterChange}
+                suggestions={suggestions.risks}
+                activeInput={activeInput}
+                setActiveInput={setActiveInput}
+              />
+            </div>
+
             <div className="tp-card">
               <div className="product-table-wrapper">
                 <div className="product-table">
@@ -226,7 +377,8 @@ const DashboardProduct = () => {
                     {/* <span className="text-center">Margin</span> */}
                   </div>
                   <VerticalScroll>
-                    {productData?.productList?.data?.map((item, index) => (
+                    {/* {productData?.productList?.data?.map((item, index) => ( */}
+                    {filteredProducts.map((item, index) => (
                       <div className="product-row" key={index}>
                         {/* <span>{item.product_name.split(/[,\s]/)[0]}</span> */}
                         <span>{item.product.split(",")[0]}</span>
