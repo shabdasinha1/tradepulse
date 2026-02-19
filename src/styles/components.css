@@ -12,7 +12,7 @@
 .tp-card-header {
   display: flex;
   gap: var(--space-sm);
-  margin-bottom: var(--space-md);
+  /* margin-bottom: var(--space-md); */
   align-items: center;
 }
 

@@ -59,6 +59,7 @@ const DashboardProduct = () => {
   const [isLoading, setIsLoading] = useState(true); // page load
   const [isTableLoading, setIsTableLoading] = useState(false); // table only
   const [searchValue, setSearchValue] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
 
   const [productData, setProductData] = useState({
     productOverview: [],
@@ -101,29 +102,33 @@ const DashboardProduct = () => {
   }, []);
 
   const handleInputChange = async (e) => {
-    const value = e.target.value;
-    setSearchValue(value);
+  const value = e.target.value;
+  setSearchValue(value);
 
-    // If user clears the input (backspace/delete)
-    if (value.trim() === "" && !isTableLoading) {
-      setIsTableLoading(true);
-      setError("");
+  // 🔥 Only reload full data if:
+  // 1. input becomes empty
+  // 2. user previously searched
+  // 3. not already loading
+  if (value.trim() === "" && hasSearched && !isTableLoading) {
+    setIsTableLoading(true);
+    setError("");
 
-      try {
-        // Call API without params → load initial full data
-        const listRes = await DashboardProductList();
+    try {
+      const listRes = await DashboardProductList();
 
-        setProductData((prev) => ({
-          ...prev,
-          productList: listRes?.data || [],
-        }));
-      } catch (err) {
-        setError(GetApiErrorMessage(err));
-      } finally {
-        setIsTableLoading(false);
-      }
+      setProductData((prev) => ({
+        ...prev,
+        productList: listRes?.data || [],
+      }));
+
+      setHasSearched(false); // reset
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    } finally {
+      setIsTableLoading(false);
     }
-  };
+  }
+};
 
   /* ===============================
      TABLE SEARCH
@@ -154,6 +159,7 @@ const DashboardProduct = () => {
         ...prev,
         productList: listRes?.data || [],
       }));
+      setHasSearched(true); // ✅ IMPORTANT
     } catch (err) {
       setError(GetApiErrorMessage(err));
     } finally {
