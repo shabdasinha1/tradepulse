@@ -437,7 +437,7 @@
 .tp-metrics-row {
   display: grid;
   gap: var(--space-md);
-  margin-bottom: var(--space-lg);
+  /* margin-bottom: var(--space-lg); */
 
   /* 4 in one row on large screens */
   grid-template-columns: repeat(4, 1fr);

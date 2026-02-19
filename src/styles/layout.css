@@ -26,7 +26,8 @@ main {
 /* Grid */
 .tp-grid {
   display: grid;
-  gap: var(--space-sm);
+  /* gap: var(--space-sm); */
+  gap: var(--space-md);
 }
 
 .tp-grid-2 {

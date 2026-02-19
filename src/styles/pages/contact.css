@@ -14,12 +14,11 @@
   position: absolute;
   inset: -40%;
 
-  background:
-    radial-gradient(
-      45% 45% at 50% 20%,
-      var(--clr-primary-soft),
-      transparent 70%
-    );
+  background: radial-gradient(
+    45% 45% at 50% 20%,
+    var(--clr-primary-soft),
+    transparent 70%
+  );
 
   filter: blur(120px);
   opacity: 0.25;
@@ -58,7 +57,6 @@
   margin: var(--space-md);
 }
 
-
 .tp-contact-hero-title span {
   color: var(--clr-primary);
 }
@@ -80,12 +78,10 @@
 
 /* Responsive */
 @media (max-width: 640px) {
- 
   .tp-contact-hero-lead {
     font-size: var(--fs-md);
   }
 }
-
 
 /* ===============================
    CONTACT PATHS
@@ -129,7 +125,7 @@
 }
 
 .tp-contact-paths-sub {
-   font-size: var(--fs-body);
+  font-size: var(--fs-body);
   color: var(--text-secondary);
 }
 
@@ -205,7 +201,6 @@
     grid-template-columns: 1fr;
   }
 }
-
 
 /* ===============================
    CONTACT FORM
@@ -312,6 +307,26 @@
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
+.tp-form-field textarea {
+  min-height: 50px;
+  max-height: 300px;
+  resize: none;
+}
+.tp-form-field textarea::-webkit-scrollbar {
+  width: 5px
+}
+
+.tp-form-field textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tp-form-field textarea::-webkit-scrollbar-thumb {
+  background: var(--clr-primary);
+  border-radius: 10px;
+
+}
+
+
 
 .tp-form-field input,
 .tp-form-field textarea {
@@ -321,7 +336,7 @@
   background: var(--bg-input);
   border: 1px solid var(--border-soft);
 
- font-size: var(--fs-label);
+  font-size: var(--fs-label);
   color: var(--text-primary);
 }
 
@@ -349,7 +364,7 @@
 }
 
 .tp-contact-form-note {
-   font-size: var(--fs-caption);
+  font-size: var(--fs-caption);
   color: var(--text-muted);
 }
 
@@ -367,7 +382,6 @@
   }
 }
 
-
 /* ===============================
    CONTACT TRUST CTA
 ================================ */
@@ -383,12 +397,11 @@
   position: absolute;
   inset: -40%;
 
-  background:
-    radial-gradient(
-      40% 40% at 50% 50%,
-      var(--clr-primary-soft),
-      transparent 65%
-    );
+  background: radial-gradient(
+    40% 40% at 50% 50%,
+    var(--clr-primary-soft),
+    transparent 65%
+  );
 
   filter: blur(100px);
   opacity: 0.18;
