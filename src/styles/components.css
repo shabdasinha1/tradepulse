@@ -307,6 +307,11 @@
 .tp-input.tp-select option {
   background-color: var(--bg-panel);
   color: var(--text-primary);
+  border-radius: 10px;
+}
+
+input::placeholder {
+  color: var(--text-primary);
 }
 
 /* ===============================
@@ -342,13 +347,40 @@
   color: var(--text-primary) !important;
 }
 .tp-input__option:hover {
-  background-color: #355dff !important;
-  /* background-color: var(--bg-panel);
-  color: var(--text-primary); */
+  background-color: var(--clr-primary-soft) !important;
+  /* background-color: var(--bg-panel) !important; */
+
+  /* background-color: var(--bg-panel); */
+  color: var(--text-primary);
+  border-radius: 10px;
+}
+.tp-input__menu {
+  border-radius: 10px !important;
 }
 .tp-input__menu-list {
   background-color: var(--bg-panel) !important;
+  border-radius: 10px !important;
+
   /* color: var(--text-primary) !important; */
+}
+.tp-input__menu-list {
+  border-radius: 5px;
+  box-shadow: var(--shadow-card);
+}
+.tp-input__menu-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Track */
+.tp-input__menu-list::-webkit-scrollbar-track {
+  background: transparent; /* Your custom track color */
+  border-radius: 10px;
+}
+
+/* Thumb */
+.tp-input__menu-list::-webkit-scrollbar-thumb {
+  background-color: var(--clr-primary);
+  border-radius: 10px;
 }
 
 @media (min-width: 769px) AND (max-width: 861px) {
@@ -437,7 +469,7 @@
 .tp-metrics-row {
   display: grid;
   gap: var(--space-md);
-  /* margin-bottom: var(--space-lg); */
+  margin-bottom: var(--space-lg);
 
   /* 4 in one row on large screens */
   grid-template-columns: repeat(4, 1fr);
@@ -508,7 +540,6 @@
 }
 .tp-chart-dropdown::-webkit-scrollbar {
   width: 8px; /* scrollbar width */
-  
 }
 
 .tp-chart-dropdown::-webkit-scrollbar-track {
@@ -536,7 +567,7 @@
 .tp-chart-option:hover {
   background: var(--clr-primary-soft);
   color: var(--clr-primary);
-      border-radius: 10px;
+  border-radius: 10px;
 }
 
 .tp-chart-option-muted {

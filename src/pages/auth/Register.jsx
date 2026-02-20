@@ -5,6 +5,8 @@ import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import { SetCookie } from "../../utils/CookieManager.jsx";
 import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 import Select from "react-select";
+import { useAppToast } from "../../components/common/toast/toast.js";
+import { useToast } from "../../components/common/toast/ToastProvider.jsx";
 
 const REGISTER_EMAIL_KEY = "tp_register_email";
 
@@ -13,7 +15,7 @@ const Register = () => {
   const [countryCodes, setCountryCodes] = useState([]);
 
   const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState([]);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const [form, setForm] = useState({
     first_name: "",
@@ -28,6 +30,18 @@ const Register = () => {
     country_code: "",
   });
 
+  const businessTypeOptions = [
+    { value: "TRADER", label: "Trader" },
+    { value: "MANUFACTURER", label: "Manufacturer" },
+    { value: "EXPORTER", label: "Exporter" },
+  ];
+  const countryOptions = [
+    { value: "india", label: "India" },
+    { value: "uk", label: "United Kingdom" },
+    { value: "uae", label: "UAE" },
+    { value: "usa", label: "United States" },
+  ];
+  const { addToast } = useToast();
   /* ===============================
      HANDLE CHANGE (INPUT + CHECKBOX)
   ================================ */
@@ -62,7 +76,31 @@ const Register = () => {
     setErrorMsg("");
     setLoading(true);
 
+    // ✅ Check if any required field is empty
+    const isFormInvalid =
+      !form.first_name.trim() ||
+      !form.last_name.trim() ||
+      !form.email.trim() ||
+      !form.mobile.trim() ||
+      !form.password.trim() ||
+      !form.company_name.trim() ||
+      !form.country ||
+      !form.business_type ||
+      !form.country_code ||
+      !form.privacy_accepted;
+
+    if (isFormInvalid) {
+      addToast("All fields are required","error");
+      setLoading(false);
+      return;
+    }
+
     try {
+      if (!form.country || !form.business_type || !form.country_code) {
+        addToast("Please fill all required fields","error");
+        setLoading(false);
+        return;
+      }
       const res = await RegisterUser(form);
 
       // ✅ CORRECT SUCCESS CHECK
@@ -120,10 +158,7 @@ const Register = () => {
               <h3 className="tp-card-title">Create Account</h3>
             </div>
 
-            <form
-              onSubmit={handleSubmit}
-              className="tp-form tp-auth-form "
-            >
+            <form onSubmit={handleSubmit} className="tp-form tp-auth-form ">
               <span className="tp-form-grid">
                 {/* ROW 1 */}
                 <div className="tp-form-group">
@@ -133,7 +168,6 @@ const Register = () => {
                     name="first_name"
                     value={form.first_name}
                     onChange={handleChange}
-                    required
                     className="tp-input"
                     placeholder="John"
                   />
@@ -146,7 +180,6 @@ const Register = () => {
                     name="last_name"
                     value={form.last_name}
                     onChange={handleChange}
-                    required
                     className="tp-input"
                     placeholder="Doe"
                   />
@@ -159,7 +192,6 @@ const Register = () => {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    required
                     className="tp-input"
                     placeholder="you@example.com"
                   />
@@ -228,7 +260,6 @@ const Register = () => {
                     name="mobile"
                     value={form.mobile}
                     onChange={handleChange}
-                    required
                     className="tp-input"
                     placeholder="9876543210"
                   />
@@ -241,7 +272,6 @@ const Register = () => {
                     name="company_name"
                     value={form.company_name}
                     onChange={handleChange}
-                    required
                     className="tp-input"
                     placeholder="Your Company"
                   />
@@ -250,7 +280,7 @@ const Register = () => {
                 {/* ROW 3 */}
                 <div className="tp-form-group">
                   <label>Business Type</label>
-                  <select
+                  {/* <select
                     name="business_type"
                     value={form.business_type}
                     onChange={handleChange}
@@ -260,12 +290,29 @@ const Register = () => {
                     <option value="TRADER">Trader</option>
                     <option value="MANUFACTURER">Manufacturer</option>
                     <option value="EXPORTER">Exporter</option>
-                  </select>
+                  </select> */}
+                  <Select
+                    classNamePrefix="tp-input"
+                    name="business_type"
+                    options={businessTypeOptions}
+                    value={
+                      businessTypeOptions.find(
+                        (opt) => opt.value === form.business_type,
+                      ) || null
+                    }
+                    onChange={(selectedOption) =>
+                      setForm({
+                        ...form,
+                        business_type: selectedOption?.value || "",
+                      })
+                    }
+                    placeholder="Select Business Type"
+                  />
                 </div>
 
                 <div className="tp-form-group">
                   <label>Country</label>
-                  <select
+                  {/* <select
                     name="country"
                     value={form.country}
                     onChange={handleChange}
@@ -276,7 +323,24 @@ const Register = () => {
                     <option value="uk">United Kingdom</option>
                     <option value="uae">UAE</option>
                     <option value="usa">United States</option>
-                  </select>
+                  </select> */}
+                  <Select
+                    classNamePrefix="tp-input"
+                    name="country"
+                    options={countryOptions}
+                    value={
+                      countryOptions.find(
+                        (opt) => opt.value === form.country,
+                      ) || null
+                    }
+                    onChange={(selectedOption) =>
+                      setForm({
+                        ...form,
+                        country: selectedOption?.value || "",
+                      })
+                    }
+                    placeholder="Select Country"
+                  />
                 </div>
 
                 {/* PASSWORD */}
@@ -287,7 +351,6 @@ const Register = () => {
                     name="password"
                     value={form.password}
                     onChange={handleChange}
-                    required
                     className="tp-input"
                     placeholder="Create a strong password"
                   />
@@ -315,7 +378,9 @@ const Register = () => {
                   </span>
                 </label>
               </div>
-
+              {errorMsg && (
+                <div className="tp-auth-error tp-text-down">{errorMsg}</div>
+              )}
               {/* SUBMIT */}
               <button
                 type="submit"

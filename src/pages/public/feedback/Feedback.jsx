@@ -203,7 +203,11 @@ const Feedback = () => {
                 />
               </div>
             </div>
-            <button type="submit" className="tp-btn-primary tp-feedback-btn" disabled={loading}>
+            <button
+              type="submit"
+              className="tp-btn-primary tp-feedback-btn"
+              disabled={loading}
+            >
               {loading ? "Submitting..." : "Submit Feedback"}
             </button>
           </form>

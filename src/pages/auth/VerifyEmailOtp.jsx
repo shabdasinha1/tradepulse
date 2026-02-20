@@ -6,7 +6,9 @@ import {
 } from "../../services/AuthenticationService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
-import {ToastContainer,  toast} from 'react-toastify';
+
+import { useToast } from "../../components/common/toast/ToastProvider.jsx";
+
 
 const REGISTER_EMAIL_KEY = "tp_register_email";
 
@@ -17,6 +19,8 @@ const VerifyEmailOtp = () => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [buttonDisabled, setButtonDisabled] = useState(false);
+
+  const {addToast} = useToast()
   /* ===============================
      GET EMAIL FROM COOKIE
   ================================ */
@@ -55,13 +59,14 @@ const VerifyEmailOtp = () => {
     e.preventDefault();
     setErrorMsg("");
     // setLoading(true);
-    toast.success("hello")
+    
     try {
       const res = await UserVerifyEmailOtp({
         email,
         otp,
       });
       if (res.data?.status === 200 || res?.success === true) {
+        addToast("Registered successfully", "success")
         // ✅ CLEANUP STORED EMAIL (COOKIE)
         RemoveCookie(REGISTER_EMAIL_KEY);
 
@@ -88,7 +93,7 @@ const VerifyEmailOtp = () => {
       });
       // console.log(res);
       if(res?.success === true || res.data?.status === 200){
-        toast.success(res.data.message)
+        addToast(res.data.message, "success")
       
       }
     } catch (error) {

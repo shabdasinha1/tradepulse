@@ -16,13 +16,15 @@
 
   width: 100%;
   max-width: 380px;
+  height: 20px;
+  
 }
 
 /* ==============================
    TOAST CARD
 ============================== */
-
 .tp-toast {
+  /* background: var(--clr-primary) !important; */
   background: var(--bg-card);
   color: var(--text-primary);
 

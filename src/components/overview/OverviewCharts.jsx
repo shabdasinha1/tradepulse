@@ -89,7 +89,7 @@ const OverviewCharts = () => {
 
 
   return (
-    <section className="tp-section tp-section--tight">
+    <section className="tp-section">
       <div className="tp-container">
         {/* METRICS ROW */}
         <div className="tp-metrics-row">
