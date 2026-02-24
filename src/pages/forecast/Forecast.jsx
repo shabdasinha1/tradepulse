@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { DashboardForcast } from "../../services/DashboardService";
+import {
+  DashboardForcast,
+  DemandGrowthForecast,
+  ForcastAssets,
+  ForcastConfidenceChart,
+  ForcastPriceChart,
+} from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import TPChart from "../../components/common/TPChart.jsx";
 import TPMetricCard from "../../components/common/TPMetricCard.jsx";
@@ -81,62 +87,141 @@ const ForecastSkeleton = () => {
   );
 };
 
-  const historicalData = [
-    { month: "Jan", historical: 45, predicted: 45 },
-    { month: "Feb", historical: 52, predicted: 52 },
-    { month: "Mar", historical: 48, predicted: 48 },
-    { month: "Apr", historical: 61, predicted: 61 },
-    { month: "May", historical: 55, predicted: 58 },
-    { month: "Jun", historical: 68, predicted: 74 },
-    { month: "Jul", predicted: 77 },
-    { month: "Aug", predicted: 80 },
-    { month: "Sep", predicted: 82 },
-  ];
+const historicalData = [
+  { month: "Jan", historical: 45, predicted: 45 },
+  { month: "Feb", historical: 52, predicted: 52 },
+  { month: "Mar", historical: 48, predicted: 48 },
+  { month: "Apr", historical: 61, predicted: 61 },
+  { month: "May", historical: 55, predicted: 58 },
+  { month: "Jun", historical: 68, predicted: 74 },
+  { month: "Jul", predicted: 77 },
+  { month: "Aug", predicted: 80 },
+  { month: "Sep", predicted: 82 },
+];
 
-  const confidenceData = [
-    { month: "Jan", value: 95 },
-    { month: "Feb", value: 94 },
-    { month: "Mar", value: 92 },
-    { month: "Apr", value: 90 },
-    { month: "May", value: 85 },
-    { month: "Jun", value: 78 },
-    { month: "Jul", value: 70 },
-    { month: "Aug", value: 66 },
-    { month: "Sep", value: 62 },
-  ];
+const confidenceData = [
+  { month: "Jan", value: 95 },
+  { month: "Feb", value: 94 },
+  { month: "Mar", value: 92 },
+  { month: "Apr", value: 90 },
+  { month: "May", value: 85 },
+  { month: "Jun", value: 78 },
+  { month: "Jul", value: 70 },
+  { month: "Aug", value: 66 },
+  { month: "Sep", value: 62 },
+];
+const transformConfidenceChart = (apiData) => {
+  if (!Array.isArray(apiData)) return [];
 
+  return apiData.map((item) => ({
+    month: String(item.label),
+    value: item.confidence,
+  }));
+};
 
 const Forecast = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [forecastData, setforecastData] = useState({
-    signals: [],
-    trendProjection: [],
-    asset: [],
+  const [forecastData, setForecastData] = useState({
+    predictiveSignals: null,
+    priceChart: [],
+    signals: null,
+    confidenceChart: [],
+    trendProjection: null,
+    assets: [],
   });
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchAllData = async () => {
       setIsLoading(true);
-      setError("");
-      try {
-        const res = await DashboardForcast();
 
-        if (res?.success === true || res?.data?.status === 200) {
-          setforecastData({
-            signals: res.data.summary,
-            trendProjection: res.data.trendProjection,
-            asset: res.data.assets,
-          });
-        }
+      try {
+        const [
+          forecastRes,
+          demandRes,
+          assetsRes,
+          priceChartRes,
+          confidenceRes,
+        ] = await Promise.allSettled([
+          DashboardForcast(27),
+          DemandGrowthForecast(27),
+          ForcastAssets({ limit: 10, page: 1 }),
+          ForcastPriceChart(27),
+          ForcastConfidenceChart(27),
+        ]);
+        // console.log(demandRes);
+        setForecastData({
+          signals:
+            forecastRes.status === "fulfilled"
+              ? (forecastRes.value?.data ?? null)
+              : null,
+
+          trendProjection:
+            forecastRes.status === "fulfilled"
+              ? (forecastRes.value?.data?.trendProjection ?? null)
+              : null,
+
+          demandGrowth:
+            demandRes.status === "fulfilled"
+              ? (demandRes.value?.data ?? null)
+              : null,
+
+          assets:
+            assetsRes.status === "fulfilled"
+              ? (assetsRes.value?.data?.assets ?? [])
+              : [],
+
+          priceChart:
+            priceChartRes.status === "fulfilled"
+              ? (() => {
+                  const apiData = priceChartRes.value?.data;
+
+                  const historical = apiData?.historical || [];
+                  const predicted = apiData?.predicted || [];
+
+                  // Convert historical
+                  const historicalFormatted = historical.map((item) => ({
+                    month: String(item.label),
+                    historical: item.value,
+                  }));
+
+                  // Convert predicted
+                  const predictedFormatted = predicted.map((item) => ({
+                    month: String(item.label),
+                    predicted: item.value,
+                  }));
+
+                  // Merge by month/year
+                  const merged = [...historicalFormatted];
+
+                  predictedFormatted.forEach((pred) => {
+                    const existing = merged.find((m) => m.month === pred.month);
+
+                    if (existing) {
+                      existing.predicted = pred.predicted;
+                    } else {
+                      merged.push(pred);
+                    }
+                  });
+
+                  return merged;
+                })()
+              : [],
+          confidenceChart:
+            confidenceRes.status === "fulfilled"
+              ? transformConfidenceChart(confidenceRes.value?.data)
+              : [],
+        });
       } catch (err) {
-        setError(GetApiErrorMessage(err));
+        // Only triggers if Promise.allSettled itself fails (very rare)
+        console.error("Unexpected Error:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    fetchAllData();
   }, []);
+  // console.log("Error : ", error);
   // console.log("Forecast Data : ", forecastData);
 
   return (
@@ -156,65 +241,74 @@ const Forecast = () => {
 
         {/* ================= METRICS ROW ================= */}
         <div className="tp-metrics-row">
-
           <TPMetricCard
             title="Price Movement Prediction"
-            value="+8.5%"
-            unit="next 3 months"
+            // value="+8.5%"
+            value={forecastData.signals?.pricePrediction?.percent + "%"}
+            // unit="next 3 months"
             footerLabel="Upward trend expected"
             trend={8.5}
-            trendDirection="up"
+            trendDirection={forecastData.signals?.pricePrediction?.direction}
           />
 
           <TPMetricCard
             title="Demand Direction Signal"
-            value="Strong"
+            value={forecastData.signals?.demandPrediction?.signal}
             unit="growth signal"
-            footerLabel="Confidence: 78%"
+            footerLabel={
+              "Confidence: " +
+              forecastData.signals?.demandPrediction?.confidence
+            }
+            // trend={90}
             trendDirection="up"
           />
 
           <TPMetricCard
             title="Shipping Cost Forecast"
-            value="$2,380"
+            value={forecastData.signals?.shippingForecast?.average}
+            // value="$2,380"
             unit="predicted average"
             footerLabel="Slight decline expected"
-            trend={3.2}
-            trendDirection="down"
+            // trend={3.2}
+            trend={forecastData.signals?.shippingForecast?.changePercent}
+            // trendDirection="Downward"
+            trendDirection={
+              forecastData.signals?.shippingForecast?.changePercent > 0
+                ? "up"
+                : "Downward"
+            }
           />
 
           <TPMetricCard
             title="Currency Volatility Alert"
-            value="Medium"
+            value={forecastData.signals?.currencyForecast?.risk}
+            // value="Medium"
             unit="risk level"
             footerLabel="Monitor closely"
             trendDirection="neutral"
           />
-
         </div>
 
         {/* ================= CHARTS ROW ================= */}
         <div className="tp-grid tp-grid-2">
-
           <TPChart
             title="Price Prediction - Historical vs Forecast"
             type="line"
-            data={historicalData}
+            // data={historicalData}
+            data={forecastData.priceChart}
             series={[
               { key: "historical", label: "Historical" },
-              { key: "predicted", label: "Predicted", dashed: true }
+              { key: "predicted", label: "Predicted", dashed: true },
             ]}
           />
 
           <TPChart
             title="AI Confidence Score by Month"
             type="bar"
-            data={confidenceData}
-            series={[
-              { key: "value", label: "Confidence" }
-            ]}
+            // data={confidenceData}
+            data={forecastData.confidenceChart}
+            series={[{ key: "value", label: "Confidence" }]}
           />
-
         </div>
         {/* ===============================
               KPI CARDS
@@ -283,7 +377,7 @@ const Forecast = () => {
                   <span className="text-center">Signal</span>
                   <span className="text-center">Confidence</span>
                 </div>
-                {forecastData?.asset?.map((item, index) => (
+                {forecastData?.assets?.map((item, index) => (
                   <div className="forecast-row" key={index}>
                     <span>{item.assetName?.split(",")[0]}</span>
 

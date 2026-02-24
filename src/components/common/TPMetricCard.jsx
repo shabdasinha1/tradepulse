@@ -14,7 +14,7 @@ const TPMetricCard = ({
   const trendClass =
     trendDirection === "up"
       ? "tp-text-up"
-      : trendDirection === "down"
+      : trendDirection === "Downward"
       ? "tp-text-down"
       : "tp-text-neutral";
 
@@ -41,7 +41,7 @@ const TPMetricCard = ({
         {trend !== undefined && (
           <span className={trendClass}>
             {trendDirection === "up" && "↗ "}
-            {trendDirection === "down" && "↘ "}
+            {trendDirection === "Downward" && "↘ "}
             {trend}%
           </span>
         )}
