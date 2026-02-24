@@ -5,7 +5,7 @@ import {
   ForcastAssets,
   ForcastConfidenceChart,
   ForcastPriceChart,
-  ProductDropdownSearch 
+  ProductDropdownSearch,
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import TPChart from "../../components/common/TPChart.jsx";
@@ -122,13 +122,13 @@ const transformConfidenceChart = (apiData) => {
 
 const Forecast = () => {
   const [error, setError] = useState("");
- const [metricLoading, setMetricLoading] = useState(false);
-const [priceChartLoading, setPriceChartLoading] = useState(false);
-const [confidenceLoading, setConfidenceLoading] = useState(false);
-const [assetsLoading, setAssetsLoading] = useState(false);
-const [metricProductCode, setMetricProductCode] = useState("27");
-const [priceChartProductCode, setPriceChartProductCode] = useState("27");
-const [confidenceProductCode, setConfidenceProductCode] = useState("27");
+  const [metricLoading, setMetricLoading] = useState(false);
+  const [priceChartLoading, setPriceChartLoading] = useState(false);
+  const [confidenceLoading, setConfidenceLoading] = useState(false);
+  const [assetsLoading, setAssetsLoading] = useState(false);
+  const [metricProductCode, setMetricProductCode] = useState("27");
+  const [priceChartProductCode, setPriceChartProductCode] = useState("27");
+  const [confidenceProductCode, setConfidenceProductCode] = useState("27");
   const [forecastData, setForecastData] = useState({
     predictiveSignals: null,
     priceChart: [],
@@ -137,73 +137,14 @@ const [confidenceProductCode, setConfidenceProductCode] = useState("27");
     trendProjection: null,
     assets: [],
   });
-const [productOptions, setProductOptions] = useState([]);
-const [search, setSearch] = useState("");
-const [isOpen, setIsOpen] = useState(false);
-const dropdownRef = useRef(null);
+  const [productOptions, setProductOptions] = useState([]);
+  const [search, setSearch] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const fetchDropdownData = async (query = "") => {
-  try {
-    const res = await ProductDropdownSearch(query);
-    const apiData = res?.data || [];
-
-    const formatted = apiData.map((item) => ({
-      ...item,
-      label: `${item.label} / ${item.value}`,
-    }));
-
-    setProductOptions(formatted);
-  } catch (error) {
-    console.error("Dropdown fetch error:", error);
-  }
-};
-
-
-const handleSelect = (item) => {
-  setSearch(item.label);
-  setIsOpen(false);
-  setMetricProductCode(item.value); // 🔥 THIS triggers metric API
-};
-
-useEffect(() => {
-  let isMounted = true;
-
-const fetchMetricCards = async () => {
-  try {
-    const [forecastRes] = await Promise.all([
-      DashboardForcast(metricProductCode)
-    ]);
-
-    if (!isMounted) return;
-
-    setForecastData((prev) => ({
-      ...prev,
-      signals:
-        forecastRes?.data ?? null,
-
-      trendProjection:
-        forecastRes?.data?.trendProjection ?? null,
-    }));
-  } catch (err) {
-    console.error("Metric Fetch Error:", err);
-  }
-};
-
-fetchMetricCards();
-
-  return () => {
-    isMounted = false;
-  };
-}, [metricProductCode]);
-
-
-
-useEffect(() => {
-  const loadDefaultProduct = async () => {
-    if (!metricProductCode) return;
-
     try {
-      const res = await ProductDropdownSearch("");
+      const res = await ProductDropdownSearch(query);
       const apiData = res?.data || [];
 
       const formatted = apiData.map((item) => ({
@@ -211,143 +152,196 @@ useEffect(() => {
         label: `${item.label} / ${item.value}`,
       }));
 
-      const matched = formatted.find(
-        (item) => String(item.value) === String(metricProductCode)
-      );
+      setProductOptions(formatted);
+    } catch (error) {
+      console.error("Dropdown fetch error:", error);
+    }
+  };
 
-      if (matched) {
-        setSearch(matched.label);
+  const handleSelect = (item) => {
+    setSearch(item.label);
+    setIsOpen(false);
+    setMetricProductCode(item.value); // 🔥 THIS triggers metric API
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchMetricCards = async () => {
+      try {
+        const [forecastRes] = await Promise.all([
+          DashboardForcast(metricProductCode),
+        ]);
+
+        if (!isMounted) return;
+
+        setForecastData((prev) => ({
+          ...prev,
+          signals: forecastRes?.data ?? null,
+
+          trendProjection: forecastRes?.data?.trendProjection ?? null,
+        }));
+      } catch (err) {
+        console.error("Metric Fetch Error:", err);
       }
-    } catch (err) {
-      console.error("Default dropdown load error:", err);
-    }
-  };
+    };
 
-  loadDefaultProduct();
-}, [metricProductCode]);
+    fetchMetricCards();
 
-useEffect(() => {
-  let isMounted = true;
+    return () => {
+      isMounted = false;
+    };
+  }, [metricProductCode]);
 
-  const fetchPriceChart = async () => {
-    try {
-      const res = await ForcastPriceChart(priceChartProductCode);
+  useEffect(() => {
+    const loadDefaultProduct = async () => {
+      if (!metricProductCode) return;
 
-      if (!isMounted) return;
+      try {
+        const res = await ProductDropdownSearch("");
+        const apiData = res?.data || [];
 
-      const apiData = res?.data ?? {};
-      const historical = apiData?.historical ?? [];
-      const predicted = apiData?.predicted ?? [];
+        const formatted = apiData.map((item) => ({
+          ...item,
+          label: `${item.label} / ${item.value}`,
+        }));
 
-      const allMonths = new Set([
-        ...historical.map((h) => h.label),
-        ...predicted.map((p) => p.label),
-      ]);
+        const matched = formatted.find(
+          (item) => String(item.value) === String(metricProductCode),
+        );
 
-      const merged = Array.from(allMonths).map((month) => {
-        const h = historical.find((i) => i.label === month);
-        const p = predicted.find((i) => i.label === month);
+        if (matched) {
+          setSearch(matched.label);
+        }
+      } catch (err) {
+        console.error("Default dropdown load error:", err);
+      }
+    };
 
-        return {
-          month: String(month),
-          historical: h?.value ?? null,
-          predicted: p?.value ?? null,
-        };
-      });
+    loadDefaultProduct();
+  }, [metricProductCode]);
 
-      setForecastData((prev) => ({
-        ...prev,
-        priceChart: merged,
-      }));
-    } catch (err) {
-      console.error("Price Chart Error:", err);
-      setForecastData((prev) => ({
-        ...prev,
-        priceChart: [],
-      }));
-    }
-  };
+  useEffect(() => {
+    let isMounted = true;
 
-  fetchPriceChart();
+    const fetchPriceChart = async () => {
+      try {
+        const res = await ForcastPriceChart(priceChartProductCode);
 
-  return () => {
-    isMounted = false;
-  };
-}, [priceChartProductCode]);
+        if (!isMounted) return;
 
-useEffect(() => {
-  let isMounted = true;
+        const apiData = res?.data ?? {};
+        const historical = apiData?.historical ?? [];
+        const predicted = apiData?.predicted ?? [];
 
-  const fetchConfidenceChart = async () => {
-    try {
-      const res = await ForcastConfidenceChart(confidenceProductCode);
+        const allMonths = new Set([
+          ...historical.map((h) => h.label),
+          ...predicted.map((p) => p.label),
+        ]);
 
-      if (!isMounted) return;
+        const merged = Array.from(allMonths).map((month) => {
+          const h = historical.find((i) => i.label === month);
+          const p = predicted.find((i) => i.label === month);
 
-      const transformed = transformConfidenceChart(res?.data ?? []);
+          return {
+            month: String(month),
+            historical: h?.value ?? null,
+            predicted: p?.value ?? null,
+          };
+        });
 
-      setForecastData((prev) => ({
-        ...prev,
-        confidenceChart: transformed,
-      }));
-    } catch (err) {
-      console.error("Confidence Chart Error:", err);
-      setForecastData((prev) => ({
-        ...prev,
-        confidenceChart: [],
-      }));
-    }
-  };
+        setForecastData((prev) => ({
+          ...prev,
+          priceChart: merged,
+        }));
+      } catch (err) {
+        console.error("Price Chart Error:", err);
+        setForecastData((prev) => ({
+          ...prev,
+          priceChart: [],
+        }));
+      }
+    };
 
-  fetchConfidenceChart();
+    fetchPriceChart();
 
-  return () => {
-    isMounted = false;
-  };
-}, [confidenceProductCode]);
+    return () => {
+      isMounted = false;
+    };
+  }, [priceChartProductCode]);
 
-useEffect(() => {
-  let isMounted = true;
+  useEffect(() => {
+    let isMounted = true;
 
-  const fetchAssets = async () => {
-    try {
-      const res = await ForcastAssets({ limit: 10, page: 1 });
+    const fetchConfidenceChart = async () => {
+      try {
+        const res = await ForcastConfidenceChart(confidenceProductCode);
 
-      if (!isMounted) return;
+        if (!isMounted) return;
 
-      setForecastData((prev) => ({
-        ...prev,
-        assets: res?.data?.assets ?? [],
-        predictiveSignals: res?.data?.summary ?? null,
-      }));
-    } catch (err) {
-      console.error("Assets Fetch Error:", err);
-      setForecastData((prev) => ({
-        ...prev,
-        assets: [],
-        predictiveSignals: null,
-      }));
-    }
-  };
+        const transformed = transformConfidenceChart(res?.data ?? []);
 
-  fetchAssets();
+        setForecastData((prev) => ({
+          ...prev,
+          confidenceChart: transformed,
+        }));
+      } catch (err) {
+        console.error("Confidence Chart Error:", err);
+        setForecastData((prev) => ({
+          ...prev,
+          confidenceChart: [],
+        }));
+      }
+    };
 
-  return () => {
-    isMounted = false;
-  };
-}, []);
+    fetchConfidenceChart();
 
+    return () => {
+      isMounted = false;
+    };
+  }, [confidenceProductCode]);
 
-useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsOpen(false);
-    }
-  };
+  useEffect(() => {
+    let isMounted = true;
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
+    const fetchAssets = async () => {
+      try {
+        const res = await ForcastAssets({ limit: 10, page: 1 });
+
+        if (!isMounted) return;
+
+        setForecastData((prev) => ({
+          ...prev,
+          assets: res?.data?.assets ?? [],
+          predictiveSignals: res?.data?.summary ?? null,
+        }));
+      } catch (err) {
+        console.error("Assets Fetch Error:", err);
+        setForecastData((prev) => ({
+          ...prev,
+          assets: [],
+          predictiveSignals: null,
+        }));
+      }
+    };
+
+    fetchAssets();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   return (
     <section className="tp-section">
       <div className="tp-container tp-grid-stack">
@@ -362,104 +356,106 @@ useEffect(() => {
             Predictive signals and trend confidence indicators
           </p>
         </header>
-{/* ================= PRODUCT FILTER ================= */}
-<div className="tp-card" style={{ marginBottom: "var(--space-lg)" }}>
-  <div className="tp-chart-search" ref={dropdownRef}>
-    <input
-      type="text"
-      className="tp-input tp-chart-search-input"
-      placeholder="Search product..."
-      value={search}
-      onFocus={() => {
-        setIsOpen(true);
-        fetchDropdownData("");
-      }}
-      onChange={(e) => {
-        const value = e.target.value;
-        setSearch(value);
-        setIsOpen(true);
-        fetchDropdownData(value);
-      }}
-    />
+        {/* ================= PRODUCT FILTER ================= */}
+        <div className="tp-card" style={{ marginBottom: "var(--space-lg)" }}>
+          <div className="tp-forcast-filter">
+            <div className="tp-chart-search " ref={dropdownRef}>
+              <input
+                type="text"
+                className="tp-input tp-chart-search-input"
+                placeholder="Search product..."
+                value={search}
+                onFocus={() => {
+                  setIsOpen(true);
+                  fetchDropdownData("");
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearch(value);
+                  setIsOpen(true);
+                  fetchDropdownData(value);
+                }}
+              />
 
-    {isOpen && (
-      <div className="tp-chart-dropdown">
-        {productOptions.length > 0 ? (
-          productOptions.map((item) => (
-            <div
-              key={item.value}
-              className="tp-chart-option"
-              onClick={() => handleSelect(item)}
-            >
-              {item.label}
+              {isOpen && (
+                <div className="tp-chart-dropdown">
+                  {productOptions.length > 0 ? (
+                    productOptions.map((item) => (
+                      <div
+                        key={item.value}
+                        className="tp-chart-option"
+                        onClick={() => handleSelect(item)}
+                      >
+                        {item.label}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="tp-chart-option tp-chart-option-muted">
+                      No results
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-          ))
-        ) : (
-          <div className="tp-chart-option tp-chart-option-muted">
-            No results
           </div>
-        )}
-      </div>
-    )}
-  </div>
-  {/* ================= METRICS ROW ================= */}
-        <div className="tp-metrics-row">
-          {/* ================= Price Movement ================= */}
-          <TPMetricCard
-            title="Price Movement Prediction"
-            // value="+8.5%"
-           value={
-  forecastData?.signals?.pricePrediction?.percent != null
-    ? `${forecastData.signals.pricePrediction.percent}%`
-    : ""
-}
-            // unit="next 3 months"
-            footerLabel="Upward trend expected"
-            trend={8.5}
-            trendDirection={forecastData.signals?.pricePrediction?.direction}
-          
-          />
+          {/* ================= METRICS ROW ================= */}
+          <div className="tp-metrics-row">
+            {/* ================= Price Movement ================= */}
+            <TPMetricCard
+              title="Price Movement Prediction"
+              // value="+8.5%"
+              value={
+                forecastData?.signals?.pricePrediction?.percent != null
+                  ? `${forecastData.signals.pricePrediction.percent}%`
+                  : ""
+              }
+              // unit="next 3 months"
+              footerLabel="Upward trend expected"
+              trend={8.5}
+              trendDirection={forecastData.signals?.pricePrediction?.direction}
+            />
 
-          {/* ================= Demand Signal ================= */}
-          <TPMetricCard
-            title="Demand Direction Signal"
-            value={forecastData?.signals?.demandPrediction?.signal ?? ""}
-            unit="growth signal"
-            footerLabel={
-              forecastData?.signals?.demandPrediction?.confidence != null
-                ? `Confidence: ${forecastData.signals.demandPrediction.confidence}%`
-                : "Confidence: "
-            }
-            trendDirection="neutral"
-          />
+            {/* ================= Demand Signal ================= */}
+            <TPMetricCard
+              title="Demand Direction Signal"
+              value={forecastData?.signals?.demandPrediction?.signal ?? ""}
+              unit="growth signal"
+              footerLabel={
+                forecastData?.signals?.demandPrediction?.confidence != null
+                  ? `Confidence: ${forecastData.signals.demandPrediction.confidence}%`
+                  : "Confidence: "
+              }
+              trendDirection="neutral"
+            />
 
-          {/* ================= Shipping Cost ================= */}
-          <TPMetricCard
-            title="Shipping Cost Forecast"
-            value={forecastData?.signals?.shippingForecast?.average ?? ""}
-            unit="predicted average"
-            footerLabel="Slight decline expected"
-            trend={forecastData?.signals?.shippingForecast?.changePercent ?? 0}
-            trendDirection={
-              forecastData?.signals?.shippingForecast?.changePercent > 0
-                ? "up"
-                : forecastData?.signals?.shippingForecast?.changePercent < 0
-                  ? "Downward"
-                  : "neutral"
-            }
-          />
+            {/* ================= Shipping Cost ================= */}
+            <TPMetricCard
+              title="Shipping Cost Forecast"
+              value={forecastData?.signals?.shippingForecast?.average ?? ""}
+              unit="predicted average"
+              footerLabel="Slight decline expected"
+              trend={
+                forecastData?.signals?.shippingForecast?.changePercent ?? 0
+              }
+              trendDirection={
+                forecastData?.signals?.shippingForecast?.changePercent > 0
+                  ? "up"
+                  : forecastData?.signals?.shippingForecast?.changePercent < 0
+                    ? "Downward"
+                    : "neutral"
+              }
+            />
 
-          {/* ================= Currency Risk ================= */}
-          <TPMetricCard
-            title="Currency Volatility Alert"
-            value={forecastData?.signals?.currencyForecast?.risk ?? ""}
-            unit="risk level"
-            footerLabel="Monitor closely"
-            trendDirection="neutral"
-          />
+            {/* ================= Currency Risk ================= */}
+            <TPMetricCard
+              title="Currency Volatility Alert"
+              value={forecastData?.signals?.currencyForecast?.risk ?? ""}
+              unit="risk level"
+              footerLabel="Monitor closely"
+              trendDirection="neutral"
+            />
+          </div>
         </div>
-</div>
-      
 
         {/* ================= CHARTS ROW ================= */}
         <div className="tp-grid tp-grid-2">
@@ -472,8 +468,8 @@ useEffect(() => {
               { key: "historical", label: "Historical" },
               { key: "predicted", label: "Predicted", dashed: true },
             ]}
-              selectedProduct={priceChartProductCode}
-  onSelectProduct={setPriceChartProductCode}
+            selectedProduct={priceChartProductCode}
+            onSelectProduct={setPriceChartProductCode}
           />
 
           <TPChart
@@ -482,103 +478,103 @@ useEffect(() => {
             // data={confidenceData}
             data={forecastData.confidenceChart}
             series={[{ key: "value", label: "Confidence" }]}
-             selectedProduct={confidenceProductCode}
-  onSelectProduct={setConfidenceProductCode}
+            selectedProduct={confidenceProductCode}
+            onSelectProduct={setConfidenceProductCode}
           />
         </div>
         {/* ===============================
               KPI CARDS
               =============================== */}
 
-       
-          <>
-            <div className="tp-grid tp-grid-2 tp-product-overview-grid">
-              <div className="tp-card">
-                <p className="tp-muted">Bullish Signals</p>
-                <h3 className="tp-text-up">
-                  {forecastData?.predictiveSignals?.bullish}
-                </h3>
-              </div>
-
-              <div className="tp-card">
-                <p className="tp-muted">Bearish Signals</p>
-                <h3 className="tp-text-down">
-                  {forecastData?.predictiveSignals?.bearish}
-                </h3>
-              </div>
-
-              <div className="tp-card">
-                <p className="tp-muted">Neutral Assets</p>
-                <h3 className="tp-overview-text">
-                  {forecastData?.predictiveSignals?.neutral}
-                </h3>
-              </div>
-
-              <div className="tp-card">
-                <p className="tp-muted">Prediction Accuracy</p>
-                <h3 className="tp-overview-text">
-                  {forecastData?.predictiveSignals?.predictionAccuracy}
-                </h3>
-              </div>
+        <>
+          <div className="tp-grid tp-grid-2 tp-product-overview-grid">
+            <div className="tp-card">
+              <p className="tp-muted">Bullish Signals</p>
+              <h3 className="tp-text-up">
+                {forecastData?.predictiveSignals?.bullish}
+              </h3>
             </div>
 
-            {/* ===============================
+            <div className="tp-card">
+              <p className="tp-muted">Bearish Signals</p>
+              <h3 className="tp-text-down">
+                {forecastData?.predictiveSignals?.bearish}
+              </h3>
+            </div>
+
+            <div className="tp-card">
+              <p className="tp-muted">Neutral Assets</p>
+              <h3 className="tp-overview-text">
+                {forecastData?.predictiveSignals?.neutral}
+              </h3>
+            </div>
+
+            <div className="tp-card">
+              <p className="tp-muted">Prediction Accuracy</p>
+              <h3 className="tp-overview-text">
+                {forecastData?.predictiveSignals?.predictionAccuracy}
+              </h3>
+            </div>
+          </div>
+
+          {/* ===============================
               FORECAST CHART PLACEHOLDER
           =============================== */}
-            <div className="tp-card">
-              <div className="forecast-chart-header">
-                <h3>Trend Projection</h3>
-                <button className="tp-btn-outline">Last 7 Days</button>
-              </div>
-
-              <div className="forecast-chart">
-                <div
-                  className="forecast-bar"
-                  style={{
-                    width: `${forecastData?.predictiveSignals?.predictionAccuracy}%`,
-                  }}
-                />
-              </div>
-
-              <p className="tp-muted forecast-note">
-                Visual representation of projected market momentum
-              </p>
+          <div className="tp-card">
+            <div className="forecast-chart-header">
+              <h3>Trend Projection</h3>
+              <button className="tp-btn-outline">Last 7 Days</button>
             </div>
 
-            {/* ===============================
+            <div className="forecast-chart">
+              <div
+                className="forecast-bar"
+                style={{
+                  width: `${forecastData?.predictiveSignals?.predictionAccuracy}%`,
+                }}
+              />
+            </div>
+
+            <p className="tp-muted forecast-note">
+              Visual representation of projected market momentum
+            </p>
+          </div>
+
+          {/* ===============================
               SIGNAL LIST
           =============================== */}
-            <div className="tp-card">
-              <div className="forecast-table">
-                <div className="forecast-row forecast-head">
-                  <span>Asset</span>
-                  <span className="text-center">Signal</span>
-                  <span className="text-center">Confidence</span>
+          <div className="tp-card">
+            <div className="forecast-table">
+              <div className="forecast-row forecast-head">
+                <span>Asset</span>
+                <span className="text-center">Signal</span>
+                <span className="text-center">Confidence</span>
+              </div>
+              {forecastData?.assets?.map((item, index) => (
+                <div className="forecast-row" key={index}>
+                  <span>{item?.assetName?.split(",")[0]}</span>
+
+                  <span className="text-center">
+                    <span
+                      className={`tp-pill ${
+                        item.signal === "Bullish"
+                          ? "tp-pill-success"
+                          : item?.signal === "Bearish"
+                            ? "tp-pill-warning"
+                            : "tp-pill-primary"
+                      }`}
+                    >
+                      {item?.signal}
+                    </span>
+                  </span>
+
+                  <span className="text-center">
+                    {Number(item?.confidence).toFixed(2)}
+                    {"%"}
+                  </span>
                 </div>
-                {forecastData?.assets?.map((item, index) => (
-                  <div className="forecast-row" key={index}>
-                    <span>{item?.assetName?.split(",")[0]}</span>
-
-                    <span className="text-center">
-                      <span
-                        className={`tp-pill ${item.signal === "Bullish"
-                            ? "tp-pill-success"
-                            : item?.signal === "Bearish"
-                              ? "tp-pill-warning"
-                              : "tp-pill-primary"
-                          }`}
-                      >
-                        {item?.signal}
-                      </span>
-                    </span>
-
-                    <span className="text-center">
-                      {Number(item?.confidence).toFixed(2)}
-                      {"%"}
-                    </span>
-                  </div>
-                ))}
-                {/* {signals.map((item, index) => (
+              ))}
+              {/* {signals.map((item, index) => (
               <div className="forecast-row" key={index}>
                 <span>{item.asset}</span>
 
@@ -597,20 +593,19 @@ useEffect(() => {
                 <span>{item.confidence}</span>
               </div>
             ))} */}
-              </div>
             </div>
+          </div>
 
-            {/* ===============================
+          {/* ===============================
               DISCLAIMER
           =============================== */}
-            <div className="tp-card">
-              <p className="tp-muted">
-                Forecasts are algorithmic estimates based on historical patterns
-                and should not be considered financial advice.
-              </p>
-            </div>
-          </>
-    
+          <div className="tp-card">
+            <p className="tp-muted">
+              Forecasts are algorithmic estimates based on historical patterns
+              and should not be considered financial advice.
+            </p>
+          </div>
+        </>
       </div>
     </section>
   );

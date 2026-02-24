@@ -518,6 +518,15 @@ input::placeholder {
   width: clamp(150px, 22vw, 260px);
   max-width: 100%;
 }
+.tp-forcast-filter {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  margin: 10px;
+}
+.tp-forcast-filter .tp-chart-search{
+  width: 350px;
+}
 
 .tp-chart-search-input {
   padding: clamp(8px, 1vw, 10px) clamp(12px, 1.2vw, 14px);
@@ -612,4 +621,16 @@ input::placeholder {
     gap: 20px;
     /* padding: 0 var(--space-xl); */
   }
+}
+@media (max-width: 426px) {
+  .tp-forcast-filter {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+.tp-forcast-filter input{
+  max-width: 100%;
+}
+  
 }
