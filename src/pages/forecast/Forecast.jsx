@@ -244,48 +244,54 @@ const Forecast = () => {
 
         {/* ================= METRICS ROW ================= */}
         <div className="tp-metrics-row">
+          {/* ================= Price Movement ================= */}
           <TPMetricCard
             title="Price Movement Prediction"
-            // value="+8.5%"
-            value={forecastData.signals?.pricePrediction?.percent + "%"}
-            // unit="next 3 months"
+            value={
+              forecastData?.signals?.pricePrediction?.percent != null
+                ? `${forecastData.signals.pricePrediction.percent}%`
+                : ""
+            }
             footerLabel="Upward trend expected"
-            trend={8.5}
-            trendDirection={forecastData.signals?.pricePrediction?.direction}
+            trend={forecastData?.signals?.pricePrediction?.percent ?? 0}
+            trendDirection={
+              forecastData?.signals?.pricePrediction?.direction ?? "neutral"
+            }
           />
 
+          {/* ================= Demand Signal ================= */}
           <TPMetricCard
             title="Demand Direction Signal"
-            value={forecastData.signals?.demandPrediction?.signal}
+            value={forecastData?.signals?.demandPrediction?.signal ?? ""}
             unit="growth signal"
             footerLabel={
-              "Confidence: " +
-              forecastData.signals?.demandPrediction?.confidence
+              forecastData?.signals?.demandPrediction?.confidence != null
+                ? `Confidence: ${forecastData.signals.demandPrediction.confidence}%`
+                : "Confidence: "
             }
-            // trend={90}
-            trendDirection="up"
+            trendDirection="neutral"
           />
 
+          {/* ================= Shipping Cost ================= */}
           <TPMetricCard
             title="Shipping Cost Forecast"
-            value={forecastData.signals?.shippingForecast?.average}
-            // value="$2,380"
+            value={forecastData?.signals?.shippingForecast?.average ?? ""}
             unit="predicted average"
             footerLabel="Slight decline expected"
-            // trend={3.2}
-            trend={forecastData.signals?.shippingForecast?.changePercent}
-            // trendDirection="Downward"
+            trend={forecastData?.signals?.shippingForecast?.changePercent ?? 0}
             trendDirection={
-              forecastData.signals?.shippingForecast?.changePercent > 0
+              forecastData?.signals?.shippingForecast?.changePercent > 0
                 ? "up"
-                : "Downward"
+                : forecastData?.signals?.shippingForecast?.changePercent < 0
+                  ? "Downward"
+                  : "neutral"
             }
           />
 
+          {/* ================= Currency Risk ================= */}
           <TPMetricCard
             title="Currency Volatility Alert"
-            value={forecastData.signals?.currencyForecast?.risk}
-            // value="Medium"
+            value={forecastData?.signals?.currencyForecast?.risk ?? ""}
             unit="risk level"
             footerLabel="Monitor closely"
             trendDirection="neutral"
@@ -386,24 +392,24 @@ const Forecast = () => {
                 </div>
                 {forecastData?.assets?.map((item, index) => (
                   <div className="forecast-row" key={index}>
-                    <span>{item.assetName?.split(",")[0]}</span>
+                    <span>{item?.assetName?.split(",")[0]}</span>
 
                     <span className="text-center">
                       <span
                         className={`tp-pill ${
-                          item.signal === "Bullish"
+                          item?.signal === "Bullish"
                             ? "tp-pill-success"
-                            : item.signal === "Bearish"
+                            : item?.signal === "Bearish"
                               ? "tp-pill-warning"
                               : "tp-pill-primary"
                         }`}
                       >
-                        {item.signal}
+                        {item?.signal}
                       </span>
                     </span>
 
                     <span className="text-center">
-                      {Number(item.confidence).toFixed(2)}
+                      {Number(item?.confidence).toFixed(2)}
                       {"%"}
                     </span>
                   </div>
