@@ -139,35 +139,28 @@ const [confidenceProductCode, setConfidenceProductCode] = useState("27");
 useEffect(() => {
   let isMounted = true;
 
-  const fetchMetricCards = async () => {
-    try {
-      const [forecastRes] = await Promise(
-        DashboardForcast(metricProductCode)
-      
-      );
+const fetchMetricCards = async () => {
+  try {
+    const [forecastRes] = await Promise.all([
+      DashboardForcast(metricProductCode)
+    ]);
 
-      if (!isMounted) return;
+    if (!isMounted) return;
 
-      setForecastData((prev) => ({
-        ...prev,
-        signals:
-          forecastRes.status === "fulfilled"
-            ? forecastRes.value?.data ?? null
-            : null,
+    setForecastData((prev) => ({
+      ...prev,
+      signals:
+        forecastRes?.data ?? null,
 
-        trendProjection:
-          forecastRes.status === "fulfilled"
-            ? forecastRes.value?.data?.trendProjection ?? null
-            : null,
+      trendProjection:
+        forecastRes?.data?.trendProjection ?? null,
+    }));
+  } catch (err) {
+    console.error("Metric Fetch Error:", err);
+  }
+};
 
-        
-      }));
-    } catch (err) {
-      console.error("Metric Fetch Error:", err);
-    }
-  };
-
-  fetchMetricCards();
+fetchMetricCards();
 
   return () => {
     isMounted = false;
