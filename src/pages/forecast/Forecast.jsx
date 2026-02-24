@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   DashboardForcast,
   DemandGrowthForecast,
   ForcastAssets,
   ForcastConfidenceChart,
   ForcastPriceChart,
+  ProductDropdownSearch 
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import TPChart from "../../components/common/TPChart.jsx";
@@ -136,6 +137,34 @@ const [confidenceProductCode, setConfidenceProductCode] = useState("27");
     trendProjection: null,
     assets: [],
   });
+const [productOptions, setProductOptions] = useState([]);
+const [search, setSearch] = useState("");
+const [isOpen, setIsOpen] = useState(false);
+const dropdownRef = useRef(null);
+
+  const fetchDropdownData = async (query = "") => {
+  try {
+    const res = await ProductDropdownSearch(query);
+    const apiData = res?.data || [];
+
+    const formatted = apiData.map((item) => ({
+      ...item,
+      label: `${item.label} / ${item.value}`,
+    }));
+
+    setProductOptions(formatted);
+  } catch (error) {
+    console.error("Dropdown fetch error:", error);
+  }
+};
+
+
+const handleSelect = (item) => {
+  setSearch(item.label);
+  setIsOpen(false);
+  setMetricProductCode(item.value); // 🔥 THIS triggers metric API
+};
+
 useEffect(() => {
   let isMounted = true;
 
@@ -165,6 +194,36 @@ fetchMetricCards();
   return () => {
     isMounted = false;
   };
+}, [metricProductCode]);
+
+
+
+useEffect(() => {
+  const loadDefaultProduct = async () => {
+    if (!metricProductCode) return;
+
+    try {
+      const res = await ProductDropdownSearch("");
+      const apiData = res?.data || [];
+
+      const formatted = apiData.map((item) => ({
+        ...item,
+        label: `${item.label} / ${item.value}`,
+      }));
+
+      const matched = formatted.find(
+        (item) => String(item.value) === String(metricProductCode)
+      );
+
+      if (matched) {
+        setSearch(matched.label);
+      }
+    } catch (err) {
+      console.error("Default dropdown load error:", err);
+    }
+  };
+
+  loadDefaultProduct();
 }, [metricProductCode]);
 
 useEffect(() => {
@@ -277,6 +336,18 @@ useEffect(() => {
     isMounted = false;
   };
 }, []);
+
+
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
   return (
     <section className="tp-section">
       <div className="tp-container tp-grid-stack">
@@ -291,8 +362,47 @@ useEffect(() => {
             Predictive signals and trend confidence indicators
           </p>
         </header>
+{/* ================= PRODUCT FILTER ================= */}
+<div className="tp-card" style={{ marginBottom: "var(--space-lg)" }}>
+  <div className="tp-chart-search" ref={dropdownRef}>
+    <input
+      type="text"
+      className="tp-input tp-chart-search-input"
+      placeholder="Search product..."
+      value={search}
+      onFocus={() => {
+        setIsOpen(true);
+        fetchDropdownData("");
+      }}
+      onChange={(e) => {
+        const value = e.target.value;
+        setSearch(value);
+        setIsOpen(true);
+        fetchDropdownData(value);
+      }}
+    />
 
-        {/* ================= METRICS ROW ================= */}
+    {isOpen && (
+      <div className="tp-chart-dropdown">
+        {productOptions.length > 0 ? (
+          productOptions.map((item) => (
+            <div
+              key={item.value}
+              className="tp-chart-option"
+              onClick={() => handleSelect(item)}
+            >
+              {item.label}
+            </div>
+          ))
+        ) : (
+          <div className="tp-chart-option tp-chart-option-muted">
+            No results
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+  {/* ================= METRICS ROW ================= */}
         <div className="tp-metrics-row">
           <TPMetricCard
             title="Price Movement Prediction"
@@ -306,9 +416,7 @@ useEffect(() => {
             footerLabel="Upward trend expected"
             trend={8.5}
             trendDirection={forecastData.signals?.pricePrediction?.direction}
-             showMetricProductDropdown={true}
-  metricSelectedProduct={metricProductCode}
-  onMetricProductSelect={setMetricProductCode}
+          
           />
 
           <TPMetricCard
@@ -348,6 +456,8 @@ useEffect(() => {
             trendDirection="neutral"
           />
         </div>
+</div>
+      
 
         {/* ================= CHARTS ROW ================= */}
         <div className="tp-grid tp-grid-2">
