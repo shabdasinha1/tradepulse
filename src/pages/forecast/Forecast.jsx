@@ -359,6 +359,7 @@ const Forecast = () => {
         {/* ================= PRODUCT FILTER ================= */}
         <div className="tp-card" style={{ marginBottom: "var(--space-lg)" }}>
           <div className="tp-forcast-filter">
+            <h4 className="tp-section-title" style={{margin: "0"}}>Predictive Market Insights</h4>
             <div className="tp-chart-search " ref={dropdownRef}>
               <input
                 type="text"
