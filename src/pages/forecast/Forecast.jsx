@@ -411,7 +411,7 @@ const Forecast = () => {
               }
               // unit="next 3 months"
               footerLabel="Upward trend expected"
-              trend={8.5}
+              // trend={8.5}
               trendDirection={forecastData.signals?.pricePrediction?.direction}
             />
 
