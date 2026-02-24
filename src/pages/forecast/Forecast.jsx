@@ -359,6 +359,7 @@ const Forecast = () => {
         {/* ================= PRODUCT FILTER ================= */}
         <div className="tp-card" style={{ marginBottom: "var(--space-lg)" }}>
           <div className="tp-forcast-filter">
+            <h4 className="tp-section-title" style={{margin: "0"}}>Predictive Market Insights</h4>
             <div className="tp-chart-search " ref={dropdownRef}>
               <input
                 type="text"
@@ -411,7 +412,7 @@ const Forecast = () => {
               }
               // unit="next 3 months"
               footerLabel="Upward trend expected"
-              trend={8.5}
+              // trend={8.5}
               trendDirection={forecastData.signals?.pricePrediction?.direction}
             />
 

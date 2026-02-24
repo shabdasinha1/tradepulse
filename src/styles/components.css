@@ -521,10 +521,11 @@ input::placeholder {
 .tp-forcast-filter {
   width: 100%;
   display: flex;
-  justify-content: end;
-  margin: 10px;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+  align-items: center;
 }
-.tp-forcast-filter .tp-chart-search{
+.tp-forcast-filter .tp-chart-search {
   width: 350px;
 }
 
@@ -624,13 +625,14 @@ input::placeholder {
 }
 @media (max-width: 426px) {
   .tp-forcast-filter {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 10px 0;
-}
-.tp-forcast-filter input{
-  max-width: 100%;
-}
-  
+    flex-direction: column;
+    margin: 10px 0;
+    align-items: start;
+  }
+  .tp-forcast-filter h4 {
+    margin-bottom: var(--space-sm) !important;
+  }
+  .tp-forcast-filter input {
+    max-width: 100%;
+  }
 }
