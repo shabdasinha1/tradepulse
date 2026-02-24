@@ -106,6 +106,7 @@ const TPChart = ({
 
   const renderTooltip = () => (
     <Tooltip
+     cursor={false}  
       contentStyle={{
         background: "var(--bg-panel)",
         border: "1px solid var(--border-soft)",
@@ -249,14 +250,15 @@ const TPChart = ({
             <Legend />
 
             {series.map((item, index) => (
-              <Bar
-                key={index}
-                dataKey={item.key}
-                name={item.label}
-                fill="var(--clr-primary-soft)"
-                stroke="var(--clr-primary)"
-                radius={[radiusSm, radiusSm, 0, 0]}
-              />
+            <Bar
+  key={index}
+  dataKey={item.key}
+  name={item.label}
+  fill="var(--clr-primary-soft)"
+  stroke="var(--clr-primary)"
+  radius={[radiusSm, radiusSm, 0, 0]}
+  activeBar={false}
+/>
             ))}
           </BarChart>
         );
