@@ -121,7 +121,13 @@ const transformConfidenceChart = (apiData) => {
 
 const Forecast = () => {
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+ const [metricLoading, setMetricLoading] = useState(false);
+const [priceChartLoading, setPriceChartLoading] = useState(false);
+const [confidenceLoading, setConfidenceLoading] = useState(false);
+const [assetsLoading, setAssetsLoading] = useState(false);
+const [metricProductCode, setMetricProductCode] = useState("27");
+const [priceChartProductCode, setPriceChartProductCode] = useState("27");
+const [confidenceProductCode, setConfidenceProductCode] = useState("27");
   const [forecastData, setForecastData] = useState({
     predictiveSignals: null,
     priceChart: [],
@@ -130,103 +136,154 @@ const Forecast = () => {
     trendProjection: null,
     assets: [],
   });
-  useEffect(() => {
-    const fetchAllData = async () => {
-      setIsLoading(true);
+useEffect(() => {
+  let isMounted = true;
 
-      try {
-        const [
-          forecastRes,
-          demandRes,
-          assetsRes,
-          priceChartRes,
-          confidenceRes,
-        ] = await Promise.allSettled([
-          DashboardForcast(27),
-          DemandGrowthForecast(27),
-          ForcastAssets({ limit: 10, page: 1 }),
-          ForcastPriceChart(27),
-          ForcastConfidenceChart(27),
-        ]);
-        console.log(assetsRes);
-        setForecastData({
-          signals:
-            forecastRes.status === "fulfilled"
-              ? (forecastRes.value?.data ?? null)
-              : null,
+  const fetchMetricCards = async () => {
+    try {
+      const [forecastRes] = await Promise(
+        DashboardForcast(metricProductCode)
+      
+      );
 
-          trendProjection:
-            forecastRes.status === "fulfilled"
-              ? (forecastRes.value?.data?.trendProjection ?? null)
-              : null,
+      if (!isMounted) return;
 
-          demandGrowth:
-            demandRes.status === "fulfilled"
-              ? (demandRes.value?.data ?? null)
-              : null,
+      setForecastData((prev) => ({
+        ...prev,
+        signals:
+          forecastRes.status === "fulfilled"
+            ? forecastRes.value?.data ?? null
+            : null,
 
-          assets:
-            assetsRes.status === "fulfilled"
-              ? (assetsRes.value?.data?.assets ?? [])
-              : [],
-          predictiveSignals:
-            assetsRes.status === "fulfilled"
-              ? (assetsRes.value?.data?.summary ?? [])
-              : [],
-          priceChart:
-            priceChartRes.status === "fulfilled"
-              ? (() => {
-                  const apiData = priceChartRes.value?.data;
+        trendProjection:
+          forecastRes.status === "fulfilled"
+            ? forecastRes.value?.data?.trendProjection ?? null
+            : null,
 
-                  const historical = apiData?.historical || [];
-                  const predicted = apiData?.predicted || [];
+        
+      }));
+    } catch (err) {
+      console.error("Metric Fetch Error:", err);
+    }
+  };
 
-                  // Convert historical
-                  const historicalFormatted = historical.map((item) => ({
-                    month: String(item.label),
-                    historical: item.value,
-                  }));
+  fetchMetricCards();
 
-                  // Convert predicted
-                  const predictedFormatted = predicted.map((item) => ({
-                    month: String(item.label),
-                    predicted: item.value,
-                  }));
+  return () => {
+    isMounted = false;
+  };
+}, [metricProductCode]);
 
-                  // Merge by month/year
-                  const merged = [...historicalFormatted];
+useEffect(() => {
+  let isMounted = true;
 
-                  predictedFormatted.forEach((pred) => {
-                    const existing = merged.find((m) => m.month === pred.month);
+  const fetchPriceChart = async () => {
+    try {
+      const res = await ForcastPriceChart(priceChartProductCode);
 
-                    if (existing) {
-                      existing.predicted = pred.predicted;
-                    } else {
-                      merged.push(pred);
-                    }
-                  });
+      if (!isMounted) return;
 
-                  return merged;
-                })()
-              : [],
-          confidenceChart:
-            confidenceRes.status === "fulfilled"
-              ? transformConfidenceChart(confidenceRes.value?.data)
-              : [],
-        });
-      } catch (err) {
-        // Only triggers if Promise.allSettled itself fails (very rare)
-        console.error("Unexpected Error:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      const apiData = res?.data ?? {};
+      const historical = apiData?.historical ?? [];
+      const predicted = apiData?.predicted ?? [];
 
-    fetchAllData();
-  }, []);
-  // console.log("Error : ", error);
-  console.log("Forecast Data : ", forecastData);
+      const allMonths = new Set([
+        ...historical.map((h) => h.label),
+        ...predicted.map((p) => p.label),
+      ]);
 
+      const merged = Array.from(allMonths).map((month) => {
+        const h = historical.find((i) => i.label === month);
+        const p = predicted.find((i) => i.label === month);
+
+        return {
+          month: String(month),
+          historical: h?.value ?? null,
+          predicted: p?.value ?? null,
+        };
+      });
+
+      setForecastData((prev) => ({
+        ...prev,
+        priceChart: merged,
+      }));
+    } catch (err) {
+      console.error("Price Chart Error:", err);
+      setForecastData((prev) => ({
+        ...prev,
+        priceChart: [],
+      }));
+    }
+  };
+
+  fetchPriceChart();
+
+  return () => {
+    isMounted = false;
+  };
+}, [priceChartProductCode]);
+
+useEffect(() => {
+  let isMounted = true;
+
+  const fetchConfidenceChart = async () => {
+    try {
+      const res = await ForcastConfidenceChart(confidenceProductCode);
+
+      if (!isMounted) return;
+
+      const transformed = transformConfidenceChart(res?.data ?? []);
+
+      setForecastData((prev) => ({
+        ...prev,
+        confidenceChart: transformed,
+      }));
+    } catch (err) {
+      console.error("Confidence Chart Error:", err);
+      setForecastData((prev) => ({
+        ...prev,
+        confidenceChart: [],
+      }));
+    }
+  };
+
+  fetchConfidenceChart();
+
+  return () => {
+    isMounted = false;
+  };
+}, [confidenceProductCode]);
+
+useEffect(() => {
+  let isMounted = true;
+
+  const fetchAssets = async () => {
+    try {
+      const res = await ForcastAssets({ limit: 10, page: 1 });
+
+      if (!isMounted) return;
+
+      setForecastData((prev) => ({
+        ...prev,
+        assets: res?.data?.assets ?? [],
+        predictiveSignals: res?.data?.summary ?? null,
+      }));
+    } catch (err) {
+      console.error("Assets Fetch Error:", err);
+      setForecastData((prev) => ({
+        ...prev,
+        assets: [],
+        predictiveSignals: null,
+      }));
+    }
+  };
+
+  fetchAssets();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
   return (
     <section className="tp-section">
       <div className="tp-container tp-grid-stack">
@@ -247,16 +304,19 @@ const Forecast = () => {
           {/* ================= Price Movement ================= */}
           <TPMetricCard
             title="Price Movement Prediction"
-            value={
-              forecastData?.signals?.pricePrediction?.percent != null
-                ? `${forecastData.signals.pricePrediction.percent}%`
-                : ""
-            }
+            // value="+8.5%"
+           value={
+  forecastData?.signals?.pricePrediction?.percent != null
+    ? `${forecastData.signals.pricePrediction.percent}%`
+    : ""
+}
+            // unit="next 3 months"
             footerLabel="Upward trend expected"
-            trend={forecastData?.signals?.pricePrediction?.percent ?? 0}
-            trendDirection={
-              forecastData?.signals?.pricePrediction?.direction ?? "neutral"
-            }
+            trend={8.5}
+            trendDirection={forecastData.signals?.pricePrediction?.direction}
+             showMetricProductDropdown={true}
+  metricSelectedProduct={metricProductCode}
+  onMetricProductSelect={setMetricProductCode}
           />
 
           {/* ================= Demand Signal ================= */}
@@ -309,6 +369,8 @@ const Forecast = () => {
               { key: "historical", label: "Historical" },
               { key: "predicted", label: "Predicted", dashed: true },
             ]}
+              selectedProduct={priceChartProductCode}
+  onSelectProduct={setPriceChartProductCode}
           />
 
           <TPChart
@@ -317,15 +379,15 @@ const Forecast = () => {
             // data={confidenceData}
             data={forecastData.confidenceChart}
             series={[{ key: "value", label: "Confidence" }]}
+             selectedProduct={confidenceProductCode}
+  onSelectProduct={setConfidenceProductCode}
           />
         </div>
         {/* ===============================
               KPI CARDS
               =============================== */}
 
-        {isLoading ? (
-          <ForecastSkeleton />
-        ) : (
+       
           <>
             <div className="tp-grid tp-grid-2 tp-product-overview-grid">
               <div className="tp-card">
@@ -396,13 +458,12 @@ const Forecast = () => {
 
                     <span className="text-center">
                       <span
-                        className={`tp-pill ${
-                          item?.signal === "Bullish"
+                        className={`tp-pill ${item.signal === "Bullish"
                             ? "tp-pill-success"
                             : item?.signal === "Bearish"
                               ? "tp-pill-warning"
                               : "tp-pill-primary"
-                        }`}
+                          }`}
                       >
                         {item?.signal}
                       </span>
@@ -446,7 +507,7 @@ const Forecast = () => {
               </p>
             </div>
           </>
-        )}
+    
       </div>
     </section>
   );
