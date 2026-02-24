@@ -148,7 +148,7 @@ const Forecast = () => {
           ForcastPriceChart(27),
           ForcastConfidenceChart(27),
         ]);
-        // console.log(demandRes);
+        console.log(assetsRes);
         setForecastData({
           signals:
             forecastRes.status === "fulfilled"
@@ -169,7 +169,10 @@ const Forecast = () => {
             assetsRes.status === "fulfilled"
               ? (assetsRes.value?.data?.assets ?? [])
               : [],
-
+          predictiveSignals:
+            assetsRes.status === "fulfilled"
+              ? (assetsRes.value?.data?.summary ?? [])
+              : [],
           priceChart:
             priceChartRes.status === "fulfilled"
               ? (() => {
@@ -222,7 +225,7 @@ const Forecast = () => {
     fetchAllData();
   }, []);
   // console.log("Error : ", error);
-  // console.log("Forecast Data : ", forecastData);
+  console.log("Forecast Data : ", forecastData);
 
   return (
     <section className="tp-section">
@@ -321,27 +324,29 @@ const Forecast = () => {
             <div className="tp-grid tp-grid-2 tp-product-overview-grid">
               <div className="tp-card">
                 <p className="tp-muted">Bullish Signals</p>
-                <h3 className="tp-text-up">{forecastData?.signals?.bullish}</h3>
+                <h3 className="tp-text-up">
+                  {forecastData?.predictiveSignals?.bullish}
+                </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Bearish Signals</p>
                 <h3 className="tp-text-down">
-                  {forecastData?.signals?.bearish}
+                  {forecastData?.predictiveSignals?.bearish}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Neutral Assets</p>
                 <h3 className="tp-overview-text">
-                  {forecastData?.signals?.neutral}
+                  {forecastData?.predictiveSignals?.neutral}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Prediction Accuracy</p>
                 <h3 className="tp-overview-text">
-                  {forecastData?.signals?.predictionAccuracy}
+                  {forecastData?.predictiveSignals?.predictionAccuracy}
                 </h3>
               </div>
             </div>
@@ -358,7 +363,9 @@ const Forecast = () => {
               <div className="forecast-chart">
                 <div
                   className="forecast-bar"
-                  style={{ width: `${forecastData?.trendProjection}%` }}
+                  style={{
+                    width: `${forecastData?.predictiveSignals?.predictionAccuracy}%`,
+                  }}
                 />
               </div>
 
@@ -396,7 +403,7 @@ const Forecast = () => {
                     </span>
 
                     <span className="text-center">
-                      {item.confidence}
+                      {Number(item.confidence).toFixed(2)}
                       {"%"}
                     </span>
                   </div>
