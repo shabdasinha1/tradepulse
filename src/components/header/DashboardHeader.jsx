@@ -58,7 +58,7 @@ const DashboardHeader = () => {
   useEffect(() => {
     const firstName = GetCookie("tp_user_first_name");
     const lastName = GetCookie("tp_user_last_name");
-    console.log(firstName,lastName)
+    // console.log(firstName,lastName)
 
     const firstInitial = firstName?.charAt(0).toUpperCase() || "";
     const lastInitial = lastName?.charAt(0).toUpperCase() || "";
