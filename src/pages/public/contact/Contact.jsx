@@ -14,7 +14,7 @@ const Contact = () => {
   /* ================ SUBMIT FORM ==================== */
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("msg sent debug", messageData);
+    // console.log("msg sent debug", messageData);
   };
   return (
     <>

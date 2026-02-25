@@ -128,6 +128,8 @@
     background var(--transition-fast),
     color var(--transition-fast),
     transform var(--transition-fast);
+  font-size: var(--fs-body);
+  margin-right: var(--space-sm);
 }
 
 .tp-theme-toggle:hover {
@@ -619,7 +621,7 @@ input::placeholder {
     /* padding: var(--space-xl); */
   }
   .tp-card-header {
-    gap: 20px;
+    gap: var(--space-sm);
     /* padding: 0 var(--space-xl); */
   }
 }

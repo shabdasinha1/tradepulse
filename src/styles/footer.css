@@ -175,7 +175,7 @@
 =============================================*/
 .tp-dashboard-footer-bottom {
   width: 100%;
-  padding: 16px 20px;
+  /* padding: 16px 20px; */
 
   font-size: var(--fs-caption);
   color: var(--text-muted);
@@ -192,6 +192,7 @@
   justify-content: center;
   
   padding: var(--space-lg) 0;
+  margin-top: auto;
 }
 
 

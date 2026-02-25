@@ -489,16 +489,16 @@
 }
 
 @media (max-width: 426px) {
-  
   .tp-setting-wrapper,
   .tp-notification-wrapper,
   .tp-theme-toggle {
-    width: 25px;
+    /* width: 25px; */
     padding: 0;
-    font-size: 14px;
+    /* font-size: 14px; */
   }
   .tp-setting-wrapper:hover,
-  .tp-notification-wrapper:hover, .tp-theme-toggle:hover {
+  .tp-notification-wrapper:hover,
+  .tp-theme-toggle:hover {
     background: none;
     color: inherit;
     transform: none;
@@ -521,5 +521,14 @@
     justify-content: center; /* ✅ center horizontally */
     text-align: center; /* ✅ text center */
     width: 100%;
+  }
+}
+@media (max-width: 330px) {
+  .tp-setting-wrapper,
+  .tp-notification-wrapper,
+  .tp-theme-toggle {
+    width: 25px;
+    padding: 0;
+    /* font-size: 14px; */
   }
 }
