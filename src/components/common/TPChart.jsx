@@ -23,8 +23,24 @@ const TPChart = ({
   xKey = "month",
   series = [],
   onSelectProduct,
-   selectedProduct,
+  selectedProduct,
 }) => {
+
+  /* ===============================
+     Y AXIS FORMATTER (NEW)
+  =============================== */
+
+  const formatNumber = (num, divisor, suffix) => {
+    const val = num / divisor;
+    return Number.isInteger(val) ? `${val}${suffix}` : `${val.toFixed(1)}${suffix}`;
+  };
+
+  const yAxisFormatter = (value) => {
+    if (value >= 1_000_000_000) return formatNumber(value, 1_000_000_000, "B");
+    if (value >= 1_000_000) return formatNumber(value, 1_000_000, "M");
+    if (value >= 100_000) return formatNumber(value, 1_000, "K");
+    return value;
+  };
 
   /* ===============================
      RESPONSIVE HANDLING
@@ -58,33 +74,32 @@ const TPChart = ({
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-  const loadDefaultProduct = async () => {
-    if (!selectedProduct) return;
+    const loadDefaultProduct = async () => {
+      if (!selectedProduct) return;
 
-    try {
-      const res = await ProductDropdownSearch("");
-      const apiData = res?.data || [];
+      try {
+        const res = await ProductDropdownSearch("");
+        const apiData = res?.data || [];
 
-      const formatted = apiData.map((item) => ({
-        ...item,
-        label: `${item.label} / ${item.value}`,
-      }));
+        const formatted = apiData.map((item) => ({
+          ...item,
+          label: `${item.label} / ${item.value}`,
+        }));
 
-      const matched = formatted.find(
-        (item) => String(item.value) === String(selectedProduct)
-      );
+        const matched = formatted.find(
+          (item) => String(item.value) === String(selectedProduct)
+        );
 
-      if (matched) {
-        setSearch(matched.label);  // 🔥 THIS sets Aggregate / 27
+        if (matched) {
+          setSearch(matched.label);
+        }
+      } catch (err) {
+        console.error("Default dropdown load error:", err);
       }
-    } catch (err) {
-      console.error("Default dropdown load error:", err);
-    }
-  };
+    };
 
-  loadDefaultProduct();
-}, [selectedProduct]);
-
+    loadDefaultProduct();
+  }, [selectedProduct]);
 
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -106,7 +121,7 @@ const TPChart = ({
 
   const renderTooltip = () => (
     <Tooltip
-     cursor={false}  
+      cursor={false}
       contentStyle={{
         background: "var(--bg-panel)",
         border: "1px solid var(--border-soft)",
@@ -207,7 +222,8 @@ const TPChart = ({
             />
 
             <YAxis
-              width={isMobile ? 35 : 50}
+              width={isMobile ? 35 : 60}
+              tickFormatter={yAxisFormatter}
               {...commonAxisProps}
             />
 
@@ -242,7 +258,8 @@ const TPChart = ({
             />
 
             <YAxis
-              width={isMobile ? 35 : 50}
+              width={isMobile ? 35 : 60}
+              tickFormatter={yAxisFormatter}
               {...commonAxisProps}
             />
 
@@ -250,15 +267,15 @@ const TPChart = ({
             <Legend />
 
             {series.map((item, index) => (
-            <Bar
-  key={index}
-  dataKey={item.key}
-  name={item.label}
-  fill="var(--clr-primary-soft)"
-  stroke="var(--clr-primary)"
-  radius={[radiusSm, radiusSm, 0, 0]}
-  activeBar={false}
-/>
+              <Bar
+                key={index}
+                dataKey={item.key}
+                name={item.label}
+                fill="var(--clr-primary-soft)"
+                stroke="var(--clr-primary)"
+                radius={[radiusSm, radiusSm, 0, 0]}
+                activeBar={false}
+              />
             ))}
           </BarChart>
         );
@@ -276,7 +293,8 @@ const TPChart = ({
             />
 
             <YAxis
-              width={isMobile ? 35 : 50}
+              width={isMobile ? 35 : 60}
+              tickFormatter={yAxisFormatter}
               {...commonAxisProps}
             />
 
