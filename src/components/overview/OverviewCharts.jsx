@@ -1,63 +1,69 @@
 import React, { useEffect, useState } from "react";
 import TPChart from "../common/TPChart.jsx";
 import TPMetricCard from "../common/TPMetricCard.jsx";
-import { DashboardPriceTrend, DemandGrowthForecast } from "../../services/DashboardService.jsx";
+import { DashboardPriceTrend, DemandGrowthForecast, ForecastOverview } from "../../services/DashboardService.jsx";
 
 const OverviewCharts = () => {
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
   const [priceData, setPriceData] = useState([]);
   const [demandData, setDemandData] = useState([]);
+  const [metrics, setMetrics] = useState({
+    currency: null,
+    shipping: null,
+    demand: null,
+    supplier: null,
+  });
 
 
 
 
 
 
- useEffect(() => {
-  if (!priceHsCode) return;
+  useEffect(() => {
+    if (!priceHsCode) return;
 
-  const fetchPriceTrend = async () => {
-    try {
-      const res = await DashboardPriceTrend(priceHsCode);
+    const fetchPriceTrend = async () => {
+      try {
+        const res = await DashboardPriceTrend(priceHsCode);
 
-      const history = res?.data?.history || [];
+        const history = res?.data?.history || [];
 
-      let formatted = [];
+        let formatted = [];
 
-      if (history.length === 0) {
-        // 🔥 Default fallback years
-        const defaultYears = ["2019", "2020", "2021", "2022", "2023"];
+        if (history.length === 0) {
+          // 🔥 Default fallback years
+          const defaultYears = ["2019", "2020", "2021", "2022", "2023"];
 
-        formatted = defaultYears.map((year) => ({
-          month: year,
-          value: 0,
-        }));
-      } else {
-        formatted = history.map((item) => ({
-          month: String(item.year),
-          value: Number(Number(item.price).toFixed(2)) || 0,
-        }));
+          formatted = defaultYears.map((year) => ({
+            month: year,
+            value: 0,
+          }));
+        } else {
+          formatted = history.map((item) => ({
+            month: String(item.year),
+            value: Number(Number(item.price).toFixed(2)) || 0,
+          }));
+        }
+
+        setPriceData(formatted);
+
+      } catch (err) {
+        console.error("Price Trend Error:", err);
+
+        // 🔥 Also fallback on error
+        setPriceData([
+          { month: "2019", value: 0 },
+          { month: "2020", value: 0 },
+          { month: "2021", value: 0 },
+          { month: "2022", value: 0 },
+          { month: "2023", value: 0 },
+        ]);
       }
+    };
 
-      setPriceData(formatted);
-
-    } catch (err) {
-      console.error("Price Trend Error:", err);
-
-      // 🔥 Also fallback on error
-      setPriceData([
-        { month: "2019", value: 0 },
-        { month: "2020", value: 0 },
-        { month: "2021", value: 0 },
-        { month: "2022", value: 0 },
-        { month: "2023", value: 0 },
-      ]);
-    }
-  };
-
-  fetchPriceTrend();
-}, [priceHsCode]);
+    fetchPriceTrend();
+  }, [priceHsCode]);
 
 
 
@@ -86,46 +92,78 @@ const OverviewCharts = () => {
     fetchDemandForecast();
   }, [demandHsCode]);
 
+  useEffect(() => {
+    const fetchOverview = async () => {
+      try {
+        const res = await ForecastOverview();
 
+        if (res?.success) {
+          setMetrics(res.data);
+        }
+      } catch (err) {
+        console.error("Forecast Overview Error:", err);
+      }
+    };
+
+    fetchOverview();
+  }, []);
 
   return (
     <section className="tp-section">
-      <div className="tp-container">
+      <div className="tp-dashboard-container">
         {/* METRICS ROW */}
         <div className="tp-metrics-row">
+
+          {/* 1️⃣ Currency */}
           <TPMetricCard
             title="Currency Exchange Tracker"
-            value="1.05"
-            unit="USD/NGN (x100)"
-            footerLabel="Naira strengthening"
-            trend={2.3}
-            trendDirection="up"
+            value={metrics.currency?.rate ?? 0}
+            unit={metrics.currency?.pair || ""}
+            footerLabel={
+              metrics.currency?.direction === "Up"
+                ? "Currency strengthening"
+                : "Currency weakening"
+            }
+            trend={`${metrics.currency?.changePercent ?? 0}`}
+            trendDirection={
+              (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
+            }
           />
 
+          {/* 2️⃣ Shipping */}
           <TPMetricCard
             title="Shipping Cost Trend"
-            value="$2,450"
+            value={`$${metrics.shipping?.average ?? 0}`}
             unit="per container"
-            footerLabel="Down from last month"
-            trend={5.2}
-            trendDirection="down"
+            footerLabel="Compared to last period"
+            trend={`${metrics.shipping?.changePercent ?? 0}`}
+            trendDirection={
+              (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
+            }
           />
 
+          {/* 3️⃣ Demand */}
           <TPMetricCard
             title="Product Demand Signal"
-            value="72%"
-            footerLabel="Electronics category"
-            trend={14}
-            trendDirection="up"
+            value={`${metrics.demand?.percent ?? 0}%`}
+            footerLabel={metrics.demand?.product || "No product"}
+            trend={`${metrics.demand?.changePercent ?? 0}`}
+            trendDirection={
+              (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
+            }
           />
 
+          {/* 4️⃣ Supplier */}
           <TPMetricCard
             title="Supplier Trust Score"
-            value="8.7/10"
-            footerLabel="Verified suppliers"
-            trend={1.2}
-            trendDirection="up"
+            value={`${metrics.supplier?.score ?? 0}/10`}
+            footerLabel="Supplier rating index"
+            trend={`${metrics.supplier?.changePercent ?? 0}`}
+            trendDirection={
+              (metrics.supplier?.changePercent ?? 0) < 0 ? "down" : "up"
+            }
           />
+
         </div>
 
         {/* CHARTS */}
@@ -137,7 +175,7 @@ const OverviewCharts = () => {
             series={[{ key: "value", label: "Price" }]}
             selectedProduct={priceHsCode}
             onSelectProduct={setPriceHsCode}
-            
+
           />
 
           <TPChart
@@ -147,7 +185,7 @@ const OverviewCharts = () => {
             series={[{ key: "value", label: "Demand" }]}
             selectedProduct={demandHsCode}
             onSelectProduct={setDemandHsCode}
-            
+
           />
 
         </div>

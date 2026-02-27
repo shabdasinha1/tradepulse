@@ -173,13 +173,24 @@
 /*=============================================
     DASHBOARD FOOTER CSS
 =============================================*/
+
 .tp-dashboard-footer-bottom {
-  width: 100%;
-  /* padding: 16px 20px; */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   font-size: var(--fs-caption);
   color: var(--text-muted);
+
   border-top: 1px solid var(--border-soft);
+
   background:
     radial-gradient(
       120% 120% at 10% 0%,
@@ -187,15 +198,7 @@
       transparent 65%
     ),
     linear-gradient(180deg, var(--bg-app), var(--bg-app));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  padding: var(--space-lg) 0;
-  margin-top: auto;
 }
-
-
 
 /* ===============================
    RESPONSIVE — TABLET

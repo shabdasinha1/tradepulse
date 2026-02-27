@@ -16,22 +16,22 @@ const Settings = lazy(() => import("../pages/settings/Settings.jsx"));
 
 export const DASHBOARD_ROUTES = [
   {
-    label: "Overview",
+    label: " Dashboard Overview",
     path: "/overview",
     component: Overview,
   },
   {
-    label: "Product",
+    label: "Product Intelligence",
     path: "/product",
     component: DashboardProduct,
   },
   {
-    label: "Suppliers",
+    label: "Suppliers Intelligence",
     path: "/suppliers",
     component: Suppliers,
   },
   {
-    label: "Forecast",
+    label: "Market Forecast",
     path: "/forecast",
     component: Forecast,
   },
@@ -46,7 +46,7 @@ export const DASHBOARD_ROUTES = [
     component: Watchlist,
   },
   {
-    label: "AI Assistant",
+    label: "AI Trade Assistant",
     path: "/ai-assistant",
     component: TradeAssistant,
   },

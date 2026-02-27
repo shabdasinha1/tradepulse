@@ -26,7 +26,7 @@ const duties = [
 const CustomsDutyRates = () => {
   return (
     <section className="tp-section">
-      <div className="tp-container">
+      <div className="tp-dashboard-container">
 
         <TradePulseCard
           header={

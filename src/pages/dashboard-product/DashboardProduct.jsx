@@ -18,7 +18,7 @@ const Skeleton = ({ className = "" }) => (
 const ProductOverviewSkeleton = () => {
   return (
     <section className="tp-section">
-      <div className="tp-container tp-grid-stack tp-skeleton-opacity">
+      <div className="tp-dashboard-container tp-grid-stack tp-skeleton-opacity">
         <div className="tp-grid tp-product-overview-grid">
           {[...Array(4)].map((_, i) => (
             <div className="tp-card" key={i}>
@@ -169,7 +169,7 @@ const DashboardProduct = () => {
 
   return (
     <section className="tp-section">
-      <div className="tp-container tp-grid-stack">
+      <div className="tp-dashboard-container tp-grid-stack">
         {/* HEADER */}
         <header>
           <h1 className="tp-section-title">

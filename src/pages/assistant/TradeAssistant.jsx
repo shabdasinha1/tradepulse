@@ -12,7 +12,7 @@ const TradeAssistant = () => {
   return (
     <main>
       <section className="tp-section tp-section--dashboard">
-        <div className="tp-container">
+        <div className="tp-dashboard-container">
 
           <TradePulseCard
             header={

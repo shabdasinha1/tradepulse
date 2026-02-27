@@ -22,6 +22,34 @@ main {
   width: 100%;
 }
 
+/* ======================================
+   DASHBOARD CONTAINER
+====================================== */
+
+.tp-dashboard-container {
+  width: 100%;
+  /* max-width: var(--container-max); */
+  margin: 0 auto;
+
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .tp-dashboard-container {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .tp-dashboard-container {
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+}
 /* Grid */
 .tp-grid {
   display: grid;
@@ -66,12 +94,61 @@ main {
   padding-block: var(--space-lg);
   min-height: unset;
 }
+/* ================================
+   PRIVATE LAYOUT FIXED STRUCTURE
+================================ */
+
 .tp-private-layout-wrapper {
-    min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  height: 100vh;
+  overflow: hidden; /* prevent body scroll */
 }
 
+
+
+
+.tp-dashboard-main main {
+  padding-top: 0;
+}
+
+
+
+/* MAIN PANEL */
+.tp-dashboard-main {
+  position: relative;
+  flex: 1;
+  height: 100vh;
+  margin-left: 240px; /* sidebar width */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left var(--transition-base);
+}
+/* Collapse adjustment */
+.tp-sidebar.collapsed ~ .tp-dashboard-main {
+  margin-left: 80px;
+}
+
+/* Mobile */
+@media (max-width: 1024px) {
+  .tp-dashboard-main {
+    margin-left: 0;
+  }
+}
+/* ================================
+   ONLY THIS SCROLLS
+================================ */
+
+.tp-dashboard-scroll {
+  flex: 1;
+  overflow-y: auto;
+
+  /* padding-top: var(--space-lg); */
+  padding-bottom: 90px;
+
+  padding-left: 0;
+  padding-right: 0;
+}
 /* ======================================================================
         SKELETON ANIMATION CSS (GLOBAL)
 ====================================================================== */
@@ -146,3 +223,4 @@ main {
     transparent 70%
   );
 }
+

@@ -79,3 +79,20 @@ export const ProductDropdownSearch = async (query) => {
     params: { q: query },
   });
 };
+
+
+/* ===============================
+   DASHBOARD FORECAST OVERVIEW
+================================ */
+export const ForecastOverview = async () => {
+  return Api.get("/forecast/overview");
+};
+
+/* ===============================
+   DASHBOARD TRADE NEWS
+================================ */
+export const DashboardTradeNews = async (countryCode) => {
+  return Api.get("/trade/news", {
+    params: { countryCode },
+  });
+};

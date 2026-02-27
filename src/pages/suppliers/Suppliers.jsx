@@ -118,7 +118,7 @@ const Suppliers = () => {
 // console.log(suppliers)
   return (
     <section className="tp-section tp-section--dashboard">
-      <div className="tp-container tp-grid-stack">
+      <div className="tp-dashboard-container tp-grid-stack">
         {/* ===============================
             PAGE HEADER
         =============================== */}

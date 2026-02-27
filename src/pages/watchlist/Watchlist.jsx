@@ -157,7 +157,7 @@ const WatchlistSection = ({ title, data, countLabel }) => {
 const Watchlist = () => {
   return (
     <section className="tp-section">
-      <div className="tp-container tp-watchlist-page">
+      <div className="tp-dashboard-container tp-watchlist-page">
 
         <div className="tp-watchlist-header">
           <h1>Watchlist</h1>

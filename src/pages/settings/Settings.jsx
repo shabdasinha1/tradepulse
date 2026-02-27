@@ -12,8 +12,8 @@ const dataSources = [
 const Settings = () => {
   return (
 
-      <section className="tp-section">
-        <div className="tp-container tp-grid-stack">
+      <section className="">
+        <div className="tp-dashboard-container tp-grid-stack">
 
           {/* ===============================
               PAGE HEADER

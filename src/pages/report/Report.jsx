@@ -37,7 +37,7 @@ const Report = () => {
   return (
 
       <section className="tp-section">
-        <div className="tp-container tp-grid-stack">
+        <div className="tp-dashboard-container tp-grid-stack">
 
           {/* ===============================
               PAGE HEADER
