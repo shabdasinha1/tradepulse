@@ -132,7 +132,7 @@ const MarketOverview = () => {
           header={
             <div className="tp-card-header">
               <FiDollarSign />
-              <h3 className="tp-card-title">Exchange Rates vs NGN</h3>
+              <h3 className="tp-card-title">Exchange Rates</h3>
             </div>
           }
         >
