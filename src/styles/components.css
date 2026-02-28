@@ -1,3 +1,56 @@
+/* ======================================
+   THEMED SCROLLBAR
+====================================== */
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--scrollbar-track);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+/* Apply ONLY where scroll actually exists */
+.tp-dashboard-main::-webkit-scrollbar {
+  width: 12px;
+}
+
+.tp-dashboard-main::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+.tp-dashboard-main::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 3px solid var(--scrollbar-track);
+}
+
+.tp-dashboard-main::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+.tp-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
 /* Cards */
 .tp-card {
   padding: var(--space-md);

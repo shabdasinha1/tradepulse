@@ -535,6 +535,8 @@
   margin-left: 240px;
   min-height: 100vh;
   /* padding: var(--space-lg); */
+    scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 /* ======================================

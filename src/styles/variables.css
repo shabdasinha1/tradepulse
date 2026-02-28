@@ -110,6 +110,10 @@
   --header-height: 64px;
   --footer-height: 280px;
 
+/* THEMED SCROLLBAR */
+  --scrollbar-track: #0f172a;
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: var(--clr-primary);
   
 }
 
@@ -150,6 +154,11 @@
       rgba(59, 92, 255, 0.1),
       transparent 55%),
     linear-gradient(180deg, #ffffff, #f9fbff);
+
+ /* THEMED SCROLLBAR */
+  --scrollbar-track: #f3f4f6;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: var(--clr-primary);
 }
 
 /* Dashboard header height */
