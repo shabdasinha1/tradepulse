@@ -3,17 +3,21 @@ import { DashboardTradeNews } from "../../services/DashboardService.jsx";
 import { FiGlobe } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 
-const LatestTradeNews = () => {
+const LatestTradeNews = ({ corridorId }) => {
   const [news, setNews] = useState([]);
   const scrollRef = useRef(null);
 
   /* ===============================
-     FETCH TRADE NEWS
+     FETCH TRADE NEWS (Corridor Scoped)
   ============================== */
   useEffect(() => {
+    if (!corridorId) return;
+
     const fetchNews = async () => {
       try {
-        const res = await DashboardTradeNews();
+        const res = await DashboardTradeNews({
+          corridor_id: corridorId,
+        });
 
         if (res?.success) {
           const formatted = res.data.map((item) => ({
@@ -31,7 +35,7 @@ const LatestTradeNews = () => {
     };
 
     fetchNews();
-  }, []);
+  }, [corridorId]);
 
   /* ===============================
      AUTO SCROLL (Only if > 3 news)
@@ -39,10 +43,6 @@ const LatestTradeNews = () => {
   useEffect(() => {
     const el = scrollRef.current;
 
-    // Stop scroll if:
-    // - No element
-    // - No news
-    // - News <= 3
     if (!el || news.length <= 3) {
       if (el) el.style.transform = "translateY(0px)";
       return;
@@ -109,7 +109,7 @@ const LatestTradeNews = () => {
             <div className="tp-card-header tp-news-header">
               <div className="tp-news-title-wrap">
                 <FiGlobe />
-                <h3 className="tp-card-title">Latest Trade News</h3>
+                <h3 className="tp-card-title">Corridor Alerts</h3>
               </div>
             </div>
           }
@@ -131,7 +131,6 @@ const LatestTradeNews = () => {
                 )
               )}
 
-              {/* Optional empty state */}
               {news.length === 0 && (
                 <div className="tp-news-item">
                   <p className="tp-news-title">

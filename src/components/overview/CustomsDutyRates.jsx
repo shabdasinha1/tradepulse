@@ -1,7 +1,6 @@
 import { FiBox } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 
-
 const duties = [
   {
     title: "Agricultural Products",
@@ -23,7 +22,7 @@ const duties = [
   },
 ];
 
-const CustomsDutyRates = () => {
+const CustomsDutyRates = ({ corridorId }) => {
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
@@ -32,7 +31,9 @@ const CustomsDutyRates = () => {
           header={
             <div className="tp-card-header">
               <FiBox />
-              <h3 className="tp-card-title">Customs Duty Rates</h3>
+              <h3 className="tp-card-title">
+                UK Import Duty Snapshot (Selected Corridor)
+              </h3>
             </div>
           }
         >

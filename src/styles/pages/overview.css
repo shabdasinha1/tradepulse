@@ -1,3 +1,27 @@
+/* ===============================
+   SUBHEADING + FILTER ALIGNMENT
+================================ */
+
+.tp-overview-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+
+.tp-overview-filter-btn {
+  padding: 12px 22px;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.tp-overview-filter-btn svg {
+  font-size: 20px;      /* slightly bigger icon */
+}
 /* ======================================
    OVERVIEW HERO TITLE (BIGGER)
 ====================================== */

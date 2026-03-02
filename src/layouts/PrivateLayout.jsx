@@ -2,6 +2,7 @@ import { useState } from "react";
 import DashboardSidebar from "../components/header/DashboardSidebar.jsx";
 import { DashboardFooter } from "../components/footer/DashboardFooter.jsx";
 import DashboardHeader from "../components/header/DashboardHeader.jsx";
+import CorridorFilterBar from "../components/common/CorridorFilterBar.jsx"; // 👈 added
 
 const PrivateLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +20,9 @@ const PrivateLayout = ({ children }) => {
         <DashboardHeader
           onMenuClick={() => setSidebarOpen(true)}
         />
+
+        {/* 👇 Global Corridor Filter */}
+        {/* <CorridorFilterBar /> */}
 
         <div className="tp-dashboard-scroll">
           {children}

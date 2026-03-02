@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import TPChart from "../common/TPChart.jsx";
 import TPMetricCard from "../common/TPMetricCard.jsx";
-import { DashboardPriceTrend, DemandGrowthForecast, ForecastOverview } from "../../services/DashboardService.jsx";
+import {
+  DashboardPriceTrend,
+  DemandGrowthForecast,
+  ForecastOverview,
+} from "../../services/DashboardService.jsx";
 
-const OverviewCharts = () => {
+const OverviewCharts = ({ corridorId }) => {
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
   const [priceData, setPriceData] = useState([]);
@@ -15,24 +19,24 @@ const OverviewCharts = () => {
     supplier: null,
   });
 
-
-
-
-
-
+  /* ===============================
+     PRICE TREND (Corridor Scoped)
+  ================================= */
   useEffect(() => {
-    if (!priceHsCode) return;
+    if (!priceHsCode || !corridorId) return;
 
     const fetchPriceTrend = async () => {
       try {
-        const res = await DashboardPriceTrend(priceHsCode);
+        const res = await DashboardPriceTrend({
+          hs: priceHsCode,
+          corridor_id: corridorId,
+        });
 
         const history = res?.data?.history || [];
 
         let formatted = [];
 
         if (history.length === 0) {
-          // 🔥 Default fallback years
           const defaultYears = ["2019", "2020", "2021", "2022", "2023"];
 
           formatted = defaultYears.map((year) => ({
@@ -47,11 +51,9 @@ const OverviewCharts = () => {
         }
 
         setPriceData(formatted);
-
       } catch (err) {
         console.error("Price Trend Error:", err);
 
-        // 🔥 Also fallback on error
         setPriceData([
           { month: "2019", value: 0 },
           { month: "2020", value: 0 },
@@ -63,16 +65,20 @@ const OverviewCharts = () => {
     };
 
     fetchPriceTrend();
-  }, [priceHsCode]);
+  }, [priceHsCode, corridorId]);
 
-
-
+  /* ===============================
+     DEMAND TREND (Corridor Scoped)
+  ================================= */
   useEffect(() => {
-    if (!demandHsCode) return;
+    if (!demandHsCode || !corridorId) return;
 
     const fetchDemandForecast = async () => {
       try {
-        const res = await DemandGrowthForecast(demandHsCode);
+        const res = await DemandGrowthForecast({
+          hs: demandHsCode,
+          corridor_id: corridorId,
+        });
 
         const forecast = res?.data?.forecast || [];
 
@@ -82,7 +88,6 @@ const OverviewCharts = () => {
         }));
 
         setDemandData(formatted);
-
       } catch (err) {
         console.error("Demand Forecast Error:", err);
         setDemandData([]);
@@ -90,12 +95,19 @@ const OverviewCharts = () => {
     };
 
     fetchDemandForecast();
-  }, [demandHsCode]);
+  }, [demandHsCode, corridorId]);
 
+  /* ===============================
+     OVERVIEW METRICS (Corridor Scoped)
+  ================================= */
   useEffect(() => {
+    if (!corridorId) return;
+
     const fetchOverview = async () => {
       try {
-        const res = await ForecastOverview();
+        const res = await ForecastOverview({
+          corridor_id: corridorId,
+        });
 
         if (res?.success) {
           setMetrics(res.data);
@@ -106,22 +118,20 @@ const OverviewCharts = () => {
     };
 
     fetchOverview();
-  }, []);
+  }, [corridorId]);
 
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
-        {/* METRICS ROW */}
         <div className="tp-metrics-row">
 
-          {/* 1️⃣ Currency */}
           <TPMetricCard
-            title="Currency Exchange Tracker"
+            title="FX Impact (Selected Corridor)"
             value={metrics.currency?.rate ?? 0}
             unit={metrics.currency?.pair || ""}
             footerLabel={
               metrics.currency?.direction === "Up"
-                ? "Currency strengthening"
+                ? "Recent FX movement affecting UK import costs"
                 : "Currency weakening"
             }
             trend={`${metrics.currency?.changePercent ?? 0}`}
@@ -130,21 +140,19 @@ const OverviewCharts = () => {
             }
           />
 
-          {/* 2️⃣ Shipping */}
           <TPMetricCard
-            title="Shipping Cost Trend"
+            title="Avg Shipping Cost (Selected Corridor)"
             value={`$${metrics.shipping?.average ?? 0}`}
             unit="per container"
-            footerLabel="Compared to last period"
+            footerLabel="Change over selected time range"
             trend={`${metrics.shipping?.changePercent ?? 0}`}
             trendDirection={
               (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
             }
           />
 
-          {/* 3️⃣ Demand */}
           <TPMetricCard
-            title="Product Demand Signal"
+            title="UK Import Demand Signal"
             value={`${metrics.demand?.percent ?? 0}%`}
             footerLabel={metrics.demand?.product || "No product"}
             trend={`${metrics.demand?.changePercent ?? 0}`}
@@ -153,11 +161,10 @@ const OverviewCharts = () => {
             }
           />
 
-          {/* 4️⃣ Supplier */}
           <TPMetricCard
-            title="Supplier Trust Score"
+            title="Exporter Reliability Score"
             value={`${metrics.supplier?.score ?? 0}/10`}
-            footerLabel="Supplier rating index"
+            footerLabel="Reliability score based on shipment consistency"
             trend={`${metrics.supplier?.changePercent ?? 0}`}
             trendDirection={
               (metrics.supplier?.changePercent ?? 0) < 0 ? "down" : "up"
@@ -166,28 +173,24 @@ const OverviewCharts = () => {
 
         </div>
 
-        {/* CHARTS */}
         <div className="tp-grid tp-grid-2">
           <TPChart
-            title="Product Price Trend"
+            title="Export Price Trend (Origin → UK)"
             type="line"
             data={priceData}
             series={[{ key: "value", label: "Price" }]}
             selectedProduct={priceHsCode}
             onSelectProduct={setPriceHsCode}
-
           />
 
           <TPChart
-            title="Demand Growth Forecast"
+            title="UK Import Demand Trend"
             type="area"
             data={demandData}
             series={[{ key: "value", label: "Demand" }]}
             selectedProduct={demandHsCode}
             onSelectProduct={setDemandHsCode}
-
           />
-
         </div>
       </div>
     </section>

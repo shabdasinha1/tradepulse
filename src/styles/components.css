@@ -544,6 +544,61 @@ input::placeholder {
   }
 }
 
+/* ===============================
+   CARD HEADER SPACING FIX
+================================ */
+
+.tp-card-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes filters to right */
+  gap: var(--space-xl);           /* more breathing space */
+}
+
+/* Title block */
+.tp-card-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+/* Filter block */
+.tp-card-filter-header .tp-universal-filter {
+  margin-left: auto;              /* force it fully right */
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.tp-card-filters {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.tp-card-filter {
+  min-width: 140px;
+  font-size: var(--fs-caption);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tp-card-filter-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .tp-card-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .tp-card-filter {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
 /* ======================================
    CHART HEADER WITH SEARCH (FIXED)
 ====================================== */
@@ -651,6 +706,46 @@ input::placeholder {
   box-shadow: none !important;
 }
 
+/* Chart header with filters */
+
+.tp-chart-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.tp-chart-filters {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.tp-chart-filter {
+  min-width: 140px;
+  font-size: var(--fs-caption);
+}
+
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tp-chart-filter-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .tp-chart-filters {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .tp-chart-filter {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .tp-chart-header {
@@ -689,5 +784,33 @@ input::placeholder {
   }
   .tp-forcast-filter input {
     max-width: 100%;
+  }
+}
+
+/* ===============================
+   UNIVERSAL FILTER
+================================ */
+
+.tp-universal-filter {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.tp-filter-control {
+  min-width: 140px;
+  font-size: var(--fs-caption);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tp-universal-filter {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .tp-filter-control {
+    flex: 1;
+    min-width: 120px;
   }
 }

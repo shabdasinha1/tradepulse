@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   LineChart,
   Line,
@@ -14,7 +14,7 @@ import {
   Legend,
 } from "recharts";
 import TradePulseCard from "../common/TradePulseCard";
-import { ProductDropdownSearch } from "../../services/DashboardService";
+import UniversalFilter from "../common/UniversalFilter"; // 👈 import here
 
 const TPChart = ({
   title,
@@ -22,17 +22,18 @@ const TPChart = ({
   data = [],
   xKey = "month",
   series = [],
-  onSelectProduct,
-  selectedProduct,
+  onFilterChange, // 👈 single unified callback
 }) => {
 
   /* ===============================
-     Y AXIS FORMATTER (NEW)
+     Y AXIS FORMATTER
   =============================== */
 
   const formatNumber = (num, divisor, suffix) => {
     const val = num / divisor;
-    return Number.isInteger(val) ? `${val}${suffix}` : `${val.toFixed(1)}${suffix}`;
+    return Number.isInteger(val)
+      ? `${val}${suffix}`
+      : `${val.toFixed(1)}${suffix}`;
   };
 
   const yAxisFormatter = (value) => {
@@ -43,18 +44,15 @@ const TPChart = ({
   };
 
   /* ===============================
-     RESPONSIVE HANDLING
+     RESPONSIVE
   =============================== */
 
-  const [isMobile, setIsMobile] = useState(
-    window.innerWidth < 640
-  );
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 640);
     };
-
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -65,55 +63,6 @@ const TPChart = ({
         .getPropertyValue("--radius-sm")
     );
   }, []);
-
-  /* ===============================
-     DROPDOWN STATE
-  =============================== */
-
-  const [productOptions, setProductOptions] = useState([]);
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    const loadDefaultProduct = async () => {
-      if (!selectedProduct) return;
-
-      try {
-        const res = await ProductDropdownSearch("");
-        const apiData = res?.data || [];
-
-        const formatted = apiData.map((item) => ({
-          ...item,
-          label: `${item.label} / ${item.value}`,
-        }));
-
-        const matched = formatted.find(
-          (item) => String(item.value) === String(selectedProduct)
-        );
-
-        if (matched) {
-          setSearch(matched.label);
-        }
-      } catch (err) {
-        console.error("Default dropdown load error:", err);
-      }
-    };
-
-    loadDefaultProduct();
-  }, [selectedProduct]);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  const filteredOptions = productOptions;
-
-  const handleSelect = (item) => {
-    setSearch(item.label);
-    setIsOpen(false);
-
-    if (onSelectProduct) {
-      onSelectProduct(item.value);
-    }
-  };
 
   /* ===============================
      TOOLTIP
@@ -149,46 +98,6 @@ const TPChart = ({
   };
 
   /* ===============================
-     DROPDOWN API
-  =============================== */
-
-  const fetchDropdownData = async (query = "") => {
-    try {
-      const res = await ProductDropdownSearch(query);
-      const apiData = res?.data || [];
-
-      const formatted = apiData.map((item) => ({
-        ...item,
-        label: `${item.label} / ${item.value}`,
-      }));
-
-      setProductOptions(formatted);
-    } catch (error) {
-      console.error("Dropdown fetch error:", error);
-    }
-  };
-
-  /* ===============================
-     CLICK OUTSIDE
-  =============================== */
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
-
-  /* ===============================
      CHART RENDER
   =============================== */
 
@@ -197,39 +106,11 @@ const TPChart = ({
       case "area":
         return (
           <AreaChart data={data}>
-            <defs>
-              <linearGradient id="tpPrimaryGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--clr-primary)"
-                  stopOpacity={0.35}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--clr-primary)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
-            </defs>
-
             <CartesianGrid stroke="var(--border-soft)" strokeDasharray="3 3" />
-
-            <XAxis
-              dataKey={xKey}
-              interval={isMobile ? "preserveStartEnd" : 0}
-              minTickGap={isMobile ? 20 : 10}
-              {...commonAxisProps}
-            />
-
-            <YAxis
-              width={isMobile ? 35 : 60}
-              tickFormatter={yAxisFormatter}
-              {...commonAxisProps}
-            />
-
+            <XAxis dataKey={xKey} {...commonAxisProps} />
+            <YAxis tickFormatter={yAxisFormatter} {...commonAxisProps} />
             {renderTooltip()}
             <Legend />
-
             {series.map((item, index) => (
               <Area
                 key={index}
@@ -237,7 +118,7 @@ const TPChart = ({
                 dataKey={item.key}
                 name={item.label}
                 stroke="var(--clr-primary)"
-                fill="url(#tpPrimaryGradient)"
+                fill="var(--clr-primary-soft)"
                 strokeWidth={2}
                 dot={false}
               />
@@ -249,23 +130,10 @@ const TPChart = ({
         return (
           <BarChart data={data}>
             <CartesianGrid stroke="var(--border-soft)" strokeDasharray="3 3" />
-
-            <XAxis
-              dataKey={xKey}
-              interval={isMobile ? "preserveStartEnd" : 0}
-              minTickGap={isMobile ? 20 : 10}
-              {...commonAxisProps}
-            />
-
-            <YAxis
-              width={isMobile ? 35 : 60}
-              tickFormatter={yAxisFormatter}
-              {...commonAxisProps}
-            />
-
+            <XAxis dataKey={xKey} {...commonAxisProps} />
+            <YAxis tickFormatter={yAxisFormatter} {...commonAxisProps} />
             {renderTooltip()}
             <Legend />
-
             {series.map((item, index) => (
               <Bar
                 key={index}
@@ -274,7 +142,6 @@ const TPChart = ({
                 fill="var(--clr-primary-soft)"
                 stroke="var(--clr-primary)"
                 radius={[radiusSm, radiusSm, 0, 0]}
-                activeBar={false}
               />
             ))}
           </BarChart>
@@ -284,45 +151,19 @@ const TPChart = ({
         return (
           <LineChart data={data}>
             <CartesianGrid stroke="var(--border-soft)" strokeDasharray="3 3" />
-
-            <XAxis
-              dataKey={xKey}
-              interval={isMobile ? "preserveStartEnd" : 0}
-              minTickGap={isMobile ? 20 : 10}
-              {...commonAxisProps}
-            />
-
-            <YAxis
-              width={isMobile ? 35 : 60}
-              tickFormatter={yAxisFormatter}
-              {...commonAxisProps}
-            />
-
+            <XAxis dataKey={xKey} {...commonAxisProps} />
+            <YAxis tickFormatter={yAxisFormatter} {...commonAxisProps} />
             {renderTooltip()}
             <Legend />
-
             {series.map((item, index) => (
               <Line
                 key={index}
                 type="monotone"
                 dataKey={item.key}
                 name={item.label}
-                stroke={
-                  item.variant === "neutral"
-                    ? "var(--text-secondary)"
-                    : "var(--clr-primary)"
-                }
-                strokeDasharray={item.dashed ? "6 4" : ""}
+                stroke="var(--clr-primary)"
                 strokeWidth={2}
-                dot={{
-                  r: 3,
-                  fill: "var(--clr-primary)",
-                  stroke: "var(--bg-card)",
-                  strokeWidth: 2,
-                }}
-                activeDot={{
-                  r: 5,
-                }}
+                dot={false}
               />
             ))}
           </LineChart>
@@ -333,49 +174,23 @@ const TPChart = ({
   return (
     <TradePulseCard
       header={
-        <div className="tp-chart-header">
+        <div className="tp-chart-header tp-chart-filter-header">
           <h4 className="tp-section-title">{title}</h4>
 
-          <div className="tp-chart-search-wrapper">
-            <div className="tp-chart-search" ref={dropdownRef}>
-              <input
-                type="text"
-                className="tp-input tp-chart-search-input"
-                placeholder="Search product..."
-                value={search}
-                onFocus={() => {
-                  setIsOpen(true);
-                  fetchDropdownData("");
-                }}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setSearch(value);
-                  setIsOpen(true);
-                  fetchDropdownData(value);
-                }}
-              />
-
-              {isOpen && (
-                <div className="tp-chart-dropdown">
-                  {filteredOptions.length > 0 ? (
-                    filteredOptions.map((item) => (
-                      <div
-                        key={item.value}
-                        className="tp-chart-option"
-                        onClick={() => handleSelect(item)}
-                      >
-                        {item.label}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="tp-chart-option tp-chart-option-muted">
-                      No results
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+          {/* 👇 Independent Filter Instance */}
+          <UniversalFilter
+            showCorridor
+            showProduct
+            showTimeRange
+            defaultValues={{
+              corridor: "",
+              product: "",
+              timeRange: "90d",
+            }}
+            onChange={(filters) => {
+              onFilterChange?.(filters);
+            }}
+          />
         </div>
       }
     >

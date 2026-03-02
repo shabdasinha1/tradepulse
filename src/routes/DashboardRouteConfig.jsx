@@ -16,40 +16,40 @@ const Settings = lazy(() => import("../pages/settings/Settings.jsx"));
 
 export const DASHBOARD_ROUTES = [
   {
-    label: " Dashboard Overview",
+    label: " Corridor Intelligence Dashboard",
     path: "/overview",
     component: Overview,
   },
   {
-    label: "Product Intelligence",
+    label: "Corridor Product Intelligence",
     path: "/product",
     component: DashboardProduct,
   },
   {
-    label: "Suppliers Intelligence",
+    label: "Exporter Reliability Intelligence",
     path: "/suppliers",
     component: Suppliers,
   },
-  {
-    label: "Market Forecast",
-    path: "/forecast",
-    component: Forecast,
-  },
-  {
-    label: "Reports",
-    path: "/reports",
-    component: Report,
-  },
-  {
-    label: "Watchlist",
-    path: "/watchlist",
-    component: Watchlist,
-  },
-  {
-    label: "AI Trade Assistant",
-    path: "/ai-assistant",
-    component: TradeAssistant,
-  },
+  // {
+  //   label: "Corridor FX & Cost Impact Monitort",
+  //   path: "/forecast",
+  //   component: Forecast,
+  // },
+  // {
+  //   label: "Reports",
+  //   path: "/reports",
+  //   component: Report,
+  // },
+  // {
+  //   label: "Watchlist",
+  //   path: "/watchlist",
+  //   component: Watchlist,
+  // },
+  // {
+  //   label: "AI Trade Assistant",
+  //   path: "/ai-assistant",
+  //   component: TradeAssistant,
+  // },
   {
     label: "Settings",
     path: "/settings",

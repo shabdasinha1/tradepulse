@@ -21,7 +21,6 @@ const DashboardHeader = ({ onMenuClick }) => {
   const [initials, setInitials] = useState("");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 428);
 
-
   const profileRef = useRef(null);
 
   /* =========================
@@ -40,26 +39,30 @@ const DashboardHeader = ({ onMenuClick }) => {
   /* =========================
      CLICK OUTSIDE CLOSE
   ========================== */
- useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (profileRef.current && !profileRef.current.contains(e.target)) {
-      setProfileOpen(false);
-    }
-  };
-
-  document.addEventListener("click", handleClickOutside);
-  return () =>
-    document.removeEventListener("click", handleClickOutside);
-}, []);
-
   useEffect(() => {
-  const handleResize = () => {
-    setIsMobile(window.innerWidth <= 428);
-  };
+    const handleClickOutside = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
 
-  window.addEventListener("resize", handleResize);
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
+    document.addEventListener("click", handleClickOutside);
+    return () =>
+      document.removeEventListener("click", handleClickOutside);
+  }, []);
+
+  /* =========================
+     RESPONSIVE CHECK
+  ========================== */
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 428);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   /* =========================
      LOGOUT
   ========================== */
@@ -69,83 +72,84 @@ const DashboardHeader = ({ onMenuClick }) => {
     RemoveCookie("tp_user_last_name");
     navigate("/", { replace: true });
   };
-return (
-  <div className="tp-dashboard-header">
 
-    {/* LEFT */}
-    <div className="tp-dashboard-header-left">
-      <button
-        className="tp-header-menu-btn"
-        onClick={onMenuClick}
-      >
-        ☰
-      </button>
-    </div>
+  return (
+    <div className="tp-dashboard-header">
 
-    {/* CENTER TITLE */}
-    <div className="tp-dashboard-header-center">
-      <h2 className="tp-dashboard-platform-title">
-       Cross Border Trade Intelligence Dashboard
-      </h2>
-    </div>
+      {/* LEFT */}
+      <div className="tp-dashboard-header-left">
+        <button
+          className="tp-header-menu-btn"
+          onClick={onMenuClick}
+        >
+          ☰
+        </button>
+      </div>
 
-    {/* RIGHT */}
-    <div className="tp-dashboard-header-right">
-      <button className="tp-dashboard-icon-btn">
-        <FiBell />
-      </button>
+      {/* CENTER TITLE */}
+      <div className="tp-dashboard-header-center">
+        <h2 className="tp-dashboard-platform-title">
+          Corridor Intelligence Dashboard
+        </h2>
+      </div>
 
-      {!isMobile && (
+      {/* RIGHT */}
+      <div className="tp-dashboard-header-right">
+        <button className="tp-dashboard-icon-btn">
+          <FiBell />
+        </button>
+
+        {!isMobile && (
+          <button
+            className="tp-dashboard-icon-btn"
+            onClick={() => navigate("/settings")}
+          >
+            <FiSettings />
+          </button>
+        )}
+
         <button
           className="tp-dashboard-icon-btn"
-          onClick={() => navigate("/settings")}
+          onClick={toggleTheme}
         >
-          <FiSettings />
+          {theme === "dark" ? <FiSun /> : <FiMoon />}
         </button>
-      )}
 
-      <button
-        className="tp-dashboard-icon-btn"
-        onClick={toggleTheme}
-      >
-        {theme === "dark" ? <FiSun /> : <FiMoon />}
-      </button>
-
-      <div className="tp-profile" ref={profileRef}>
-        <div
-          className="tp-avatar"
-          onClick={() => setProfileOpen((prev) => !prev)}
-        >
-          {initials || "U"}
-        </div>
-
-        {profileOpen && (
-          <div className="tp-profile-dropdown">
-
-            {isMobile && (
-              <button
-                onClick={() => {
-                  navigate("/settings");
-                  setProfileOpen(false);
-                }}
-              >
-                <FiSettings />
-                Settings
-              </button>
-            )}
-
-            <button onClick={handleLogout}>
-              <FiLogOut />
-              Logout
-            </button>
-
+        <div className="tp-profile" ref={profileRef}>
+          <div
+            className="tp-avatar"
+            onClick={() => setProfileOpen((prev) => !prev)}
+          >
+            {initials || "U"}
           </div>
-        )}
-      </div>
-    </div>
 
-  </div>
-);
+          {profileOpen && (
+            <div className="tp-profile-dropdown">
+
+              {isMobile && (
+                <button
+                  onClick={() => {
+                    navigate("/settings");
+                    setProfileOpen(false);
+                  }}
+                >
+                  <FiSettings />
+                  Settings
+                </button>
+              )}
+
+              <button onClick={handleLogout}>
+                <FiLogOut />
+                Logout
+              </button>
+
+            </div>
+          )}
+        </div>
+      </div>
+
+    </div>
+  );
 };
 
 export default DashboardHeader;
