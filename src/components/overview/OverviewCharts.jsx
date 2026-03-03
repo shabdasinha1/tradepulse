@@ -18,6 +18,7 @@ const OverviewCharts = ({ corridorId }) => {
     demand: null,
     supplier: null,
   });
+  const [budget, setBudget] = useState(250000);
 
   /* ===============================
      PRICE TREND (Corridor Scoped)
@@ -120,6 +121,28 @@ const OverviewCharts = ({ corridorId }) => {
     fetchOverview();
   }, [corridorId]);
 
+  /* ===============================
+   MARGIN IMPACT CALCULATION
+================================= */
+
+const fxPercent = metrics.currency?.changePercent ?? 0;
+const numericBudget = Number(budget) || 0;
+const impact = (numericBudget * fxPercent) / 100;
+
+let severity = "Low";
+let severityClass = "tp-pill-success";
+
+if (Math.abs(fxPercent) >= 1 && Math.abs(fxPercent) < 2) {
+  severity = "Medium";
+  severityClass = "tp-pill-warning";
+}
+
+if (Math.abs(fxPercent) >= 2) {
+  severity = "High";
+  severityClass = "tp-text-down";
+}
+
+
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
@@ -172,6 +195,7 @@ const OverviewCharts = ({ corridorId }) => {
           />
 
         </div>
+      
 
         <div className="tp-grid tp-grid-2">
           <TPChart

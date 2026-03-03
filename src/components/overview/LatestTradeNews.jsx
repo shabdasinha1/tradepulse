@@ -7,9 +7,6 @@ const LatestTradeNews = ({ corridorId }) => {
   const [news, setNews] = useState([]);
   const scrollRef = useRef(null);
 
-  /* ===============================
-     FETCH TRADE NEWS (Corridor Scoped)
-  ============================== */
   useEffect(() => {
     if (!corridorId) return;
 
@@ -37,9 +34,6 @@ const LatestTradeNews = ({ corridorId }) => {
     fetchNews();
   }, [corridorId]);
 
-  /* ===============================
-     AUTO SCROLL (Only if > 3 news)
-  ============================== */
   useEffect(() => {
     const el = scrollRef.current;
 
@@ -52,20 +46,14 @@ const LatestTradeNews = ({ corridorId }) => {
     let position = 0;
     let isPaused = false;
     const speed = 0.6;
-
     const contentHeight = el.scrollHeight / 2 || 0;
 
     const animate = () => {
       if (!isPaused) {
         position += speed;
-
-        if (position >= contentHeight) {
-          position = 0;
-        }
-
+        if (position >= contentHeight) position = 0;
         el.style.transform = `translateY(-${position}px)`;
       }
-
       animationFrame = requestAnimationFrame(animate);
     };
 
@@ -84,9 +72,6 @@ const LatestTradeNews = ({ corridorId }) => {
     };
   }, [news]);
 
-  /* ===============================
-     TIME FORMATTER
-  ============================== */
   const formatTimeAgo = (dateString) => {
     const now = new Date();
     const published = new Date(dateString);
@@ -102,47 +87,41 @@ const LatestTradeNews = ({ corridorId }) => {
   };
 
   return (
-    <section className="tp-section">
-      <div className="tp-dashboard-container">
-        <TradePulseCard
-          header={
-            <div className="tp-card-header tp-news-header">
-              <div className="tp-news-title-wrap">
-                <FiGlobe />
-                <h3 className="tp-card-title">Corridor Alerts</h3>
-              </div>
-            </div>
-          }
-        >
-          <div className="tp-news-viewport">
-            <div ref={scrollRef} className="tp-news-scroll">
-              {(news.length > 3 ? [...news, ...news] : news).map(
-                (item, i) => (
-                  <div key={i} className="tp-news-item">
-                    <div className="tp-news-content">
-                      <p className="tp-news-title">{item.title}</p>
-                      <span className="tp-news-time">{item.time}</span>
-                    </div>
-
-                    <span className="tp-badge tp-badge-primary">
-                      {item.tag}
-                    </span>
-                  </div>
-                )
-              )}
-
-              {news.length === 0 && (
-                <div className="tp-news-item">
-                  <p className="tp-news-title">
-                    No trade updates available
-                  </p>
-                </div>
-              )}
-            </div>
+    <TradePulseCard
+      header={
+        <div className="tp-card-header tp-news-header">
+          <div className="tp-news-title-wrap">
+            <FiGlobe />
+            <h3 className="tp-card-title">Corridor Alerts</h3>
           </div>
-        </TradePulseCard>
+        </div>
+      }
+    >
+      <div className="tp-news-viewport">
+        <div ref={scrollRef} className="tp-news-scroll">
+          {(news.length > 3 ? [...news, ...news] : news).map((item, i) => (
+            <div key={i} className="tp-news-item">
+              <div className="tp-news-content">
+                <p className="tp-news-title">{item.title}</p>
+                <span className="tp-news-time">{item.time}</span>
+              </div>
+
+              <span className="tp-badge tp-badge-primary">
+                {item.tag}
+              </span>
+            </div>
+          ))}
+
+          {news.length === 0 && (
+            <div className="tp-news-item">
+              <p className="tp-news-title">
+                No trade updates available
+              </p>
+            </div>
+          )}
+        </div>
       </div>
-    </section>
+    </TradePulseCard>
   );
 };
 

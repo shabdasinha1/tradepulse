@@ -410,3 +410,141 @@
     grid-template-columns: repeat(1, 1fr);
   }
 }
+
+
+/* ======================================
+   MARGIN IMPACT ESTIMATOR
+====================================== */
+
+.tp-margin-estimator {
+  /* margin-bottom: var(--space-xl);   */
+  padding: var(--space-lg);
+}
+
+/* Header */
+.tp-margin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.tp-margin-title {
+  margin-bottom: 4px;
+}
+
+/* Content Layout */
+.tp-margin-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+}
+
+/* Input */
+.tp-margin-input {
+  max-width: 260px;
+  width: 100%;
+}
+
+/* Result */
+.tp-margin-result {
+  text-align: right;
+  min-width: 220px;
+}
+
+.tp-margin-value {
+  margin: 6px 0 10px 0;
+}
+
+/* ======================================
+   RESPONSIVE IMPROVEMENTS
+====================================== */
+
+/* Large Tablet */
+@media (max-width: 1024px) {
+  .tp-margin-content {
+    gap: var(--space-lg);
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+
+  .tp-margin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tp-margin-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-lg);
+  }
+
+  .tp-margin-result {
+    text-align: left;
+    min-width: unset;
+    width: 100%;
+  }
+
+  .tp-margin-input {
+    max-width: 100%;
+  }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+
+  .tp-margin-estimator {
+    padding: var(--space-md);
+  }
+
+  .tp-margin-value {
+    font-size: var(--fs-xl);
+  }
+}
+
+/* ======================================
+   NEWS + MARGIN 50/50 LAYOUT
+====================================== */
+
+.tp-news-margin-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-xl);
+  align-items: stretch;
+}
+
+.tp-news-column,
+.tp-margin-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.tp-news-column .tp-card,
+.tp-margin-column .tp-card {
+  height: 100%;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .tp-news-margin-layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .tp-news-margin-layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -6,6 +6,7 @@ import { DashboardSuppliers } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import { FiSliders } from "react-icons/fi";
 import GlobalFilterPanel from '../../components/global/GlobalFilterPanel.jsx'; // ✅ added
+import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 
 
 const LIMIT = 5;
@@ -133,7 +134,7 @@ const [filterOpen, setFilterOpen] = useState(false);
               </button>
           </div>
         </header>
-
+<PageDisclaimer/>
         <TradePulseCard
           header={
             <div className="tp-card-header tp-supplier-header">

@@ -10,6 +10,7 @@ import VerticalScroll from "../../components/common/VerticalScroll";
 import { IoIosTrendingDown, IoIosTrendingUp } from "react-icons/io";
 import { FiSliders } from "react-icons/fi";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
+import PageDisclaimer from "../../components/common/PageDisclaimer";
 
 /* ===============================
    SKELETON COMPONENTS
@@ -198,6 +199,7 @@ const DashboardProduct = () => {
     </button>
   </div>
 </header>
+<PageDisclaimer/>
         {isLoading && <ProductOverviewSkeleton />}
 
         {!isLoading && (
