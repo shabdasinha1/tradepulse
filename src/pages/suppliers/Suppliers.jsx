@@ -154,7 +154,7 @@ const [filterOpen, setFilterOpen] = useState(false);
                 <span className="text-center">Reliability Score</span>
                 <span className="text-center">Activity Level</span>
                 <span className="text-center">Shipment Frequency (Last 12M)</span>
-                <span />
+                {/* <span /> */}
               </div>
 
               <div className="tp-table">
@@ -192,11 +192,11 @@ const [filterOpen, setFilterOpen] = useState(false);
 
                     <strong className="text-center">{s.trade_count}</strong>
 
-                    <a className="supplier-link text-center">
+                    {/* <a className="supplier-link text-center">
                       {s.catalog_size}
                     </a>
 
-                    <FiStar className="tp-star" />
+                    <FiStar className="tp-star" /> */}
                   </div>
                 ))}
 

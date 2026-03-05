@@ -567,13 +567,14 @@
    MOBILE SIDEBAR (ONLY BELOW 428px)
 ====================================== */
 
-@media (max-width: 428px) {
+/* @media (max-width: 428px) { */
+@media (max-width: 768px){
 
   .tp-sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 300;
-    width: 240px !important;
+    width: 240px !important;  
   }
    .tp-sidebar.collapsed {
     width: 240px !important;
@@ -656,7 +657,8 @@
   backdrop-filter: blur(2px);
   z-index: 250; /* BELOW sidebar */
 }
-@media (max-width: 428px) {
+/* @media (max-width: 428px) { */
+@media (max-width: 768px) {
 
   .tp-dashboard-main {
     position: relative;
@@ -939,7 +941,7 @@
 }
 
 /* Only show below 428px */
-@media (max-width: 428px) {
+@media (max-width: 768px) {
   .tp-header-menu-btn {
     display: flex;
   }

@@ -51,14 +51,14 @@
 .tp-table-head,
 .tp-table-row {
   display: grid;
-  grid-template-columns:
+  /* grid-template-columns:
     1.6fr
     1fr
     0.8fr
     0.9fr
     0.7fr
     1fr
-    40px;
+    40px; */
   align-items: center;
   gap: var(--space-md);
 }

@@ -43,12 +43,12 @@ function Overview() {
   ============================== */
 
   useEffect(() => {
-    const first = GetCookie("tp_user_first_name");
-    const last = GetCookie("tp_user_last_name");
+    const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "");
 
-    if (first || last) {
-      setDisplayName(`${first || ""} ${last || ""}`.trim());
-    }
+    const first = capitalize(GetCookie("tp_user_first_name"));
+    const last = capitalize(GetCookie("tp_user_last_name"));
+
+    setDisplayName(`${first} ${last}`.trim());
   }, []);
 
   return (
@@ -77,7 +77,7 @@ function Overview() {
               </button>
             </div>
           </header>
-          <PageDisclaimer/>
+          <PageDisclaimer />
         </div>
       </section>
 
@@ -91,9 +91,7 @@ function Overview() {
       ============================== */}
       <section className="tp-section">
         <div className="tp-dashboard-container">
-
           <div className="tp-news-margin-layout">
-
             {/* LEFT 50% – NEWS */}
             <div className="tp-news-column">
               <LatestTradeNews corridorId={corridorId} />
@@ -101,42 +99,31 @@ function Overview() {
 
             {/* RIGHT 50% – MARGIN */}
             <div className="tp-margin-column">
-
               <div className="tp-card tp-margin-estimator">
-
                 <div className="tp-margin-header">
                   <div>
-                    <h3 className="tp-margin-title">
-                      Margin Impact Estimator
-                    </h3>
+                    <h3 className="tp-margin-title">Margin Impact Estimator</h3>
                     <p className="tp-muted">
                       Estimate FX impact on your import exposure
                     </p>
                   </div>
 
-                  <span className="tp-badge tp-badge-primary">
-                    Simple MVP
-                  </span>
+                  <span className="tp-badge tp-badge-primary">Simple MVP</span>
                 </div>
 
                 <div className="tp-margin-content">
-
                   <div className="tp-form-group tp-margin-input">
                     <label>Estimated Import Budget (£)</label>
                     <input
                       type="number"
                       className="tp-input"
                       value={budget}
-                      onChange={(e) =>
-                        setBudget(Number(e.target.value))
-                      }
+                      onChange={(e) => setBudget(Number(e.target.value))}
                     />
                   </div>
 
                   <div className="tp-margin-result">
-                    <p className="tp-muted">
-                      Estimated FX Impact
-                    </p>
+                    <p className="tp-muted">Estimated FX Impact</p>
 
                     <h2 className="tp-margin-value">
                       {impact >= 0 ? "+" : "-"}£
@@ -147,14 +134,10 @@ function Overview() {
                       {severity} Risk
                     </span>
                   </div>
-
                 </div>
               </div>
-
             </div>
-
           </div>
-
         </div>
       </section>
 
@@ -164,11 +147,7 @@ function Overview() {
       <MarketOverview corridorId={corridorId} />
       <CustomsDutyRates corridorId={corridorId} />
 
-      {filterOpen && (
-        <GlobalFilterPanel
-          onClose={() => setFilterOpen(false)}
-        />
-      )}
+      {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
     </>
   );
 }

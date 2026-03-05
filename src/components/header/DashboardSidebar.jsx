@@ -46,11 +46,11 @@ const DashboardSidebar = ({ open, setOpen }) => {
   ========================== */
 const location = useLocation();
   const [profileOpen, setProfileOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 428);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   // Persistent collapse state
   const [collapsed, setCollapsed] = useState(() => {
-    if (window.innerWidth <= 428) return false;
+    if (window.innerWidth <= 768) return false;
     return localStorage.getItem("tp_sidebar_collapsed") === "true";
   });
   const [initials, setInitials] = useState("");
@@ -115,7 +115,7 @@ const location = useLocation();
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 428);
+      setIsMobile(window.innerWidth <= 768);
     };
 
     window.addEventListener("resize", handleResize);
