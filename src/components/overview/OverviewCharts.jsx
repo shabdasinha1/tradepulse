@@ -155,7 +155,8 @@ if (Math.abs(fxPercent) >= 2) {
             footerLabel={
               metrics.currency?.direction === "Up"
                 ? "Recent FX movement affecting UK import costs"
-                : "Currency weakening"
+                // : "Currency weakening"
+                : "Current exchange rate movement affecting UK import cost."
             }
             trend={`${metrics.currency?.changePercent ?? 0}`}
             trendDirection={
@@ -167,7 +168,8 @@ if (Math.abs(fxPercent) >= 2) {
             title="Avg Shipping Cost (Selected Corridor)"
             value={`$${metrics.shipping?.average ?? 0}`}
             unit="per container"
-            footerLabel="Change over selected time range"
+            // footerLabel="Change over selected time range"
+            footerLabel="Average container cost within selected trade corridor."
             trend={`${metrics.shipping?.changePercent ?? 0}`}
             trendDirection={
               (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
@@ -177,7 +179,8 @@ if (Math.abs(fxPercent) >= 2) {
           <TPMetricCard
             title="UK Import Demand Signal"
             value={`${metrics.demand?.percent ?? 0}%`}
-            footerLabel={metrics.demand?.product || "No product"}
+            // footerLabel={metrics.demand?.product || "No product"}
+            footerLabel={metrics.demand?.product || "Trend of UK import demand for selected product"}
             trend={`${metrics.demand?.changePercent ?? 0}`}
             trendDirection={
               (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
@@ -187,7 +190,8 @@ if (Math.abs(fxPercent) >= 2) {
           <TPMetricCard
             title="Exporter Reliability Score"
             value={`${metrics.supplier?.score ?? 0}/10`}
-            footerLabel="Reliability score based on shipment consistency"
+            footerLabel="Aggregate reliability index based on activity frequency and volatilityconsistency"
+            // footerLabel="Reliability score based on shipment consistency"
             trend={`${metrics.supplier?.changePercent ?? 0}`}
             trendDirection={
               (metrics.supplier?.changePercent ?? 0) < 0 ? "down" : "up"
