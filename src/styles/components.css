@@ -193,8 +193,8 @@
 
 /* Section headings */
 .tp-section-title {
-  /* font-size: var(--fs-2xl); */
-  font-size: var(--fs-3xl);
+  font-size: var(--fs-xl);
+  /* font-size: var(--fs-3xl); */
   font-family: var(--font-heading);
   margin-bottom: var(--space-xs);
   letter-spacing: -0.03em;
@@ -506,7 +506,8 @@ input::placeholder {
 }
 
 .tp-metric-value {
-  font-size: clamp(var(--fs-xl), 2.5vw, var(--fs-3xl));
+  /* font-size: clamp(var(--fs-xl), 2.5vw, var(--fs-3xl)); */
+  font-size: var(--fs-xl);
   font-weight: var(--fw-semibold);
   line-height: 1.1;
 }
@@ -950,19 +951,26 @@ input::placeholder {
 
 /* Hover option */
 .tp-select__option--is-focused {
-  background: rgba(80, 110, 255, 0.08);
+  background: var(--clr-primary-soft) !important;
 }
 
 /* Selected option */
 .tp-select__option--is-selected {
-  background: var(--clr-primary);
-  color: white;
+  background: var(--clr-primary) !important;
+  /* color: white; */
 }
 
 /* Remove separator */
 .tp-select__indicator-separator {
   display: none;
 }
-.css-tj5bde-Svg{
+.css-tj5bde-Svg {
   display: none !important;
+}
+.css-1nmdiq5-menu {
+  z-index: 999 !important;
+}
+.tp-select__input-container input{
+  background-color: transparent;
+  color:var(--text-primary) !important;
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetCookie } from "../../utils/CookieManager.jsx";
-import { FiSliders } from "react-icons/fi";
+import { FiDollarSign, FiSliders } from "react-icons/fi";
 
 import CustomsDutyRates from "../../components/overview/CustomsDutyRates.jsx";
 import LatestTradeNews from "../../components/overview/LatestTradeNews.jsx";
@@ -9,6 +9,8 @@ import MarketOverview from "../../components/overview/MarketOverview.jsx";
 import OverviewCharts from "../../components/overview/OverviewCharts.jsx";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
+// import { FiCalculator } from "react-icons/fi";
+import { IoCalculatorOutline } from "react-icons/io5";
 
 function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
@@ -102,7 +104,15 @@ function Overview() {
               <div className="tp-card tp-margin-estimator">
                 <div className="tp-margin-header">
                   <div>
-                    <h3 className="tp-margin-title">Margin Impact Estimator</h3>
+                    <span className="tp-news-title-wrap">
+
+                      <IoCalculatorOutline className="tp-title-icon" />
+                    <h3 className="tp-margin-title">
+                      {" "}
+                      {/* <FiDollarSign className="tp-title-icon" /> */}
+                      Margin Impact Estimator
+                    </h3>
+                    </span>
                     <p className="tp-muted">
                       Estimate FX impact on your import exposure
                     </p>

@@ -5,9 +5,9 @@ import { FiPlus, FiStar } from "react-icons/fi";
 import { DashboardSuppliers } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import { FiSliders } from "react-icons/fi";
-import GlobalFilterPanel from '../../components/global/GlobalFilterPanel.jsx'; // ✅ added
+import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx"; // ✅ added
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
-
+import UniversalFilter from "../../components/common/UniversalFilter.jsx";
 
 const LIMIT = 5;
 
@@ -31,7 +31,7 @@ const SupplierRowSkeleton = () => {
 
 const Suppliers = () => {
   const corridorId = useSelector((state) => state.corridor.corridorId);
-const [filterOpen, setFilterOpen] = useState(false); 
+  const [filterOpen, setFilterOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [suppliers, setSuppliers] = useState([]);
@@ -40,6 +40,13 @@ const [filterOpen, setFilterOpen] = useState(false);
 
   const observerRef = useRef(null);
   const tableScrollRef = useRef(null);
+
+  const [filters, setFilters] = useState({
+    corridor: corridorId || "",
+    product: "",
+    riskScore: "",
+    activityStatus: "",
+  });
 
   /* ===============================
      RESET WHEN CORRIDOR CHANGES
@@ -105,7 +112,7 @@ const [filterOpen, setFilterOpen] = useState(false);
         root: tableScrollRef.current,
         threshold: 0.1,
         rootMargin: "100px",
-      }
+      },
     );
 
     observer.observe(observerRef.current);
@@ -116,44 +123,59 @@ const [filterOpen, setFilterOpen] = useState(false);
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
-
         <header>
           <h1 className="tp-section-title">
             Exporter Reliability <span>Intelligence</span>
           </h1>
           <div className="tp-overview-sub-row">
-          <p className="tp-section-sub">
-            Structured exporter activity insights within selected corridor.
-          </p>
-           <button
-                className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setFilterOpen(true)}
-              >
-                <FiSliders />
-                Filters
-              </button>
+            <p className="tp-section-sub">
+              Structured exporter activity insights within selected corridor.
+            </p>
+            <button
+              className="tp-btn-outline tp-overview-filter-btn"
+              onClick={() => setFilterOpen(true)}
+            >
+              <FiSliders />
+              Filters
+            </button>
           </div>
         </header>
-<PageDisclaimer/>
+        <PageDisclaimer />
         <TradePulseCard
           header={
             <div className="tp-card-header tp-supplier-header">
-              {/* <h3 className="tp-card-title">Supplier Directory</h3>
-              <button className="tp-btn-primary tp-btn-sm">
+              <h3 className="tp-card-title">Supplier Directory</h3>
+              {/*<button className="tp-btn-primary tp-btn-sm">
                 <FiPlus /> Add Supplier
               </button> */}
+              <UniversalFilter
+                showCorridor
+                showProduct
+                showRiskLevel
+                showActivityStatus
+                defaultValues={{
+                  corridor: corridorId || "",
+                  product: "",
+                  riskScore: "",
+                  activityStatus: "",
+                }}
+                onChange={(values) => {
+                  setFilters(values);
+                }}
+              />
             </div>
           }
         >
           <div className="tp-table-wrapper-suppliers" ref={tableScrollRef}>
             <div className="tp-table-hr-scroll">
-
               <div className="tp-table-head tp-table-suppliers">
                 <span>Exporter Name</span>
                 <span className="text-center">Origin Country</span>
                 <span className="text-center">Reliability Score</span>
                 <span className="text-center">Activity Level</span>
-                <span className="text-center">Shipment Frequency (Last 12M)</span>
+                <span className="text-center">
+                  Shipment Frequency (Last 12M)
+                </span>
                 {/* <span /> */}
               </div>
 
@@ -212,9 +234,7 @@ const [filterOpen, setFilterOpen] = useState(false);
                   className="text-center tp-muted"
                   style={{ padding: 16 }}
                 >
-                  {isLoading
-                    ? "Loading more suppliers..."
-                    : "Scroll for more"}
+                  {isLoading ? "Loading more suppliers..." : "Scroll for more"}
                 </div>
               )}
 
@@ -231,9 +251,7 @@ const [filterOpen, setFilterOpen] = useState(false);
           </div>
         </TradePulseCard>
       </div>
-      {filterOpen && (
-        <GlobalFilterPanel onClose={() => setFilterOpen(false)} />
-      )}
+      {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
     </section>
   );
 };

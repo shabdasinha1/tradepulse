@@ -11,6 +11,7 @@ import { IoIosTrendingDown, IoIosTrendingUp } from "react-icons/io";
 import { FiSliders } from "react-icons/fi";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
 import PageDisclaimer from "../../components/common/PageDisclaimer";
+import UniversalFilter from "../../components/common/UniversalFilter";
 
 /* ===============================
    SKELETON COMPONENTS
@@ -65,8 +66,15 @@ const DashboardProduct = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isTableLoading, setIsTableLoading] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
+  // const [searchValue, setSearchValue] = useState("");
+  // const [hasSearched, setHasSearched] = useState(false);
+
+  const [filters, setFilters] = useState({
+    corridor: corridorId || "",
+    product: "",
+    timeRange: "90d",
+    riskLevel: "",
+  });
 
   const [productData, setProductData] = useState({
     productOverview: [],
@@ -77,18 +85,87 @@ const DashboardProduct = () => {
   /* ===============================
      INITIAL PAGE LOAD (Corridor Scoped)
   ================================= */
+  // useEffect(() => {
+  //   if (!corridorId) return;
+
+  //   const fetchAllData = async () => {
+  //     setIsLoading(true);
+  //     setError("");
+
+  //     try {
+  //       const results = await Promise.allSettled([
+  //         DashboardProductOverview({ corridor_id: corridorId }),
+  //         DashboardProductList({ corridor_id: corridorId }),
+  //         DashboardProductInsights({ corridor_id: corridorId }),
+  //       ]);
+
+  //       const [overviewRes, listRes, insightRes] = results;
+
+  //       setProductData({
+  //         productOverview:
+  //           overviewRes.status === "fulfilled" ? overviewRes.value.data : [],
+  //         productList:
+  //           listRes.status === "fulfilled" ? listRes.value.data : [],
+  //         productInsight:
+  //           insightRes.status === "fulfilled" ? insightRes.value.data : [],
+  //       });
+  //     } catch (err) {
+  //       setError(GetApiErrorMessage(err));
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchAllData();
+  // }, [corridorId]);
+
+  // const handleInputChange = async (e) => {
+  //   const value = e.target.value;
+  //   setSearchValue(value);
+
+  //   if (value.trim() === "" && hasSearched && !isTableLoading) {
+  //     setIsTableLoading(true);
+  //     setError("");
+
+  //     try {
+  //       const listRes = await DashboardProductList({
+  //         corridor_id: corridorId,
+  //       });
+
+  //       setProductData((prev) => ({
+  //         ...prev,
+  //         productList: listRes?.data || [],
+  //       }));
+
+  //       setHasSearched(false);
+  //     } catch (err) {
+  //       setError(GetApiErrorMessage(err));
+  //     } finally {
+  //       setIsTableLoading(false);
+  //     }
+  //   }
+  // };
+
+  //  ---------------------------LOAD DATA WITH FILTERS-----------------------
   useEffect(() => {
-    if (!corridorId) return;
+    if (!filters.corridor) return;
 
     const fetchAllData = async () => {
       setIsLoading(true);
       setError("");
 
       try {
+        const params = {
+          corridor_id: filters.corridor,
+          product: filters.product,
+          time_range: filters.timeRange,
+          risk_level: filters.riskLevel,
+        };
+
         const results = await Promise.allSettled([
-          DashboardProductOverview({ corridor_id: corridorId }),
-          DashboardProductList({ corridor_id: corridorId }),
-          DashboardProductInsights({ corridor_id: corridorId }),
+          DashboardProductOverview(params),
+          DashboardProductList(params),
+          DashboardProductInsights(params),
         ]);
 
         const [overviewRes, listRes, insightRes] = results;
@@ -109,97 +186,70 @@ const DashboardProduct = () => {
     };
 
     fetchAllData();
-  }, [corridorId]);
-
-  const handleInputChange = async (e) => {
-    const value = e.target.value;
-    setSearchValue(value);
-
-    if (value.trim() === "" && hasSearched && !isTableLoading) {
-      setIsTableLoading(true);
-      setError("");
-
-      try {
-        const listRes = await DashboardProductList({
-          corridor_id: corridorId,
-        });
-
-        setProductData((prev) => ({
-          ...prev,
-          productList: listRes?.data || [],
-        }));
-
-        setHasSearched(false);
-      } catch (err) {
-        setError(GetApiErrorMessage(err));
-      } finally {
-        setIsTableLoading(false);
-      }
-    }
-  };
+  }, []);
 
   /* ===============================
      TABLE SEARCH (Corridor Scoped)
   ================================= */
-  const handleSearch = async () => {
-    if (isTableLoading) return;
+  // const handleSearch = async () => {
+  //   if (isTableLoading) return;
 
-    const trimmed = searchValue.trim();
+  //   const trimmed = searchValue.trim();
 
-    setIsTableLoading(true);
-    setError("");
+  //   // setIsTableLoading(true);
+  //   setError("");
 
-    try {
-      let params = {
-        corridor_id: corridorId,
-      };
+  //   try {
+  //     let params = {
+  //       corridor_id: corridorId,
+  //     };
 
-      if (trimmed) {
-        if (/^\d+$/.test(trimmed)) {
-          params.hs = trimmed;
-        } else {
-          params.q = trimmed;
-        }
-      }
+  //     if (trimmed) {
+  //       if (/^\d+$/.test(trimmed)) {
+  //         params.hs = trimmed;
+  //       } else {
+  //         params.q = trimmed;
+  //       }
+  //     }
 
-      const listRes = await DashboardProductList(params);
+  //     const listRes = await DashboardProductList(params);
 
-      setProductData((prev) => ({
-        ...prev,
-        productList: listRes?.data || [],
-      }));
+  //     setProductData((prev) => ({
+  //       ...prev,
+  //       productList: listRes?.data || [],
+  //     }));
 
-      setHasSearched(true);
-    } catch (err) {
-      setError(GetApiErrorMessage(err));
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+  //     setHasSearched(true);
+  //   } catch (err) {
+  //     setError(GetApiErrorMessage(err));
+  //   } finally {
+  //     setIsTableLoading(false);
+  //   }
+  // };
 
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
-       <header>
-  <h1 className="tp-section-title">
-    Corridor Product <span>Intelligence</span>
-  </h1>
+        <header>
+          <h1 className="tp-section-title">
+            Corridor Product <span>Intelligence</span>
+          </h1>
 
-  <div className="tp-overview-sub-row">
-    <p className="tp-section-sub">
-      Product performance within selected trade corridor.
-    </p>
+          <div className="tp-overview-sub-row">
+            <p className="tp-section-sub">
+              Product performance within selected trade corridor.
+            </p>
 
-    <button
-      className="tp-btn-outline tp-overview-filter-btn"
-      onClick={() => setFilterOpen(true)}
-    >
-      <FiSliders />
-      Filters
-    </button>
-  </div>
-</header>
-<PageDisclaimer/>
+            <button
+              className="tp-btn-outline tp-overview-filter-btn"
+              onClick={() => setFilterOpen(true)}
+            >
+              <FiSliders />
+              Filters
+            </button>
+          </div>
+        </header>
+        <PageDisclaimer />
         {isLoading && <ProductOverviewSkeleton />}
 
         {!isLoading && (
@@ -225,10 +275,10 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Price Volatility</p>
-                <h3 className="tp-text-up">
+                <h3 className="tp-text-up tp-overview-text">
                   {
                     productData?.productOverview?.topValueProduct?.split(
-                      ","
+                      ",",
                     )?.[0]
                   }
                 </h3>
@@ -236,10 +286,10 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Risk Product</p>
-                <h3 className="tp-text-down">
+                <h3 className="tp-text-down tp-overview-text">
                   {
                     productData?.productOverview?.lowestValueProduct?.split(
-                      ","
+                      ",",
                     )?.[0]
                   }
                 </h3>
@@ -250,13 +300,13 @@ const DashboardProduct = () => {
               <div className="tp-table-header">
                 <h3 className="tp-table-title">Product List</h3>
 
-                <div className="tp-table-search">
+                {/* <div className="tp-table-search">
                   <input
                     type="text"
                     className="tp-input"
                     placeholder="Search by HS Code or Product"
                     value={searchValue}
-                    onChange={handleInputChange}
+                    // onChange={handleInputChange}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") handleSearch();
                     }}
@@ -269,6 +319,23 @@ const DashboardProduct = () => {
                   >
                     {isTableLoading ? "Searching..." : "Search"}
                   </button>
+                </div> */}
+                <div className="tp-table-search">
+                  <UniversalFilter
+                    showCorridor
+                    showProduct
+                    showTimeRange
+                    showRiskLevel
+                    defaultValues={{
+                      corridor: corridorId || "",
+                      product: "",
+                      timeRange: "90d",
+                      riskLevel: "",
+                    }}
+                    onChange={(values) => {
+                      setFilters(values);
+                    }}
+                  />
                 </div>
               </div>
 
@@ -279,12 +346,8 @@ const DashboardProduct = () => {
                     <span className="text-center">
                       Avg Export Price (Origin → UK)
                     </span>
-                    <span className="text-center">
-                      UK Import Demand Trend
-                    </span>
-                    <span className="text-center">
-                      Export Activity Level
-                    </span>
+                    <span className="text-center">UK Import Demand Trend</span>
+                    <span className="text-center">Export Activity Level</span>
                     <span className="text-center">Volatility Risk</span>
                   </div>
 
@@ -367,17 +430,18 @@ const DashboardProduct = () => {
                   Highest Price Volatility (Selected Corridor)
                 </p>
                 <h3 className="tp-overview-text">
-                  {productData?.productInsight?.largest_product?.split(",")?.[0]}
+                  {
+                    productData?.productInsight?.largest_product?.split(
+                      ",",
+                    )?.[0]
+                  }
                 </h3>
               </div>
             </div>
           </>
         )}
-       
       </div>
-       {filterOpen && (
-  <GlobalFilterPanel onClose={() => setFilterOpen(false)} />
-)}
+      {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
     </section>
   );
 };

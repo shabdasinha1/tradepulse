@@ -8,6 +8,8 @@ import {
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
 import UniversalFilter from "../common/UniversalFilter"; // ✅ new
+import {  MdOutlineCurrencyPound } from "react-icons/md";
+
 
 const MarketOverview = ({ corridorId }) => {
   const [error, setError] = useState("");
@@ -96,7 +98,8 @@ const MarketOverview = ({ corridorId }) => {
           header={
             <div className="tp-card-header tp-card-filter-header">
               <div className="tp-card-title-wrap">
-                <FiDollarSign />
+                <MdOutlineCurrencyPound />
+
                 <h3 className="tp-card-title">
                   Corridor FX & Cost Impact Monitor
                 </h3>

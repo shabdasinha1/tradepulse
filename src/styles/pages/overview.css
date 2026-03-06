@@ -313,7 +313,8 @@
 }
 
 .tp-ship-price {
-  font-size: var(--fs-heading-sm);
+  /* font-size: var(--fs-heading-sm); */
+  font-size: var(--fs-xl);
   font-weight: var(--fw-semibold);
 }
 
@@ -377,7 +378,8 @@
 
 /* Rate */
 .tp-duty-rate {
-  font-size: var(--fs-heading-sm);
+  /* font-size: var(--fs-heading-sm); */
+  font-size: var(--fs-xl);
   font-weight: var(--fw-semibold);
   line-height: 1.2;
 }
@@ -432,7 +434,7 @@
 }
 
 .tp-margin-title {
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
 }
 
 /* Content Layout */
@@ -448,6 +450,7 @@
 .tp-margin-input {
   max-width: 260px;
   width: 100%;
+  
 }
 
 /* Result */
@@ -458,6 +461,7 @@
 
 .tp-margin-value {
   margin: 6px 0 10px 0;
+  font-size: var(--fs-xl);
 }
 
 /* ======================================
