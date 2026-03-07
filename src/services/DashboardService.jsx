@@ -21,9 +21,9 @@ export const DashboardPriceTrend = async (priceHsCode) => {
 /* ===============================
    DASHBOARD PRODUCT LIST
 ================================ */
-// export const DashboardProductList = async () => {
-//   return Api.get("/products/list");
-// };
+export const DashboardAllProductList = async () => {
+  return Api.get("/products/list");
+};
 export const DashboardProductList = async (params = {}) => {
   return Api.get("/products/search", { params });
 };

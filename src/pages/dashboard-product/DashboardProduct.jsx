@@ -4,6 +4,7 @@ import {
   DashboardProductInsights,
   DashboardProductList,
   DashboardProductOverview,
+  DashboardAllProductList 
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import VerticalScroll from "../../components/common/VerticalScroll";
@@ -81,7 +82,19 @@ const DashboardProduct = () => {
     productList: [],
     productInsight: [],
   });
+const [allProducts, setAllProducts] = useState([]);
 
+const fetchAllProducts = async () => {
+  try {
+    const res = await DashboardAllProductList();
+
+    if (res?.data?.success) {
+      setAllProducts(res.data.data.data || []);
+    }
+  } catch (err) {
+    console.error(GetApiErrorMessage(err));
+  }
+};
   /* ===============================
      INITIAL PAGE LOAD (Corridor Scoped)
   ================================= */
@@ -147,6 +160,10 @@ const DashboardProduct = () => {
   // };
 
   //  ---------------------------LOAD DATA WITH FILTERS-----------------------
+  useEffect(() => {
+  fetchAllProducts();
+}, []);
+
   useEffect(() => {
     if (!filters.corridor) return;
 
@@ -326,6 +343,7 @@ const DashboardProduct = () => {
                     showProduct
                     showTimeRange
                     showRiskLevel
+                    productOptions={allProducts}
                     defaultValues={{
                       corridor: corridorId || "",
                       product: "",
@@ -368,47 +386,41 @@ const DashboardProduct = () => {
                       </div>
                     ) : (
                       productData?.productList?.data?.map((item, index) => (
-                        <div className="product-row" key={index}>
-                          <span>{item.product?.split(",")[0]}</span>
+  <div className="product-row" key={index}>
+    <span>{item.product}</span>
 
-                          <span className="tp-muted text-center">
-                            {item.priceRange}
-                          </span>
+    <span className="tp-muted text-center">
+      £{item.avgExportPrice}
+    </span>
 
-                          <span className="text-center">
-                            {item.demandTrend?.direction === "UP" ? (
-                              <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
-                            ) : (
-                              <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
-                            )}
-                            {item.demandTrend?.percent}%
-                          </span>
+    <span className="text-center">
+      {item.demandTrend?.direction === "UP" ? (
+        <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
+      ) : (
+        <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
+      )}
+      {item.demandTrend?.percent || 0}%
+    </span>
 
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill ${
-                                item.supply === "Stable"
-                                  ? "tp-pill-success"
-                                  : "tp-pill-warning"
-                              }`}
-                            >
-                              {item.supply}
-                            </span>
-                          </span>
+    <span className="text-center">
+      <span className="tp-pill tp-pill-primary">
+        {item.exportActivity}
+      </span>
+    </span>
 
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill ${
-                                item.risk === "Low"
-                                  ? "tp-pill-success"
-                                  : "tp-pill-warning"
-                              }`}
-                            >
-                              {item.risk}
-                            </span>
-                          </span>
-                        </div>
-                      ))
+    <span className="text-center">
+      <span
+        className={`tp-pill ${
+          item.volatilityRisk === "LOW"
+            ? "tp-pill-success"
+            : "tp-pill-warning"
+        }`}
+      >
+        {item.volatilityRisk}
+      </span>
+    </span>
+  </div>
+))
                     )}
                   </VerticalScroll>
                 </div>

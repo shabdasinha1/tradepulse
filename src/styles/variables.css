@@ -109,6 +109,18 @@
   --scrollbar-track: #0f172a;
   --scrollbar-thumb: #334155;
   --scrollbar-thumb-hover: var(--clr-primary);
+
+  /* ======================================
+   CHART SPACING SYSTEM
+====================================== */
+  --chart-margin-top: 4;
+  --chart-margin-right: 10;
+  --chart-margin-bottom: 2;
+  --chart-margin-left: -12;
+
+  --chart-yaxis-width: 38;
+  --tp-chart-margin-left: -14;
+--tp-chart-yaxis-width: 36;
 }
 
 /* ======================================
@@ -153,6 +165,18 @@
   --scrollbar-track: #f3f4f6;
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: var(--clr-primary);
+
+    /* ======================================
+   CHART SPACING SYSTEM
+====================================== */
+  --chart-margin-top: 4;
+  --chart-margin-right: 10;
+  --chart-margin-bottom: 2;
+  --chart-margin-left: -12;
+
+  --chart-yaxis-width: 38;
+  --tp-chart-margin-left: -14;
+--tp-chart-yaxis-width: 36;
 }
 
 /* Dashboard header height */

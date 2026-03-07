@@ -14,7 +14,7 @@ import {
   Legend,
 } from "recharts";
 import TradePulseCard from "../common/TradePulseCard";
-import UniversalFilter from "../common/UniversalFilter"; // 👈 import here
+import UniversalFilter from "../common/UniversalFilter";
 
 const TPChart = ({
   title,
@@ -22,7 +22,7 @@ const TPChart = ({
   data = [],
   xKey = "month",
   series = [],
-  onFilterChange, // 👈 single unified callback
+  onFilterChange,
 }) => {
 
   /* ===============================
@@ -65,6 +65,26 @@ const TPChart = ({
   }, []);
 
   /* ===============================
+     CHART SPACING FROM GLOBAL CSS
+  =============================== */
+
+  const chartMargin = useMemo(() => {
+    const styles = getComputedStyle(document.documentElement);
+
+    return {
+      top: parseInt(styles.getPropertyValue("--tp-chart-margin-top")),
+      right: parseInt(styles.getPropertyValue("--tp-chart-margin-right")),
+      bottom: parseInt(styles.getPropertyValue("--tp-chart-margin-bottom")),
+      left: parseInt(styles.getPropertyValue("--tp-chart-margin-left")),
+    };
+  }, []);
+
+  const yAxisWidth = useMemo(() => {
+    const styles = getComputedStyle(document.documentElement);
+    return parseInt(styles.getPropertyValue("--tp-chart-yaxis-width"));
+  }, []);
+
+  /* ===============================
      TOOLTIP
   =============================== */
 
@@ -103,12 +123,17 @@ const TPChart = ({
 
   const renderChart = () => {
     switch (type) {
+
       case "area":
         return (
-          <AreaChart data={data}>
+          <AreaChart data={data} margin={chartMargin}>
             <CartesianGrid stroke="var(--border-soft)" strokeDasharray="3 3" />
             <XAxis dataKey={xKey} {...commonAxisProps} />
-            <YAxis tickFormatter={yAxisFormatter} {...commonAxisProps} />
+            <YAxis
+              width={yAxisWidth}
+              tickFormatter={yAxisFormatter}
+              {...commonAxisProps}
+            />
             {renderTooltip()}
             <Legend />
             {series.map((item, index) => (
@@ -128,10 +153,14 @@ const TPChart = ({
 
       case "bar":
         return (
-          <BarChart data={data}>
+          <BarChart data={data} margin={chartMargin}>
             <CartesianGrid stroke="var(--border-soft)" strokeDasharray="3 3" />
             <XAxis dataKey={xKey} {...commonAxisProps} />
-            <YAxis tickFormatter={yAxisFormatter} {...commonAxisProps} />
+            <YAxis
+              width={yAxisWidth}
+              tickFormatter={yAxisFormatter}
+              {...commonAxisProps}
+            />
             {renderTooltip()}
             <Legend />
             {series.map((item, index) => (
@@ -149,10 +178,14 @@ const TPChart = ({
 
       default:
         return (
-          <LineChart data={data}>
+          <LineChart data={data} margin={chartMargin}>
             <CartesianGrid stroke="var(--border-soft)" strokeDasharray="3 3" />
             <XAxis dataKey={xKey} {...commonAxisProps} />
-            <YAxis tickFormatter={yAxisFormatter} {...commonAxisProps} />
+            <YAxis
+              width={yAxisWidth}
+              tickFormatter={yAxisFormatter}
+              {...commonAxisProps}
+            />
             {renderTooltip()}
             <Legend />
             {series.map((item, index) => (
@@ -177,7 +210,6 @@ const TPChart = ({
         <div className="tp-chart-header tp-chart-filter-header">
           <h4 className="tp-section-title">{title}</h4>
 
-          {/* 👇 Independent Filter Instance */}
           <UniversalFilter
             showCorridor
             showProduct
