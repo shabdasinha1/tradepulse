@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   DashboardProductInsights,
-  DashboardProductList,
   DashboardProductOverview,
-  DashboardAllProductList 
+  DashboardAllProductList,
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import VerticalScroll from "../../components/common/VerticalScroll";
@@ -15,8 +14,9 @@ import PageDisclaimer from "../../components/common/PageDisclaimer";
 import UniversalFilter from "../../components/common/UniversalFilter";
 
 /* ===============================
-   SKELETON COMPONENTS
-================================ */
+    SKELETON COMPONENTS
+  ================================ */
+
 const Skeleton = ({ className = "" }) => (
   <div className={`tp-skeleton skeleton ${className}`} />
 );
@@ -58,17 +58,17 @@ const ProductOverviewSkeleton = () => {
 };
 
 /* ===============================
-   MAIN COMPONENT
-================================ */
+    MAIN COMPONENT
+  ================================ */
+
 const DashboardProduct = () => {
   const corridorId = useSelector((state) => state.corridor.corridorId);
+
   const [filterOpen, setFilterOpen] = useState(false);
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isTableLoading, setIsTableLoading] = useState(false);
-  // const [searchValue, setSearchValue] = useState("");
-  // const [hasSearched, setHasSearched] = useState(false);
 
   const [filters, setFilters] = useState({
     corridor: corridorId || "",
@@ -77,172 +77,157 @@ const DashboardProduct = () => {
     riskLevel: "",
   });
 
+  const filterKey = `${filters.corridor}-${filters.product}-${filters.timeRange}-${filters.riskLevel}`;
+
   const [productData, setProductData] = useState({
     productOverview: [],
-    productList: [],
     productInsight: [],
   });
-const [allProducts, setAllProducts] = useState([]);
 
-const fetchAllProducts = async () => {
-  try {
-    const res = await DashboardAllProductList();
+  const [allProducts, setAllProducts] = useState([]);
 
-    if (res?.data?.success) {
-      setAllProducts(res.data.data.data || []);
-    }
-  } catch (err) {
-    console.error(GetApiErrorMessage(err));
-  }
-};
+  const [products, setProducts] = useState([]);
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  const observer = useRef();
+
   /* ===============================
-     INITIAL PAGE LOAD (Corridor Scoped)
-  ================================= */
-  // useEffect(() => {
-  //   if (!corridorId) return;
+      FETCH ALL PRODUCT OPTIONS
+    ================================= */
 
-  //   const fetchAllData = async () => {
-  //     setIsLoading(true);
-  //     setError("");
+  const fetchAllProducts = async () => {
+    try {
+      const res = await DashboardAllProductList();
 
-  //     try {
-  //       const results = await Promise.allSettled([
-  //         DashboardProductOverview({ corridor_id: corridorId }),
-  //         DashboardProductList({ corridor_id: corridorId }),
-  //         DashboardProductInsights({ corridor_id: corridorId }),
-  //       ]);
-
-  //       const [overviewRes, listRes, insightRes] = results;
-
-  //       setProductData({
-  //         productOverview:
-  //           overviewRes.status === "fulfilled" ? overviewRes.value.data : [],
-  //         productList:
-  //           listRes.status === "fulfilled" ? listRes.value.data : [],
-  //         productInsight:
-  //           insightRes.status === "fulfilled" ? insightRes.value.data : [],
-  //       });
-  //     } catch (err) {
-  //       setError(GetApiErrorMessage(err));
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   fetchAllData();
-  // }, [corridorId]);
-
-  // const handleInputChange = async (e) => {
-  //   const value = e.target.value;
-  //   setSearchValue(value);
-
-  //   if (value.trim() === "" && hasSearched && !isTableLoading) {
-  //     setIsTableLoading(true);
-  //     setError("");
-
-  //     try {
-  //       const listRes = await DashboardProductList({
-  //         corridor_id: corridorId,
-  //       });
-
-  //       setProductData((prev) => ({
-  //         ...prev,
-  //         productList: listRes?.data || [],
-  //       }));
-
-  //       setHasSearched(false);
-  //     } catch (err) {
-  //       setError(GetApiErrorMessage(err));
-  //     } finally {
-  //       setIsTableLoading(false);
-  //     }
-  //   }
-  // };
-
-  //  ---------------------------LOAD DATA WITH FILTERS-----------------------
-  useEffect(() => {
-  fetchAllProducts();
-}, []);
-
-  useEffect(() => {
-    if (!filters.corridor) return;
-
-    const fetchAllData = async () => {
-      setIsLoading(true);
-      setError("");
-
-      try {
-        const params = {
-          corridor_id: filters.corridor,
-          product: filters.product,
-          time_range: filters.timeRange,
-          risk_level: filters.riskLevel,
-        };
-
-        const results = await Promise.allSettled([
-          DashboardProductOverview(params),
-          DashboardProductList(params),
-          DashboardProductInsights(params),
-        ]);
-
-        const [overviewRes, listRes, insightRes] = results;
-
-        setProductData({
-          productOverview:
-            overviewRes.status === "fulfilled" ? overviewRes.value.data : [],
-          productList:
-            listRes.status === "fulfilled" ? listRes.value.data : [],
-          productInsight:
-            insightRes.status === "fulfilled" ? insightRes.value.data : [],
-        });
-      } catch (err) {
-        setError(GetApiErrorMessage(err));
-      } finally {
-        setIsLoading(false);
+      if (res?.data?.success) {
+        setAllProducts(res.data.data.data || []);
       }
-    };
+    } catch (err) {
+      console.error(GetApiErrorMessage(err));
+    }
+  };
 
-    fetchAllData();
+  useEffect(() => {
+    fetchAllProducts();
   }, []);
 
   /* ===============================
-     TABLE SEARCH (Corridor Scoped)
-  ================================= */
-  // const handleSearch = async () => {
-  //   if (isTableLoading) return;
+      FETCH OVERVIEW + INSIGHTS
+    ================================= */
 
-  //   const trimmed = searchValue.trim();
+  const fetchOverviewAndInsights = async () => {
+    if (!filters.corridor) return;
 
-  //   // setIsTableLoading(true);
-  //   setError("");
+    setIsLoading(true);
 
-  //   try {
-  //     let params = {
-  //       corridor_id: corridorId,
-  //     };
+    try {
+      const params = {
+        corridor_id: filters.corridor,
+        product: filters.product,
+        time_range: filters.timeRange,
+        risk_level: filters.riskLevel,
+      };
 
-  //     if (trimmed) {
-  //       if (/^\d+$/.test(trimmed)) {
-  //         params.hs = trimmed;
-  //       } else {
-  //         params.q = trimmed;
-  //       }
-  //     }
+      const results = await Promise.allSettled([
+        DashboardProductOverview(params),
+        DashboardProductInsights(params),
+      ]);
 
-  //     const listRes = await DashboardProductList(params);
+      const [overviewRes, insightRes] = results;
 
-  //     setProductData((prev) => ({
-  //       ...prev,
-  //       productList: listRes?.data || [],
-  //     }));
+      if (overviewRes.status === "fulfilled") {
+        setProductData((prev) => ({
+          ...prev,
+          productOverview: overviewRes.value.data,
+        }));
+      }
 
-  //     setHasSearched(true);
-  //   } catch (err) {
-  //     setError(GetApiErrorMessage(err));
-  //   } finally {
-  //     setIsTableLoading(false);
-  //   }
-  // };
+      if (insightRes.status === "fulfilled") {
+        setProductData((prev) => ({
+          ...prev,
+          productInsight: insightRes.value.data,
+        }));
+      }
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  /* ===============================
+      FETCH TABLE DATA
+    ================================= */
+
+  const fetchProducts = async () => {
+    if (!filters.corridor) return;
+    if (!hasMore && page !== 1) return;
+
+    setIsTableLoading(true);
+
+    try {
+      const params = {
+        corridor_id: filters.corridor,
+        product: filters.product,
+        time_range: filters.timeRange,
+        risk_level: filters.riskLevel,
+        page: page,
+        limit: 10,
+      };
+
+      const res = await DashboardAllProductList(params);
+
+      const newData = res?.data?.data || [];
+
+      setProducts((prev) => (page === 1 ? newData : [...prev, ...newData]));
+
+      if (newData.length < 10) {
+        setHasMore(false);
+      }
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    } finally {
+      setIsTableLoading(false);
+    }
+  };
+
+  /* ===============================
+      EFFECTS
+    ================================= */
+
+  useEffect(() => {
+    fetchOverviewAndInsights();
+  }, [filterKey]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [page, filterKey]);
+
+  /* ===============================
+      INFINITE SCROLL
+    ================================= */
+
+  const lastProductRef = useCallback(
+    (node) => {
+      if (isTableLoading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            setPage((prev) => prev + 1);
+          }
+        },
+        { rootMargin: "200px" },
+      );
+
+      if (node) observer.current.observe(node);
+    },
+    [isTableLoading, hasMore],
+  );
 
   return (
     <section className="tp-section">
@@ -266,11 +251,15 @@ const fetchAllProducts = async () => {
             </button>
           </div>
         </header>
+
         <PageDisclaimer />
+
         {isLoading && <ProductOverviewSkeleton />}
 
         {!isLoading && (
           <>
+            {/* ================= OVERVIEW ================= */}
+
             <div className="tp-grid tp-product-overview-grid">
               <div className="tp-card">
                 <p className="tp-muted">
@@ -313,30 +302,12 @@ const fetchAllProducts = async () => {
               </div>
             </div>
 
+            {/* ================= TABLE ================= */}
+
             <div className="tp-card">
               <div className="tp-table-header">
                 <h3 className="tp-table-title">Product List</h3>
 
-                {/* <div className="tp-table-search">
-                  <input
-                    type="text"
-                    className="tp-input"
-                    placeholder="Search by HS Code or Product"
-                    value={searchValue}
-                    // onChange={handleInputChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSearch();
-                    }}
-                  />
-
-                  <button
-                    className="tp-btn tp-btn-primary"
-                    onClick={handleSearch}
-                    disabled={!searchValue.trim() || isTableLoading}
-                  >
-                    {isTableLoading ? "Searching..." : "Search"}
-                  </button>
-                </div> */}
                 <div className="tp-table-search">
                   <UniversalFilter
                     showCorridor
@@ -351,6 +322,9 @@ const fetchAllProducts = async () => {
                       riskLevel: "",
                     }}
                     onChange={(values) => {
+                      setProducts([]);
+                      setPage(1);
+                      setHasMore(true);
                       setFilters(values);
                     }}
                   />
@@ -370,62 +344,68 @@ const fetchAllProducts = async () => {
                   </div>
 
                   <VerticalScroll>
-                    {isTableLoading ? (
-                      [...Array(6)].map((_, i) => (
-                        <div className="product-row" key={i}>
-                          {[...Array(5)].map((_, j) => (
-                            <Skeleton key={j} className="sk-table-cell" />
-                          ))}
-                        </div>
-                      ))
-                    ) : productData?.productList?.data?.length === 0 ? (
+                    {products.length === 0 && !isTableLoading && (
                       <div className="product-row tp-empty-row">
                         <span className="tp-muted tp-empty-text">
                           Product not found
                         </span>
                       </div>
-                    ) : (
-                      productData?.productList?.data?.map((item, index) => (
-  <div className="product-row" key={index}>
-    <span>{item.product}</span>
-
-    <span className="tp-muted text-center">
-      £{item.avgExportPrice}
-    </span>
-
-    <span className="text-center">
-      {item.demandTrend?.direction === "UP" ? (
-        <IoIosTrendingUp className="tp-trend-logo tp-text-up" />
-      ) : (
-        <IoIosTrendingDown className="tp-trend-logo tp-text-down" />
-      )}
-      {item.demandTrend?.percent || 0}%
-    </span>
-
-    <span className="text-center">
-      <span className="tp-pill tp-pill-primary">
-        {item.exportActivity}
-      </span>
-    </span>
-
-    <span className="text-center">
-      <span
-        className={`tp-pill ${
-          item.volatilityRisk === "LOW"
-            ? "tp-pill-success"
-            : "tp-pill-warning"
-        }`}
-      >
-        {item.volatilityRisk}
-      </span>
-    </span>
-  </div>
-))
                     )}
+
+                    {products.map((item, index) => {
+                      const isLast = products.length === index + 1;
+
+                      return (
+                        <div
+                          ref={isLast ? lastProductRef : null}
+                          className="product-row"
+                          key={index}
+                        >
+                          <span>{item.product}</span>
+
+                          <span className="tp-muted text-center">
+                            £{item.avgExportPrice}
+                          </span>
+
+                          <span className="text-center">
+                            {item.demandTrend?.percent || 0}%
+                          </span>
+
+                          <span className="text-center">
+                            <span className="tp-pill tp-pill-primary">
+                              {item.exportActivity}
+                            </span>
+                          </span>
+
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                item.volatilityRisk === "LOW"
+                                  ? "tp-pill-success"
+                                  : "tp-pill-warning"
+                              }`}
+                            >
+                              {item.volatilityRisk}
+                            </span>
+                          </span>
+                        </div>
+                      );
+                    })}
+
+                    {isTableLoading &&
+                      [...Array(4)].map((_, i) => (
+                        <div className="product-row" key={i}>
+                          {[...Array(5)].map((_, j) => (
+                            <Skeleton key={j} className="sk-table-cell" />
+                          ))}
+                        </div>
+                      ))}
                   </VerticalScroll>
                 </div>
               </div>
             </div>
+
+            {/* ================= INSIGHTS ================= */}
 
             <div className="tp-grid tp-insight-grid">
               <div className="tp-card">
@@ -453,6 +433,7 @@ const fetchAllProducts = async () => {
           </>
         )}
       </div>
+
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
     </section>
   );

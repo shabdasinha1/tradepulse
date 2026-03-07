@@ -21,8 +21,8 @@ export const DashboardPriceTrend = async (priceHsCode) => {
 /* ===============================
    DASHBOARD PRODUCT LIST
 ================================ */
-export const DashboardAllProductList = async () => {
-  return Api.get("/products/list");
+export const DashboardAllProductList = async (params = {}) => {
+  return Api.get("/products/list", { params });
 };
 export const DashboardProductList = async (params = {}) => {
   return Api.get("/products/search", { params });
@@ -44,7 +44,7 @@ export const DashboardProductInsights = async () => {
 /* ===============================
    DASHBOARD FORECAST
 ================================ */
-export const DashboardForcast = async (hasCode)=>{
+export const DashboardForcast = async (hasCode) => {
   return Api.get(`/forecast/dashboard/${hasCode}`);
 };
 //  DASHBOARD FORCAST DEMANG GRAPH
@@ -53,16 +53,16 @@ export const DemandGrowthForecast = async (demandHsCode) => {
   return Api.get(`/forecast/demand/${demandHsCode}`);
 };
 
-export const ForcastAssets = async ({limit, page})=>{
+export const ForcastAssets = async ({ limit, page }) => {
   return Api.get(`/forecast/assets?limit=${limit}&page=${page}`);
-}
+};
 
-export const ForcastPriceChart = async(hsCode)=>{
-  return Api.get(`/forecast/price-chart/${hsCode}`)
-}
-export const ForcastConfidenceChart = async(hsCode)=>{
-  return Api.get(`/forecast/confidence-chart/${hsCode}`)
-}
+export const ForcastPriceChart = async (hsCode) => {
+  return Api.get(`/forecast/price-chart/${hsCode}`);
+};
+export const ForcastConfidenceChart = async (hsCode) => {
+  return Api.get(`/forecast/confidence-chart/${hsCode}`);
+};
 
 /* ===============================
    DASHBOARD SUPPLIERS
@@ -79,7 +79,6 @@ export const ProductDropdownSearch = async (query) => {
     params: { q: query },
   });
 };
-
 
 /* ===============================
    DASHBOARD FORECAST OVERVIEW

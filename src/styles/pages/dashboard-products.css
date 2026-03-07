@@ -105,6 +105,50 @@ header .tp-section-title {
   }
 } */
 
+.product-table-wrapper {
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+.tp-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 0 4px;
+  flex-wrap: wrap;
+}
+
+.tp-page-btn {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tp-page-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tp-page-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+@media (max-width: 768px) {
+  .product-table-wrapper {
+    height: 360px;
+  }
+
+  .tp-page-btn {
+    min-width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+}
 /*=======================================================
             SKELETON CSS 
  =========================================================*/
