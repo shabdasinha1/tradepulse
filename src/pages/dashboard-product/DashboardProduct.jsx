@@ -100,9 +100,9 @@ const DashboardProduct = () => {
   const fetchAllProducts = async () => {
     try {
       const res = await DashboardAllProductList();
-
-      if (res?.data?.success) {
-        setAllProducts(res.data.data.data || []);
+      if (res?.success) {
+        console.log(res);
+        setAllProducts(res.data.data || []);
       }
     } catch (err) {
       console.error(GetApiErrorMessage(err));
@@ -124,8 +124,8 @@ const DashboardProduct = () => {
 
     try {
       const params = {
-        corridor_id: filters.corridor,
-        product: filters.product,
+        // corridor_id: filters.corridor,
+        // product: filters.product,
         time_range: filters.timeRange,
         risk_level: filters.riskLevel,
       };
@@ -169,10 +169,10 @@ const DashboardProduct = () => {
 
     try {
       const params = {
-        corridor_id: filters.corridor,
-        product: filters.product,
-        time_range: filters.timeRange,
-        risk_level: filters.riskLevel,
+        // corridor_id: filters.corridor,
+        // product: filters.product,
+        // time_range: filters.timeRange,
+        // risk_level: filters.riskLevel,
         page: page,
         limit: 10,
       };
@@ -180,7 +180,9 @@ const DashboardProduct = () => {
       const res = await DashboardAllProductList(params);
 
       const newData = res?.data?.data || [];
-
+      // const newData = res?.data?.data?.data || [];
+      console.log("API RESPONSE:", res);
+      console.log("NEW DATA:", newData);
       setProducts((prev) => (page === 1 ? newData : [...prev, ...newData]));
 
       if (newData.length < 10) {
@@ -228,7 +230,7 @@ const DashboardProduct = () => {
     },
     [isTableLoading, hasMore],
   );
-
+  console.log("Product Data 2 :", products, isTableLoading);
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -321,11 +323,28 @@ const DashboardProduct = () => {
                       timeRange: "90d",
                       riskLevel: "",
                     }}
+                    // onChange={(values) => {
+                    //   setProducts([]);
+                    //   setPage(1);
+                    //   setHasMore(true);
+                    //   setFilters(values);
+                    // }}
                     onChange={(values) => {
-                      setProducts([]);
-                      setPage(1);
-                      setHasMore(true);
-                      setFilters(values);
+                      setFilters((prev) => {
+                        const isSame =
+                          prev.corridor === values.corridor &&
+                          prev.product === values.product &&
+                          prev.timeRange === values.timeRange &&
+                          prev.riskLevel === values.riskLevel;
+
+                        if (isSame) return prev;
+
+                        setProducts([]);
+                        setPage(1);
+                        setHasMore(true);
+
+                        return values;
+                      });
                     }}
                   />
                 </div>
@@ -354,6 +373,8 @@ const DashboardProduct = () => {
 
                     {products.map((item, index) => {
                       const isLast = products.length === index + 1;
+                      // console.log(item);
+                      // console.log(isLast);
 
                       return (
                         <div
