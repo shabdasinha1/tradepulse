@@ -100,6 +100,7 @@ const DashboardProduct = () => {
   const fetchAllProducts = async () => {
     try {
       const res = await DashboardAllProductList();
+      console.log(res);
       if (res?.success) {
         console.log(res);
         setAllProducts(res.data.data || []);

@@ -93,7 +93,7 @@ const Suppliers = () => {
      FETCH DATA WHEN PAGE CHANGES
   =============================== */
   useEffect(() => {
-    fetchSuppliers();
+    // fetchSuppliers();
   }, [page, corridorId]);
 
   /* ===============================
