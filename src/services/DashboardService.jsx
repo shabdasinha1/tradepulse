@@ -95,3 +95,11 @@ export const DashboardTradeNews = async (countryCode) => {
     params: { countryCode },
   });
 };
+
+
+/* ===============================
+   CORRIDORS BY REPORTER COUNTRY
+================================ */
+export const DashboardCorridors = async (reporterCode) => {
+  return Api.get(`/products/corridors?reporter=${reporterCode}`);
+};
