@@ -7,15 +7,14 @@ import {
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import VerticalScroll from "../../components/common/VerticalScroll";
-import { IoIosTrendingDown, IoIosTrendingUp } from "react-icons/io";
 import { FiSliders } from "react-icons/fi";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
 import PageDisclaimer from "../../components/common/PageDisclaimer";
 import UniversalFilter from "../../components/common/UniversalFilter";
 
 /* ===============================
-    SKELETON COMPONENTS
-  ================================ */
+   SKELETON COMPONENTS
+================================ */
 
 const Skeleton = ({ className = "" }) => (
   <div className={`tp-skeleton skeleton ${className}`} />
@@ -58,16 +57,19 @@ const ProductOverviewSkeleton = () => {
 };
 
 /* ===============================
-    MAIN COMPONENT
-  ================================ */
+   MAIN COMPONENT
+================================ */
 
 const DashboardProduct = () => {
   const corridorId = useSelector((state) => state.corridor.corridorId);
 
+  const observer = useRef(null);
+
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [isOverviewLoading, setIsOverviewLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -77,11 +79,9 @@ const DashboardProduct = () => {
     riskLevel: "",
   });
 
-  const filterKey = `${filters.corridor}-${filters.product}-${filters.timeRange}-${filters.riskLevel}`;
-
   const [productData, setProductData] = useState({
-    productOverview: [],
-    productInsight: [],
+    productOverview: {},
+    productInsight: {},
   });
 
   const [allProducts, setAllProducts] = useState([]);
@@ -91,22 +91,19 @@ const DashboardProduct = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const observer = useRef();
-
   /* ===============================
-      FETCH ALL PRODUCT OPTIONS
-    ================================= */
+     FETCH PRODUCT OPTIONS
+  ================================ */
 
   const fetchAllProducts = async () => {
     try {
       const res = await DashboardAllProductList();
-      console.log(res);
+
       if (res?.success) {
-        console.log(res);
-        setAllProducts(res.data.data || []);
+        setAllProducts(res?.data?.data || []);
       }
     } catch (err) {
-      console.error(GetApiErrorMessage(err));
+      console.error("Product options error:", err);
     }
   };
 
@@ -115,18 +112,17 @@ const DashboardProduct = () => {
   }, []);
 
   /* ===============================
-      FETCH OVERVIEW + INSIGHTS
-    ================================= */
+     FETCH OVERVIEW + INSIGHTS
+  ================================ */
 
   const fetchOverviewAndInsights = async () => {
     if (!filters.corridor) return;
 
-    setIsLoading(true);
+    setIsOverviewLoading(true);
+    setError(null);
 
     try {
       const params = {
-        // corridor_id: filters.corridor,
-        // product: filters.product,
         time_range: filters.timeRange,
         risk_level: filters.riskLevel,
       };
@@ -135,61 +131,65 @@ const DashboardProduct = () => {
         DashboardProductOverview(params),
         DashboardProductInsights(params),
       ]);
-
+      console.log("result : ", results);
       const [overviewRes, insightRes] = results;
 
       if (overviewRes.status === "fulfilled") {
         setProductData((prev) => ({
           ...prev,
-          productOverview: overviewRes.value.data,
+          productOverview: overviewRes.value?.data || {},
         }));
       }
 
       if (insightRes.status === "fulfilled") {
         setProductData((prev) => ({
           ...prev,
-          productInsight: insightRes.value.data,
+          productInsight: insightRes.value?.data || {},
         }));
       }
     } catch (err) {
+      console.error("Overview API error:", err);
       setError(GetApiErrorMessage(err));
     } finally {
-      setIsLoading(false);
+      setIsOverviewLoading(false);
     }
   };
 
   /* ===============================
-      FETCH TABLE DATA
-    ================================= */
+     FETCH TABLE DATA
+  ================================ */
 
   const fetchProducts = async () => {
-    if (!filters.corridor) return;
+    if (isTableLoading) return;
     if (!hasMore && page !== 1) return;
 
     setIsTableLoading(true);
 
     try {
       const params = {
-        // corridor_id: filters.corridor,
-        // product: filters.product,
-        // time_range: filters.timeRange,
-        // risk_level: filters.riskLevel,
-        page: page,
+        page,
         limit: 10,
       };
 
       const res = await DashboardAllProductList(params);
 
       const newData = res?.data?.data || [];
-      // const newData = res?.data?.data?.data || [];
-      console.log("API RESPONSE:", res);
-      console.log("NEW DATA:", newData);
-      setProducts((prev) => (page === 1 ? newData : [...prev, ...newData]));
+
+      setProducts((prev) => {
+        const merged = page === 1 ? newData : [...prev, ...newData];
+
+        const unique = Array.from(
+          new Map(merged.map((item) => [item.product, item])).values(),
+        );
+
+        return unique;
+      });
 
       if (newData.length < 10) {
         setHasMore(false);
       }
     } catch (err) {
+      console.error("Products API error:", err);
       setError(GetApiErrorMessage(err));
     } finally {
       setIsTableLoading(false);
@@ -197,41 +197,60 @@ const DashboardProduct = () => {
   };
 
   /* ===============================
-      EFFECTS
-    ================================= */
+     EFFECTS
+  ================================ */
 
   useEffect(() => {
     fetchOverviewAndInsights();
-  }, [filterKey]);
+  }, [filters]);
 
   useEffect(() => {
     fetchProducts();
-  }, [page, filterKey]);
+  }, [page]);
 
   /* ===============================
-      INFINITE SCROLL
-    ================================= */
+     INFINITE SCROLL
+  ================================ */
 
   const lastProductRef = useCallback(
     (node) => {
-      if (isTableLoading) return;
+      if (isTableLoading || !hasMore) return;
 
       if (observer.current) observer.current.disconnect();
 
-      observer.current = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasMore) {
-            setPage((prev) => prev + 1);
-          }
-        },
-        { rootMargin: "200px" },
-      );
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prev) => prev + 1);
+        }
+      });
 
       if (node) observer.current.observe(node);
     },
-    [isTableLoading, hasMore],
+    [hasMore, isTableLoading],
   );
-  console.log("Product Data 2 :", products, isTableLoading);
+
+  /* ===============================
+     FILTER HANDLER
+  ================================ */
+
+  const handleFilterChange = (values) => {
+    setFilters((prev) => {
+      const isSame =
+        prev.corridor === values.corridor &&
+        prev.product === values.product &&
+        prev.timeRange === values.timeRange &&
+        prev.riskLevel === values.riskLevel;
+
+      if (isSame) return prev;
+
+      setProducts([]);
+      setPage(1);
+      setHasMore(true);
+
+      return values;
+    });
+  };
+
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -257,19 +276,30 @@ const DashboardProduct = () => {
 
         <PageDisclaimer />
 
-        {isLoading && <ProductOverviewSkeleton />}
+        {error && (
+          <div className="tp-error-box">
+            <p>{error}</p>
+          </div>
+        )}
 
-        {!isLoading && (
-          <>
-            {/* ================= OVERVIEW ================= */}
+        {/* ================= OVERVIEW ================= */}
 
-            <div className="tp-grid tp-product-overview-grid">
+        <div className="tp-grid tp-product-overview-grid">
+          {isOverviewLoading ? (
+            [...Array(4)].map((_, i) => (
+              <div className="tp-card" key={i}>
+                <Skeleton className="sk-text-sm" />
+                <Skeleton className="sk-text-lg" />
+              </div>
+            ))
+          ) : (
+            <>
               <div className="tp-card">
                 <p className="tp-muted">
                   Most Imported Product (Selected Corridor)
                 </p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.totalProducts}
+                  {productData?.productOverview?.totalProducts || "-"}
                 </h3>
               </div>
 
@@ -278,7 +308,7 @@ const DashboardProduct = () => {
                   Fastest Growing Demand (Selected Corridor)
                 </p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.activeProducts}
+                  {productData?.productOverview?.activeProducts || "-"}
                 </h3>
               </div>
 
@@ -303,157 +333,136 @@ const DashboardProduct = () => {
                   }
                 </h3>
               </div>
+            </>
+          )}
+        </div>
+
+        {/* ================= TABLE ================= */}
+
+        <div className="tp-card">
+          <div className="tp-table-header">
+            <h3 className="tp-table-title">Product List</h3>
+
+            <div className="tp-table-search">
+              <UniversalFilter
+                showCorridor
+                showProduct
+                showTimeRange
+                showRiskLevel
+                productOptions={allProducts}
+                defaultValues={{
+                  corridor: corridorId || "",
+                  product: "",
+                  timeRange: "90d",
+                  riskLevel: "",
+                }}
+                onChange={handleFilterChange}
+              />
             </div>
+          </div>
 
-            {/* ================= TABLE ================= */}
-
-            <div className="tp-card">
-              <div className="tp-table-header">
-                <h3 className="tp-table-title">Product List</h3>
-
-                <div className="tp-table-search">
-                  <UniversalFilter
-                    showCorridor
-                    showProduct
-                    showTimeRange
-                    showRiskLevel
-                    productOptions={allProducts}
-                    defaultValues={{
-                      corridor: corridorId || "",
-                      product: "",
-                      timeRange: "90d",
-                      riskLevel: "",
-                    }}
-                    // onChange={(values) => {
-                    //   setProducts([]);
-                    //   setPage(1);
-                    //   setHasMore(true);
-                    //   setFilters(values);
-                    // }}
-                    onChange={(values) => {
-                      setFilters((prev) => {
-                        const isSame =
-                          prev.corridor === values.corridor &&
-                          prev.product === values.product &&
-                          prev.timeRange === values.timeRange &&
-                          prev.riskLevel === values.riskLevel;
-
-                        if (isSame) return prev;
-
-                        setProducts([]);
-                        setPage(1);
-                        setHasMore(true);
-
-                        return values;
-                      });
-                    }}
-                  />
-                </div>
+          <div className="product-table-wrapper">
+            <div className="product-table">
+              <div className="product-row product-head">
+                <span>Product</span>
+                <span className="text-center">
+                  Avg Export Price (Origin → UK)
+                </span>
+                <span className="text-center">UK Import Demand Trend</span>
+                <span className="text-center">Export Activity Level</span>
+                <span className="text-center">Volatility Risk</span>
               </div>
 
-              <div className="product-table-wrapper">
-                <div className="product-table">
-                  <div className="product-row product-head">
-                    <span>Product</span>
-                    <span className="text-center">
-                      Avg Export Price (Origin → UK)
+              <VerticalScroll>
+                {products.length === 0 && !isTableLoading && (
+                  <div className="product-row tp-empty-row">
+                    <span className="tp-muted tp-empty-text">
+                      Product not found
                     </span>
-                    <span className="text-center">UK Import Demand Trend</span>
-                    <span className="text-center">Export Activity Level</span>
-                    <span className="text-center">Volatility Risk</span>
                   </div>
+                )}
 
-                  <VerticalScroll>
-                    {products.length === 0 && !isTableLoading && (
-                      <div className="product-row tp-empty-row">
-                        <span className="tp-muted tp-empty-text">
-                          Product not found
+                {products.map((item, index) => {
+                  const isLast = products.length === index + 1;
+
+                  return (
+                    <div
+                      ref={isLast ? lastProductRef : null}
+                      className="product-row"
+                      key={item.product || index}
+                    >
+                      <span>{item.product}</span>
+
+                      <span className="tp-muted text-center">
+                        {/* £{item.avgExportPrice} */}£
+                        {Number(item.avgExportPrice).toFixed(2)}
+                      </span>
+
+                      <span className="text-center">
+                        <span className="tp-pill tp-pill-primary">
+                          {item.importDemandTrend}
                         </span>
-                      </div>
-                    )}
+                      </span>
 
-                    {products.map((item, index) => {
-                      const isLast = products.length === index + 1;
-                      // console.log(item);
-                      // console.log(isLast);
+                      <span className="text-center">
+                        <span className="tp-pill tp-pill-primary">
+                          {item.exportActivityLevel}
+                        </span>
+                      </span>
 
-                      return (
-                        <div
-                          ref={isLast ? lastProductRef : null}
-                          className="product-row"
-                          key={index}
+                      <span className="text-center">
+                        <span
+                          className={`tp-pill ${
+                            item.volatilityRisk === "LOW"
+                              ? "tp-pill-success"
+                              : item.volatilityRisk === "MEDIUM"
+                                ? "tp-pill-warning"
+                                : item.volatilityRisk === "HIGH"
+                                  ? "tp-pill-danger"
+                                  : ""
+                          }`}
                         >
-                          <span>{item.product}</span>
+                          {item.volatilityRisk}
+                        </span>
+                      </span>
+                    </div>
+                  );
+                })}
 
-                          <span className="tp-muted text-center">
-                            £{item.avgExportPrice}
-                          </span>
-
-                          <span className="text-center">
-                            {item.demandTrend?.percent || 0}%
-                          </span>
-
-                          <span className="text-center">
-                            <span className="tp-pill tp-pill-primary">
-                              {item.exportActivity}
-                            </span>
-                          </span>
-
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill ${
-                                item.volatilityRisk === "LOW"
-                                  ? "tp-pill-success"
-                                  : "tp-pill-warning"
-                              }`}
-                            >
-                              {item.volatilityRisk}
-                            </span>
-                          </span>
-                        </div>
-                      );
-                    })}
-
-                    {isTableLoading &&
-                      [...Array(4)].map((_, i) => (
-                        <div className="product-row" key={i}>
-                          {[...Array(5)].map((_, j) => (
-                            <Skeleton key={j} className="sk-table-cell" />
-                          ))}
-                        </div>
+                {isTableLoading &&
+                  [...Array(4)].map((_, i) => (
+                    <div className="product-row" key={i}>
+                      {[...Array(5)].map((_, j) => (
+                        <Skeleton key={j} className="sk-table-cell" />
                       ))}
-                  </VerticalScroll>
-                </div>
-              </div>
+                    </div>
+                  ))}
+              </VerticalScroll>
             </div>
+          </div>
+        </div>
 
-            {/* ================= INSIGHTS ================= */}
+        {/* ================= INSIGHTS ================= */}
 
-            <div className="tp-grid tp-insight-grid">
-              <div className="tp-card">
-                <p className="tp-muted">
-                  Most Imported Product (Selected Corridor)
-                </p>
-                <h3 className="tp-overview-text">
-                  {productData?.productInsight?.most_traded?.split(",")?.[0]}
-                </h3>
-              </div>
+        <div className="tp-grid tp-insight-grid">
+          <div className="tp-card">
+            <p className="tp-muted">
+              Most Imported Product (Selected Corridor)
+            </p>
+            <h3 className="tp-overview-text">
+              {productData?.productInsight?.most_traded?.split(",")?.[0]}
+            </h3>
+          </div>
 
-              <div className="tp-card">
-                <p className="tp-muted">
-                  Highest Price Volatility (Selected Corridor)
-                </p>
-                <h3 className="tp-overview-text">
-                  {
-                    productData?.productInsight?.largest_product?.split(
-                      ",",
-                    )?.[0]
-                  }
-                </h3>
-              </div>
-            </div>
-          </>
-        )}
+          <div className="tp-card">
+            <p className="tp-muted">
+              Highest Price Volatility (Selected Corridor)
+            </p>
+            <h3 className="tp-overview-text">
+              {productData?.productInsight?.largest_product?.split(",")?.[0]}
+            </h3>
+          </div>
+        </div>
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}

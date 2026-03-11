@@ -256,7 +256,10 @@
   color: var(--clr-primary);
   border: 1px solid rgba(79, 124, 255, 0.25);
 }
-
+.tp-pill-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--clr-danger);
+}
 /* Forms */
 .tp-form {
   display: flex;
@@ -970,7 +973,7 @@ input::placeholder {
 .css-1nmdiq5-menu {
   z-index: 999 !important;
 }
-.tp-select__input-container input{
+.tp-select__input-container input {
   background-color: transparent;
-  color:var(--text-primary) !important;
+  color: var(--text-primary) !important;
 }
