@@ -6,19 +6,19 @@ import {
   setCorridor,
   setProduct,
   setTimeRange,
+  setReporterCode,
+  setCountry,
+  setPartnerCode
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
+import { DashboardCorridors } from "../../services/DashboardService";
+
+
+
 
 function GlobalFilterPanel({ onClose }) {
   const modalRef = useRef(null);
   const dispatch = useDispatch();
-
-  const corridorOptions = [
-    { value: "uk-ng", label: "UK ↔ Nigeria" },
-    { value: "uk-gh", label: "UK ↔ Ghana" },
-    { value: "uk-ke", label: "UK ↔ Kenya" },
-    { value: "uk-za", label: "UK ↔ South Africa" },
-  ];
 
   const productOptions = [
     { value: "", label: "All Products" },
@@ -36,20 +36,71 @@ function GlobalFilterPanel({ onClose }) {
 
   const [isClosing, setIsClosing] = useState(false);
 
-  const { corridorId, productId, timeRange } = useSelector(
-    (state) => state.corridor,
-  );
+  const { country, reporterCode, corridor, partnerCode, productId, timeRange } = useSelector(
+  (state) => state.corridor,
+);
+
+  const countries = useSelector((state) => state.country.countries);
+
+  const countryOptions = countries.map((c) => ({
+    value: c.numeric,
+    label: c.name,
+  }));
 
   /* =========================
       LOCAL STATE (TEMP)
-    ========================== */
-  const [localCorridor, setLocalCorridor] = useState(corridorId);
-  const [localProduct, setLocalProduct] = useState(productId);
-  const [localTimeRange, setLocalTimeRange] = useState(timeRange);
+  ========================== */
+
+  const [localCountry, setLocalCountry] = useState(reporterCode || "");
+const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
+  const [localProduct, setLocalProduct] = useState(productId || "");
+  const [localTimeRange, setLocalTimeRange] = useState(timeRange || "90d");
+
+  const [corridorOptions, setCorridorOptions] = useState([]);
+const corridorState = useSelector((state) => state.corridor);
+
+useEffect(() => {
+  console.log("Redux corridor state updated:", corridorState);
+}, [corridorState]);
+
+  useEffect(() => {
+    if (reporterCode) setLocalCountry(reporterCode);
+  if (partnerCode) setLocalCorridor(partnerCode);
+    if (productId) setLocalProduct(productId);
+    if (timeRange) setLocalTimeRange(timeRange);
+  }, [reporterCode, corridor, productId, timeRange]);
+
+  /* =========================
+   LOAD CORRIDORS ON COUNTRY SELECT
+  ========================= */
+
+  useEffect(() => {
+    if (!reporterCode) return;
+
+    const fetchCorridors = async () => {
+      try {
+        const res = await DashboardCorridors(reporterCode);
+        console.log("corridor", res);
+        const corridors = res?.data?.data || [];
+
+        const formatted = corridors.map((c) => ({
+          value: c.partnerCode,
+          label: c.label,
+        }));
+
+        setCorridorOptions(formatted);
+      } catch (error) {
+        console.error("Corridor API Error:", error);
+      }
+    };
+
+    fetchCorridors();
+  }, [reporterCode]);
 
   /* =========================
       LOCK BODY SCROLL
-    ========================== */
+  ========================== */
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -59,7 +110,8 @@ function GlobalFilterPanel({ onClose }) {
 
   /* =========================
       ESC CLOSE
-    ========================== */
+  ========================== */
+
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") handleClose();
@@ -84,7 +136,8 @@ function GlobalFilterPanel({ onClose }) {
 
   /* =========================
       APPLY FILTERS
-    ========================== */
+  ========================== */
+
   const handleApply = () => {
     dispatch(setCorridor(localCorridor));
     dispatch(setProduct(localProduct));
@@ -94,8 +147,10 @@ function GlobalFilterPanel({ onClose }) {
 
   /* =========================
       RESET FILTERS
-    ========================== */
+  ========================== */
+
   const handleReset = () => {
+    setLocalCountry("");
     setLocalCorridor("");
     setLocalProduct("");
     setLocalTimeRange("90d");
@@ -111,9 +166,8 @@ function GlobalFilterPanel({ onClose }) {
       onClick={handleOverlayClick}
     >
       <div
-        className={`tp-filter-panel tp-card ${
-          isClosing ? "tp-panel-exit" : ""
-        }`}
+        className={`tp-filter-panel tp-card ${isClosing ? "tp-panel-exit" : ""
+          }`}
         ref={modalRef}
       >
         {/* HEADER */}
@@ -132,24 +186,44 @@ function GlobalFilterPanel({ onClose }) {
         {/* BODY */}
         <div className="tp-filter-body">
           <div className="tp-form-group">
+            <label>Country</label>
+
+            <Select
+              className="tp-select"
+              classNamePrefix="tp-select"
+              options={countryOptions}
+              value={countryOptions.find((opt) => opt.value === reporterCode)}
+              onChange={(opt) => {
+                const code = opt?.value || "";
+                const name = opt?.label || "";
+
+                setLocalCountry(code);
+
+                dispatch(setReporterCode(code)); // numeric code for API
+                dispatch(setCountry(name));      // store readable country name
+              }}
+              placeholder="Select Country"
+              isSearchable
+            />
+          </div>
+
+          <div className="tp-form-group">
             <label>Corridor</label>
-            {/* <select
-              className="tp-input tp-select"
-              value={localCorridor}
-              onChange={(e) => setLocalCorridor(e.target.value)}
-            >
-              <option value="">Select Corridor</option>
-              <option value="uk-ng">UK ↔ Nigeria</option>
-              <option value="uk-gh">UK ↔ Ghana</option>
-              <option value="uk-ke">UK ↔ Kenya</option>
-              <option value="uk-za">UK ↔ South Africa</option>
-            </select> */}
+
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
               options={corridorOptions}
               value={corridorOptions.find((opt) => opt.value === localCorridor)}
-              onChange={(opt) => setLocalCorridor(opt?.value || "")}
+              onChange={(opt) => {
+  const partner = opt?.value || "";
+  const corridorLabel = opt?.label || "";
+
+  setLocalCorridor(partner);
+
+  dispatch(setPartnerCode(partner)); // store partnerCode
+  dispatch(setCorridor(corridorLabel)); // store readable corridor label
+}}
               placeholder="Select Corridor"
               isSearchable
             />
@@ -157,16 +231,7 @@ function GlobalFilterPanel({ onClose }) {
 
           <div className="tp-form-group">
             <label>Product</label>
-            {/* <select
-              className="tp-input tp-select"
-              value={localProduct}
-              onChange={(e) => setLocalProduct(e.target.value)}
-            >
-              <option value="">All Products</option>
-              <option value="cocoa">Cocoa Beans</option>
-              <option value="oil">Crude Oil</option>
-              <option value="tea">Tea</option>
-            </select> */}
+
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
@@ -180,16 +245,7 @@ function GlobalFilterPanel({ onClose }) {
 
           <div className="tp-form-group">
             <label>Time Range</label>
-            {/* <select
-              className="tp-input tp-select"
-              value={localTimeRange}
-              onChange={(e) => setLocalTimeRange(e.target.value)}
-            >
-              <option value="30d">Last 30 Days</option>
-              <option value="90d">Last 90 Days</option>
-              <option value="6m">Last 6 Months</option>
-              <option value="12m">Last 12 Months</option>
-            </select> */}
+
             <Select
               className="tp-select"
               classNamePrefix="tp-select"

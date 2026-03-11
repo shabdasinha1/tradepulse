@@ -43,7 +43,7 @@ const AppRoutes = () => {
             }
           />
 
-          {AUTH_ROUTES.map(({ path, component: Component }) => (
+          {AUTH_ROUTES.map(({ path, component: Component }) => ( 
             <Route
               key={path}
               path={path}
