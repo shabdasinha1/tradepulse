@@ -49,6 +49,14 @@ export const DashboardProductHighlights = async (params = {}) => {
 };
 
 /* ===============================
+   DASHBOARD KPI SUMMARY
+================================ */
+export const DashboardKPIs = async (params = {}) => {
+  return Api.get("/dashboard/kpis", { params });
+};
+
+
+/* ===============================
    DASHBOARD FORECAST
 ================================ */
 export const DashboardForcast = async (hasCode) => {

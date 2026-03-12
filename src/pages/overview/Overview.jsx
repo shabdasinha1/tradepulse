@@ -86,7 +86,7 @@ function Overview() {
       {/* ===============================
           KPI + CHARTS
       ============================== */}
-      <OverviewCharts corridorId={corridorId} />
+      <OverviewCharts />
 
       {/* ===============================
           NEWS + MARGIN 50/50
