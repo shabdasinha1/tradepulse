@@ -210,7 +210,7 @@ const TPChart = ({
         <div className="tp-chart-header tp-chart-filter-header">
           <h4 className="tp-section-title">{title}</h4>
 
-          <UniversalFilter
+          {/* <UniversalFilter
             showCorridor
             showProduct
             showTimeRange
@@ -222,7 +222,7 @@ const TPChart = ({
             onChange={(filters) => {
               onFilterChange?.(filters);
             }}
-          />
+          /> */}
         </div>
       }
     >

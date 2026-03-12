@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
+import { FiX } from "react-icons/fi";
 import Select from "react-select";
 import { useSelector } from "react-redux";
 import AsyncSelect from "react-select/async";
-import { DashboardCorridors, ProductDropdownSearch } from "../../services/DashboardService";
+import {
+  DashboardCorridors,
+  ProductDropdownSearch,
+} from "../../services/DashboardService";
 
 const UniversalFilter = ({
   showCorridor = false,
@@ -14,21 +19,24 @@ const UniversalFilter = ({
   onChange,
   className = "",
 }) => {
+  const modalRef = useRef(null);
+  const [isClosing, setIsClosing] = useState(false);
 
   const { reporterCode, partnerCode, productId, productLabel } = useSelector(
-  (state) => state.corridor
-);
+    (state) => state.corridor
+  );
 
   const [filters, setFilters] = useState({
-  corridor: defaultValues.corridor || "",
-  partnerCode: defaultValues.partnerCode || "",
-  product: defaultValues.product || "",
-  productLabel: defaultValues.productLabel || "",
-  riskLevel: defaultValues.riskLevel || "",
-  activityStatus: defaultValues.activityStatus || "",
-  startDate: defaultValues.startDate || "",
-  endDate: defaultValues.endDate || "",
-});
+    corridor: defaultValues.corridor || "",
+    partnerCode: defaultValues.partnerCode || "",
+    product: defaultValues.product || "",
+    productLabel: defaultValues.productLabel || "",
+    riskLevel: defaultValues.riskLevel || "",
+    activityStatus: defaultValues.activityStatus || "",
+    startDate: defaultValues.startDate || "",
+    endDate: defaultValues.endDate || "",
+  });
+
   const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
   ]);
@@ -39,7 +47,6 @@ const UniversalFilter = ({
     { value: "oil", label: "Crude Oil" },
     { value: "tea", label: "Tea" },
   ];
-
 
   const riskOptions = [
     { value: "", label: "All" },
@@ -84,23 +91,22 @@ const UniversalFilter = ({
   }, [reporterCode]);
 
   /* ===============================
-   SYNC GLOBAL PRODUCT
-=============================== */
+     SYNC GLOBAL PRODUCT
+  =============================== */
 
-useEffect(() => {
-  if (!productId) return;
+  useEffect(() => {
+    if (!productId) return;
 
-  setFilters((prev) => {
-    // avoid overriding local filter if same
-    if (prev.product === productId) return prev;
+    setFilters((prev) => {
+      if (prev.product === productId) return prev;
 
-    return {
-      ...prev,
-      product: productId,
-      productLabel: productLabel || "",
-    };
-  });
-}, [productId, productLabel]);
+      return {
+        ...prev,
+        product: productId,
+        productLabel: productLabel || "",
+      };
+    });
+  }, [productId, productLabel]);
 
   /* ===============================
      SYNC GLOBAL CORRIDOR
@@ -124,9 +130,9 @@ useEffect(() => {
      EMIT FILTER CHANGES
   =============================== */
 
-  useEffect(() => {
-    onChange && onChange(filters);
-  }, [filters]);
+  // useEffect(() => {
+  //   onChange && onChange(filters);
+  // }, [filters]);
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({
@@ -134,132 +140,232 @@ useEffect(() => {
       [key]: value,
     }));
   };
-const loadProductOptions = async (inputValue) => {
-  try {
-    const res = await ProductDropdownSearch(inputValue || "");
-    const products = res?.data || [];
 
-    return products.map((p) => ({
-      value: p.value,
-      label: p.label,
-    }));
-  } catch (err) {
-    console.error("Product search error:", err);
-    return [];
-  }
-};
-  return (
-    <div className={`tp-universal-filter ${className}`}>
+  /* ===============================
+     PRODUCT SEARCH
+  =============================== */
 
-      {showCorridor && (
-        <div className="tp-form-group">
-          <label>Corridor</label>
-          <Select
-            className="tp-select tp-filter-control"
-            classNamePrefix="tp-select"
-            options={corridorOptions}
-            value={corridorOptions.find(
-              (o) => o.value === filters.partnerCode
+  const loadProductOptions = async (inputValue) => {
+    try {
+      const res = await ProductDropdownSearch(inputValue || "");
+      const products = res?.data || [];
+
+      return products.map((p) => ({
+        value: p.value,
+        label: p.label,
+      }));
+    } catch (err) {
+      console.error("Product search error:", err);
+      return [];
+    }
+  };
+
+  /* ===============================
+     MODAL CLOSE
+  =============================== */
+
+  const handleClose = () => {
+    setIsClosing(true);
+
+    setTimeout(() => {
+      if (onChange) onChange(filters);
+    }, 300);
+  };
+
+  const handleOverlayClick = (e) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      handleClose();
+    }
+  };
+
+  /* ===============================
+     LOCK BODY SCROLL
+  =============================== */
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  /* ===============================
+     ESC CLOSE
+  =============================== */
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") handleClose();
+    };
+
+    document.addEventListener("keydown", handleEsc);
+    return () => document.removeEventListener("keydown", handleEsc);
+  }, []);
+
+  const modalContent = (
+    <div
+      className={`tp-filter-overlay ${isClosing ? "tp-overlay-exit" : ""}`}
+      onClick={handleOverlayClick}
+    >
+      <div
+        className={`tp-filter-panel tp-card ${
+          isClosing ? "tp-panel-exit" : ""
+        }`}
+        ref={modalRef}
+      >
+        {/* HEADER */}
+        <div className="tp-filter-header">
+          <h3>Filters</h3>
+
+          <button
+            className="tp-filter-close"
+            onClick={handleClose}
+            aria-label="Close Filters"
+          >
+            <FiX />
+          </button>
+        </div>
+
+        {/* BODY */}
+        <div className="tp-filter-body">
+          <div className={`tp-universal-filter ${className}`}>
+            {showCorridor && (
+              <div className="tp-form-group">
+                <label>Corridor</label>
+
+                <Select
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  options={corridorOptions}
+                  value={corridorOptions.find(
+                    (o) => o.value === filters.partnerCode
+                  )}
+                  onChange={(opt) => {
+                    const partner = opt?.value || "";
+                    const corridorLabel = opt?.label || "";
+
+                    setFilters((prev) => ({
+                      ...prev,
+                      partnerCode: partner,
+                      corridor: corridorLabel,
+                    }));
+                  }}
+                  placeholder="Select Corridor"
+                  isSearchable
+                />
+              </div>
             )}
-            onChange={(opt) => {
-              const partner = opt?.value || "";
-              const corridorLabel = opt?.label || "";
 
-              setFilters((prev) => ({
-                ...prev,
-                partnerCode: partner,
-                corridor: corridorLabel,
-              }));
-            }}
-            placeholder="Select Corridor"
-            isSearchable
-          />
-        </div>
-      )}
+            {showProduct && (
+              <div className="tp-form-group">
+                <label>Product</label>
 
-      {showProduct && (
-        <div className="tp-form-group">
-          <label>Product</label>
-         <AsyncSelect
-  className="tp-select tp-filter-control"
-  classNamePrefix="tp-select"
-  cacheOptions
-  defaultOptions
-  loadOptions={loadProductOptions}
-  value={
-  filters.product
-    ? {
-        value: filters.product,
-        label: filters.productLabel || filters.product,
-      }
-    : null
-}
-  onChange={(opt) =>
-    setFilters((prev) => ({
-      ...prev,
-      product: opt?.value || "",
-      productLabel: opt?.label || "",
-    }))
-  }
-  placeholder="Search"
-  isClearable
-/>
-        </div>
-      )}
-<div className="tp-form-group">
-  <label>Start Date</label>
-  <input
-    type="date"
-    className="tp-input tp-filter-control"
-    value={filters.startDate}
-    onChange={(e) => updateFilter("startDate", e.target.value)}
-  />
-</div>
-
-<div className="tp-form-group">
-  <label>End Date</label>
-  <input
-    type="date"
-    className="tp-input tp-filter-control"
-    value={filters.endDate}
-    onChange={(e) => updateFilter("endDate", e.target.value)}
-  />
-</div>
-
-      {showRiskLevel && (
-        <div className="tp-form-group">
-          <label>Risk Level</label>
-          <Select
-            className="tp-select tp-filter-control"
-            classNamePrefix="tp-select"
-            options={riskOptions}
-            value={riskOptions.find((o) => o.value === filters.riskLevel)}
-            onChange={(opt) => updateFilter("riskLevel", opt?.value || "")}
-            placeholder="Select Risk Level"
-          />
-        </div>
-      )}
-
-      {showActivityStatus && (
-        <div className="tp-form-group">
-          <label>Activity Status</label>
-          <Select
-            className="tp-select tp-filter-control"
-            classNamePrefix="tp-select"
-            options={activityOptions}
-            value={activityOptions.find(
-              (o) => o.value === filters.activityStatus
+                <AsyncSelect
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={loadProductOptions}
+                  value={
+                    filters.product
+                      ? {
+                          value: filters.product,
+                          label: filters.productLabel || filters.product,
+                        }
+                      : null
+                  }
+                  onChange={(opt) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      product: opt?.value || "",
+                      productLabel: opt?.label || "",
+                    }))
+                  }
+                  placeholder="Search"
+                  isClearable
+                />
+              </div>
             )}
-            onChange={(opt) =>
-              updateFilter("activityStatus", opt?.value || "")
-            }
-            placeholder="Select Activity Status"
-          />
-        </div>
-      )}
 
+            {showTimeRange && (
+              <>
+                <div className="tp-form-group">
+                  <label>Start Date</label>
+
+                  <input
+                    type="date"
+                    className="tp-input tp-filter-control"
+                    value={filters.startDate}
+                    onChange={(e) =>
+                      updateFilter("startDate", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className="tp-form-group">
+                  <label>End Date</label>
+
+                  <input
+                    type="date"
+                    className="tp-input tp-filter-control"
+                    value={filters.endDate}
+                    onChange={(e) => updateFilter("endDate", e.target.value)}
+                  />
+                </div>
+              </>
+            )}
+
+            {showRiskLevel && (
+              <div className="tp-form-group">
+                <label>Risk Level</label>
+
+                <Select
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  options={riskOptions}
+                  value={riskOptions.find(
+                    (o) => o.value === filters.riskLevel
+                  )}
+                  onChange={(opt) =>
+                    updateFilter("riskLevel", opt?.value || "")
+                  }
+                  placeholder="Select Risk Level"
+                />
+              </div>
+            )}
+
+            {showActivityStatus && (
+              <div className="tp-form-group">
+                <label>Activity Status</label>
+
+                <Select
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  options={activityOptions}
+                  value={activityOptions.find(
+                    (o) => o.value === filters.activityStatus
+                  )}
+                  onChange={(opt) =>
+                    updateFilter("activityStatus", opt?.value || "")
+                  }
+                  placeholder="Select Activity Status"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* FOOTER */}
+        <div className="tp-filter-footer">
+          <button className="tp-btn-primary" onClick={handleClose}>
+            Apply Filters
+          </button>
+        </div>
+      </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default UniversalFilter;

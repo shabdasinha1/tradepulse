@@ -106,7 +106,7 @@ const MarketOverview = ({ corridorId }) => {
               </div>
 
               {/* ✅ Independent Filter */}
-              <UniversalFilter
+              {/* <UniversalFilter
                 showCorridor
                 showTimeRange
                 defaultValues={{
@@ -116,7 +116,7 @@ const MarketOverview = ({ corridorId }) => {
                 onChange={(filters) => {
                   setFxFilters(filters);
                 }}
-              />
+              /> */}
             </div>
           }
         >
@@ -159,7 +159,7 @@ const MarketOverview = ({ corridorId }) => {
               </div>
 
               {/* ✅ Independent Filter */}
-              <UniversalFilter
+              {/* <UniversalFilter
                 showCorridor
                 showTimeRange
                 defaultValues={{
@@ -169,7 +169,7 @@ const MarketOverview = ({ corridorId }) => {
                 onChange={(filters) => {
                   setShipFilters(filters);
                 }}
-              />
+              /> */}
             </div>
           }
         >

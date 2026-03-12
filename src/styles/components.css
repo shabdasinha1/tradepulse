@@ -272,6 +272,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 15px;
 }
 
 .tp-form-group label {
@@ -809,14 +810,14 @@ input::placeholder {
   gap: var(--space-sm);
   align-items: center;
   margin-bottom: var(--space-sm);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+  /* display: grid; */
+  /* grid-template-columns: repeat(auto-fit, minmax(125px, 1fr)); */
   width: 100%;
 }
 
 .tp-filter-control {
   /* min-width: 140px; */
-  width: 150px;
+  /* width: 150px; */
   font-size: var(--fs-caption);
 }
 
