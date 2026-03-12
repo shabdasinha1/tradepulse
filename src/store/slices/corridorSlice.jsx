@@ -4,9 +4,13 @@ const initialState = {
   country: "United Kingdom",
   reporterCode: "826",
   partnerCode: 566,
-  corridor: 566,
+  partnerCountry: "Nigeria",
+  corridor: "UK ↔ Nigeria",
   productId: "",
+  productLabel: "",
   timeRange: "90d",
+  startDate: null,
+  endDate: null,
 };
 
 const corridorSlice = createSlice({
@@ -20,6 +24,7 @@ const corridorSlice = createSlice({
     setReporterCode: (state, action) => {
       state.reporterCode = action.payload;
       state.partnerCode = null;
+      state.partnerCountry = null;
       state.corridor = null;
       state.productId = null;
     },
@@ -33,22 +38,35 @@ const corridorSlice = createSlice({
       state.partnerCode = action.payload;
     },
 
+    setPartnerCountry: (state, action) => {
+      state.partnerCountry = action.payload;
+    },
+
     setProduct: (state, action) => {
-      state.productId = action.payload;
+      state.productId = action.payload.value;
+      state.productLabel = action.payload.label;
     },
 
     setTimeRange: (state, action) => {
       state.timeRange = action.payload;
     },
+    setDateRange: (state, action) => {
+  state.startDate = action.payload.startDate;
+  state.endDate = action.payload.endDate;
+},
 
-    resetFilters: (state) => {
-      state.country = "United Kingdom";
-      state.reporterCode = "826";
-      state.partnerCode = 566;
-      state.corridor = 566;
-      state.productId = "";
-      state.timeRange = "90d";
-    },
+   resetFilters: (state) => {
+  state.country = "United Kingdom";
+  state.reporterCode = "826";
+  state.partnerCode = 566;
+  state.partnerCountry = "Nigeria";
+  state.corridor = "UK ↔ Nigeria";
+  state.productId = "";
+  state.productLabel = "";
+  state.timeRange = "90d";
+  state.startDate = null;
+  state.endDate = null;
+},
   },
 });
 
@@ -56,9 +74,11 @@ export const {
   setCountry,
   setReporterCode,
   setPartnerCode,
+  setPartnerCountry,
   setCorridor,
   setProduct,
   setTimeRange,
+  setDateRange,
   resetFilters,
 } = corridorSlice.actions;
 

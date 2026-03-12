@@ -5,41 +5,40 @@ import { FiX } from "react-icons/fi";
 import {
   setCorridor,
   setProduct,
-  setTimeRange,
   setReporterCode,
   setCountry,
-  setPartnerCode
+  setPartnerCode,
+  setPartnerCountry,
+  setDateRange,
+  resetFilters
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
-import { DashboardCorridors } from "../../services/DashboardService";
+import AsyncSelect from "react-select/async";
+import { DashboardCorridors, ProductDropdownSearch } from "../../services/DashboardService";
 
 
 
 
 function GlobalFilterPanel({ onClose }) {
+
   const modalRef = useRef(null);
   const dispatch = useDispatch();
 
-  const productOptions = [
-    { value: "", label: "All Products" },
-    { value: "cocoa", label: "Cocoa Beans" },
-    { value: "oil", label: "Crude Oil" },
-    { value: "tea", label: "Tea" },
-  ];
 
-  const timeRangeOptions = [
-    { value: "30d", label: "Last 30 Days" },
-    { value: "90d", label: "Last 90 Days" },
-    { value: "6m", label: "Last 6 Months" },
-    { value: "12m", label: "Last 12 Months" },
-  ];
+
 
   const [isClosing, setIsClosing] = useState(false);
 
-  const { country, reporterCode, corridor, partnerCode, productId, timeRange } = useSelector(
-  (state) => state.corridor,
-);
-
+const {
+  country,
+  reporterCode,
+  corridor,
+  partnerCode,
+  productId,
+  productLabel,
+  startDate,
+  endDate
+} = useSelector((state) => state.corridor);
   const countries = useSelector((state) => state.country.countries);
 
   const countryOptions = countries.map((c) => ({
@@ -52,23 +51,26 @@ function GlobalFilterPanel({ onClose }) {
   ========================== */
 
   const [localCountry, setLocalCountry] = useState(reporterCode || "");
-const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
-  const [localProduct, setLocalProduct] = useState(productId || "");
-  const [localTimeRange, setLocalTimeRange] = useState(timeRange || "90d");
-
+  const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
+  const [localProduct, setLocalProduct] = useState(null);
+ 
   const [corridorOptions, setCorridorOptions] = useState([]);
-const corridorState = useSelector((state) => state.corridor);
+
 
 useEffect(() => {
-  console.log("Redux corridor state updated:", corridorState);
-}, [corridorState]);
-
-  useEffect(() => {
-    if (reporterCode) setLocalCountry(reporterCode);
+  if (reporterCode) setLocalCountry(reporterCode);
   if (partnerCode) setLocalCorridor(partnerCode);
-    if (productId) setLocalProduct(productId);
-    if (timeRange) setLocalTimeRange(timeRange);
-  }, [reporterCode, corridor, productId, timeRange]);
+
+  if (productId) {
+    setLocalProduct({
+      value: productId,
+      label: productLabel,
+    });
+  } else {
+    setLocalProduct(null);
+  }
+
+}, [reporterCode, partnerCode, productId, productLabel]);
 
   /* =========================
    LOAD CORRIDORS ON COUNTRY SELECT
@@ -121,6 +123,19 @@ useEffect(() => {
     return () => document.removeEventListener("keydown", handleEsc);
   }, []);
 
+
+  useEffect(() => {
+    console.log("Redux corridor state updated:", {
+      country,
+      reporterCode,
+      partnerCode,
+      corridor,
+      productId,
+       productLabel
+    
+    });
+  }, [country, reporterCode, partnerCode, corridor, productId, productLabel]);
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -138,26 +153,43 @@ useEffect(() => {
       APPLY FILTERS
   ========================== */
 
-  const handleApply = () => {
-    dispatch(setCorridor(localCorridor));
-    dispatch(setProduct(localProduct));
-    dispatch(setTimeRange(localTimeRange));
-    handleClose();
-  };
+const handleApply = () => {
 
+  if (startDate && !endDate) {
+    alert("Please select End Date");
+    return;
+  }
+
+  if (startDate && endDate && startDate > endDate) {
+    alert("Start date cannot be after End date");
+    return;
+  }
+
+  dispatch(setProduct(localProduct || { value: "", label: "" }));
+
+  handleClose();
+};
   /* =========================
       RESET FILTERS
   ========================== */
 
-  const handleReset = () => {
-    setLocalCountry("");
-    setLocalCorridor("");
-    setLocalProduct("");
-    setLocalTimeRange("90d");
+ const handleReset = () => {
+  dispatch(resetFilters());
+};
 
-    dispatch(setCorridor(""));
-    dispatch(setProduct(""));
-    dispatch(setTimeRange("90d"));
+  const loadProductOptions = async (inputValue) => {
+    try {
+      const res = await ProductDropdownSearch(inputValue || "");
+      const products = res?.data || [];
+
+      return products.map((p) => ({
+        value: p.value,
+        label: p.label,
+      }));
+    } catch (err) {
+      console.error("Product search error:", err);
+      return [];
+    }
   };
 
   const modalContent = (
@@ -216,14 +248,16 @@ useEffect(() => {
               options={corridorOptions}
               value={corridorOptions.find((opt) => opt.value === localCorridor)}
               onChange={(opt) => {
-  const partner = opt?.value || "";
-  const corridorLabel = opt?.label || "";
+                const partner = opt?.value || "";
+                const corridorLabel = opt?.label || "";
 
-  setLocalCorridor(partner);
+                setLocalCorridor(partner);
 
-  dispatch(setPartnerCode(partner)); // store partnerCode
-  dispatch(setCorridor(corridorLabel)); // store readable corridor label
-}}
+                dispatch(setPartnerCode(partner)); // store partnerCode
+                dispatch(setCorridor(corridorLabel)); // store readable corridor label
+                const partnerCountry = corridorLabel.split("↔")[1]?.trim();
+                dispatch(setPartnerCountry(partnerCountry));
+              }}
               placeholder="Select Corridor"
               isSearchable
             />
@@ -232,32 +266,52 @@ useEffect(() => {
           <div className="tp-form-group">
             <label>Product</label>
 
-            <Select
-              className="tp-select"
-              classNamePrefix="tp-select"
-              options={productOptions}
-              value={productOptions.find((opt) => opt.value === localProduct)}
-              onChange={(opt) => setLocalProduct(opt?.value || "")}
-              placeholder="All Products"
-              isSearchable
-            />
+           <AsyncSelect
+  className="tp-select"
+  classNamePrefix="tp-select"
+  cacheOptions
+  defaultOptions
+  loadOptions={loadProductOptions}
+  value={localProduct}
+  onChange={(opt) => setLocalProduct(opt)}
+  placeholder="Search HS Code or Product"
+  isClearable
+/>
           </div>
 
-          <div className="tp-form-group">
-            <label>Time Range</label>
+         <div className="tp-form-group">
+  <label>Start Date</label>
+  <input
+  type="date"
+  className="tp-input"
+  value={startDate || ""}
+  onChange={(e) =>
+    dispatch(
+      setDateRange({
+        startDate: e.target.value,
+        endDate: endDate,
+      })
+    )
+  }
+/>
+</div>
 
-            <Select
-              className="tp-select"
-              classNamePrefix="tp-select"
-              options={timeRangeOptions}
-              value={timeRangeOptions.find(
-                (opt) => opt.value === localTimeRange,
-              )}
-              onChange={(opt) => setLocalTimeRange(opt?.value || "")}
-              isSearchable={false}
-              placeholder="Select Time Range"
-            />
-          </div>
+<div className="tp-form-group">
+  <label>End Date</label>
+ <input
+  type="date"
+  className="tp-input"
+  value={endDate || ""}
+  onChange={(e) =>
+    dispatch(
+      setDateRange({
+        startDate: startDate,
+        endDate: e.target.value,
+      })
+    )
+  }
+/>
+</div>
         </div>
 
         {/* FOOTER */}

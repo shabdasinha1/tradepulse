@@ -31,14 +31,21 @@ export const DashboardProductList = async (params = {}) => {
 /* ===============================
    DASHBOARD PRODUCT OVERVIEW
 ================================ */
-export const DashboardProductOverview = async () => {
-  return Api.get("/products/overview");
+export const DashboardProductOverview = async (params = {}) => {
+  return Api.get("/products/overview", { params });
 };
 /* ===============================
    DASHBOARD PRODUCT INSIGHTS
 ================================ */
 export const DashboardProductInsights = async () => {
   return Api.get("/products/insights");
+};
+
+/* ===============================
+   DASHBOARD PRODUCT HIGHLIGHTS
+================================ */
+export const DashboardProductHighlights = async (params = {}) => {
+  return Api.get("/products/highlights", { params });
 };
 
 /* ===============================

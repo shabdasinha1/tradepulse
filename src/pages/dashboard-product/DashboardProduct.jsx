@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useSelector, shallowEqual } from "react-redux";
 import {
-  DashboardProductInsights,
   DashboardProductOverview,
   DashboardAllProductList,
+  DashboardProductHighlights,
 } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import VerticalScroll from "../../components/common/VerticalScroll";
@@ -12,13 +12,21 @@ import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
 import PageDisclaimer from "../../components/common/PageDisclaimer";
 import UniversalFilter from "../../components/common/UniversalFilter";
 
+
+const DEFAULT_FILTERS = {
+  partnerCode: "",
+  product: "",
+  timeRange: "90d",
+  riskLevel: ""
+};
+
 /* ===============================
    SKELETON COMPONENTS
 ================================ */
 
-const Skeleton = ({ className = "" }) => (
+const Skeleton = React.memo(({ className = "" }) => (
   <div className={`tp-skeleton skeleton ${className}`} />
-);
+));
 
 const ProductOverviewSkeleton = () => {
   return (
@@ -61,27 +69,28 @@ const ProductOverviewSkeleton = () => {
 ================================ */
 
 const DashboardProduct = () => {
-  const corridorId = useSelector((state) => state.corridor.corridorId);
+  const { reporterCode, partnerCode, corridor, startDate, endDate } =
+    useSelector(state => state.corridor, shallowEqual);
 
   const observer = useRef(null);
 
   const [filterOpen, setFilterOpen] = useState(false);
 
   const [error, setError] = useState(null);
-
+  const requestRef = useRef(0);
   const [isOverviewLoading, setIsOverviewLoading] = useState(false);
   const [isTableLoading, setIsTableLoading] = useState(false);
 
   const [filters, setFilters] = useState({
-    corridor: corridorId || "",
-    product: "",
-    timeRange: "90d",
-    riskLevel: "",
-  });
+  partnerCode: partnerCode || "",
+  product: "",
+  timeRange: "90d",
+  riskLevel: ""
+});
 
   const [productData, setProductData] = useState({
     productOverview: {},
-    productInsight: {},
+    productHighlights: {},
   });
 
   const [allProducts, setAllProducts] = useState([]);
@@ -116,23 +125,26 @@ const DashboardProduct = () => {
   ================================ */
 
   const fetchOverviewAndInsights = async () => {
-    if (!filters.corridor) return;
+    if (!filters.partnerCode) return;
 
     setIsOverviewLoading(true);
     setError(null);
 
     try {
       const params = {
-        time_range: filters.timeRange,
-        risk_level: filters.riskLevel,
+        reporter: reporterCode,
+        partner: filters.partnerCode,
+        product: filters.product || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
       };
 
       const results = await Promise.allSettled([
         DashboardProductOverview(params),
-        DashboardProductInsights(params),
+        DashboardProductHighlights(params),
       ]);
-      console.log("result : ", results);
-      const [overviewRes, insightRes] = results;
+
+      const [overviewRes, highlightRes] = results;
 
       if (overviewRes.status === "fulfilled") {
         setProductData((prev) => ({
@@ -141,10 +153,12 @@ const DashboardProduct = () => {
         }));
       }
 
-      if (insightRes.status === "fulfilled") {
+
+
+      if (highlightRes.status === "fulfilled") {
         setProductData((prev) => ({
           ...prev,
-          productInsight: insightRes.value?.data || {},
+          productHighlights: highlightRes.value?.data || {},
         }));
       }
     } catch (err) {
@@ -159,75 +173,147 @@ const DashboardProduct = () => {
      FETCH TABLE DATA
   ================================ */
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (reset = false) => {
+
     if (isTableLoading) return;
-    if (!hasMore && page !== 1) return;
+
+    const requestId = ++requestRef.current;
 
     setIsTableLoading(true);
 
     try {
+
       const params = {
-        page,
-        limit: 10,
+        reporter: reporterCode,
+        partner: filters.partnerCode,
+        product: filters.product || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        risk: filters.riskLevel?.toUpperCase(),
+        page: reset ? 1 : page,
+        limit: 10
       };
 
       const res = await DashboardAllProductList(params);
 
-      const newData = res?.data?.data || [];
+      if (requestId !== requestRef.current) return;
 
-      setProducts((prev) => {
-        const merged = page === 1 ? newData : [...prev, ...newData];
+      const newData = res?.data?.data ?? [];
 
-        const unique = Array.from(
-          new Map(merged.map((item) => [item.product, item])).values(),
-        );
+      setProducts(prev => {
 
-        return unique;
+        const map = new Map(prev.map(i => [i.product, i]));
+
+        newData.forEach(i => map.set(i.product, i));
+
+        return Array.from(map.values());
+
       });
 
-      if (newData.length < 10) {
-        setHasMore(false);
-      }
+      setHasMore(newData.length === 10);
+
     } catch (err) {
-      console.error("Products API error:", err);
       setError(GetApiErrorMessage(err));
-    } finally {
+    }
+    finally {
       setIsTableLoading(false);
     }
+
   };
+
+    const lastProductRef = useCallback(node => {
+
+    if (isTableLoading) return;
+
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver(entries => {
+
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(p => p + 1);
+      }
+
+    });
+
+    if (node) observer.current.observe(node);
+
+  }, [isTableLoading, hasMore]);
+
+  const productRows = useMemo(() => {
+
+    return products.map((item, index) => {
+
+      const isLast = products.length === index + 1;
+
+      return (
+        <div
+          ref={isLast ? lastProductRef : null}
+          className="product-row"
+          key={item.product || index}
+        >
+          <span>{item.product}</span>
+
+          <span className="tp-muted text-center">
+            {/* £{item.avgExportPrice} */}£
+            {Number(item.avgExportPrice).toFixed(2)}
+          </span>
+
+          <span className="text-center">
+            <span className="tp-pill tp-pill-primary">
+              {item.importDemandTrend}
+            </span>
+          </span>
+
+          <span className="text-center">
+            <span className="tp-pill tp-pill-primary">
+              {item.exportActivityLevel}
+            </span>
+          </span>
+
+          <span className="text-center">
+            <span
+              className={`tp-pill ${item.volatilityRisk === "LOW"
+                ? "tp-pill-success"
+                : item.volatilityRisk === "MEDIUM"
+                  ? "tp-pill-warning"
+                  : item.volatilityRisk === "HIGH"
+                    ? "tp-pill-danger"
+                    : ""
+                }`}
+            >
+              {item.volatilityRisk}
+            </span>
+          </span>
+        </div>
+      );
+
+    });
+
+  }, [products, lastProductRef]);
 
   /* ===============================
      EFFECTS
   ================================ */
-
   useEffect(() => {
+    if (!filters.partnerCode) return;
+
+    setProducts([]);
+    setPage(1);
+    setHasMore(true);
+
+    fetchProducts(true);
     fetchOverviewAndInsights();
-  }, [filters]);
+
+  }, [filters, startDate, endDate]);
 
   useEffect(() => {
+    if (page === 1) return;
     fetchProducts();
   }, [page]);
-
   /* ===============================
      INFINITE SCROLL
   ================================ */
 
-  const lastProductRef = useCallback(
-    (node) => {
-      if (isTableLoading || !hasMore) return;
-
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prev) => prev + 1);
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [hasMore, isTableLoading],
-  );
 
   /* ===============================
      FILTER HANDLER
@@ -236,12 +322,12 @@ const DashboardProduct = () => {
   const handleFilterChange = (values) => {
     setFilters((prev) => {
       const isSame =
-        prev.corridor === values.corridor &&
-        prev.product === values.product &&
-        prev.timeRange === values.timeRange &&
-        prev.riskLevel === values.riskLevel;
+  prev.partnerCode === values.partnerCode &&
+  prev.product === values.product &&
+  prev.timeRange === values.timeRange &&
+  prev.riskLevel === values.riskLevel;
 
-      if (isSame) return prev;
+if (isSame) return prev;
 
       setProducts([]);
       setPage(1);
@@ -296,7 +382,7 @@ const DashboardProduct = () => {
             <>
               <div className="tp-card">
                 <p className="tp-muted">
-                  Most Imported Product (Selected Corridor)
+                  Most Imported Product ({corridor || "Selected Corridor"})
                 </p>
                 <h3 className="tp-overview-text">
                   {productData?.productOverview?.totalProducts || "-"}
@@ -305,7 +391,7 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">
-                  Fastest Growing Demand (Selected Corridor)
+                  Fastest Growing Demand ({corridor || "Selected Corridor"})
                 </p>
                 <h3 className="tp-overview-text">
                   {productData?.productOverview?.activeProducts || "-"}
@@ -350,12 +436,7 @@ const DashboardProduct = () => {
                 showTimeRange
                 showRiskLevel
                 productOptions={allProducts}
-                defaultValues={{
-                  corridor: corridorId || "",
-                  product: "",
-                  timeRange: "90d",
-                  riskLevel: "",
-                }}
+                defaultValues={filters}
                 onChange={handleFilterChange}
               />
             </div>
@@ -382,52 +463,7 @@ const DashboardProduct = () => {
                   </div>
                 )}
 
-                {products.map((item, index) => {
-                  const isLast = products.length === index + 1;
-
-                  return (
-                    <div
-                      ref={isLast ? lastProductRef : null}
-                      className="product-row"
-                      key={item.product || index}
-                    >
-                      <span>{item.product}</span>
-
-                      <span className="tp-muted text-center">
-                        {/* £{item.avgExportPrice} */}£
-                        {Number(item.avgExportPrice).toFixed(2)}
-                      </span>
-
-                      <span className="text-center">
-                        <span className="tp-pill tp-pill-primary">
-                          {item.importDemandTrend}
-                        </span>
-                      </span>
-
-                      <span className="text-center">
-                        <span className="tp-pill tp-pill-primary">
-                          {item.exportActivityLevel}
-                        </span>
-                      </span>
-
-                      <span className="text-center">
-                        <span
-                          className={`tp-pill ${
-                            item.volatilityRisk === "LOW"
-                              ? "tp-pill-success"
-                              : item.volatilityRisk === "MEDIUM"
-                                ? "tp-pill-warning"
-                                : item.volatilityRisk === "HIGH"
-                                  ? "tp-pill-danger"
-                                  : ""
-                          }`}
-                        >
-                          {item.volatilityRisk}
-                        </span>
-                      </span>
-                    </div>
-                  );
-                })}
+                {productRows}
 
                 {isTableLoading &&
                   [...Array(4)].map((_, i) => (
@@ -447,19 +483,19 @@ const DashboardProduct = () => {
         <div className="tp-grid tp-insight-grid">
           <div className="tp-card">
             <p className="tp-muted">
-              Most Imported Product (Selected Corridor)
+              Most Imported Product  ({corridor || "Selected Corridor"})
             </p>
             <h3 className="tp-overview-text">
-              {productData?.productInsight?.most_traded?.split(",")?.[0]}
+              {productData?.productHighlights?.mostTradedProduct || "N/A"}
             </h3>
           </div>
 
           <div className="tp-card">
             <p className="tp-muted">
-              Highest Price Volatility (Selected Corridor)
+              Highest Price Volatility  ({corridor || "Selected Corridor"})
             </p>
             <h3 className="tp-overview-text">
-              {productData?.productInsight?.largest_product?.split(",")?.[0]}
+              {productData?.productHighlights?.highestVolatilityProduct || "N/A"}
             </h3>
           </div>
         </div>

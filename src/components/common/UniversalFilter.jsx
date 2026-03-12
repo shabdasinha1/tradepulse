@@ -1,31 +1,37 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
+import { useSelector } from "react-redux";
+import AsyncSelect from "react-select/async";
+import { DashboardCorridors, ProductDropdownSearch } from "../../services/DashboardService";
 
 const UniversalFilter = ({
   showCorridor = false,
   showProduct = false,
   showTimeRange = false,
   showRiskLevel = false,
-  showActivityStatus = false, // ✅ NEW FLAG (default false)
+  showActivityStatus = false,
   defaultValues = {},
   onChange,
   className = "",
 }) => {
-  const [filters, setFilters] = useState({
-    corridor: defaultValues.corridor || "",
-    product: defaultValues.product || "",
-    timeRange: defaultValues.timeRange || "90d",
-    riskLevel: defaultValues.riskLevel || "",
-    activityStatus: defaultValues.activityStatus || "", // ✅ NEW STATE
-  });
 
-  const corridorOptions = [
+  const { reporterCode, partnerCode, productId, productLabel } = useSelector(
+  (state) => state.corridor
+);
+
+  const [filters, setFilters] = useState({
+  corridor: defaultValues.corridor || "",
+  partnerCode: defaultValues.partnerCode || "",
+  product: defaultValues.product || "",
+  productLabel: defaultValues.productLabel || "",
+  riskLevel: defaultValues.riskLevel || "",
+  activityStatus: defaultValues.activityStatus || "",
+  startDate: defaultValues.startDate || "",
+  endDate: defaultValues.endDate || "",
+});
+  const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
-    { value: "uk-ng", label: "UK ↔ Nigeria" },
-    { value: "uk-gh", label: "UK ↔ Ghana" },
-    { value: "uk-ke", label: "UK ↔ Kenya" },
-    { value: "uk-za", label: "UK ↔ South Africa" },
-  ];
+  ]);
 
   const productOptions = [
     { value: "", label: "Product" },
@@ -34,15 +40,9 @@ const UniversalFilter = ({
     { value: "tea", label: "Tea" },
   ];
 
-  const timeRangeOptions = [
-    { value: "30d", label: "Last 30 Days" },
-    { value: "90d", label: "Last 90 Days" },
-    { value: "6m", label: "Last 6 Months" },
-    { value: "12m", label: "Last 12 Months" },
-  ];
 
   const riskOptions = [
-    { value: "", label: "Risk Level" },
+    { value: "", label: "All" },
     { value: "low", label: "Low" },
     { value: "medium", label: "Medium" },
     { value: "high", label: "High" },
@@ -55,8 +55,75 @@ const UniversalFilter = ({
   ];
 
   /* ===============================
-     EMIT CHANGES UPWARD
+     LOAD CORRIDORS
   =============================== */
+
+  useEffect(() => {
+    if (!reporterCode) return;
+
+    const fetchCorridors = async () => {
+      try {
+        const res = await DashboardCorridors(reporterCode);
+        const corridors = res?.data?.data || [];
+
+        const formatted = [
+          { value: "", label: "Corridor" },
+          ...corridors.map((c) => ({
+            value: c.partnerCode,
+            label: c.label,
+          })),
+        ];
+
+        setCorridorOptions(formatted);
+      } catch (error) {
+        console.error("Corridor API Error:", error);
+      }
+    };
+
+    fetchCorridors();
+  }, [reporterCode]);
+
+  /* ===============================
+   SYNC GLOBAL PRODUCT
+=============================== */
+
+useEffect(() => {
+  if (!productId) return;
+
+  setFilters((prev) => {
+    // avoid overriding local filter if same
+    if (prev.product === productId) return prev;
+
+    return {
+      ...prev,
+      product: productId,
+      productLabel: productLabel || "",
+    };
+  });
+}, [productId, productLabel]);
+
+  /* ===============================
+     SYNC GLOBAL CORRIDOR
+  =============================== */
+
+  useEffect(() => {
+    if (!partnerCode) return;
+
+    const selected = corridorOptions.find((c) => c.value === partnerCode);
+
+    if (!selected) return;
+
+    setFilters((prev) => ({
+      ...prev,
+      partnerCode: partnerCode,
+      corridor: selected.label,
+    }));
+  }, [partnerCode, corridorOptions]);
+
+  /* ===============================
+     EMIT FILTER CHANGES
+  =============================== */
+
   useEffect(() => {
     onChange && onChange(filters);
   }, [filters]);
@@ -67,132 +134,130 @@ const UniversalFilter = ({
       [key]: value,
     }));
   };
+const loadProductOptions = async (inputValue) => {
+  try {
+    const res = await ProductDropdownSearch(inputValue || "");
+    const products = res?.data || [];
 
+    return products.map((p) => ({
+      value: p.value,
+      label: p.label,
+    }));
+  } catch (err) {
+    console.error("Product search error:", err);
+    return [];
+  }
+};
   return (
     <div className={`tp-universal-filter ${className}`}>
-      {/* ================= Corridor ================= */}
-      {/* {showCorridor && (
-        <select
-          className="tp-input tp-select tp-filter-control"
-          value={filters.corridor}
-          onChange={(e) => updateFilter("corridor", e.target.value)}
-        >
-          <option value="">Corridor</option>
-          <option value="uk-ng">UK ↔ Nigeria</option>
-          <option value="uk-gh">UK ↔ Ghana</option>
-          <option value="uk-ke">UK ↔ Kenya</option>
-          <option value="uk-za">UK ↔ South Africa</option>
-        </select>
-      )} */}
+
       {showCorridor && (
-        <Select
-          className=" tp-select tp-filter-control"
-          classNamePrefix="tp-select"
-          options={corridorOptions}
-          value={corridorOptions.find((o) => o.value === filters.corridor)}
-          onChange={(opt) => updateFilter("corridor", opt?.value || "")}
-          placeholder="Corridor"
-          isSearchable
-        />
+        <div className="tp-form-group">
+          <label>Corridor</label>
+          <Select
+            className="tp-select tp-filter-control"
+            classNamePrefix="tp-select"
+            options={corridorOptions}
+            value={corridorOptions.find(
+              (o) => o.value === filters.partnerCode
+            )}
+            onChange={(opt) => {
+              const partner = opt?.value || "";
+              const corridorLabel = opt?.label || "";
+
+              setFilters((prev) => ({
+                ...prev,
+                partnerCode: partner,
+                corridor: corridorLabel,
+              }));
+            }}
+            placeholder="Select Corridor"
+            isSearchable
+          />
+        </div>
       )}
 
-      {/* ================= Product ================= */}
-      {/* {showProduct && (
-        <select
-          className="tp-input tp-select tp-filter-control"
-          value={filters.product}
-          onChange={(e) => updateFilter("product", e.target.value)}
-        >
-          <option value="">Product</option>
-          <option value="cocoa">Cocoa Beans</option>
-          <option value="oil">Crude Oil</option>
-          <option value="tea">Tea</option>
-        </select>
-      )} */}
       {showProduct && (
-        <Select
-          className="tp-select tp-filter-control"
-          classNamePrefix="tp-select"
-          options={productOptions}
-          value={productOptions.find((o) => o.value === filters.product)}
-          onChange={(opt) => updateFilter("product", opt?.value || "")}
-          placeholder="Product"
-          isSearchable
-        />
+        <div className="tp-form-group">
+          <label>Product</label>
+         <AsyncSelect
+  className="tp-select tp-filter-control"
+  classNamePrefix="tp-select"
+  cacheOptions
+  defaultOptions
+  loadOptions={loadProductOptions}
+  value={
+  filters.product
+    ? {
+        value: filters.product,
+        label: filters.productLabel || filters.product,
+      }
+    : null
+}
+  onChange={(opt) =>
+    setFilters((prev) => ({
+      ...prev,
+      product: opt?.value || "",
+      productLabel: opt?.label || "",
+    }))
+  }
+  placeholder="Search"
+  isClearable
+/>
+        </div>
       )}
+<div className="tp-form-group">
+  <label>Start Date</label>
+  <input
+    type="date"
+    className="tp-input tp-filter-control"
+    value={filters.startDate}
+    onChange={(e) => updateFilter("startDate", e.target.value)}
+  />
+</div>
 
-      {/* ================= Time Range ================= */}
-      {/* {showTimeRange && (
-        <select
-          className="tp-input tp-select tp-filter-control"
-          value={filters.timeRange}
-          onChange={(e) => updateFilter("timeRange", e.target.value)}
-        >
-          <option value="30d">Last 30 Days</option>
-          <option value="90d">Last 90 Days</option>
-          <option value="6m">Last 6 Months</option>
-          <option value="12m">Last 12 Months</option>
-        </select>
-      )} */}
-      {showTimeRange && (
-        <Select
-          className="tp-select tp-filter-control"
-          classNamePrefix="tp-select"
-          options={timeRangeOptions}
-          value={timeRangeOptions.find((o) => o.value === filters.timeRange)}
-          onChange={(opt) => updateFilter("timeRange", opt?.value || "")}
-          isSearchable={false}
-        />
-      )}
+<div className="tp-form-group">
+  <label>End Date</label>
+  <input
+    type="date"
+    className="tp-input tp-filter-control"
+    value={filters.endDate}
+    onChange={(e) => updateFilter("endDate", e.target.value)}
+  />
+</div>
 
-      {/* ================= Risk Level ================= */}
-      {/* {showRiskLevel && (
-        <select
-          className="tp-input tp-select tp-filter-control"
-          value={filters.riskLevel}
-          onChange={(e) => updateFilter("riskLevel", e.target.value)}
-        >
-          <option value="">Risk Level</option>
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-      )} */}
       {showRiskLevel && (
-        <Select
-          className="tp-select tp-filter-control"
-          classNamePrefix="tp-select"
-          options={riskOptions}
-          value={riskOptions.find((o) => o.value === filters.riskLevel)}
-          onChange={(opt) => updateFilter("riskLevel", opt?.value || "")}
-          placeholder="Risk Level"
-        />
+        <div className="tp-form-group">
+          <label>Risk Level</label>
+          <Select
+            className="tp-select tp-filter-control"
+            classNamePrefix="tp-select"
+            options={riskOptions}
+            value={riskOptions.find((o) => o.value === filters.riskLevel)}
+            onChange={(opt) => updateFilter("riskLevel", opt?.value || "")}
+            placeholder="Select Risk Level"
+          />
+        </div>
       )}
 
-      {/* ================= Activity Status (NEW) ================= */}
-      {/* {showActivityStatus && (
-        <select
-          className="tp-input tp-select tp-filter-control"
-          value={filters.activityStatus}
-          onChange={(e) => updateFilter("activityStatus", e.target.value)}
-        >
-          <option value="">Activity Status</option>
-          <option value="active">Active</option>
-          <option value="dormant">Dormant</option>
-        </select>
-      )} */}
       {showActivityStatus && (
-        <Select
-          className="tp-select tp-filter-control"
-          classNamePrefix="tp-select"
-          options={activityOptions}
-          value={activityOptions.find(
-            (o) => o.value === filters.activityStatus,
-          )}
-          onChange={(opt) => updateFilter("activityStatus", opt?.value || "")}
-          placeholder="Activity Status"
-        />
+        <div className="tp-form-group">
+          <label>Activity Status</label>
+          <Select
+            className="tp-select tp-filter-control"
+            classNamePrefix="tp-select"
+            options={activityOptions}
+            value={activityOptions.find(
+              (o) => o.value === filters.activityStatus
+            )}
+            onChange={(opt) =>
+              updateFilter("activityStatus", opt?.value || "")
+            }
+            placeholder="Select Activity Status"
+          />
+        </div>
       )}
+
     </div>
   );
 };
