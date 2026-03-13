@@ -78,7 +78,9 @@ const ProductOverviewSkeleton = () => {
 const DashboardProduct = () => {
   const { reporterCode, partnerCode, corridor, startDate, endDate } =
     useSelector((state) => state.corridor, shallowEqual);
-
+  const shortCorridor = corridor.includes(",")
+    ? corridor.split(",")[0] + "..."
+    : corridor;
   const observer = useRef(null);
 
   const [filterOpen, setFilterOpen] = useState(false);
@@ -347,7 +349,9 @@ const DashboardProduct = () => {
               <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
                 {/* <span className="tp-arrow">→</span> */}
-                <span className="tp-country">({corridor || "Selected Corridor"})</span>
+                <span className="tp-country tp-country-truncate" title={corridor}>
+                  {shortCorridor || "Selected Corridor"}
+                </span>
               </div>
               <button
                 className="tp-btn-outline tp-overview-filter-btn"

@@ -16,12 +16,12 @@ import { IoCalculatorOutline } from "react-icons/io5";
 function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
 
-  const { corridor} =
-    useSelector((state) => state.corridor);
+  const { corridor } = useSelector((state) => state.corridor);
+  const shortCorridor = corridor.includes(",")
+    ? corridor.split(",")[0] + "..."
+    : corridor;
   const [displayName, setDisplayName] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
-
-  
 
   /* ===============================
      MARGIN STATE + CALCULATION
@@ -30,23 +30,21 @@ function Overview() {
   const [budget, setBudget] = useState(250000);
 
   const { data: marginImpactData } = useQuery({
-  queryKey: ["marginImpact", budget],
-  queryFn: () => DashboardMarginImpact(budget),
-  enabled: !!budget,
-});
+    queryKey: ["marginImpact", budget],
+    queryFn: () => DashboardMarginImpact(budget),
+    enabled: !!budget,
+  });
 
-const fxPercent = marginImpactData?.data?.volatility ?? 0;
+  const fxPercent = marginImpactData?.data?.volatility ?? 0;
 
-const impact = marginImpactData?.data?.estimatedImpact ?? 0;
+  const impact = marginImpactData?.data?.estimatedImpact ?? 0;
 
-const severity = marginImpactData?.data?.risk || "Low";
+  const severity = marginImpactData?.data?.risk || "Low";
 
-let severityClass = "tp-pill-success";
+  let severityClass = "tp-pill-success";
 
-if (severity === "Medium") severityClass = "tp-pill-warning";
-if (severity === "High") severityClass = "tp-text-down";
-
-  
+  if (severity === "Medium") severityClass = "tp-pill-warning";
+  if (severity === "High") severityClass = "tp-text-down";
 
   /* ===============================
      USER NAME
@@ -80,8 +78,13 @@ if (severity === "High") severityClass = "tp-text-down";
               <div className="tp-filter-btn-wrapper">
                 <div className="tp-corridor-pill">
                   <span className="tp-country">Active Corridor : </span>
-                 
-                  <span className="tp-country">({corridor || "Selected Corridor"})</span>
+
+                  <span
+                    className="tp-country tp-country-truncate"
+                    title={corridor}
+                  >
+                    {shortCorridor || "Selected Corridor"}
+                  </span>
                 </div>
                 <button
                   className="tp-btn-outline tp-overview-filter-btn"

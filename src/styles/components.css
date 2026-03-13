@@ -1012,6 +1012,7 @@ input::placeholder {
 
   padding: 12px 22px;
   gap: var(--space-sm);
+  cursor: context-menu;
 }
 
 .tp-arrow {
@@ -1024,4 +1025,5 @@ input::placeholder {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  
 }

@@ -42,7 +42,6 @@ const Suppliers = () => {
   const shortCorridor = corridor.includes(",")
     ? corridor.split(",")[0] + "..."
     : corridor;
-  console.log(corridor, shortCorridor);
   const observerRef = useRef(null);
   const tableScrollRef = useRef(null);
 
