@@ -15,6 +15,7 @@ import {
 } from "recharts";
 import TradePulseCard from "../common/TradePulseCard";
 import UniversalFilter from "../common/UniversalFilter";
+import { CiFilter } from "react-icons/ci";
 
 const TPChart = ({
   title,
@@ -24,7 +25,7 @@ const TPChart = ({
   series = [],
   onFilterChange,
 }) => {
-
+  const [filterOpen, setFilterOpen] = useState(false);
   /* ===============================
      Y AXIS FORMATTER
   =============================== */
@@ -59,8 +60,9 @@ const TPChart = ({
 
   const radiusSm = useMemo(() => {
     return parseInt(
-      getComputedStyle(document.documentElement)
-        .getPropertyValue("--radius-sm")
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--radius-sm",
+      ),
     );
   }, []);
 
@@ -123,7 +125,6 @@ const TPChart = ({
 
   const renderChart = () => {
     switch (type) {
-
       case "area":
         return (
           <AreaChart data={data} margin={chartMargin}>
@@ -205,33 +206,45 @@ const TPChart = ({
   };
 
   return (
-    <TradePulseCard
-      header={
-        <div className="tp-chart-header tp-chart-filter-header">
-          <h4 className="tp-section-title">{title}</h4>
+    <>
+      <TradePulseCard
+        header={
+          <div className="tp-chart-header tp-chart-filter-header">
+            <h4 className="tp-section-title">{title}</h4>
+            <button
+              className="tp-btn-outline tp-overview-filter-btn"
+              onClick={() => setFilterOpen(true)}
+            >
+              <CiFilter />
+              Filters
+            </button>
 
-          {/* <UniversalFilter
-            showCorridor
-            showProduct
-            showTimeRange
-            defaultValues={{
-              corridor: "",
-              product: "",
-              timeRange: "90d",
-            }}
-            onChange={(filters) => {
-              onFilterChange?.(filters);
-            }}
-          /> */}
+          </div>
+        }
+      >
+        <div className="tp-chart-wrapper">
+          <ResponsiveContainer width="100%" height="100%">
+            {renderChart()}
+          </ResponsiveContainer>
         </div>
-      }
-    >
-      <div className="tp-chart-wrapper">
-        <ResponsiveContainer width="100%" height="100%">
-          {renderChart()}
-        </ResponsiveContainer>
-      </div>
-    </TradePulseCard>
+      </TradePulseCard>
+      {filterOpen && (
+        <UniversalFilter
+          showCorridor
+          showProduct
+          showTimeRange
+          defaultValues={{
+            corridor: "",
+            product: "",
+            timeRange: "90d",
+          }}
+          onChange={(filters) => {
+            onFilterChange?.(filters); // send filters to parent
+            setFilterOpen(false); // close modal
+          }}
+        />
+      )}
+    </>
   );
 };
 
