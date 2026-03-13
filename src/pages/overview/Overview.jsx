@@ -58,7 +58,7 @@ function Overview() {
       {/* ===============================
           HEADER
       ============================== */}
-      <section className="tp-name-section">
+      <section className="tp-name-section tp-section">
         <div className="tp-dashboard-container tp-grid-stack">
           <header>
             <h1 className="tp-section-title tp-overview-hero-title">
