@@ -1,8 +1,9 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { GetCookie } from "../../utils/CookieManager.jsx";
 import { FiDollarSign, FiSliders } from "react-icons/fi";
-
+import { DashboardMarginImpact } from "../../services/DashboardService.jsx";
 import CustomsDutyRates from "../../components/overview/CustomsDutyRates.jsx";
 import LatestTradeNews from "../../components/overview/LatestTradeNews.jsx";
 import MarketOverview from "../../components/overview/MarketOverview.jsx";
@@ -18,27 +19,32 @@ function Overview() {
   const [displayName, setDisplayName] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
 
+  
+
   /* ===============================
      MARGIN STATE + CALCULATION
   ============================== */
 
   const [budget, setBudget] = useState(250000);
-  const fxPercent = 1.2; // dummy static for now
 
-  const impact = (budget * fxPercent) / 100;
+  const { data: marginImpactData } = useQuery({
+  queryKey: ["marginImpact", budget],
+  queryFn: () => DashboardMarginImpact(budget),
+  enabled: !!budget,
+});
 
-  let severity = "Low";
-  let severityClass = "tp-pill-success";
+const fxPercent = marginImpactData?.data?.volatility ?? 0;
 
-  if (Math.abs(fxPercent) >= 1 && Math.abs(fxPercent) < 2) {
-    severity = "Medium";
-    severityClass = "tp-pill-warning";
-  }
+const impact = marginImpactData?.data?.estimatedImpact ?? 0;
 
-  if (Math.abs(fxPercent) >= 2) {
-    severity = "High";
-    severityClass = "tp-text-down";
-  }
+const severity = marginImpactData?.data?.risk || "Low";
+
+let severityClass = "tp-pill-success";
+
+if (severity === "Medium") severityClass = "tp-pill-warning";
+if (severity === "High") severityClass = "tp-text-down";
+
+  
 
   /* ===============================
      USER NAME
