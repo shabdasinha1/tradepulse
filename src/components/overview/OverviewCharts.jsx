@@ -25,28 +25,28 @@ const OverviewCharts = () => {
     supplier: null,
   });
 
- const [priceFilters, setPriceFilters] = useState({
-  partnerCode: "",
-  product: "",
-  startDate: "",
-  endDate: ""
-});
+  const [priceFilters, setPriceFilters] = useState({
+    partnerCode: "",
+    product: "",
+    startDate: "",
+    endDate: ""
+  });
 
-const [demandFilters, setDemandFilters] = useState({
-  partnerCode: "",
-  product: "",
-  startDate: "",
-  endDate: ""
-});
- const pricePartner = priceFilters.partnerCode || partnerCode;
-const priceProduct = priceFilters.product || productId;
-const priceStartDate = priceFilters.startDate || startDate;
-const priceEndDate = priceFilters.endDate || endDate;
+  const [demandFilters, setDemandFilters] = useState({
+    partnerCode: "",
+    product: "",
+    startDate: "",
+    endDate: ""
+  });
+  const pricePartner = priceFilters.partnerCode || partnerCode;
+  const priceProduct = priceFilters.product || productId;
+  const priceStartDate = priceFilters.startDate || startDate;
+  const priceEndDate = priceFilters.endDate || endDate;
 
-const demandPartner = demandFilters.partnerCode || partnerCode;
-const demandProduct = demandFilters.product || productId;
-const demandStartDate = demandFilters.startDate || startDate;
-const demandEndDate = demandFilters.endDate || endDate;
+  const demandPartner = demandFilters.partnerCode || partnerCode;
+  const demandProduct = demandFilters.product || productId;
+  const demandStartDate = demandFilters.startDate || startDate;
+  const demandEndDate = demandFilters.endDate || endDate;
 
   const [budget, setBudget] = useState(250000);
 
@@ -57,21 +57,21 @@ const demandEndDate = demandFilters.endDate || endDate;
 
   const { data: priceTrendData } = useQuery({
     queryKey: [
-  "exportPriceTrend",
-  reporterCode,
-  pricePartner,
-  priceProduct,
-  priceStartDate,
-  priceEndDate
-],
+      "exportPriceTrend",
+      reporterCode,
+      pricePartner,
+      priceProduct,
+      priceStartDate,
+      priceEndDate
+    ],
     queryFn: () =>
-     DashboardExportPriceTrend({
-  reporter: reporterCode,
-  partner: pricePartner,
-  product: priceProduct,
-  startDate: priceStartDate || undefined,
-  endDate: priceEndDate || undefined
-}),
+      DashboardExportPriceTrend({
+        reporter: reporterCode,
+        partner: pricePartner,
+        product: priceProduct,
+        startDate: priceStartDate || undefined,
+        endDate: priceEndDate || undefined
+      }),
     enabled: !!reporterCode && !!pricePartner,
   });
 
@@ -95,22 +95,22 @@ const demandEndDate = demandFilters.endDate || endDate;
   ================================= */
 
   const { data: demandTrendData } = useQuery({
-   queryKey: [
-  "importDemandTrend",
-  reporterCode,
-  demandPartner,
-  demandProduct,
-  demandStartDate,
-  demandEndDate
-],
+    queryKey: [
+      "importDemandTrend",
+      reporterCode,
+      demandPartner,
+      demandProduct,
+      demandStartDate,
+      demandEndDate
+    ],
     queryFn: () =>
       DashboardImportDemandTrend({
-  reporter: reporterCode,
-  partner: demandPartner,
-  product: demandProduct,
-  startDate: demandStartDate || undefined,
-  endDate: demandEndDate || undefined
-}),
+        reporter: reporterCode,
+        partner: demandPartner,
+        product: demandProduct,
+        startDate: demandStartDate || undefined,
+        endDate: demandEndDate || undefined
+      }),
     enabled: !!reporterCode && !!demandPartner,
   });
 
@@ -256,32 +256,32 @@ const demandEndDate = demandFilters.endDate || endDate;
         </div>
 
         <div className="tp-grid tp-grid-2">
-<TPChart
-  title="Export Price Trend (Origin → UK)"
-  type="line"
-  data={priceData}
-  series={[{ key: "value", label: "Price" }]}
-  activeFilters={{
-    partnerCode: pricePartner,
-    product: priceProduct,
-    startDate: priceStartDate,
-    endDate: priceEndDate
-  }}
-  onFilterChange={(filters) => setPriceFilters(filters)}
-/>
-      <TPChart
-  title="UK Import Demand Trend"
-  type="area"
-  data={demandData}
-  series={[{ key: "value", label: "Demand" }]}
-  activeFilters={{
-    partnerCode: demandPartner,
-    product: demandProduct,
-    startDate: demandStartDate,
-    endDate: demandEndDate
-  }}
-  onFilterChange={(filters) => setDemandFilters(filters)}
-/>
+          <TPChart
+            title="Export Price Trend (Origin → UK)"
+            type="line"
+            data={priceData}
+            series={[{ key: "value", label: "Price" }]}
+            activeFilters={{
+              partnerCode: pricePartner,
+              product: priceProduct,
+              startDate: priceStartDate,
+              endDate: priceEndDate
+            }}
+            onFilterChange={(filters) => setPriceFilters(filters)}
+          />
+          <TPChart
+            title="UK Import Demand Trend"
+            type="area"
+            data={demandData}
+            series={[{ key: "value", label: "Demand" }]}
+            activeFilters={{
+              partnerCode: demandPartner,
+              product: demandProduct,
+              startDate: demandStartDate,
+              endDate: demandEndDate
+            }}
+            onFilterChange={(filters) => setDemandFilters(filters)}
+          />
 
         </div>
 

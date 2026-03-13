@@ -235,11 +235,11 @@ const TPChart = ({
           showProduct
           showTimeRange
           defaultValues={{
-  partnerCode: activeFilters?.partnerCode || "",
-  product: activeFilters?.product || "",
-  startDate: activeFilters?.startDate || "",
-  endDate: activeFilters?.endDate || "",
-}}
+            partnerCode: activeFilters?.partnerCode || "",
+            product: activeFilters?.product || "",
+            startDate: activeFilters?.startDate || "",
+            endDate: activeFilters?.endDate || "",
+          }}
           onChange={(filters) => {
             onFilterChange?.(filters); // send filters to parent
             setFilterOpen(false); // close modal
