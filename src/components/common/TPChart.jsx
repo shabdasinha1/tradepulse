@@ -24,6 +24,7 @@ const TPChart = ({
   xKey = "month",
   series = [],
   onFilterChange,
+  activeFilters
 }) => {
   const [filterOpen, setFilterOpen] = useState(false);
   /* ===============================
@@ -234,10 +235,11 @@ const TPChart = ({
           showProduct
           showTimeRange
           defaultValues={{
-            corridor: "",
-            product: "",
-            timeRange: "90d",
-          }}
+  partnerCode: activeFilters?.partnerCode || "",
+  product: activeFilters?.product || "",
+  startDate: activeFilters?.startDate || "",
+  endDate: activeFilters?.endDate || "",
+}}
           onChange={(filters) => {
             onFilterChange?.(filters); // send filters to parent
             setFilterOpen(false); // close modal

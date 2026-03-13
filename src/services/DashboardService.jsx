@@ -13,9 +13,20 @@ export const DashboardOverviewExchange = async (base) => {
   return Api.get(`/exchange/exchange?base=${base}`);
 };
 
-// DASHBOARD PRICE TREND GRAPH
-export const DashboardPriceTrend = async (priceHsCode) => {
-  return Api.get(`/products/priceTrend?hs=${priceHsCode}`);
+/* ===============================
+   DASHBOARD EXPORT PRICE TREND
+================================ */
+
+export const DashboardExportPriceTrend = async (params = {}) => {
+  return Api.get("/dashboard/export-price-trend", { params });
+};
+
+/* ===============================
+   DASHBOARD IMPORT DEMAND TREND
+================================ */
+
+export const DashboardImportDemandTrend = async (params = {}) => {
+  return Api.get("/dashboard/import-demand-trend", { params });
 };
 
 /* ===============================
@@ -61,11 +72,6 @@ export const DashboardKPIs = async (params = {}) => {
 ================================ */
 export const DashboardForcast = async (hasCode) => {
   return Api.get(`/forecast/dashboard/${hasCode}`);
-};
-//  DASHBOARD FORCAST DEMANG GRAPH
-export const DemandGrowthForecast = async (demandHsCode) => {
-  // return Api.get(`/forecast/demandForecast?hs=${demandHsCode}`);
-  return Api.get(`/forecast/demand/${demandHsCode}`);
 };
 
 export const ForcastAssets = async ({ limit, page }) => {

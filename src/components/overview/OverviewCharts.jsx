@@ -1,10 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import TPChart from "../common/TPChart.jsx";
 import TPMetricCard from "../common/TPMetricCard.jsx";
 import {
-  DashboardPriceTrend,
-  DemandGrowthForecast,
+  DashboardExportPriceTrend,
+  DashboardImportDemandTrend,
   DashboardKPIs
 } from "../../services/DashboardService.jsx";
 
@@ -24,168 +25,161 @@ const OverviewCharts = () => {
     supplier: null,
   });
 
+ const [priceFilters, setPriceFilters] = useState({
+  partnerCode: "",
+  product: "",
+  startDate: "",
+  endDate: ""
+});
+
+const [demandFilters, setDemandFilters] = useState({
+  partnerCode: "",
+  product: "",
+  startDate: "",
+  endDate: ""
+});
+ const pricePartner = priceFilters.partnerCode || partnerCode;
+const priceProduct = priceFilters.product || productId;
+const priceStartDate = priceFilters.startDate || startDate;
+const priceEndDate = priceFilters.endDate || endDate;
+
+const demandPartner = demandFilters.partnerCode || partnerCode;
+const demandProduct = demandFilters.product || productId;
+const demandStartDate = demandFilters.startDate || startDate;
+const demandEndDate = demandFilters.endDate || endDate;
+
   const [budget, setBudget] = useState(250000);
+
 
   /* ===============================
      PRICE TREND
   ================================= */
 
+  const { data: priceTrendData } = useQuery({
+    queryKey: [
+  "exportPriceTrend",
+  reporterCode,
+  pricePartner,
+  priceProduct,
+  priceStartDate,
+  priceEndDate
+],
+    queryFn: () =>
+     DashboardExportPriceTrend({
+  reporter: reporterCode,
+  partner: pricePartner,
+  product: priceProduct,
+  startDate: priceStartDate || undefined,
+  endDate: priceEndDate || undefined
+}),
+    enabled: !!reporterCode && !!pricePartner,
+  });
+
   useEffect(() => {
-    if (!priceHsCode || !reporterCode || !partnerCode) return;
+    const trend = priceTrendData?.data || [];
 
-    const fetchPriceTrend = async () => {
-      try {
+    if (!trend.length) {
+      setPriceData([]);
+      return;
+    }
 
-        const res = await DashboardPriceTrend({
-          hs: priceHsCode,
-          reporter: reporterCode,
-          partner: partnerCode,
-        });
+    const formatted = trend.map((item) => ({
+      month: item.date?.slice(0, 4),
+      value: Number(item.price?.toFixed(2)) || 0
+    }));
 
-        const history = res?.data?.history || [];
-
-        let formatted = [];
-
-        if (history.length === 0) {
-
-          const defaultYears = ["2019", "2020", "2021", "2022", "2023"];
-
-          formatted = defaultYears.map((year) => ({
-            month: year,
-            value: 0,
-          }));
-
-        } else {
-
-          formatted = history.map((item) => ({
-            month: String(item.year),
-            value: Number(Number(item.price).toFixed(2)) || 0,
-          }));
-
-        }
-
-        setPriceData(formatted);
-
-      } catch (err) {
-
-        console.error("Price Trend Error:", err);
-
-        setPriceData([
-          { month: "2019", value: 0 },
-          { month: "2020", value: 0 },
-          { month: "2021", value: 0 },
-          { month: "2022", value: 0 },
-          { month: "2023", value: 0 },
-        ]);
-
-      }
-    };
-
-    fetchPriceTrend();
-
-  }, [priceHsCode, reporterCode, partnerCode]);
-
+    setPriceData(formatted);
+  }, [priceTrendData]);
   /* ===============================
      DEMAND TREND
   ================================= */
 
+  const { data: demandTrendData } = useQuery({
+   queryKey: [
+  "importDemandTrend",
+  reporterCode,
+  demandPartner,
+  demandProduct,
+  demandStartDate,
+  demandEndDate
+],
+    queryFn: () =>
+      DashboardImportDemandTrend({
+  reporter: reporterCode,
+  partner: demandPartner,
+  product: demandProduct,
+  startDate: demandStartDate || undefined,
+  endDate: demandEndDate || undefined
+}),
+    enabled: !!reporterCode && !!demandPartner,
+  });
+
   useEffect(() => {
-    if (!demandHsCode || !reporterCode || !partnerCode) return;
+    const trend = demandTrendData?.data || [];
 
-    const fetchDemandForecast = async () => {
+    if (!trend.length) {
+      setDemandData([]);
+      return;
+    }
 
-      try {
+    const formatted = trend.map((item) => ({
+      month: item.date?.slice(0, 4),
+      value: Number(item.demand?.toFixed(2)) || 0
+    }));
 
-        const res = await DemandGrowthForecast({
-          hs: demandHsCode,
-          reporter: reporterCode,
-          partner: partnerCode,
-        });
-
-        const forecast = res?.data?.forecast || [];
-
-        const formatted = forecast.map((item) => ({
-          month: String(item.year),
-          value: Number(Number(item.demandIndex).toFixed(2)) || 0,
-        }));
-
-        setDemandData(formatted);
-
-      } catch (err) {
-
-        console.error("Demand Forecast Error:", err);
-        setDemandData([]);
-
-      }
-
-    };
-
-    fetchDemandForecast();
-
-  }, [demandHsCode, reporterCode, partnerCode]);
-
+    setDemandData(formatted);
+  }, [demandTrendData]);
   /* ===============================
      KPI METRICS
   ================================= */
 
+  const { data: kpiData } = useQuery({
+    queryKey: [
+      "dashboardKPIs",
+      reporterCode,
+      partnerCode,
+      productId,
+      startDate,
+      endDate
+    ],
+    queryFn: () =>
+      DashboardKPIs({
+        reporter: reporterCode,
+        partner: partnerCode,
+        product: productId || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined
+      }),
+    enabled: !!reporterCode && !!partnerCode,
+  });
+
   useEffect(() => {
+    const data = kpiData?.data;
 
-    if (!reporterCode || !partnerCode) return;
+    if (!data) return;
 
-    const fetchKPIs = async () => {
-
-      try {
-
-        const res = await DashboardKPIs({
-          reporter: reporterCode,
-          partner: partnerCode,
-          product: productId || undefined,
-          startDate: startDate || undefined,
-          endDate: endDate || undefined,
-        });
-
-        const data = res?.data;
-
-        if (!data) return;
-
-        setMetrics({
-
-          currency: {
-            rate: data.fxImpact?.value ?? 0,
-            changePercent: data.fxImpact?.changePercent ?? 0,
-            pair: "USD/NGN",
-          },
-
-          shipping: {
-            average: data.avgShippingCost?.value ?? 0,
-            changePercent: data.avgShippingCost?.changePercent ?? 0,
-          },
-
-          demand: {
-            percent: data.importDemandSignal?.value ?? 0,
-            changePercent: data.importDemandSignal?.changePercent ?? 0,
-            product: "Import Demand",
-          },
-
-          supplier: {
-            score: data.exporterReliabilityScore?.value ?? 0,
-            changePercent: 0,
-          }
-
-        });
-
-      } catch (err) {
-
-        console.error("KPI API Error:", err);
-
+    setMetrics({
+      currency: {
+        rate: data.fxImpact?.value ?? 0,
+        changePercent: data.fxImpact?.changePercent ?? 0,
+        pair: "USD/NGN",
+      },
+      shipping: {
+        average: data.avgShippingCost?.value ?? 0,
+        changePercent: data.avgShippingCost?.changePercent ?? 0,
+      },
+      demand: {
+        percent: data.importDemandSignal?.value ?? 0,
+        changePercent: data.importDemandSignal?.changePercent ?? 0,
+        product: "Import Demand",
+      },
+      supplier: {
+        score: data.exporterReliabilityScore?.value ?? 0,
+        changePercent: 0,
       }
+    });
 
-    };
-
-    fetchKPIs();
-
-  }, [reporterCode, partnerCode, productId, startDate, endDate]);
-
+  }, [kpiData]);
   /* ===============================
    MARGIN IMPACT CALCULATION
 ================================= */
@@ -213,31 +207,31 @@ const OverviewCharts = () => {
 
         <div className="tp-metrics-row">
 
-         <TPMetricCard
-  title={`FX Impact (${corridor || "Selected Corridor"})`}
-  value={metrics.currency?.rate ?? 0}
-  unit={metrics.currency?.pair || ""}
-  footerLabel={
-    metrics.currency?.direction === "Up"
-      ? "Recent FX movement affecting UK import costs"
-      : "Current exchange rate movement affecting UK import cost."
-  }
-  trend={`${metrics.currency?.changePercent ?? 0}`}
-  trendDirection={
-    (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
-  }
-/>
+          <TPMetricCard
+            title={`FX Impact (${corridor || "Selected Corridor"})`}
+            value={metrics.currency?.rate ?? 0}
+            unit={metrics.currency?.pair || ""}
+            footerLabel={
+              metrics.currency?.direction === "Up"
+                ? "Recent FX movement affecting UK import costs"
+                : "Current exchange rate movement affecting UK import cost."
+            }
+            trend={`${metrics.currency?.changePercent ?? 0}`}
+            trendDirection={
+              (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
+            }
+          />
 
-<TPMetricCard
-  title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
-  value={`$${metrics.shipping?.average ?? 0}`}
-  unit="per container"
-  footerLabel="Average container cost within selected trade corridor."
-  trend={`${metrics.shipping?.changePercent ?? 0}`}
-  trendDirection={
-    (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
-  }
-/>
+          <TPMetricCard
+            title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
+            value={`$${metrics.shipping?.average ?? 0}`}
+            unit="per container"
+            footerLabel="Average container cost within selected trade corridor."
+            trend={`${metrics.shipping?.changePercent ?? 0}`}
+            trendDirection={
+              (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
+            }
+          />
 
           <TPMetricCard
             title="UK Import Demand Signal"
@@ -262,24 +256,32 @@ const OverviewCharts = () => {
         </div>
 
         <div className="tp-grid tp-grid-2">
-
-          <TPChart
-            title="Export Price Trend (Origin → UK)"
-            type="line"
-            data={priceData}
-            series={[{ key: "value", label: "Price" }]}
-            selectedProduct={priceHsCode}
-            onSelectProduct={setPriceHsCode}
-          />
-
-          <TPChart
-            title="UK Import Demand Trend"
-            type="area"
-            data={demandData}
-            series={[{ key: "value", label: "Demand" }]}
-            selectedProduct={demandHsCode}
-            onSelectProduct={setDemandHsCode}
-          />
+<TPChart
+  title="Export Price Trend (Origin → UK)"
+  type="line"
+  data={priceData}
+  series={[{ key: "value", label: "Price" }]}
+  activeFilters={{
+    partnerCode: pricePartner,
+    product: priceProduct,
+    startDate: priceStartDate,
+    endDate: priceEndDate
+  }}
+  onFilterChange={(filters) => setPriceFilters(filters)}
+/>
+      <TPChart
+  title="UK Import Demand Trend"
+  type="area"
+  data={demandData}
+  series={[{ key: "value", label: "Demand" }]}
+  activeFilters={{
+    partnerCode: demandPartner,
+    product: demandProduct,
+    startDate: demandStartDate,
+    endDate: demandEndDate
+  }}
+  onFilterChange={(filters) => setDemandFilters(filters)}
+/>
 
         </div>
 
