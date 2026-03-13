@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { countries } from "../../data/Data.jsx";
 
 const initialState = {
   country: "United Kingdom",
@@ -11,15 +12,25 @@ const initialState = {
   timeRange: "90d",
   startDate: null,
   endDate: null,
+  baseCurrency: "GBP",  
 };
 
 const corridorSlice = createSlice({
   name: "corridor",
   initialState,
   reducers: {
-    setCountry: (state, action) => {
-      state.country = action.payload;
-    },
+  setCountry: (state, action) => {
+  state.country = action.payload;
+
+  const country = countries.find(
+    (c) => c.name === action.payload
+  );
+
+  if (country) {
+    state.reporterCode = country.numeric;   // ✅ set reporter code
+    state.baseCurrency = country.currency;  // ✅ set base currency
+  }
+},
 
     setReporterCode: (state, action) => {
       state.reporterCode = action.payload;
@@ -66,6 +77,7 @@ const corridorSlice = createSlice({
   state.timeRange = "90d";
   state.startDate = null;
   state.endDate = null;
+  state.baseCurrency = "GBP"; // ✅ reset
 },
   },
 });

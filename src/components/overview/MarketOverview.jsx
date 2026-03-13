@@ -59,11 +59,10 @@ useEffect(() => {
   const fetchExchange = async () => {
     try {
       const res = await DashboardExchangeRate({
-        // baseCurrency: "USD",
-        // quoteCurrency: "HKD",
-        // product: productId,
-        // startDate,
-        // endDate,
+        baseCurrency: "USD",
+        quoteCurrency: "HKD",
+        startDate,
+        endDate,
       });
 
       setOverviewData((prev) => ({
