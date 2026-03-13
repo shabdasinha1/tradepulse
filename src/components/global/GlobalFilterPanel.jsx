@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -86,29 +87,22 @@ useEffect(() => {
   /* =========================
    LOAD CORRIDORS ON COUNTRY SELECT
   ========================= */
+const { data: corridorData } = useQuery({
+  queryKey: ["corridors", localCountry],
+  queryFn: () => DashboardCorridors(localCountry),
+  enabled: !!localCountry,
+});
 
- useEffect(() => {
-  if (!localCountry) return;
+useEffect(() => {
+  const corridors = corridorData?.data?.data || [];
 
-  const fetchCorridors = async () => {
-    try {
-      const res = await DashboardCorridors(localCountry);
-        console.log("corridor", res);
-        const corridors = res?.data?.data || [];
+  const formatted = corridors.map((c) => ({
+    value: c.partnerCode,
+    label: c.label,
+  }));
 
-        const formatted = corridors.map((c) => ({
-          value: c.partnerCode,
-          label: c.label,
-        }));
-
-        setCorridorOptions(formatted);
-      } catch (error) {
-        console.error("Corridor API Error:", error);
-      }
-    };
-
-    fetchCorridors();
- }, [localCountry]);
+  setCorridorOptions(formatted);
+}, [corridorData]);
 
   /* =========================
       LOCK BODY SCROLL

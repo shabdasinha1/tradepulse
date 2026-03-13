@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
@@ -22,8 +23,21 @@ const UniversalFilter = ({
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
-  const { reporterCode, partnerCode, productId, productLabel, startDate, endDate } =
-  useSelector((state) => state.corridor);
+const {
+  reporterCode,
+  partnerCode,
+  productId,
+  productLabel,
+  startDate,
+  endDate,
+} = useSelector((state) => state.corridor);
+
+const lastReduxSync = useRef({
+  partnerCode,
+  productId,
+  startDate,
+  endDate,
+});
 
   const [filters, setFilters] = useState({
     corridor: defaultValues.corridor || "",
@@ -64,87 +78,91 @@ const UniversalFilter = ({
      LOAD CORRIDORS
   =============================== */
 
-  useEffect(() => {
-    if (!reporterCode) return;
+  const { data: corridorData } = useQuery({
+  queryKey: ["corridors", reporterCode],
+  queryFn: () => DashboardCorridors(reporterCode),
+  enabled: !!reporterCode,
+});
 
-    const fetchCorridors = async () => {
-      try {
-        const res = await DashboardCorridors(reporterCode);
-        const corridors = res?.data?.data || [];
+useEffect(() => {
+  const corridors = corridorData?.data?.data || [];
 
-        const formatted = [
-          { value: "", label: "Corridor" },
-          ...corridors.map((c) => ({
-            value: c.partnerCode,
-            label: c.label,
-          })),
-        ];
+  const formatted = [
+    { value: "", label: "Corridor" },
+    ...corridors.map((c) => ({
+      value: c.partnerCode,
+      label: c.label,
+    })),
+  ];
 
-        setCorridorOptions(formatted);
-      } catch (error) {
-        console.error("Corridor API Error:", error);
-      }
-    };
-
-    fetchCorridors();
-  }, [reporterCode]);
+  setCorridorOptions(formatted);
+}, [corridorData]);
 
   /* ===============================
      SYNC GLOBAL PRODUCT
   =============================== */
 
-  useEffect(() => {
-    if (!productId) return;
-
-    setFilters((prev) => {
-      if (prev.product === productId) return prev;
-
-      return {
-        ...prev,
-        product: productId,
-        productLabel: productLabel || "",
-      };
-    });
-  }, [productId, productLabel]);
-
-
-  /* ===============================
-   SYNC GLOBAL DATES
+ /* ===============================
+   SYNC GLOBAL PRODUCT
 =============================== */
 
 useEffect(() => {
-  setFilters((prev) => {
-    if (prev.startDate === startDate && prev.endDate === endDate) return prev;
+  if (lastReduxSync.current.productId === productId) return;
 
-    return {
-      ...prev,
-      startDate: startDate || "",
-      endDate: endDate || "",
-    };
-  });
-}, [startDate, endDate]);
+  lastReduxSync.current.productId = productId;
+
+  setFilters((prev) => ({
+    ...prev,
+    product: productId || "",
+    productLabel: productLabel || "",
+  }));
+}, [productId, productLabel]);
 
   /* ===============================
      SYNC GLOBAL CORRIDOR
   =============================== */
 
-  useEffect(() => {
-  if (!partnerCode) return;
+/* ===============================
+   SYNC GLOBAL CORRIDOR
+=============================== */
+
+useEffect(() => {
+  if (lastReduxSync.current.partnerCode === partnerCode) return;
+
+  lastReduxSync.current.partnerCode = partnerCode;
 
   const selected = corridorOptions.find((c) => c.value === partnerCode);
 
   if (!selected) return;
 
-  setFilters((prev) => {
-    if (prev.partnerCode === partnerCode) return prev;
-
-    return {
-      ...prev,
-      partnerCode: partnerCode,
-      corridor: selected.label,
-    };
-  });
+  setFilters((prev) => ({
+    ...prev,
+    partnerCode: partnerCode,
+    corridor: selected.label,
+  }));
 }, [partnerCode, corridorOptions]);
+
+
+/* ===============================
+   SYNC GLOBAL DATES
+=============================== */
+
+useEffect(() => {
+  if (
+    lastReduxSync.current.startDate === startDate &&
+    lastReduxSync.current.endDate === endDate
+  )
+    return;
+
+  lastReduxSync.current.startDate = startDate;
+  lastReduxSync.current.endDate = endDate;
+
+  setFilters((prev) => ({
+    ...prev,
+    startDate: startDate || "",
+    endDate: endDate || "",
+  }));
+}, [startDate, endDate]);
 
   /* ===============================
      EMIT FILTER CHANGES
