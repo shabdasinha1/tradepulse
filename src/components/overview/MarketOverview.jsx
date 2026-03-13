@@ -8,12 +8,15 @@ import {
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
 import UniversalFilter from "../common/UniversalFilter"; // ✅ new
-import {  MdOutlineCurrencyPound } from "react-icons/md";
-
+import { MdOutlineCurrencyPound } from "react-icons/md";
+import { CiFilter } from "react-icons/ci";
 
 const MarketOverview = ({ corridorId }) => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  const [fxFilterOpen, setFxFilterOpen] = useState(false); // Exchange Modal
+  const [shipFilterOpen, setShipFilterOpen] = useState(false); // Shipping Modal
 
   const [OverviewData, setOverviewData] = useState({
     shippingData: [],
@@ -92,7 +95,6 @@ const MarketOverview = ({ corridorId }) => {
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
-
         {/* ================= EXCHANGE RATES ================= */}
         <TradePulseCard
           header={
@@ -104,6 +106,13 @@ const MarketOverview = ({ corridorId }) => {
                   Corridor FX & Cost Impact Monitor
                 </h3>
               </div>
+              <button
+                className="tp-btn-outline tp-overview-filter-btn"
+                onClick={() => setFxFilterOpen(true)}
+              >
+                <CiFilter />
+                Filters
+              </button>
 
               {/* ✅ Independent Filter */}
               {/* <UniversalFilter
@@ -132,8 +141,8 @@ const MarketOverview = ({ corridorId }) => {
                           r.trend === "UP"
                             ? "tp-text-up"
                             : r.trend === "DOWN"
-                            ? "tp-text-down"
-                            : "tp-text-neutral"
+                              ? "tp-text-down"
+                              : "tp-text-neutral"
                         }`}
                       >
                         {r.changePercent}%
@@ -157,6 +166,13 @@ const MarketOverview = ({ corridorId }) => {
                 <FiTruck />
                 <h3 className="tp-card-title">Latest Shipping Costs</h3>
               </div>
+              <button
+                className="tp-btn-outline tp-overview-filter-btn"
+                onClick={() => setShipFilterOpen(true)}
+              >
+                <CiFilter />
+                Filters
+              </button>
 
               {/* ✅ Independent Filter */}
               {/* <UniversalFilter
@@ -208,10 +224,32 @@ const MarketOverview = ({ corridorId }) => {
             ))}
           </div>
         </TradePulseCard>
-
-        {error && (
-          <div className="text-center tp-text-danger">{error}</div>
+        {/* FX Filter Modal */}
+        {fxFilterOpen && (
+          <UniversalFilter
+            showCorridor
+            showTimeRange
+            defaultValues={fxFilters}
+            onChange={(filters) => {
+              setFxFilters(filters); // update FX filter state
+              setFxFilterOpen(false); // close modal
+            }}
+          />
         )}
+
+        {/* Shipping Filter Modal */}
+        {shipFilterOpen && (
+          <UniversalFilter
+            showCorridor
+            showTimeRange
+            defaultValues={shipFilters}
+            onChange={(filters) => {
+              setShipFilters(filters); // update Shipping filter state
+              setShipFilterOpen(false); // close modal
+            }}
+          />
+        )}
+        {/* {error && <div className="text-center tp-text-danger">{error}</div>} */}
       </div>
     </section>
   );

@@ -562,6 +562,7 @@ input::placeholder {
   justify-content: space-between; /* pushes filters to right */
   gap: var(--space-xl);
   width: 100%; /* more breathing space */
+  flex-wrap: wrap;
 }
 
 /* Title block */
@@ -595,8 +596,8 @@ input::placeholder {
 /* Responsive */
 @media (max-width: 768px) {
   .tp-card-filter-header {
-    flex-direction: column;
-    align-items: flex-start;
+    /* flex-direction: column; */
+    /* align-items: flex-start; */
     gap: var(--space-sm);
   }
 
@@ -725,8 +726,10 @@ input::placeholder {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-md);
-  flex-direction: column;
+  /* flex-direction: column; */
   width: 100%;
+  margin-bottom: var(--space-xs);
+  flex-wrap: wrap;
 }
 
 .tp-chart-filters {
@@ -742,11 +745,11 @@ input::placeholder {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .tp-chart-filter-header {
+  /* .tp-chart-filter-header {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-sm);
-  }
+  } */
 
   .tp-chart-filters {
     width: 100%;
@@ -762,7 +765,7 @@ input::placeholder {
 /* Responsive */
 @media (max-width: 640px) {
   .tp-chart-header {
-    flex-direction: column;
+    /* flex-direction: column; */
     gap: var(--space-sm);
     width: 100%;
   }
