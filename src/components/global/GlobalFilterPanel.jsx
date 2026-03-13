@@ -50,16 +50,27 @@ const {
       LOCAL STATE (TEMP)
   ========================== */
 
-  const [localCountry, setLocalCountry] = useState(reporterCode || "");
-  const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
-  const [localProduct, setLocalProduct] = useState(null);
+const [localCountry, setLocalCountry] = useState(reporterCode || "");
+const [localCountryName, setLocalCountryName] = useState(country || "");
+
+const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
+const [localCorridorLabel, setLocalCorridorLabel] = useState(corridor || "");
+const [localPartnerCountry, setLocalPartnerCountry] = useState("");
+const [localStartDate, setLocalStartDate] = useState(startDate || "");
+const [localEndDate, setLocalEndDate] = useState(endDate || "");
+const [localProduct, setLocalProduct] = useState(null);
  
   const [corridorOptions, setCorridorOptions] = useState([]);
 
 
 useEffect(() => {
   if (reporterCode) setLocalCountry(reporterCode);
+  if (country) setLocalCountryName(country);
+
   if (partnerCode) setLocalCorridor(partnerCode);
+
+  if (startDate) setLocalStartDate(startDate);
+  if (endDate) setLocalEndDate(endDate);
 
   if (productId) {
     setLocalProduct({
@@ -70,18 +81,18 @@ useEffect(() => {
     setLocalProduct(null);
   }
 
-}, [reporterCode, partnerCode, productId, productLabel]);
+}, [reporterCode, partnerCode, productId, productLabel, startDate, endDate]);
 
   /* =========================
    LOAD CORRIDORS ON COUNTRY SELECT
   ========================= */
 
-  useEffect(() => {
-    if (!reporterCode) return;
+ useEffect(() => {
+  if (!localCountry) return;
 
-    const fetchCorridors = async () => {
-      try {
-        const res = await DashboardCorridors(reporterCode);
+  const fetchCorridors = async () => {
+    try {
+      const res = await DashboardCorridors(localCountry);
         console.log("corridor", res);
         const corridors = res?.data?.data || [];
 
@@ -97,7 +108,7 @@ useEffect(() => {
     };
 
     fetchCorridors();
-  }, [reporterCode]);
+ }, [localCountry]);
 
   /* =========================
       LOCK BODY SCROLL
@@ -165,7 +176,21 @@ const handleApply = () => {
     return;
   }
 
-  dispatch(setProduct(localProduct || { value: "", label: "" }));
+  dispatch(setReporterCode(localCountry));
+dispatch(setCountry(localCountryName));
+
+dispatch(setPartnerCode(localCorridor));
+dispatch(setCorridor(localCorridorLabel));
+dispatch(setPartnerCountry(localPartnerCountry));
+
+dispatch(setProduct(localProduct || { value: "", label: "" }));
+
+dispatch(
+  setDateRange({
+    startDate: localStartDate,
+    endDate: localEndDate,
+  })
+);
 
   handleClose();
 };
@@ -173,8 +198,19 @@ const handleApply = () => {
       RESET FILTERS
   ========================== */
 
- const handleReset = () => {
+const handleReset = () => {
   dispatch(resetFilters());
+
+  setLocalCountry("826");
+  setLocalCountryName("United Kingdom");
+
+  setLocalCorridor(566);
+  setLocalCorridorLabel("UK ↔ Nigeria");
+
+  setLocalStartDate("");
+  setLocalEndDate("");
+
+  setLocalProduct(null);
 };
 
   const loadProductOptions = async (inputValue) => {
@@ -224,16 +260,19 @@ const handleApply = () => {
               className="tp-select"
               classNamePrefix="tp-select"
               options={countryOptions}
-              value={countryOptions.find((opt) => opt.value === reporterCode)}
+             value={countryOptions.find((opt) => opt.value === localCountry)}
               onChange={(opt) => {
-                const code = opt?.value || "";
-                const name = opt?.label || "";
+  const code = opt?.value || "";
+  const name = opt?.label || "";
 
-                setLocalCountry(code);
+  setLocalCountry(code);
+  setLocalCountryName(name);
 
-                dispatch(setReporterCode(code)); // numeric code for API
-                dispatch(setCountry(name));      // store readable country name
-              }}
+  // reset dependent filters locally
+  setLocalCorridor("");
+  setLocalCorridorLabel("");
+  setLocalProduct(null);
+}}
               placeholder="Select Country"
               isSearchable
             />
@@ -247,17 +286,16 @@ const handleApply = () => {
               classNamePrefix="tp-select"
               options={corridorOptions}
               value={corridorOptions.find((opt) => opt.value === localCorridor)}
-              onChange={(opt) => {
-                const partner = opt?.value || "";
-                const corridorLabel = opt?.label || "";
+             onChange={(opt) => {
+  const partner = opt?.value || "";
+  const corridorLabel = opt?.label || "";
 
-                setLocalCorridor(partner);
+  setLocalCorridor(partner);
+  setLocalCorridorLabel(corridorLabel);
 
-                dispatch(setPartnerCode(partner)); // store partnerCode
-                dispatch(setCorridor(corridorLabel)); // store readable corridor label
-                const partnerCountry = corridorLabel.split("↔")[1]?.trim();
-                dispatch(setPartnerCountry(partnerCountry));
-              }}
+  const partnerCountry = corridorLabel.split("↔")[1]?.trim();
+  setLocalPartnerCountry(partnerCountry);
+}}
               placeholder="Select Corridor"
               isSearchable
             />
@@ -284,15 +322,8 @@ const handleApply = () => {
   <input
   type="date"
   className="tp-input"
-  value={startDate || ""}
-  onChange={(e) =>
-    dispatch(
-      setDateRange({
-        startDate: e.target.value,
-        endDate: endDate,
-      })
-    )
-  }
+  value={localStartDate}
+onChange={(e) => setLocalStartDate(e.target.value)}
 />
 </div>
 
@@ -301,15 +332,8 @@ const handleApply = () => {
  <input
   type="date"
   className="tp-input"
-  value={endDate || ""}
-  onChange={(e) =>
-    dispatch(
-      setDateRange({
-        startDate: startDate,
-        endDate: e.target.value,
-      })
-    )
-  }
+ value={localEndDate}
+onChange={(e) => setLocalEndDate(e.target.value)}
 />
 </div>
         </div>

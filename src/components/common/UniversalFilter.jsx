@@ -22,9 +22,8 @@ const UniversalFilter = ({
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
-  const { reporterCode, partnerCode, productId, productLabel } = useSelector(
-    (state) => state.corridor
-  );
+  const { reporterCode, partnerCode, productId, productLabel, startDate, endDate } =
+  useSelector((state) => state.corridor);
 
   const [filters, setFilters] = useState({
     corridor: defaultValues.corridor || "",
@@ -108,23 +107,44 @@ const UniversalFilter = ({
     });
   }, [productId, productLabel]);
 
+
+  /* ===============================
+   SYNC GLOBAL DATES
+=============================== */
+
+useEffect(() => {
+  setFilters((prev) => {
+    if (prev.startDate === startDate && prev.endDate === endDate) return prev;
+
+    return {
+      ...prev,
+      startDate: startDate || "",
+      endDate: endDate || "",
+    };
+  });
+}, [startDate, endDate]);
+
   /* ===============================
      SYNC GLOBAL CORRIDOR
   =============================== */
 
   useEffect(() => {
-    if (!partnerCode) return;
+  if (!partnerCode) return;
 
-    const selected = corridorOptions.find((c) => c.value === partnerCode);
+  const selected = corridorOptions.find((c) => c.value === partnerCode);
 
-    if (!selected) return;
+  if (!selected) return;
 
-    setFilters((prev) => ({
+  setFilters((prev) => {
+    if (prev.partnerCode === partnerCode) return prev;
+
+    return {
       ...prev,
       partnerCode: partnerCode,
       corridor: selected.label,
-    }));
-  }, [partnerCode, corridorOptions]);
+    };
+  });
+}, [partnerCode, corridorOptions]);
 
   /* ===============================
      EMIT FILTER CHANGES
