@@ -128,46 +128,49 @@ const DashboardProduct = () => {
 
   const activePartner = filters.partnerCode || partnerCode;
 
-const params = useMemo(() => ({
-  reporter: reporterCode,
-  partner: activePartner,
-  product: filters.product || undefined,
-  startDate: startDate || undefined,
-  endDate: endDate || undefined,
-}), [reporterCode, activePartner, filters.product, startDate, endDate]);
+  const params = useMemo(
+    () => ({
+      reporter: reporterCode,
+      partner: activePartner,
+      product: filters.product || undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    }),
+    [reporterCode, activePartner, filters.product, startDate, endDate],
+  );
 
-const { data: overviewData, isLoading: overviewLoading } = useQuery({
-  queryKey: [
-    "productOverview",
-    reporterCode,
-    activePartner,
-    filters.product,
-    startDate,
-    endDate
-  ],
-  queryFn: () => DashboardProductOverview(params),
-  enabled: !!activePartner,
-});
+  const { data: overviewData, isLoading: overviewLoading } = useQuery({
+    queryKey: [
+      "productOverview",
+      reporterCode,
+      activePartner,
+      filters.product,
+      startDate,
+      endDate,
+    ],
+    queryFn: () => DashboardProductOverview(params),
+    enabled: !!activePartner,
+  });
 
- const { data: highlightData } = useQuery({
-  queryKey: [
-    "productHighlights",
-    reporterCode,
-    partnerCode,
-    filters.product,
-    startDate,
-    endDate
-  ],
-  queryFn: () => DashboardProductHighlights(params),
-  enabled: !!partnerCode,
-});
+  const { data: highlightData } = useQuery({
+    queryKey: [
+      "productHighlights",
+      reporterCode,
+      partnerCode,
+      filters.product,
+      startDate,
+      endDate,
+    ],
+    queryFn: () => DashboardProductHighlights(params),
+    enabled: !!partnerCode,
+  });
 
   useEffect(() => {
-  setFilters((prev) => ({
-    ...prev,
-    partnerCode: partnerCode || "",
-  }));
-}, [partnerCode]);
+    setFilters((prev) => ({
+      ...prev,
+      partnerCode: partnerCode || "",
+    }));
+  }, [partnerCode]);
   /* ===============================
      FETCH TABLE DATA
   ================================ */
@@ -182,7 +185,7 @@ const { data: overviewData, isLoading: overviewLoading } = useQuery({
     try {
       const params = {
         reporter: reporterCode,
-       partner: partnerCode,
+        partner: partnerCode,
         product: filters.product || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
@@ -267,14 +270,15 @@ const { data: overviewData, isLoading: overviewLoading } = useQuery({
 
           <span className="text-center">
             <span
-              className={`tp-pill ${item.volatilityRisk === "LOW"
+              className={`tp-pill ${
+                item.volatilityRisk === "LOW"
                   ? "tp-pill-success"
                   : item.volatilityRisk === "MEDIUM"
                     ? "tp-pill-warning"
                     : item.volatilityRisk === "HIGH"
                       ? "tp-pill-danger"
                       : ""
-                }`}
+              }`}
             >
               {item.volatilityRisk}
             </span>
@@ -288,14 +292,13 @@ const { data: overviewData, isLoading: overviewLoading } = useQuery({
      EFFECTS
   ================================ */
   useEffect(() => {
-   if (!partnerCode) return;
+    if (!partnerCode) return;
 
     setProducts([]);
     setPage(1);
     setHasMore(true);
 
     fetchProducts(true);
-
   }, [filters, startDate, endDate]);
 
   useEffect(() => {
@@ -340,14 +343,20 @@ const { data: overviewData, isLoading: overviewLoading } = useQuery({
             <p className="tp-section-sub">
               Product performance within selected trade corridor.
             </p>
-
-            <button
-              className="tp-btn-outline tp-overview-filter-btn"
-              onClick={() => setFilterOpen(true)}
-            >
-              <FiSliders />
-              Filters
-            </button>
+            <div className="tp-filter-btn-wrapper">
+              <div className="tp-corridor-pill">
+                <span className="tp-country">Active Corridor : </span>
+                {/* <span className="tp-arrow">→</span> */}
+                <span className="tp-country">Corridor</span>
+              </div>
+              <button
+                className="tp-btn-outline tp-overview-filter-btn"
+                onClick={() => setFilterOpen(true)}
+              >
+                <FiSliders />
+                Filters
+              </button>
+            </div>
           </div>
         </header>
 
@@ -444,9 +453,7 @@ const { data: overviewData, isLoading: overviewLoading } = useQuery({
             <div className="product-table">
               <div className="product-row product-head">
                 <span>Product</span>
-                <span className="text-center">
-                  Avg Export Price
-                </span>
+                <span className="text-center">Avg Export Price</span>
                 <span className="text-center">UK Import Demand Trend</span>
                 <span className="text-center">Export Activity Level</span>
                 <span className="text-center">Volatility Risk</span>

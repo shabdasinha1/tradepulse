@@ -154,3 +154,9 @@
     transform: translateY(16px) scale(0.94);
   }
 }
+@media (max-width:768px) {
+  .tp-filter-panel .tp-form-group{
+    width: 100%;
+  }
+  
+}

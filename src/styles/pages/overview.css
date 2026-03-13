@@ -456,7 +456,7 @@
 /* Result */
 .tp-margin-result {
   text-align: right;
-  min-width: 220px;
+  /* min-width: 220px; */
 }
 
 .tp-margin-value {
@@ -484,15 +484,15 @@
   }
 
   .tp-margin-content {
-    flex-direction: column;
+    /* flex-direction: column; */
     align-items: flex-start;
     gap: var(--space-lg);
   }
 
   .tp-margin-result {
-    text-align: left;
-    min-width: unset;
-    width: 100%;
+    /* text-align: left; */
+    /* min-width: unset; */
+    /* width: 100%; */
   }
 
   .tp-margin-input {
@@ -510,6 +510,8 @@
   .tp-margin-value {
     font-size: var(--fs-xl);
   }
+  
+  
 }
 
 /* ======================================
@@ -550,5 +552,10 @@
 @media (max-width: 768px) {
   .tp-news-margin-layout {
     grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 443px) {
+  .tp-margin-result {
+    text-align: left;
   }
 }

@@ -903,7 +903,8 @@ input::placeholder {
 
 .tp-select__control {
   width: 100%;
-  padding: clamp(2px, 0.2vw, 4px);
+  /* padding: clamp(2px, 0.2vw, 4px); */
+  padding: clamp(10px, 1vw, 12px) clamp(12px, 1.2vw, 14px);
   font-size: var(--fs-body);
   line-height: 1.4;
   border-radius: var(--radius-control) !important;
@@ -980,4 +981,35 @@ input::placeholder {
 .tp-select__input-container input {
   background-color: transparent;
   color: var(--text-primary) !important;
+}
+.css-hlgwow,
+.css-19bb58m {
+  padding: 0 !important;
+}
+
+.tp-filter-btn-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.tp-corridor-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* padding: 6px 10px; */
+  border-radius: var(--radius-md);
+  background: var(--bg-soft);
+  border: 1px solid var(--border-soft);
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  font-weight: var(--fw-bold);
+
+  padding: 12px 22px;
+  gap: var(--space-sm);
+}
+
+.tp-arrow {
+  opacity: 0.7;
 }

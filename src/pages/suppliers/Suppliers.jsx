@@ -131,13 +131,20 @@ const Suppliers = () => {
             <p className="tp-section-sub">
               Structured exporter activity insights within selected corridor.
             </p>
-            <button
-              className="tp-btn-outline tp-overview-filter-btn"
-              onClick={() => setFilterOpen(true)}
-            >
-              <FiSliders />
-              Filters
-            </button>
+            <div className="tp-filter-btn-wrapper">
+              <div className="tp-corridor-pill">
+                <span className="tp-country">Active Corridor : </span>
+                {/* <span className="tp-arrow">→</span> */}
+                <span className="tp-country">Corridor</span>
+              </div>
+              <button
+                className="tp-btn-outline tp-overview-filter-btn"
+                onClick={() => setFilterOpen(true)}
+              >
+                <FiSliders />
+                Filters
+              </button>
+            </div>
           </div>
         </header>
         <PageDisclaimer />
