@@ -148,7 +148,7 @@ const Suppliers = () => {
               {/*<button className="tp-btn-primary tp-btn-sm">
                 <FiPlus /> Add Supplier
               </button> */}
-              <UniversalFilter
+              {/* <UniversalFilter
                 showCorridor
                 showProduct
                 showRiskLevel
@@ -162,7 +162,7 @@ const Suppliers = () => {
                 onChange={(values) => {
                   setFilters(values);
                 }}
-              />
+              /> */}
             </div>
           }
         >

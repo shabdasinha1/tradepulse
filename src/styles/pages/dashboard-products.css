@@ -61,7 +61,8 @@ header .tp-section-title {
   font-size: var(--fs-xl);
 }
 .tp-product-overview-grid {
-  grid-template-columns: repeat(4, 1fr);
+  /* grid-template-columns: repeat(4, 1fr); */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
 }
 .tp-insight-grid {
   grid-template-columns: 1fr 1fr;
@@ -278,10 +279,10 @@ header .tp-section-title {
   .tp-table-search .tp-universal-filter {
     flex-direction: column;
   }
-  .tp-filter-control{
+  .tp-filter-control {
     width: 100%;
   }
-  .tp-form-group{
+  .tp-form-group {
     width: 100% !important;
   }
 }
