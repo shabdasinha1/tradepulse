@@ -347,7 +347,7 @@ const DashboardProduct = () => {
               <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
                 {/* <span className="tp-arrow">→</span> */}
-                <span className="tp-country">Corridor</span>
+                <span className="tp-country">({corridor || "Selected Corridor"})</span>
               </div>
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
