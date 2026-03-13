@@ -846,7 +846,7 @@ input::placeholder {
 ====================================== */
 
 .tp-disclaimer {
-  margin-bottom: var(--space-lg);
+  /* margin-bottom: var(--space-lg); */
 }
 
 .tp-disclaimer-inner {

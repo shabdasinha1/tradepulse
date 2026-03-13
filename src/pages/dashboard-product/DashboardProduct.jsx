@@ -349,7 +349,10 @@ const DashboardProduct = () => {
               <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
                 {/* <span className="tp-arrow">→</span> */}
-                <span className="tp-country tp-country-truncate" title={corridor}>
+                <span
+                  className="tp-country tp-country-truncate"
+                  title={corridor}
+                >
                   {shortCorridor || "Selected Corridor"}
                 </span>
               </div>
@@ -364,7 +367,9 @@ const DashboardProduct = () => {
           </div>
         </header>
 
-        <PageDisclaimer />
+        <span className="tp-product-disclaimer">
+          <PageDisclaimer />
+        </span>
 
         {error && (
           <div className="tp-error-box">

@@ -98,82 +98,86 @@ function Overview() {
           </header>
           <PageDisclaimer />
         </div>
-      </section>
 
-      {/* ===============================
+        {/* ===============================
           KPI + CHARTS
       ============================== */}
-      <OverviewCharts />
+        <OverviewCharts />
 
-      {/* ===============================
+        {/* ===============================
           NEWS + MARGIN 50/50
       ============================== */}
-      <section className="tp-section">
-        <div className="tp-dashboard-container">
-          <div className="tp-news-margin-layout">
-            {/* LEFT 50% – NEWS */}
-            <div className="tp-news-column">
-              <LatestTradeNews corridorId={corridorId} />
-            </div>
+        <section className="tp-section">
+          <div className="tp-dashboard-container">
+            <div className="tp-news-margin-layout">
+              {/* LEFT 50% – NEWS */}
+              <div className="tp-news-column">
+                <LatestTradeNews corridorId={corridorId} />
+              </div>
 
-            {/* RIGHT 50% – MARGIN */}
-            <div className="tp-margin-column">
-              <div className="tp-card tp-margin-estimator">
-                <div className="tp-margin-header">
-                  <div>
-                    <span className="tp-news-title-wrap">
-                      <IoCalculatorOutline className="tp-title-icon" />
-                      <h3 className="tp-margin-title">
-                        {" "}
-                        {/* <FiDollarSign className="tp-title-icon" /> */}
-                        Margin Impact Estimator
-                      </h3>
+              {/* RIGHT 50% – MARGIN */}
+              <div className="tp-margin-column">
+                <div className="tp-card tp-margin-estimator">
+                  <div className="tp-margin-header">
+                    <div>
+                      <span className="tp-news-title-wrap">
+                        <IoCalculatorOutline className="tp-title-icon" />
+                        <h3 className="tp-margin-title">
+                          {" "}
+                          {/* <FiDollarSign className="tp-title-icon" /> */}
+                          Margin Impact Estimator
+                        </h3>
+                      </span>
+                      <p className="tp-muted">
+                        Estimate FX impact on your import exposure
+                      </p>
+                    </div>
+
+                    <span className="tp-badge tp-badge-primary">
+                      Simple MVP
                     </span>
-                    <p className="tp-muted">
-                      Estimate FX impact on your import exposure
-                    </p>
                   </div>
 
-                  <span className="tp-badge tp-badge-primary">Simple MVP</span>
-                </div>
+                  <div className="tp-margin-content">
+                    <div className="tp-form-group tp-margin-input">
+                      <label>Estimated Import Budget (£)</label>
+                      <input
+                        type="number"
+                        className="tp-input"
+                        value={budget}
+                        onChange={(e) => setBudget(Number(e.target.value))}
+                      />
+                    </div>
 
-                <div className="tp-margin-content">
-                  <div className="tp-form-group tp-margin-input">
-                    <label>Estimated Import Budget (£)</label>
-                    <input
-                      type="number"
-                      className="tp-input"
-                      value={budget}
-                      onChange={(e) => setBudget(Number(e.target.value))}
-                    />
-                  </div>
+                    <div className="tp-margin-result">
+                      <p className="tp-muted">Estimated FX Impact</p>
 
-                  <div className="tp-margin-result">
-                    <p className="tp-muted">Estimated FX Impact</p>
+                      <h2 className="tp-margin-value">
+                        {impact >= 0 ? "+" : "-"}£
+                        {Math.abs(impact).toLocaleString()}
+                      </h2>
 
-                    <h2 className="tp-margin-value">
-                      {impact >= 0 ? "+" : "-"}£
-                      {Math.abs(impact).toLocaleString()}
-                    </h2>
-
-                    <span className={`tp-pill ${severityClass}`}>
-                      {severity} Risk
-                    </span>
+                      <span className={`tp-pill ${severityClass}`}>
+                        {severity} Risk
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ===============================
+        {/* ===============================
           OTHER COMPONENTS
       ============================== */}
-      <MarketOverview corridorId={corridorId} />
-      <CustomsDutyRates corridorId={corridorId} />
+        <MarketOverview corridorId={corridorId} />
+        <CustomsDutyRates corridorId={corridorId} />
 
-      {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
+        {filterOpen && (
+          <GlobalFilterPanel onClose={() => setFilterOpen(false)} />
+        )}
+      </section>
     </>
   );
 }

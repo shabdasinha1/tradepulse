@@ -156,7 +156,9 @@ const Suppliers = () => {
             </div>
           </div>
         </header>
+        <span className="tp-product-disclaimer">
         <PageDisclaimer />
+        </span>
         <TradePulseCard
           header={
             <div className="tp-card-header tp-supplier-header">

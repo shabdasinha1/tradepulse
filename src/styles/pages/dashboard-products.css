@@ -315,3 +315,6 @@ header .tp-section-title {
   filter: invert(0.5); /* makes icon white */
   cursor: pointer;
 }
+.tp-product-disclaimer{
+  margin-bottom: var(--space-sm);
+}
