@@ -38,6 +38,11 @@ const Suppliers = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  const { corridor } = useSelector((state) => state.corridor);
+  const shortCorridor = corridor.includes(",")
+    ? corridor.split(",")[0] + "..."
+    : corridor;
+  console.log(corridor, shortCorridor);
   const observerRef = useRef(null);
   const tableScrollRef = useRef(null);
 
@@ -135,7 +140,12 @@ const Suppliers = () => {
               <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
                 {/* <span className="tp-arrow">→</span> */}
-                <span className="tp-country">Corridor</span>
+                <span
+                  className="tp-country tp-country-truncate"
+                  title={corridor || "Selected Corridor"}
+                >
+                  {shortCorridor}
+                </span>
               </div>
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
