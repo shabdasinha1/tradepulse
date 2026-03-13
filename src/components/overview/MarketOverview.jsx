@@ -27,7 +27,7 @@ const MarketOverview = ({ corridorId }) => {
 
   const [base, setBase] = useState("EUR");
 
-  const { partnerCode, productId, startDate, endDate } = useSelector(
+  const { baseCurrency,partnerCode, productId, startDate, endDate } = useSelector(
   (state) => state.corridor
 );
 
@@ -35,10 +35,11 @@ const MarketOverview = ({ corridorId }) => {
      FILTER STATES (INDEPENDENT)
   =============================== */
 
-  const [fxFilters, setFxFilters] = useState({
-    corridor: corridorId || "",
-    timeRange: "90d",
-  });
+const [fxFilters, setFxFilters] = useState({
+  quoteCurrency: "",
+  startDate: "",
+  endDate: "",
+});
 
   const [shipFilters, setShipFilters] = useState({
     corridor: corridorId || "",
@@ -58,16 +59,21 @@ useEffect(() => {
 
   const fetchExchange = async () => {
     try {
+
+      const activeQuote = fxFilters.quoteCurrency || "";
+      const activeStart = fxFilters.startDate || startDate;
+      const activeEnd = fxFilters.endDate || endDate;
+      
       const res = await DashboardExchangeRate({
-        baseCurrency: "USD",
-        quoteCurrency: "HKD",
-        startDate,
-        endDate,
+        baseCurrency,
+        quoteCurrency: activeQuote,
+        startDate: activeStart,
+        endDate: activeEnd,
       });
 
       setOverviewData((prev) => ({
         ...prev,
-        exchangeRates: res?.data || [],   // ✅ FIX
+        exchangeRates: res?.data || [],
       }));
 
     } catch (err) {
@@ -76,7 +82,13 @@ useEffect(() => {
   };
 
   fetchExchange();
-}, [partnerCode, productId, startDate, endDate]);
+}, [
+  partnerCode,
+  baseCurrency,
+  startDate,
+  endDate,
+  fxFilters
+]);
 
   /* ===============================
      SHIPPING FETCH
@@ -216,8 +228,9 @@ useEffect(() => {
         {/* FX Filter Modal */}
         {fxFilterOpen && (
           <UniversalFilter
-            showCorridor
+           
             showTimeRange
+            showQuoteCurrency
             defaultValues={fxFilters}
             onChange={(filters) => {
               setFxFilters(filters); // update FX filter state

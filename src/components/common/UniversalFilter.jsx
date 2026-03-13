@@ -1,3 +1,4 @@
+import { countries } from "../../data/Data.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -16,6 +17,7 @@ const UniversalFilter = ({
   showTimeRange = false,
   showRiskLevel = false,
   showActivityStatus = false,
+  showQuoteCurrency = false,
   defaultValues = {},
   onChange,
   className = "",
@@ -23,21 +25,22 @@ const UniversalFilter = ({
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
-const {
+ const {
   reporterCode,
   partnerCode,
   productId,
   productLabel,
   startDate,
   endDate,
+  corridor
 } = useSelector((state) => state.corridor);
 
-const lastReduxSync = useRef({
-  partnerCode,
-  productId,
-  startDate,
-  endDate,
-});
+  const lastReduxSync = useRef({
+    partnerCode,
+    productId,
+    startDate,
+    endDate,
+  });
 
   const [filters, setFilters] = useState({
     corridor: defaultValues.corridor || "",
@@ -48,6 +51,7 @@ const lastReduxSync = useRef({
     activityStatus: defaultValues.activityStatus || "",
     startDate: defaultValues.startDate || "",
     endDate: defaultValues.endDate || "",
+    quoteCurrency: defaultValues.quoteCurrency || "",   // ✅ NEW
   });
 
   const [corridorOptions, setCorridorOptions] = useState([
@@ -73,96 +77,99 @@ const lastReduxSync = useRef({
     { value: "active", label: "Active" },
     { value: "dormant", label: "Dormant" },
   ];
-
+  const currencyOptions = countries.map((c) => ({
+    value: c.currency,
+    label: `${c.name} (${c.currency})`,
+  }));
   /* ===============================
      LOAD CORRIDORS
   =============================== */
 
   const { data: corridorData } = useQuery({
-  queryKey: ["corridors", reporterCode],
-  queryFn: () => DashboardCorridors(reporterCode),
-  enabled: !!reporterCode,
-});
+    queryKey: ["corridors", reporterCode],
+    queryFn: () => DashboardCorridors(reporterCode),
+    enabled: !!reporterCode,
+  });
 
-useEffect(() => {
-  const corridors = corridorData?.data?.data || [];
+  useEffect(() => {
+    const corridors = corridorData?.data?.data || [];
 
-  const formatted = [
-    { value: "", label: "Corridor" },
-    ...corridors.map((c) => ({
-      value: c.partnerCode,
-      label: c.label,
-    })),
-  ];
+    const formatted = [
+      { value: "", label: "Corridor" },
+      ...corridors.map((c) => ({
+        value: c.partnerCode,
+        label: c.label,
+      })),
+    ];
 
-  setCorridorOptions(formatted);
-}, [corridorData]);
+    setCorridorOptions(formatted);
+  }, [corridorData]);
 
   /* ===============================
      SYNC GLOBAL PRODUCT
   =============================== */
 
- /* ===============================
-   SYNC GLOBAL PRODUCT
-=============================== */
+  /* ===============================
+    SYNC GLOBAL PRODUCT
+ =============================== */
 
-useEffect(() => {
-  if (lastReduxSync.current.productId === productId) return;
+  useEffect(() => {
+    if (lastReduxSync.current.productId === productId) return;
 
-  lastReduxSync.current.productId = productId;
+    lastReduxSync.current.productId = productId;
 
-  setFilters((prev) => ({
-    ...prev,
-    product: productId || "",
-    productLabel: productLabel || "",
-  }));
-}, [productId, productLabel]);
+    setFilters((prev) => ({
+      ...prev,
+      product: productId || "",
+      productLabel: productLabel || "",
+    }));
+  }, [productId, productLabel]);
 
   /* ===============================
      SYNC GLOBAL CORRIDOR
   =============================== */
 
-/* ===============================
-   SYNC GLOBAL CORRIDOR
-=============================== */
+  /* ===============================
+     SYNC GLOBAL CORRIDOR
+  =============================== */
 
-useEffect(() => {
-  if (lastReduxSync.current.partnerCode === partnerCode) return;
+  useEffect(() => {
+    if (lastReduxSync.current.partnerCode === partnerCode) return;
 
-  lastReduxSync.current.partnerCode = partnerCode;
+    lastReduxSync.current.partnerCode = partnerCode;
 
-  const selected = corridorOptions.find((c) => c.value === partnerCode);
+    const selected = corridorOptions.find((c) => c.value === partnerCode);
 
-  if (!selected) return;
+    if (!selected) return;
 
-  setFilters((prev) => ({
-    ...prev,
-    partnerCode: partnerCode,
-    corridor: selected.label,
-  }));
-}, [partnerCode, corridorOptions]);
+    setFilters((prev) => ({
+      ...prev,
+      partnerCode: partnerCode,
+      corridor: selected.label,
+    }));
+  }, [partnerCode, corridorOptions]);
 
 
-/* ===============================
-   SYNC GLOBAL DATES
-=============================== */
+  /* ===============================
+     SYNC GLOBAL DATES
+  =============================== */
 
-useEffect(() => {
-  if (
-    lastReduxSync.current.startDate === startDate &&
-    lastReduxSync.current.endDate === endDate
-  )
-    return;
+  useEffect(() => {
+    if (
+      lastReduxSync.current.startDate === startDate &&
+      lastReduxSync.current.endDate === endDate
+    )
+      return;
 
-  lastReduxSync.current.startDate = startDate;
-  lastReduxSync.current.endDate = endDate;
+    lastReduxSync.current.startDate = startDate;
+    lastReduxSync.current.endDate = endDate;
 
-  setFilters((prev) => ({
-    ...prev,
-    startDate: startDate || "",
-    endDate: endDate || "",
-  }));
-}, [startDate, endDate]);
+    setFilters((prev) => ({
+      ...prev,
+      startDate: startDate || "",
+      endDate: endDate || "",
+    }));
+  }, [startDate, endDate]);
 
   /* ===============================
      EMIT FILTER CHANGES
@@ -210,6 +217,24 @@ useEffect(() => {
     }, 300);
   };
 
+const handleReset = () => {
+
+  const resetFilters = {
+    corridor: corridor,
+    partnerCode: partnerCode,
+    product: "",
+    productLabel: "",
+    riskLevel: "",
+    activityStatus: "",
+    startDate: "",
+    endDate: "",
+    quoteCurrency: ""
+  };
+
+  setFilters(resetFilters);
+
+  };
+
   const handleOverlayClick = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       handleClose();
@@ -246,9 +271,8 @@ useEffect(() => {
       onClick={handleOverlayClick}
     >
       <div
-        className={`tp-filter-panel tp-card ${
-          isClosing ? "tp-panel-exit" : ""
-        }`}
+        className={`tp-filter-panel tp-card ${isClosing ? "tp-panel-exit" : ""
+          }`}
         ref={modalRef}
       >
         {/* HEADER */}
@@ -307,9 +331,9 @@ useEffect(() => {
                   value={
                     filters.product
                       ? {
-                          value: filters.product,
-                          label: filters.productLabel || filters.product,
-                        }
+                        value: filters.product,
+                        label: filters.productLabel || filters.product,
+                      }
                       : null
                   }
                   onChange={(opt) =>
@@ -321,6 +345,26 @@ useEffect(() => {
                   }
                   placeholder="Search"
                   isClearable
+                />
+              </div>
+            )}
+
+             {showQuoteCurrency && (
+              <div className="tp-form-group">
+                <label>Quote Currency</label>
+
+                <Select
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  options={currencyOptions}
+                  value={currencyOptions.find(
+                    (o) => o.value === filters.quoteCurrency
+                  )}
+                  onChange={(opt) =>
+                    updateFilter("quoteCurrency", opt?.value || "")
+                  }
+                  placeholder="Select Quote Currency"
+                  isSearchable
                 />
               </div>
             )}
@@ -390,15 +434,29 @@ useEffect(() => {
                 />
               </div>
             )}
+
+           
           </div>
         </div>
 
         {/* FOOTER */}
         <div className="tp-filter-footer">
-          <button className="tp-btn-primary" onClick={handleClose}>
-            Apply Filters
-          </button>
-        </div>
+
+  <button
+    className="tp-btn-outline"
+    onClick={handleReset}
+  >
+    Reset Filters
+  </button>
+
+  <button
+    className="tp-btn-primary"
+    onClick={handleClose}
+  >
+    Apply Filters
+  </button>
+
+</div>
       </div>
     </div>
   );
