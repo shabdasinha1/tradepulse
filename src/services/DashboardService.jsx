@@ -30,6 +30,16 @@ export const DashboardImportDemandTrend = async (params = {}) => {
 };
 
 /* ===============================
+   DASHBOARD MARGIN IMPACT
+================================ */
+
+export const DashboardMarginImpact = async (budget) => {
+  return Api.get("/dashboard/margin-impact", {
+    params: { budget }
+  });
+};
+
+/* ===============================
    DASHBOARD PRODUCT LIST
 ================================ */
 export const DashboardAllProductList = async (params = {}) => {
