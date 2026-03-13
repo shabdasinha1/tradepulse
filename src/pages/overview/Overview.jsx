@@ -17,7 +17,7 @@ function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
 
   const { corridor } = useSelector((state) => state.corridor);
-  const shortCorridor = corridor.includes(",")
+  const shortCorridor = corridor?.includes(",")
     ? corridor.split(",")[0] + "..."
     : corridor;
   const [displayName, setDisplayName] = useState("");

@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { countries } from "../../data/Data.jsx";
 
 const initialState = {
   country: "United Kingdom",
@@ -20,16 +19,11 @@ const corridorSlice = createSlice({
   initialState,
   reducers: {
   setCountry: (state, action) => {
-  state.country = action.payload;
+  const { name, numeric, currency } = action.payload;
 
-  const country = countries.find(
-    (c) => c.name === action.payload
-  );
-
-  if (country) {
-    state.reporterCode = country.numeric;   // ✅ set reporter code
-    state.baseCurrency = country.currency;  // ✅ set base currency
-  }
+  state.country = name;
+  state.reporterCode = numeric;
+  state.baseCurrency = currency;
 },
 
     setReporterCode: (state, action) => {

@@ -150,3 +150,11 @@ export const DashboardTradeNews = async (countryCode) => {
 export const DashboardCorridors = async (reporterCode) => {
   return Api.get(`/products/corridors?reporter=${reporterCode}`);
 };
+
+
+/* ===============================
+   DASHBOARD COUNTRIES LIST
+================================ */
+export const DashboardCountries = async (params = {}) => {
+  return Api.get("/dashboard/countries", { params });
+};

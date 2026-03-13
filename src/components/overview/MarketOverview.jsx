@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import {
   DashboardOverviewExchange,
   DashboardOverviewShipping,
-   DashboardExchangeRate 
+   DashboardExchangeRate ,
+    DashboardShippingCosts 
 } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
@@ -93,28 +94,29 @@ useEffect(() => {
   /* ===============================
      SHIPPING FETCH
   =============================== */
+useEffect(() => {
+  const fetchShipping = async () => {
+    try {
+      const res = await DashboardShippingCosts({
+        page: 1,
+        limit: 50,
+        startDate: startDate || shipFilters.startDate,
+        endDate: endDate || shipFilters.endDate,
+        origin: shipFilters.origin || "",
+        destination: shipFilters.destination || "",
+      });
 
-  useEffect(() => {
-    if (!shipFilters.corridor) return;
+      setOverviewData((prev) => ({
+        ...prev,
+        shippingData: res?.data || [],
+      }));
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    }
+  };
 
-    const fetchShipping = async () => {
-      try {
-        const res = await DashboardOverviewShipping({
-          corridor_id: shipFilters.corridor,
-          time_range: shipFilters.timeRange,
-        });
-
-        setOverviewData((prev) => ({
-          ...prev,
-          shippingData: res?.data || [],
-        }));
-      } catch (err) {
-        setError(GetApiErrorMessage(err));
-      }
-    };
-
-    fetchShipping();
-  }, [shipFilters]);
+  fetchShipping();
+}, [startDate, endDate, shipFilters]);
 
   return (
     <section className="tp-section">
@@ -191,38 +193,38 @@ useEffect(() => {
           }
         >
           <div className="tp-grid tp-ship-grid">
-            {OverviewData?.shippingData?.data?.map((s, i) => (
-              <div key={i} className="tp-ship-card">
-                <div className="tp-ship-header">
-                  <div>
-                    <h4 className="tp-ship-route">{s.route}</h4>
-                    <span className="tp-ship-port">
-                      {s.portName ? s.portName : "0 Apapa Port"}
-                    </span>
-                  </div>
+          {OverviewData?.shippingData?.map((s, i) => (
+  <div key={i} className="tp-ship-card">
+    <div className="tp-ship-header">
+      <div>
+        <h4 className="tp-ship-route">{s.corridor}</h4>
+        <span className="tp-ship-port">{s.currency}</span>
+      </div>
 
-                  <span className="tp-ship-days">
-                    {s.transitDays ? `${s.transitDays} Days` : "0 Days"}
-                  </span>
-                </div>
+      <span className="tp-ship-days">
+        {s.days ? `${s.days} Days` : "0 Days"}
+      </span>
+    </div>
 
-                <div className="tp-ship-footer">
-                  <strong className="tp-ship-price">{s.price}</strong>
+    <div className="tp-ship-footer">
+      <strong className="tp-ship-price">
+        {s.currency} {s.cost}
+      </strong>
 
-                  <span
-                    className={`tp-ship-change ${
-                      s.change != 0
-                        ? s.change > 0
-                          ? "tp-text-up"
-                          : "tp-text-down"
-                        : "tp-muted"
-                    }`}
-                  >
-                    {s.changePercent}%
-                  </span>
-                </div>
-              </div>
-            ))}
+      <span
+        className={`tp-ship-change ${
+          s.changePercent != 0
+            ? s.changePercent > 0
+              ? "tp-text-up"
+              : "tp-text-down"
+            : "tp-muted"
+        }`}
+      >
+        {s.changePercent}%
+      </span>
+    </div>
+  </div>
+))}
           </div>
         </TradePulseCard>
         {/* FX Filter Modal */}
@@ -242,7 +244,8 @@ useEffect(() => {
         {/* Shipping Filter Modal */}
         {shipFilterOpen && (
           <UniversalFilter
-            showCorridor
+            showOrigin
+            showDestination
             showTimeRange
             defaultValues={shipFilters}
             onChange={(filters) => {

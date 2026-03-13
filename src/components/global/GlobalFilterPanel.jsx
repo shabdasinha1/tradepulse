@@ -15,8 +15,8 @@ import {
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-import { DashboardCorridors, ProductDropdownSearch } from "../../services/DashboardService";
-
+import { DashboardCorridors, ProductDropdownSearch, DashboardCountries } from "../../services/DashboardService";
+import { setCountries } from "../../store/slices/countrySlice";
 
 
 
@@ -30,16 +30,16 @@ function GlobalFilterPanel({ onClose }) {
 
   const [isClosing, setIsClosing] = useState(false);
 
-const {
-  country,
-  reporterCode,
-  corridor,
-  partnerCode,
-  productId,
-  productLabel,
-  startDate,
-  endDate
-} = useSelector((state) => state.corridor);
+  const {
+    country,
+    reporterCode,
+    corridor,
+    partnerCode,
+    productId,
+    productLabel,
+    startDate,
+    endDate
+  } = useSelector((state) => state.corridor);
   const countries = useSelector((state) => state.country.countries);
 
   const countryOptions = countries.map((c) => ({
@@ -51,58 +51,86 @@ const {
       LOCAL STATE (TEMP)
   ========================== */
 
-const [localCountry, setLocalCountry] = useState(reporterCode || "");
-const [localCountryName, setLocalCountryName] = useState(country || "");
+  const [localCountry, setLocalCountry] = useState(reporterCode || "");
+  const [localCountryName, setLocalCountryName] = useState(country || "");
 
-const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
-const [localCorridorLabel, setLocalCorridorLabel] = useState(corridor || "");
-const [localPartnerCountry, setLocalPartnerCountry] = useState("");
-const [localStartDate, setLocalStartDate] = useState(startDate || "");
-const [localEndDate, setLocalEndDate] = useState(endDate || "");
-const [localProduct, setLocalProduct] = useState(null);
- 
+  const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
+  const [localCorridorLabel, setLocalCorridorLabel] = useState(corridor || "");
+  const [localPartnerCountry, setLocalPartnerCountry] = useState("");
+  const [localStartDate, setLocalStartDate] = useState(startDate || "");
+  const [localEndDate, setLocalEndDate] = useState(endDate || "");
+  const [localProduct, setLocalProduct] = useState(null);
+  const [countryPage, setCountryPage] = useState(1);
+  const [countrySearch, setCountrySearch] = useState("");
+  const LIMIT = 50;
+
   const [corridorOptions, setCorridorOptions] = useState([]);
 
 
-useEffect(() => {
-  if (reporterCode) setLocalCountry(reporterCode);
-  if (country) setLocalCountryName(country);
+  useEffect(() => {
+    if (reporterCode) setLocalCountry(reporterCode);
+    if (country) setLocalCountryName(country);
 
-  if (partnerCode) setLocalCorridor(partnerCode);
+    if (partnerCode) setLocalCorridor(partnerCode);
 
-  if (startDate) setLocalStartDate(startDate);
-  if (endDate) setLocalEndDate(endDate);
+    if (startDate) setLocalStartDate(startDate);
+    if (endDate) setLocalEndDate(endDate);
 
-  if (productId) {
-    setLocalProduct({
-      value: productId,
-      label: productLabel,
-    });
-  } else {
-    setLocalProduct(null);
-  }
+    if (productId) {
+      setLocalProduct({
+        value: productId,
+        label: productLabel,
+      });
+    } else {
+      setLocalProduct(null);
+    }
 
-}, [reporterCode, partnerCode, productId, productLabel, startDate, endDate]);
+  }, [reporterCode, partnerCode, productId, productLabel, startDate, endDate]);
 
+
+  const { data: countriesData, isFetching } = useQuery({
+    queryKey: ["countries", countryPage, countrySearch],
+    queryFn: () =>
+      DashboardCountries({
+        page: countryPage,
+        limit: LIMIT,
+        search: countrySearch,
+      }),
+    keepPreviousData: true,
+  });
+
+  useEffect(() => {
+    if (countriesData?.data) {
+      const newCountries = countriesData.data;
+
+      dispatch(
+        setCountries(
+          countryPage === 1
+            ? newCountries
+            : [...countries, ...newCountries]
+        )
+      );
+    }
+  }, [countriesData]);
   /* =========================
    LOAD CORRIDORS ON COUNTRY SELECT
   ========================= */
-const { data: corridorData } = useQuery({
-  queryKey: ["corridors", localCountry],
-  queryFn: () => DashboardCorridors(localCountry),
-  enabled: !!localCountry,
-});
+  const { data: corridorData } = useQuery({
+    queryKey: ["corridors", localCountry],
+    queryFn: () => DashboardCorridors(localCountry),
+    enabled: !!localCountry,
+  });
 
-useEffect(() => {
-  const corridors = corridorData?.data?.data || [];
+  useEffect(() => {
+    const corridors = corridorData?.data?.data || [];
 
-  const formatted = corridors.map((c) => ({
-    value: c.partnerCode,
-    label: c.label,
-  }));
+    const formatted = corridors.map((c) => ({
+      value: c.partnerCode,
+      label: c.label,
+    }));
 
-  setCorridorOptions(formatted);
-}, [corridorData]);
+    setCorridorOptions(formatted);
+  }, [corridorData]);
 
   /* =========================
       LOCK BODY SCROLL
@@ -136,8 +164,8 @@ useEffect(() => {
       partnerCode,
       corridor,
       productId,
-       productLabel
-    
+      productLabel
+
     });
   }, [country, reporterCode, partnerCode, corridor, productId, productLabel]);
 
@@ -158,54 +186,65 @@ useEffect(() => {
       APPLY FILTERS
   ========================== */
 
-const handleApply = () => {
+  const handleApply = () => {
 
-  if (startDate && !endDate) {
-    alert("Please select End Date");
-    return;
-  }
+    if (startDate && !endDate) {
+      alert("Please select End Date");
+      return;
+    }
 
-  if (startDate && endDate && startDate > endDate) {
-    alert("Start date cannot be after End date");
-    return;
-  }
+    if (startDate && endDate && startDate > endDate) {
+      alert("Start date cannot be after End date");
+      return;
+    }
 
-  dispatch(setReporterCode(localCountry));
-dispatch(setCountry(localCountryName));
+    dispatch(setReporterCode(localCountry));
 
-dispatch(setPartnerCode(localCorridor));
-dispatch(setCorridor(localCorridorLabel));
-dispatch(setPartnerCountry(localPartnerCountry));
+    const selectedCountry = countries.find(
+      (c) => c.numeric === localCountry
+    );
 
-dispatch(setProduct(localProduct || { value: "", label: "" }));
+    if (selectedCountry) {
+      dispatch(setCountry({
+        name: selectedCountry.name,
+        numeric: selectedCountry.numeric,
+        currency: selectedCountry.currency,
+      }));
+    }
 
-dispatch(
-  setDateRange({
-    startDate: localStartDate,
-    endDate: localEndDate,
-  })
-);
+    dispatch(setPartnerCode(localCorridor));
+    dispatch(setCorridor(localCorridorLabel));
+    dispatch(setPartnerCountry(localPartnerCountry));
 
-  handleClose();
-};
+    dispatch(setProduct(localProduct || { value: "", label: "" }));
+
+    dispatch(
+      setDateRange({
+        startDate: localStartDate,
+        endDate: localEndDate,
+      })
+    );
+
+    handleClose();
+  };
   /* =========================
       RESET FILTERS
   ========================== */
 
-const handleReset = () => {
-  dispatch(resetFilters());
+  const handleReset = () => {
+    dispatch(resetFilters());
 
-  setLocalCountry("826");
-  setLocalCountryName("United Kingdom");
+    setLocalCountry("826");
+    setLocalCountryName("United Kingdom");
 
-  setLocalCorridor(566);
-  setLocalCorridorLabel("UK ↔ Nigeria");
+    setLocalCorridor(566);
+    setLocalCorridorLabel("UK ↔ Nigeria");
 
-  setLocalStartDate("");
-  setLocalEndDate("");
+    setLocalStartDate("");
+    setLocalEndDate("");
 
-  setLocalProduct(null);
-};
+    setLocalProduct(null);
+  };
 
   const loadProductOptions = async (inputValue) => {
     try {
@@ -221,7 +260,14 @@ const handleReset = () => {
       return [];
     }
   };
+  const handleCountryScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
 
+    if (bottom && !isFetching) {
+      setCountryPage((prev) => prev + 1);
+    }
+  };
   const modalContent = (
     <div
       className={`tp-filter-overlay ${isClosing ? "tp-overlay-exit" : ""}`}
@@ -250,26 +296,44 @@ const handleReset = () => {
           <div className="tp-form-group">
             <label>Country</label>
 
-            <Select
-              className="tp-select"
-              classNamePrefix="tp-select"
-              options={countryOptions}
-             value={countryOptions.find((opt) => opt.value === localCountry)}
-              onChange={(opt) => {
-  const code = opt?.value || "";
-  const name = opt?.label || "";
+           <Select
+  className="tp-select"
+  classNamePrefix="tp-select"
+  options={countryOptions}
+  value={
+    countryOptions.find((opt) => opt.value === reporterCode) || {
+      value: reporterCode,
+      label: country,
+    }
+  }
+  onMenuScrollToBottom={handleCountryScroll}
+  onInputChange={(input) => {
+    setCountrySearch(input);
+    setCountryPage(1);
+  }}
+  onChange={(opt) => {
+    const code = opt?.value || "";
+    const name = opt?.label || "";
 
-  setLocalCountry(code);
-  setLocalCountryName(name);
+    setLocalCountry(code);
+    setLocalCountryName(name);
 
-  // reset dependent filters locally
-  setLocalCorridor("");
-  setLocalCorridorLabel("");
-  setLocalProduct(null);
-}}
-              placeholder="Select Country"
-              isSearchable
-            />
+    dispatch(setReporterCode(code));
+    dispatch(
+      setCountry({
+        name,
+        numeric: code,
+        currency: countries.find((c) => c.numeric === code)?.currency || "",
+      })
+    );
+
+    setLocalCorridor("");
+    setLocalCorridorLabel("");
+    setLocalProduct(null);
+  }}
+  placeholder="Select Country"
+  isSearchable
+/>
           </div>
 
           <div className="tp-form-group">
@@ -280,16 +344,16 @@ const handleReset = () => {
               classNamePrefix="tp-select"
               options={corridorOptions}
               value={corridorOptions.find((opt) => opt.value === localCorridor)}
-             onChange={(opt) => {
-  const partner = opt?.value || "";
-  const corridorLabel = opt?.label || "";
+              onChange={(opt) => {
+                const partner = opt?.value || "";
+                const corridorLabel = opt?.label || "";
 
-  setLocalCorridor(partner);
-  setLocalCorridorLabel(corridorLabel);
+                setLocalCorridor(partner);
+                setLocalCorridorLabel(corridorLabel);
 
-  const partnerCountry = corridorLabel.split("↔")[1]?.trim();
-  setLocalPartnerCountry(partnerCountry);
-}}
+                const partnerCountry = corridorLabel.split("↔")[1]?.trim();
+                setLocalPartnerCountry(partnerCountry);
+              }}
               placeholder="Select Corridor"
               isSearchable
             />
@@ -298,38 +362,38 @@ const handleReset = () => {
           <div className="tp-form-group">
             <label>Product</label>
 
-           <AsyncSelect
-  className="tp-select"
-  classNamePrefix="tp-select"
-  cacheOptions
-  defaultOptions
-  loadOptions={loadProductOptions}
-  value={localProduct}
-  onChange={(opt) => setLocalProduct(opt)}
-  placeholder="Search HS Code or Product"
-  isClearable
-/>
+            <AsyncSelect
+              className="tp-select"
+              classNamePrefix="tp-select"
+              cacheOptions
+              defaultOptions
+              loadOptions={loadProductOptions}
+              value={localProduct}
+              onChange={(opt) => setLocalProduct(opt)}
+              placeholder="Search HS Code or Product"
+              isClearable
+            />
           </div>
 
-         <div className="tp-form-group">
-  <label>Start Date</label>
-  <input
-  type="date"
-  className="tp-input"
-  value={localStartDate}
-onChange={(e) => setLocalStartDate(e.target.value)}
-/>
-</div>
+          <div className="tp-form-group">
+            <label>Start Date</label>
+            <input
+              type="date"
+              className="tp-input"
+              value={localStartDate}
+              onChange={(e) => setLocalStartDate(e.target.value)}
+            />
+          </div>
 
-<div className="tp-form-group">
-  <label>End Date</label>
- <input
-  type="date"
-  className="tp-input"
- value={localEndDate}
-onChange={(e) => setLocalEndDate(e.target.value)}
-/>
-</div>
+          <div className="tp-form-group">
+            <label>End Date</label>
+            <input
+              type="date"
+              className="tp-input"
+              value={localEndDate}
+              onChange={(e) => setLocalEndDate(e.target.value)}
+            />
+          </div>
         </div>
 
         {/* FOOTER */}

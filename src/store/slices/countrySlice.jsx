@@ -1,15 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { sortedCountries, countryNumericMap } from "../../data/Data.jsx"
 
 const initialState = {
-  countries: sortedCountries,
-  countryMap: countryNumericMap
+  countries: [],
+  countryMap: {}
 }
 
 const countrySlice = createSlice({
   name: "country",
   initialState,
-  reducers: {}
+  reducers: {
+    setCountries: (state, action) => {
+      const countries = action.payload || []
+
+      state.countries = [...countries].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      )
+
+      state.countryMap = countries.reduce((acc, c) => {
+        acc[c.numeric] = c.name
+        return acc
+      }, {})
+    }
+  }
 })
 
+export const { setCountries } = countrySlice.actions
 export default countrySlice.reducer

@@ -162,11 +162,12 @@ const OverviewCharts = () => {
       currency: {
         rate: data.fxImpact?.value ?? 0,
         changePercent: data.fxImpact?.changePercent ?? 0,
-        pair: "USD/NGN",
+        pair: data.fxImpact?.pair ?? "",
       },
       shipping: {
         average: data.avgShippingCost?.value ?? 0,
         changePercent: data.avgShippingCost?.changePercent ?? 0,
+        unit: data.avgShippingCost?.unit ?? "",
       },
       demand: {
         percent: data.importDemandSignal?.value ?? 0,
@@ -175,7 +176,7 @@ const OverviewCharts = () => {
       },
       supplier: {
         score: data.exporterReliabilityScore?.value ?? 0,
-        changePercent: 0,
+        maxScore: data.exporterReliabilityScore?.max ?? 0
       }
     });
 
@@ -224,8 +225,8 @@ const OverviewCharts = () => {
 
           <TPMetricCard
             title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
-            value={`$${metrics.shipping?.average ?? 0}`}
-            unit="per container"
+            value={`${metrics.shipping?.average ?? 0}`}
+            unit={`${metrics.shipping?.unit || ""} per container`}
             footerLabel="Average container cost within selected trade corridor."
             trend={`${metrics.shipping?.changePercent ?? 0}`}
             trendDirection={
@@ -245,12 +246,10 @@ const OverviewCharts = () => {
 
           <TPMetricCard
             title="Exporter Reliability Score"
-            value={`${metrics.supplier?.score ?? 0}/10`}
-            footerLabel="Aggregate reliability index based on activity frequency and volatilityconsistency"
-            trend={`${metrics.supplier?.changePercent ?? 0}`}
-            trendDirection={
-              (metrics.supplier?.changePercent ?? 0) < 0 ? "down" : "up"
-            }
+            value={`${metrics.supplier?.score ?? 0}/${metrics.supplier?.maxScore ?? 0}`}
+            footerLabel="Aggregate reliability index based on activity frequency and volatility consistency"
+            trend=""
+            trendDirection=""
           />
 
         </div>

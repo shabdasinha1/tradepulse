@@ -1,4 +1,3 @@
-import { countries } from "../../data/Data.jsx";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
@@ -9,6 +8,7 @@ import AsyncSelect from "react-select/async";
 import {
   DashboardCorridors,
   ProductDropdownSearch,
+  DashboardCountries
 } from "../../services/DashboardService";
 
 const UniversalFilter = ({
@@ -18,6 +18,8 @@ const UniversalFilter = ({
   showRiskLevel = false,
   showActivityStatus = false,
   showQuoteCurrency = false,
+  showOrigin = false,
+  showDestination = false,
   defaultValues = {},
   onChange,
   className = "",
@@ -25,15 +27,15 @@ const UniversalFilter = ({
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
- const {
-  reporterCode,
-  partnerCode,
-  productId,
-  productLabel,
-  startDate,
-  endDate,
-  corridor
-} = useSelector((state) => state.corridor);
+  const {
+    reporterCode,
+    partnerCode,
+    productId,
+    productLabel,
+    startDate,
+    endDate,
+    corridor
+  } = useSelector((state) => state.corridor);
 
   const lastReduxSync = useRef({
     partnerCode,
@@ -51,8 +53,14 @@ const UniversalFilter = ({
     activityStatus: defaultValues.activityStatus || "",
     startDate: defaultValues.startDate || "",
     endDate: defaultValues.endDate || "",
-    quoteCurrency: defaultValues.quoteCurrency || "",   // ✅ NEW
+    quoteCurrency: defaultValues.quoteCurrency || "",
+    origin: defaultValues.origin || "",
+    destination: defaultValues.destination || "",
   });
+  const [countriesList, setCountriesList] = useState([]);
+  const [countryPage, setCountryPage] = useState(1);
+  const [countrySearch, setCountrySearch] = useState("");
+  const LIMIT = 50;
 
   const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
@@ -77,10 +85,59 @@ const UniversalFilter = ({
     { value: "active", label: "Active" },
     { value: "dormant", label: "Dormant" },
   ];
-  const currencyOptions = countries.map((c) => ({
-    value: c.currency,
-    label: `${c.name} (${c.currency})`,
+
+  const currencyOptions = [
+    ...new Map(
+      countriesList
+        .filter((c) => c.currency)
+        .map((c) => [
+          c.currency,
+          {
+            value: c.currency,
+            label: `${c.name} (${c.currency})`,
+          },
+        ])
+    ).values(),
+  ];
+
+  const countryOptions = countriesList.map((c) => ({
+    value: c.name,
+    label: c.name,
   }));
+
+  const { data: countriesData, isFetching } = useQuery({
+    queryKey: ["universalCountries", countryPage, countrySearch],
+    queryFn: () =>
+      DashboardCountries({
+        page: countryPage,
+        limit: LIMIT,
+        search: countrySearch,
+        currency: filters.quoteCurrency || undefined
+      }),
+    keepPreviousData: true,
+  });
+
+  useEffect(() => {
+    if (countriesData?.data) {
+      const newCountries = countriesData.data;
+
+      setCountriesList((prev) =>
+        countryPage === 1 ? newCountries : [...prev, ...newCountries]
+      );
+    }
+  }, [countriesData]);
+
+  const handleCurrencyScroll = () => {
+    if (!isFetching) {
+      setCountryPage((prev) => prev + 1);
+    }
+  };
+
+  const handleCountryScroll = () => {
+    if (!isFetching) {
+      setCountryPage((prev) => prev + 1);
+    }
+  };
   /* ===============================
      LOAD CORRIDORS
   =============================== */
@@ -217,21 +274,21 @@ const UniversalFilter = ({
     }, 300);
   };
 
-const handleReset = () => {
+  const handleReset = () => {
 
-  const resetFilters = {
-    corridor: corridor,
-    partnerCode: partnerCode,
-    product: "",
-    productLabel: "",
-    riskLevel: "",
-    activityStatus: "",
-    startDate: "",
-    endDate: "",
-    quoteCurrency: ""
-  };
+    const resetFilters = {
+      corridor: corridor,
+      partnerCode: partnerCode,
+      product: "",
+      productLabel: "",
+      riskLevel: "",
+      activityStatus: "",
+      startDate: "",
+      endDate: "",
+      quoteCurrency: ""
+    };
 
-  setFilters(resetFilters);
+    setFilters(resetFilters);
 
   };
 
@@ -318,6 +375,58 @@ const handleReset = () => {
               </div>
             )}
 
+            {showOrigin && (
+              <div className="tp-form-group">
+                <label>Origin</label>
+
+                <Select
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  options={countryOptions}
+                  value={countryOptions.find((o) => o.value === filters.origin) || null}
+                  onMenuScrollToBottom={handleCountryScroll}
+                  onInputChange={(input) => {
+                    setCountrySearch(input);
+                    setCountryPage(1);
+                  }}
+                  onChange={(opt) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      origin: opt?.value || "",
+                    }))
+                  }
+                  placeholder="Select Origin"
+                  isSearchable
+                />
+              </div>
+            )}
+
+            {showDestination && (
+              <div className="tp-form-group">
+                <label>Destination</label>
+
+                <Select
+                  className="tp-select tp-filter-control"
+                  classNamePrefix="tp-select"
+                  options={countryOptions}
+                  value={countryOptions.find((o) => o.value === filters.destination) || null}
+                  onMenuScrollToBottom={handleCountryScroll}
+                  onInputChange={(input) => {
+                    setCountrySearch(input);
+                    setCountryPage(1);
+                  }}
+                  onChange={(opt) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      destination: opt?.value || "",
+                    }))
+                  }
+                  placeholder="Select Destination"
+                  isSearchable
+                />
+              </div>
+            )}
+
             {showProduct && (
               <div className="tp-form-group">
                 <label>Product</label>
@@ -349,7 +458,7 @@ const handleReset = () => {
               </div>
             )}
 
-             {showQuoteCurrency && (
+            {showQuoteCurrency && (
               <div className="tp-form-group">
                 <label>Quote Currency</label>
 
@@ -357,9 +466,14 @@ const handleReset = () => {
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   options={currencyOptions}
-                  value={currencyOptions.find(
-                    (o) => o.value === filters.quoteCurrency
-                  )}
+                  value={
+                    currencyOptions.find((o) => o.value === filters.quoteCurrency) || null
+                  }
+                  onMenuScrollToBottom={handleCurrencyScroll}
+                  onInputChange={(input) => {
+                    setCountrySearch(input);
+                    setCountryPage(1);
+                  }}
                   onChange={(opt) =>
                     updateFilter("quoteCurrency", opt?.value || "")
                   }
@@ -435,28 +549,28 @@ const handleReset = () => {
               </div>
             )}
 
-           
+
           </div>
         </div>
 
         {/* FOOTER */}
         <div className="tp-filter-footer">
 
-  <button
-    className="tp-btn-outline"
-    onClick={handleReset}
-  >
-    Reset Filters
-  </button>
+          <button
+            className="tp-btn-outline"
+            onClick={handleReset}
+          >
+            Reset Filters
+          </button>
 
-  <button
-    className="tp-btn-primary"
-    onClick={handleClose}
-  >
-    Apply Filters
-  </button>
+          <button
+            className="tp-btn-primary"
+            onClick={handleClose}
+          >
+            Apply Filters
+          </button>
 
-</div>
+        </div>
       </div>
     </div>
   );

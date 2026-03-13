@@ -1,6 +1,7 @@
 :root {
   /* ========= BRAND ========= */
-  --clr-primary: #5b82ff; /* brighter, calmer blue */
+  --clr-primary: #5b82ff;
+  /* brighter, calmer blue */
   --clr-primary-soft: rgba(91, 130, 255, 0.18);
 
   --clr-success: #22c55e;
@@ -8,7 +9,8 @@
   --clr-warning: #f59e0b;
 
   /* ========= BACKGROUND ========= */
-  --bg-app: #070a14; /* lifted from pure black */
+  --bg-app: #070a14;
+  /* lifted from pure black */
   --bg-panel: #0d1326;
   --bg-card: #121a33;
   --bg-card-hover: #182145;
@@ -17,16 +19,16 @@
   --border-medium: rgba(255, 255, 255, 0.14);
 
   /* ========= TEXT ========= */
-  --text-primary: #f1f5f9; /* cleaner white */
-  --text-secondary: #cbd5e1; /* readable */
+  --text-primary: #f1f5f9;
+  /* cleaner white */
+  --text-secondary: #cbd5e1;
+  /* readable */
   --text-muted: #94a3b8;
   /* ========= CARD BACKGROUND ========= */
   --bg-card-surface:
-    radial-gradient(
-      120% 140% at 0% 0%,
+    radial-gradient(120% 140% at 0% 0%,
       rgba(91, 130, 255, 0.28),
-      transparent 60%
-    ),
+      transparent 60%),
     linear-gradient(180deg, #0d1326, #070a14);
 
   /* ========= SHADOWS ========= */
@@ -113,15 +115,15 @@
   /* ======================================
    CHART SPACING SYSTEM
 ====================================== */
---tp-chart-margin-top: 6;
---tp-chart-margin-right: 12;
---tp-chart-margin-bottom: 2;
---tp-chart-margin-left: -6;
+  --tp-chart-margin-top: 6;
+  --tp-chart-margin-right: 12;
+  --tp-chart-margin-bottom: 2;
+  --tp-chart-margin-left: -6;
 
 
   --chart-yaxis-width: 38;
   --tp-chart-margin-left: -8;
---tp-chart-yaxis-width: 48;
+  --tp-chart-yaxis-width: 48;
 }
 
 /* ======================================
@@ -167,18 +169,18 @@
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: var(--clr-primary);
 
-    /* ======================================
+  /* ======================================
    CHART SPACING SYSTEM
 ====================================== */
- --tp-chart-margin-top: 6;
---tp-chart-margin-right: 12;
---tp-chart-margin-bottom: 2;
---tp-chart-margin-left: -6;
+  --tp-chart-margin-top: 6;
+  --tp-chart-margin-right: 12;
+  --tp-chart-margin-bottom: 2;
+  --tp-chart-margin-left: -6;
 
 
   --chart-yaxis-width: 38;
   --tp-chart-margin-left: -8;
---tp-chart-yaxis-width: 48;
+  --tp-chart-yaxis-width: 48;
 }
 
 /* Dashboard header height */
