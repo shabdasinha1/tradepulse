@@ -113,14 +113,15 @@
   /* ======================================
    CHART SPACING SYSTEM
 ====================================== */
-  --chart-margin-top: 4;
-  --chart-margin-right: 10;
-  --chart-margin-bottom: 2;
-  --chart-margin-left: -12;
+--tp-chart-margin-top: 6;
+--tp-chart-margin-right: 12;
+--tp-chart-margin-bottom: 2;
+--tp-chart-margin-left: -6;
+
 
   --chart-yaxis-width: 38;
-  --tp-chart-margin-left: -14;
---tp-chart-yaxis-width: 36;
+  --tp-chart-margin-left: -8;
+--tp-chart-yaxis-width: 48;
 }
 
 /* ======================================
@@ -169,14 +170,15 @@
     /* ======================================
    CHART SPACING SYSTEM
 ====================================== */
-  --chart-margin-top: 4;
-  --chart-margin-right: 10;
-  --chart-margin-bottom: 2;
-  --chart-margin-left: -12;
+ --tp-chart-margin-top: 6;
+--tp-chart-margin-right: 12;
+--tp-chart-margin-bottom: 2;
+--tp-chart-margin-left: -6;
+
 
   --chart-yaxis-width: 38;
-  --tp-chart-margin-left: -14;
---tp-chart-yaxis-width: 36;
+  --tp-chart-margin-left: -8;
+--tp-chart-yaxis-width: 48;
 }
 
 /* Dashboard header height */

@@ -75,10 +75,10 @@ const TPChart = ({
     const styles = getComputedStyle(document.documentElement);
 
     return {
-      top: parseInt(styles.getPropertyValue("--tp-chart-margin-top")),
-      right: parseInt(styles.getPropertyValue("--tp-chart-margin-right")),
-      bottom: parseInt(styles.getPropertyValue("--tp-chart-margin-bottom")),
-      left: parseInt(styles.getPropertyValue("--tp-chart-margin-left")),
+    top: parseInt(styles.getPropertyValue("--chart-margin-top")),
+right: parseInt(styles.getPropertyValue("--chart-margin-right")),
+bottom: parseInt(styles.getPropertyValue("--chart-margin-bottom")),
+left: parseInt(styles.getPropertyValue("--chart-margin-left")),
     };
   }, []);
 

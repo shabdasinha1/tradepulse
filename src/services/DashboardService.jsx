@@ -48,6 +48,14 @@ export const DashboardExchangeRate = async (params = {}) => {
 };
 
 /* ===============================
+   DASHBOARD SHIPPING COSTS
+================================ */
+
+export const DashboardShippingCosts = async (params = {}) => {
+  return Api.get("/dashboard/shipping-costs", { params });
+};
+
+/* ===============================
    DASHBOARD PRODUCT LIST
 ================================ */
 export const DashboardAllProductList = async (params = {}) => {
