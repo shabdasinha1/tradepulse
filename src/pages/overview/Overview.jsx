@@ -16,6 +16,8 @@ import { IoCalculatorOutline } from "react-icons/io5";
 function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
 
+  const { corridor} =
+    useSelector((state) => state.corridor);
   const [displayName, setDisplayName] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
 
@@ -78,8 +80,8 @@ if (severity === "High") severityClass = "tp-text-down";
               <div className="tp-filter-btn-wrapper">
                 <div className="tp-corridor-pill">
                   <span className="tp-country">Active Corridor : </span>
-                  {/* <span className="tp-arrow">→</span> */}
-                  <span className="tp-country">Corridor</span>
+                 
+                  <span className="tp-country">({corridor || "Selected Corridor"})</span>
                 </div>
                 <button
                   className="tp-btn-outline tp-overview-filter-btn"

@@ -235,7 +235,7 @@ const OverviewCharts = () => {
 
           <TPMetricCard
             title="UK Import Demand Signal"
-            value={`${metrics.demand?.percent ?? 0}%`}
+            value={`${metrics.demand?.percent ?? 0}`}
             footerLabel={metrics.demand?.product || "Trend of UK import demand for selected product"}
             trend={`${metrics.demand?.changePercent ?? 0}`}
             trendDirection={
@@ -257,7 +257,7 @@ const OverviewCharts = () => {
 
         <div className="tp-grid tp-grid-2">
           <TPChart
-            title="Export Price Trend (Origin → UK)"
+            title="Export Price Trend"
             type="line"
             data={priceData}
             series={[{ key: "value", label: "Price" }]}

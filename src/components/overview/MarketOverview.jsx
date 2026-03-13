@@ -1,9 +1,11 @@
+import { useSelector } from "react-redux";
 import { FiDollarSign, FiTruck } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import { useEffect, useState } from "react";
 import {
   DashboardOverviewExchange,
   DashboardOverviewShipping,
+   DashboardExchangeRate 
 } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
@@ -25,6 +27,10 @@ const MarketOverview = ({ corridorId }) => {
 
   const [base, setBase] = useState("EUR");
 
+  const { partnerCode, productId, startDate, endDate } = useSelector(
+  (state) => state.corridor
+);
+
   /* ===============================
      FILTER STATES (INDEPENDENT)
   =============================== */
@@ -43,28 +49,35 @@ const MarketOverview = ({ corridorId }) => {
      EXCHANGE FETCH
   =============================== */
 
-  useEffect(() => {
-    if (!fxFilters.corridor) return;
+/* ===============================
+   EXCHANGE FETCH
+================================ */
 
-    const fetchExchange = async () => {
-      try {
-        const res = await DashboardOverviewExchange({
-          base,
-          corridor_id: fxFilters.corridor,
-          time_range: fxFilters.timeRange,
-        });
+useEffect(() => {
+  if (!partnerCode) return;
 
-        setOverviewData((prev) => ({
-          ...prev,
-          exchangeRates: res?.data?.data?.rates || [],
-        }));
-      } catch (err) {
-        setError(GetApiErrorMessage(err));
-      }
-    };
+  const fetchExchange = async () => {
+    try {
+      const res = await DashboardExchangeRate({
+        // baseCurrency: "USD",
+        // quoteCurrency: "HKD",
+        // product: productId,
+        // startDate,
+        // endDate,
+      });
 
-    fetchExchange();
-  }, [base, fxFilters]);
+      setOverviewData((prev) => ({
+        ...prev,
+        exchangeRates: res?.data || [],   // ✅ FIX
+      }));
+
+    } catch (err) {
+      setError(GetApiErrorMessage(err));
+    }
+  };
+
+  fetchExchange();
+}, [partnerCode, productId, startDate, endDate]);
 
   /* ===============================
      SHIPPING FETCH
@@ -114,18 +127,7 @@ const MarketOverview = ({ corridorId }) => {
                 Filters
               </button>
 
-              {/* ✅ Independent Filter */}
-              {/* <UniversalFilter
-                showCorridor
-                showTimeRange
-                defaultValues={{
-                  corridor: corridorId || "",
-                  timeRange: "90d",
-                }}
-                onChange={(filters) => {
-                  setFxFilters(filters);
-                }}
-              /> */}
+           
             </div>
           }
         >
@@ -174,18 +176,6 @@ const MarketOverview = ({ corridorId }) => {
                 Filters
               </button>
 
-              {/* ✅ Independent Filter */}
-              {/* <UniversalFilter
-                showCorridor
-                showTimeRange
-                defaultValues={{
-                  corridor: corridorId || "",
-                  timeRange: "90d",
-                }}
-                onChange={(filters) => {
-                  setShipFilters(filters);
-                }}
-              /> */}
             </div>
           }
         >

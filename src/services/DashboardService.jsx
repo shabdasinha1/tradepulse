@@ -40,6 +40,14 @@ export const DashboardMarginImpact = async (budget) => {
 };
 
 /* ===============================
+   DASHBOARD EXCHANGE RATE
+================================ */
+
+export const DashboardExchangeRate = async (params = {}) => {
+  return Api.get("/dashboard/exchange-rate", { params });
+};
+
+/* ===============================
    DASHBOARD PRODUCT LIST
 ================================ */
 export const DashboardAllProductList = async (params = {}) => {
