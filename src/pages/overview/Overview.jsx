@@ -69,14 +69,20 @@ function Overview() {
               <p className="tp-section-sub">
                 Here’s your corridor-specific trade intelligence overview.
               </p>
-
-              <button
-                className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setFilterOpen(true)}
-              >
-                <FiSliders />
-                Filters
-              </button>
+              <div className="tp-filter-btn-wrapper">
+                <div className="tp-corridor-pill">
+                  <span className="tp-country">Active Corridor : </span>
+                  {/* <span className="tp-arrow">→</span> */}
+                  <span className="tp-country">Corridor</span>
+                </div>
+                <button
+                  className="tp-btn-outline tp-overview-filter-btn"
+                  onClick={() => setFilterOpen(true)}
+                >
+                  <FiSliders />
+                  Filters
+                </button>
+              </div>
             </div>
           </header>
           <PageDisclaimer />
@@ -105,13 +111,12 @@ function Overview() {
                 <div className="tp-margin-header">
                   <div>
                     <span className="tp-news-title-wrap">
-
                       <IoCalculatorOutline className="tp-title-icon" />
-                    <h3 className="tp-margin-title">
-                      {" "}
-                      {/* <FiDollarSign className="tp-title-icon" /> */}
-                      Margin Impact Estimator
-                    </h3>
+                      <h3 className="tp-margin-title">
+                        {" "}
+                        {/* <FiDollarSign className="tp-title-icon" /> */}
+                        Margin Impact Estimator
+                      </h3>
                     </span>
                     <p className="tp-muted">
                       Estimate FX impact on your import exposure
