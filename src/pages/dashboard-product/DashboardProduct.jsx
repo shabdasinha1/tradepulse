@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import React, {
   useCallback,
   useEffect,
@@ -85,7 +86,7 @@ const DashboardProduct = () => {
 
   const [error, setError] = useState(null);
   const requestRef = useRef(0);
-  const [isOverviewLoading, setIsOverviewLoading] = useState(false);
+
   const [isTableLoading, setIsTableLoading] = useState(false);
 
   const [filters, setFilters] = useState({
@@ -111,69 +112,62 @@ const DashboardProduct = () => {
      FETCH PRODUCT OPTIONS
   ================================ */
 
-  const fetchAllProducts = async () => {
-    try {
-      const res = await DashboardAllProductList();
-
-      if (res?.success) {
-        setAllProducts(res?.data?.data || []);
-      }
-    } catch (err) {
-      console.error("Product options error:", err);
-    }
-  };
+  const { data: allProductsData } = useQuery({
+    queryKey: ["allProducts"],
+    queryFn: () => DashboardAllProductList(),
+  });
 
   useEffect(() => {
-    fetchAllProducts();
-  }, []);
-
+    if (allProductsData?.success) {
+      setAllProducts(allProductsData?.data?.data || []);
+    }
+  }, [allProductsData]);
   /* ===============================
      FETCH OVERVIEW + INSIGHTS
   ================================ */
 
-  const fetchOverviewAndInsights = async () => {
-    if (!filters.partnerCode) return;
+  const activePartner = filters.partnerCode || partnerCode;
 
-    setIsOverviewLoading(true);
-    setError(null);
+const params = useMemo(() => ({
+  reporter: reporterCode,
+  partner: activePartner,
+  product: filters.product || undefined,
+  startDate: startDate || undefined,
+  endDate: endDate || undefined,
+}), [reporterCode, activePartner, filters.product, startDate, endDate]);
 
-    try {
-      const params = {
-        reporter: reporterCode,
-        partner: filters.partnerCode,
-        product: filters.product || undefined,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined,
-      };
+const { data: overviewData, isLoading: overviewLoading } = useQuery({
+  queryKey: [
+    "productOverview",
+    reporterCode,
+    activePartner,
+    filters.product,
+    startDate,
+    endDate
+  ],
+  queryFn: () => DashboardProductOverview(params),
+  enabled: !!activePartner,
+});
 
-      const results = await Promise.allSettled([
-        DashboardProductOverview(params),
-        DashboardProductHighlights(params),
-      ]);
+ const { data: highlightData } = useQuery({
+  queryKey: [
+    "productHighlights",
+    reporterCode,
+    partnerCode,
+    filters.product,
+    startDate,
+    endDate
+  ],
+  queryFn: () => DashboardProductHighlights(params),
+  enabled: !!partnerCode,
+});
 
-      const [overviewRes, highlightRes] = results;
-
-      if (overviewRes.status === "fulfilled") {
-        setProductData((prev) => ({
-          ...prev,
-          productOverview: overviewRes.value?.data || {},
-        }));
-      }
-
-      if (highlightRes.status === "fulfilled") {
-        setProductData((prev) => ({
-          ...prev,
-          productHighlights: highlightRes.value?.data || {},
-        }));
-      }
-    } catch (err) {
-      console.error("Overview API error:", err);
-      setError(GetApiErrorMessage(err));
-    } finally {
-      setIsOverviewLoading(false);
-    }
-  };
-
+  useEffect(() => {
+  setFilters((prev) => ({
+    ...prev,
+    partnerCode: partnerCode || "",
+  }));
+}, [partnerCode]);
   /* ===============================
      FETCH TABLE DATA
   ================================ */
@@ -188,7 +182,7 @@ const DashboardProduct = () => {
     try {
       const params = {
         reporter: reporterCode,
-        partner: filters.partnerCode,
+       partner: partnerCode,
         product: filters.product || undefined,
         startDate: startDate || undefined,
         endDate: endDate || undefined,
@@ -205,9 +199,7 @@ const DashboardProduct = () => {
 
       setProducts((prev) => {
         const map = new Map(prev.map((i) => [i.product, i]));
-
         newData.forEach((i) => map.set(i.product, i));
-
         return Array.from(map.values());
       });
 
@@ -219,6 +211,14 @@ const DashboardProduct = () => {
     }
   };
 
+  useEffect(() => {
+    if (!overviewData && !highlightData) return;
+
+    setProductData({
+      productOverview: overviewData?.data || {},
+      productHighlights: highlightData?.data || {},
+    });
+  }, [overviewData, highlightData]);
   const lastProductRef = useCallback(
     (node) => {
       if (isTableLoading) return;
@@ -267,15 +267,14 @@ const DashboardProduct = () => {
 
           <span className="text-center">
             <span
-              className={`tp-pill ${
-                item.volatilityRisk === "LOW"
+              className={`tp-pill ${item.volatilityRisk === "LOW"
                   ? "tp-pill-success"
                   : item.volatilityRisk === "MEDIUM"
                     ? "tp-pill-warning"
                     : item.volatilityRisk === "HIGH"
                       ? "tp-pill-danger"
                       : ""
-              }`}
+                }`}
             >
               {item.volatilityRisk}
             </span>
@@ -289,14 +288,14 @@ const DashboardProduct = () => {
      EFFECTS
   ================================ */
   useEffect(() => {
-    if (!filters.partnerCode) return;
+   if (!partnerCode) return;
 
     setProducts([]);
     setPage(1);
     setHasMore(true);
 
     fetchProducts(true);
-    fetchOverviewAndInsights();
+
   }, [filters, startDate, endDate]);
 
   useEffect(() => {
@@ -363,7 +362,7 @@ const DashboardProduct = () => {
         {/* ================= OVERVIEW ================= */}
 
         <div className="tp-grid tp-product-overview-grid">
-          {isOverviewLoading ? (
+          {overviewLoading ? (
             [...Array(4)].map((_, i) => (
               <div className="tp-card" key={i}>
                 <Skeleton className="sk-text-sm" />
@@ -446,7 +445,7 @@ const DashboardProduct = () => {
               <div className="product-row product-head">
                 <span>Product</span>
                 <span className="text-center">
-                  Avg Export Price (Origin → UK)
+                  Avg Export Price
                 </span>
                 <span className="text-center">UK Import Demand Trend</span>
                 <span className="text-center">Export Activity Level</span>
