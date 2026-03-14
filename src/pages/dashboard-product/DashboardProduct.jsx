@@ -19,83 +19,49 @@ import { CiFilter } from "react-icons/ci";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
 import PageDisclaimer from "../../components/common/PageDisclaimer";
 import UniversalFilter from "../../components/common/UniversalFilter";
-
-const DEFAULT_FILTERS = {
-  partnerCode: "",
-  product: "",
-  timeRange: "90d",
-  riskLevel: "",
-};
+import useUniversalFilters from "../../hooks/useUniversalFilters";
 
 /* ===============================
-   SKELETON COMPONENTS
+   SKELETON COMPONENT
 ================================ */
 
 const Skeleton = React.memo(({ className = "" }) => (
   <div className={`tp-skeleton skeleton ${className}`} />
 ));
 
-const ProductOverviewSkeleton = () => {
-  return (
-    <section className="tp-section">
-      <div className="tp-dashboard-container tp-grid-stack tp-skeleton-opacity">
-        <div className="tp-grid tp-product-overview-grid">
-          {[...Array(4)].map((_, i) => (
-            <div className="tp-card" key={i}>
-              <Skeleton className="sk-text-sm" />
-              <Skeleton className="sk-text-lg" />
-            </div>
-          ))}
-        </div>
-
-        <div className="tp-card tp-skeleton">
-          {[...Array(6)].map((_, i) => (
-            <div className="product-row" key={i}>
-              {[...Array(6)].map((_, j) => (
-                <Skeleton key={j} className="sk-table-cell" />
-              ))}
-            </div>
-          ))}
-        </div>
-
-        <div className="tp-grid tp-grid-2">
-          {[...Array(2)].map((_, i) => (
-            <div className="tp-card" key={i}>
-              <Skeleton className="sk-text-sm" />
-              <Skeleton className="sk-text-lg" />
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
 /* ===============================
    MAIN COMPONENT
 ================================ */
 
 const DashboardProduct = () => {
-  const { reporterCode, partnerCode, corridor, startDate, endDate } =
+  const { reporterCode, productId, partnerCode, corridor, startDate, endDate } =
     useSelector((state) => state.corridor, shallowEqual);
-  const shortCorridor = corridor.includes(",")
+  
+
+
+  const shortCorridor = corridor?.includes(",")
     ? corridor.split(",")[0] + "..."
     : corridor;
+
   const observer = useRef(null);
+  const requestRef = useRef(0);
 
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
   const [error, setError] = useState(null);
-  const requestRef = useRef(0);
-
   const [isTableLoading, setIsTableLoading] = useState(false);
 
-  const [filters, setFilters] = useState({
+  /* ===============================
+   LOCAL TABLE FILTERS (HOOK)
+================================ */
+
+  const { filters, setFilters } = useUniversalFilters({
     partnerCode: partnerCode || "",
     product: "",
-    timeRange: "90d",
     riskLevel: "",
+    startDate: "",
+    endDate: "",
   });
 
   const [productData, setProductData] = useState({
@@ -103,16 +69,17 @@ const DashboardProduct = () => {
     productHighlights: {},
   });
 
-  const [allProducts, setAllProducts] = useState([]);
-
   const [products, setProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
+  const activePartner = filters.partnerCode || partnerCode;
+
   /* ===============================
      FETCH PRODUCT OPTIONS
-  ================================ */
+  =============================== */
 
   const { data: allProductsData } = useQuery({
     queryKey: ["allProducts"],
@@ -124,106 +91,159 @@ const DashboardProduct = () => {
       setAllProducts(allProductsData?.data?.data || []);
     }
   }, [allProductsData]);
+
   /* ===============================
-     FETCH OVERVIEW + INSIGHTS
-  ================================ */
+     GLOBAL PARAMS
+  =============================== */
 
-  const activePartner = filters.partnerCode || partnerCode;
-
-  const params = useMemo(
+  const globalParams = useMemo(
     () => ({
       reporter: reporterCode,
-      partner: activePartner,
-      product: filters.product || undefined,
+      partner: partnerCode,
+      product: productId || undefined,
       startDate: startDate || undefined,
       endDate: endDate || undefined,
     }),
-    [reporterCode, activePartner, filters.product, startDate, endDate],
+    [reporterCode, partnerCode, productId, startDate, endDate],
   );
 
-  const { data: overviewData, isLoading: overviewLoading } = useQuery({
-    queryKey: [
-      "productOverview",
-      reporterCode,
-      activePartner,
-      filters.product,
-      startDate,
-      endDate,
-    ],
-    queryFn: () => DashboardProductOverview(params),
-    enabled: !!activePartner,
-  });
+  /* ===============================
+     OVERVIEW API
+  =============================== */
 
-  const { data: highlightData } = useQuery({
-    queryKey: [
-      "productHighlights",
-      reporterCode,
-      partnerCode,
-      filters.product,
-      startDate,
-      endDate,
-    ],
-    queryFn: () => DashboardProductHighlights(params),
+  const { data: overviewData, isLoading: overviewLoading } = useQuery({
+    queryKey: ["productOverview", globalParams],
+    queryFn: () => DashboardProductOverview(globalParams),
     enabled: !!partnerCode,
   });
 
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      partnerCode: partnerCode || "",
-    }));
-  }, [partnerCode]);
   /* ===============================
-     FETCH TABLE DATA
-  ================================ */
+     HIGHLIGHTS API
+  =============================== */
 
-  const fetchProducts = async (reset = false) => {
-    if (isTableLoading) return;
+  const { data: highlightData } = useQuery({
+    queryKey: ["productHighlights", globalParams],
+    queryFn: () => DashboardProductHighlights(globalParams),
+    enabled: !!partnerCode,
+  });
 
-    const requestId = ++requestRef.current;
-
-    setIsTableLoading(true);
-
-    try {
-      const params = {
-        reporter: reporterCode,
-        partner: partnerCode,
-        product: filters.product || undefined,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined,
-        risk: filters.riskLevel?.toUpperCase(),
-        page: reset ? 1 : page,
-        limit: 10,
-      };
-
-      const res = await DashboardAllProductList(params);
-
-      if (requestId !== requestRef.current) return;
-
-      const newData = res?.data?.data ?? [];
-
-      setProducts((prev) => {
-        const map = new Map(prev.map((i) => [i.product, i]));
-        newData.forEach((i) => map.set(i.product, i));
-        return Array.from(map.values());
-      });
-
-      setHasMore(newData.length === 10);
-    } catch (err) {
-      setError(GetApiErrorMessage(err));
-    } finally {
-      setIsTableLoading(false);
-    }
-  };
+  /* ===============================
+     STORE OVERVIEW + HIGHLIGHTS
+  =============================== */
 
   useEffect(() => {
-    if (!overviewData && !highlightData) return;
-
     setProductData({
       productOverview: overviewData?.data || {},
       productHighlights: highlightData?.data || {},
     });
   }, [overviewData, highlightData]);
+
+  /* ===============================
+     TABLE FILTER KEY
+  =============================== */
+
+  const tableFilterKey = useMemo(
+    () => ({
+      partnerCode: filters.partnerCode,
+      product: filters.product,
+      riskLevel: filters.riskLevel,
+      startDate: filters.startDate,
+      endDate: filters.endDate,
+    }),
+    [
+      filters.partnerCode,
+      filters.product,
+      filters.riskLevel,
+      filters.startDate,
+      filters.endDate,
+    ],
+  );
+
+  /* ===============================
+     FETCH TABLE PRODUCTS
+  =============================== */
+
+  const fetchProducts = async (reset = false) => {
+
+
+  if (!reporterCode || !activePartner) return;
+
+  const requestId = ++requestRef.current;
+
+  setIsTableLoading(true);
+
+  try {
+
+    const params = {
+      reporter: reporterCode,
+      partner: activePartner,
+      product: filters.product || productId || undefined,
+      startDate: filters.startDate || startDate || undefined,
+      endDate: filters.endDate || endDate || undefined,
+      risk: filters.riskLevel
+        ? filters.riskLevel.toUpperCase()
+        : undefined,
+      page: reset ? 1 : page,
+      limit: 10,
+    };
+
+    const res = await DashboardAllProductList(params);
+
+    if (requestId !== requestRef.current) return;
+
+    const newData = res?.data?.data ?? [];
+
+    setProducts((prev) => {
+      if (reset) return newData;
+
+      const map = new Map(prev.map((i) => [i.product, i]));
+      newData.forEach((i) => map.set(i.product, i));
+      return Array.from(map.values());
+    });
+
+    setHasMore(newData.length === 10);
+
+  } catch (err) {
+    setError(GetApiErrorMessage(err));
+  } finally {
+    setIsTableLoading(false);
+  }
+};
+
+  /* ===============================
+     FETCH WHEN FILTERS CHANGE
+  =============================== */
+
+  useEffect(() => {
+    if (!activePartner) return;
+
+    setProducts([]);
+    setPage(1);
+    setHasMore(true);
+
+    fetchProducts(true);
+  }, [
+  reporterCode,
+  activePartner,
+  filters.product,
+  filters.riskLevel,
+  filters.startDate,
+  filters.endDate
+]);
+
+  /* ===============================
+     FETCH PAGINATION
+  =============================== */
+
+  useEffect(() => {
+    if (page === 1) return;
+    fetchProducts();
+  }, [page]);
+
+  /* ===============================
+     INFINITE SCROLL
+  =============================== */
+
   const lastProductRef = useCallback(
     (node) => {
       if (isTableLoading) return;
@@ -232,7 +252,7 @@ const DashboardProduct = () => {
 
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setPage((p) => p + 1);
+          setPage((prev) => prev + 1);
         }
       });
 
@@ -240,6 +260,10 @@ const DashboardProduct = () => {
     },
     [isTableLoading, hasMore],
   );
+
+  /* ===============================
+     PRODUCT ROWS
+  =============================== */
 
   const productRows = useMemo(() => {
     return products.map((item, index) => {
@@ -254,8 +278,7 @@ const DashboardProduct = () => {
           <span>{item.product}</span>
 
           <span className="tp-muted text-center">
-            {/* £{item.avgExportPrice} */}£
-            {Number(item.avgExportPrice).toFixed(2)}
+            £{Number(item.avgExportPrice).toFixed(2)}
           </span>
 
           <span className="text-center">
@@ -291,47 +314,23 @@ const DashboardProduct = () => {
   }, [products, lastProductRef]);
 
   /* ===============================
-     EFFECTS
-  ================================ */
-  useEffect(() => {
-    if (!partnerCode) return;
+     FILTER HANDLER
+  =============================== */
+
+  const handleFilterChange = (values) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...values,
+    }));
 
     setProducts([]);
     setPage(1);
     setHasMore(true);
-
-    fetchProducts(true);
-  }, [filters, startDate, endDate]);
-
-  useEffect(() => {
-    if (page === 1) return;
-    fetchProducts();
-  }, [page]);
-  /* ===============================
-     INFINITE SCROLL
-  ================================ */
-
-  /* ===============================
-     FILTER HANDLER
-  ================================ */
-
-  const handleFilterChange = (values) => {
-    setFilters((prev) => {
-      const isSame =
-        prev.partnerCode === values.partnerCode &&
-        prev.product === values.product &&
-        prev.timeRange === values.timeRange &&
-        prev.riskLevel === values.riskLevel;
-
-      if (isSame) return prev;
-
-      setProducts([]);
-      setPage(1);
-      setHasMore(true);
-
-      return values;
-    });
   };
+
+  /* ===============================
+     UI
+  =============================== */
 
   return (
     <section className="tp-section">
@@ -345,10 +344,10 @@ const DashboardProduct = () => {
             <p className="tp-section-sub">
               Product performance within selected trade corridor.
             </p>
+
             <div className="tp-filter-btn-wrapper">
               <div className="tp-corridor-pill">
-                <span className="tp-country">Active Corridor : </span>
-                {/* <span className="tp-arrow">→</span> */}
+                <span className="tp-country">Active Corridor :</span>
                 <span
                   className="tp-country tp-country-truncate"
                   title={corridor}
@@ -356,6 +355,7 @@ const DashboardProduct = () => {
                   {shortCorridor || "Selected Corridor"}
                 </span>
               </div>
+
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
                 onClick={() => setFilterOpen(true)}
@@ -390,18 +390,14 @@ const DashboardProduct = () => {
           ) : (
             <>
               <div className="tp-card">
-                <p className="tp-muted">
-                  Most Imported Product ({corridor || "Selected Corridor"})
-                </p>
+                <p className="tp-muted">Most Imported Product ({corridor})</p>
                 <h3 className="tp-overview-text">
                   {productData?.productOverview?.totalProducts || "-"}
                 </h3>
               </div>
 
               <div className="tp-card">
-                <p className="tp-muted">
-                  Fastest Growing Demand ({corridor || "Selected Corridor"})
-                </p>
+                <p className="tp-muted">Fastest Growing Demand ({corridor})</p>
                 <h3 className="tp-overview-text">
                   {productData?.productOverview?.activeProducts || "-"}
                 </h3>
@@ -410,11 +406,7 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Highest Price Volatility</p>
                 <h3 className="tp-text-up tp-overview-text">
-                  {
-                    productData?.productOverview?.topValueProduct?.split(
-                      ",",
-                    )?.[0]
-                  }
+                  {productData?.productOverview?.topValueProduct?.split(",")[0]}
                 </h3>
               </div>
 
@@ -424,7 +416,7 @@ const DashboardProduct = () => {
                   {
                     productData?.productOverview?.lowestValueProduct?.split(
                       ",",
-                    )?.[0]
+                    )[0]
                   }
                 </h3>
               </div>
@@ -438,17 +430,6 @@ const DashboardProduct = () => {
           <div className="tp-table-header">
             <h3 className="tp-table-title">Product List</h3>
 
-            {/* <div className="tp-table-search">
-              <UniversalFilter
-                showCorridor
-                showProduct
-                showTimeRange
-                showRiskLevel
-                productOptions={allProducts}
-                defaultValues={filters}
-                onChange={handleFilterChange}
-              />
-            </div> */}
             <button
               className="tp-btn-outline tp-overview-filter-btn"
               onClick={() => setTableFilterOpen(true)}
@@ -496,18 +477,14 @@ const DashboardProduct = () => {
 
         <div className="tp-grid tp-insight-grid">
           <div className="tp-card">
-            <p className="tp-muted">
-              Most Imported Product ({corridor || "Selected Corridor"})
-            </p>
+            <p className="tp-muted">Most Imported Product ({corridor})</p>
             <h3 className="tp-overview-text">
               {productData?.productHighlights?.mostTradedProduct || "N/A"}
             </h3>
           </div>
 
           <div className="tp-card">
-            <p className="tp-muted">
-              Highest Price Volatility ({corridor || "Selected Corridor"})
-            </p>
+            <p className="tp-muted">Highest Price Volatility ({corridor})</p>
             <h3 className="tp-overview-text">
               {productData?.productHighlights?.highestVolatilityProduct ||
                 "N/A"}
@@ -517,6 +494,7 @@ const DashboardProduct = () => {
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
+
       {tableFilterOpen && (
         <UniversalFilter
           showCorridor

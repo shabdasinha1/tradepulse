@@ -15,18 +15,17 @@ import {
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
-import { DashboardCorridors, ProductDropdownSearch, DashboardCountries } from "../../services/DashboardService";
+import {
+  DashboardCorridors,
+  ProductDropdownSearch,
+  DashboardCountries
+} from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
-
-
 
 function GlobalFilterPanel({ onClose }) {
 
   const modalRef = useRef(null);
   const dispatch = useDispatch();
-
-
-
 
   const [isClosing, setIsClosing] = useState(false);
 
@@ -40,6 +39,7 @@ function GlobalFilterPanel({ onClose }) {
     startDate,
     endDate
   } = useSelector((state) => state.corridor);
+
   const countries = useSelector((state) => state.country.countries);
 
   const countryOptions = countries.map((c) => ({
@@ -48,7 +48,7 @@ function GlobalFilterPanel({ onClose }) {
   }));
 
   /* =========================
-      LOCAL STATE (TEMP)
+     LOCAL TEMP STATE
   ========================== */
 
   const [localCountry, setLocalCountry] = useState(reporterCode || "");
@@ -57,24 +57,33 @@ function GlobalFilterPanel({ onClose }) {
   const [localCorridor, setLocalCorridor] = useState(partnerCode || "");
   const [localCorridorLabel, setLocalCorridorLabel] = useState(corridor || "");
   const [localPartnerCountry, setLocalPartnerCountry] = useState("");
+
   const [localStartDate, setLocalStartDate] = useState(startDate || "");
   const [localEndDate, setLocalEndDate] = useState(endDate || "");
+
   const [localProduct, setLocalProduct] = useState(null);
+
   const [countryPage, setCountryPage] = useState(1);
   const [countrySearch, setCountrySearch] = useState("");
+
   const LIMIT = 50;
 
   const [corridorOptions, setCorridorOptions] = useState([]);
 
+  /* =========================
+     SYNC REDUX → LOCAL
+  ========================== */
 
   useEffect(() => {
-    if (reporterCode) setLocalCountry(reporterCode);
-    if (country) setLocalCountryName(country);
 
-    if (partnerCode) setLocalCorridor(partnerCode);
+    setLocalCountry(reporterCode || "");
+    setLocalCountryName(country || "");
 
-    if (startDate) setLocalStartDate(startDate);
-    if (endDate) setLocalEndDate(endDate);
+    setLocalCorridor(partnerCode || "");
+    setLocalCorridorLabel(corridor || "");
+
+    setLocalStartDate(startDate || "");
+    setLocalEndDate(endDate || "");
 
     if (productId) {
       setLocalProduct({
@@ -85,8 +94,19 @@ function GlobalFilterPanel({ onClose }) {
       setLocalProduct(null);
     }
 
-  }, [reporterCode, partnerCode, productId, productLabel, startDate, endDate]);
+  }, [
+    reporterCode,
+    partnerCode,
+    corridor,
+    productId,
+    productLabel,
+    startDate,
+    endDate
+  ]);
 
+  /* =========================
+     LOAD COUNTRIES
+  ========================== */
 
   const { data: countriesData, isFetching } = useQuery({
     queryKey: ["countries", countryPage, countrySearch],
@@ -101,6 +121,7 @@ function GlobalFilterPanel({ onClose }) {
 
   useEffect(() => {
     if (countriesData?.data) {
+
       const newCountries = countriesData.data;
 
       dispatch(
@@ -110,11 +131,14 @@ function GlobalFilterPanel({ onClose }) {
             : [...countries, ...newCountries]
         )
       );
+
     }
   }, [countriesData]);
+
   /* =========================
-   LOAD CORRIDORS ON COUNTRY SELECT
-  ========================= */
+     LOAD CORRIDORS
+  ========================== */
+
   const { data: corridorData } = useQuery({
     queryKey: ["corridors", localCountry],
     queryFn: () => DashboardCorridors(localCountry),
@@ -122,6 +146,7 @@ function GlobalFilterPanel({ onClose }) {
   });
 
   useEffect(() => {
+
     const corridors = corridorData?.data?.data || [];
 
     const formatted = corridors.map((c) => ({
@@ -130,10 +155,11 @@ function GlobalFilterPanel({ onClose }) {
     }));
 
     setCorridorOptions(formatted);
+
   }, [corridorData]);
 
   /* =========================
-      LOCK BODY SCROLL
+     MODAL BEHAVIOR
   ========================== */
 
   useEffect(() => {
@@ -142,10 +168,6 @@ function GlobalFilterPanel({ onClose }) {
       document.body.style.overflow = "";
     };
   }, []);
-
-  /* =========================
-      ESC CLOSE
-  ========================== */
 
   useEffect(() => {
     const handleEsc = (e) => {
@@ -156,24 +178,9 @@ function GlobalFilterPanel({ onClose }) {
     return () => document.removeEventListener("keydown", handleEsc);
   }, []);
 
-
-  useEffect(() => {
-    console.log("Redux corridor state updated:", {
-      country,
-      reporterCode,
-      partnerCode,
-      corridor,
-      productId,
-      productLabel
-
-    });
-  }, [country, reporterCode, partnerCode, corridor, productId, productLabel]);
-
   const handleClose = () => {
     setIsClosing(true);
-    setTimeout(() => {
-      onClose();
-    }, 300);
+    setTimeout(() => onClose(), 300);
   };
 
   const handleOverlayClick = (e) => {
@@ -183,17 +190,17 @@ function GlobalFilterPanel({ onClose }) {
   };
 
   /* =========================
-      APPLY FILTERS
+     APPLY FILTERS
   ========================== */
 
   const handleApply = () => {
 
-    if (startDate && !endDate) {
+    if (localStartDate && !localEndDate) {
       alert("Please select End Date");
       return;
     }
 
-    if (startDate && endDate && startDate > endDate) {
+    if (localStartDate && localEndDate && localStartDate > localEndDate) {
       alert("Start date cannot be after End date");
       return;
     }
@@ -205,11 +212,13 @@ function GlobalFilterPanel({ onClose }) {
     );
 
     if (selectedCountry) {
+
       dispatch(setCountry({
         name: selectedCountry.name,
         numeric: selectedCountry.numeric,
         currency: selectedCountry.currency,
       }));
+
     }
 
     dispatch(setPartnerCode(localCorridor));
@@ -227,11 +236,13 @@ function GlobalFilterPanel({ onClose }) {
 
     handleClose();
   };
+
   /* =========================
-      RESET FILTERS
+     RESET FILTERS
   ========================== */
 
   const handleReset = () => {
+
     dispatch(resetFilters());
 
     setLocalCountry("826");
@@ -244,10 +255,17 @@ function GlobalFilterPanel({ onClose }) {
     setLocalEndDate("");
 
     setLocalProduct(null);
+
   };
 
+  /* =========================
+     PRODUCT SEARCH
+  ========================== */
+
   const loadProductOptions = async (inputValue) => {
+
     try {
+
       const res = await ProductDropdownSearch(inputValue || "");
       const products = res?.data || [];
 
@@ -255,27 +273,36 @@ function GlobalFilterPanel({ onClose }) {
         value: p.value,
         label: p.label,
       }));
+
     } catch (err) {
+
       console.error("Product search error:", err);
       return [];
+
     }
+
   };
+
   const handleCountryScroll = (e) => {
+
     const bottom =
       e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
 
     if (bottom && !isFetching) {
       setCountryPage((prev) => prev + 1);
     }
+
   };
+  
   const modalContent = (
     <div
       className={`tp-filter-overlay ${isClosing ? "tp-overlay-exit" : ""}`}
       onClick={handleOverlayClick}
     >
       <div
-        className={`tp-filter-panel tp-card ${isClosing ? "tp-panel-exit" : ""
-          }`}
+        className={`tp-filter-panel tp-card ${
+          isClosing ? "tp-panel-exit" : ""
+        }`}
         ref={modalRef}
       >
         {/* HEADER */}
@@ -296,44 +323,45 @@ function GlobalFilterPanel({ onClose }) {
           <div className="tp-form-group">
             <label>Country</label>
 
-           <Select
-  className="tp-select"
-  classNamePrefix="tp-select"
-  options={countryOptions}
-  value={
-    countryOptions.find((opt) => opt.value === reporterCode) || {
-      value: reporterCode,
-      label: country,
-    }
-  }
-  onMenuScrollToBottom={handleCountryScroll}
-  onInputChange={(input) => {
-    setCountrySearch(input);
-    setCountryPage(1);
-  }}
-  onChange={(opt) => {
-    const code = opt?.value || "";
-    const name = opt?.label || "";
+            <Select
+              className="tp-select"
+              classNamePrefix="tp-select"
+              options={countryOptions}
+              value={
+                countryOptions.find((opt) => opt.value === reporterCode) || {
+                  value: reporterCode,
+                  label: country,
+                }
+              }
+              onMenuScrollToBottom={handleCountryScroll}
+              onInputChange={(input) => {
+                setCountrySearch(input);
+                setCountryPage(1);
+              }}
+              onChange={(opt) => {
+                const code = opt?.value || "";
+                const name = opt?.label || "";
 
-    setLocalCountry(code);
-    setLocalCountryName(name);
+                setLocalCountry(code);
+                setLocalCountryName(name);
 
-    dispatch(setReporterCode(code));
-    dispatch(
-      setCountry({
-        name,
-        numeric: code,
-        currency: countries.find((c) => c.numeric === code)?.currency || "",
-      })
-    );
+                dispatch(setReporterCode(code));
+                dispatch(
+                  setCountry({
+                    name,
+                    numeric: code,
+                    currency:
+                      countries.find((c) => c.numeric === code)?.currency || "",
+                  }),
+                );
 
-    setLocalCorridor("");
-    setLocalCorridorLabel("");
-    setLocalProduct(null);
-  }}
-  placeholder="Select Country"
-  isSearchable
-/>
+                setLocalCorridor("");
+                setLocalCorridorLabel("");
+                setLocalProduct(null);
+              }}
+              placeholder="Select Country"
+              isSearchable
+            />
           </div>
 
           <div className="tp-form-group">

@@ -11,6 +11,8 @@ import {
   DashboardCountries
 } from "../../services/DashboardService";
 
+import useUniversalFilters from "../../hooks/useUniversalFilters";
+
 const UniversalFilter = ({
   showCorridor = false,
   showProduct = false,
@@ -24,39 +26,21 @@ const UniversalFilter = ({
   onChange,
   className = "",
 }) => {
+
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
+  const { reporterCode } = useSelector((state) => state.corridor);
+
+  /* 🔥 HOOK USED HERE */
+
   const {
-    reporterCode,
-    partnerCode,
-    productId,
-    productLabel,
-    startDate,
-    endDate,
-    corridor
-  } = useSelector((state) => state.corridor);
+    filters,
+    setFilters,
+    updateFilter,
+    resetFilters
+  } = useUniversalFilters(defaultValues);
 
-  const lastReduxSync = useRef({
-    partnerCode,
-    productId,
-    startDate,
-    endDate,
-  });
-
-  const [filters, setFilters] = useState({
-    corridor: defaultValues.corridor || "",
-    partnerCode: defaultValues.partnerCode || "",
-    product: defaultValues.product || "",
-    productLabel: defaultValues.productLabel || "",
-    riskLevel: defaultValues.riskLevel || "",
-    activityStatus: defaultValues.activityStatus || "",
-    startDate: defaultValues.startDate || "",
-    endDate: defaultValues.endDate || "",
-    quoteCurrency: defaultValues.quoteCurrency || "",
-    origin: defaultValues.origin || "",
-    destination: defaultValues.destination || "",
-  });
   const [countriesList, setCountriesList] = useState([]);
   const [countryPage, setCountryPage] = useState(1);
   const [countrySearch, setCountrySearch] = useState("");
@@ -65,26 +49,56 @@ const UniversalFilter = ({
   const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
   ]);
+/* ===============================
+   RISK + ACTIVITY OPTIONS
+================================ */
 
-  const productOptions = [
-    { value: "", label: "Product" },
-    { value: "cocoa", label: "Cocoa Beans" },
-    { value: "oil", label: "Crude Oil" },
-    { value: "tea", label: "Tea" },
-  ];
+const riskOptions = [
+  { value: "", label: "All" },
+  { value: "LOW", label: "Low" },
+  { value: "MEDIUM", label: "Medium" },
+  { value: "HIGH", label: "High" },
+];
 
-  const riskOptions = [
-    { value: "", label: "All" },
-    { value: "low", label: "Low" },
-    { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-  ];
+const activityOptions = [
+  { value: "", label: "Activity Status" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "DORMANT", label: "Dormant" },
+];
+  /* ===============================
+     COUNTRIES
+  =============================== */
 
-  const activityOptions = [
-    { value: "", label: "Activity Status" },
-    { value: "active", label: "Active" },
-    { value: "dormant", label: "Dormant" },
-  ];
+  const { data: countriesData, isFetching } = useQuery({
+    queryKey: ["universalCountries", countryPage, countrySearch],
+    queryFn: () =>
+      DashboardCountries({
+        page: countryPage,
+        limit: LIMIT,
+        search: countrySearch,
+        currency: filters.quoteCurrency || undefined
+      }),
+    keepPreviousData: true,
+  });
+
+  useEffect(() => {
+
+    if (countriesData?.data) {
+
+      const newCountries = countriesData.data;
+
+      setCountriesList((prev) =>
+        countryPage === 1 ? newCountries : [...prev, ...newCountries]
+      );
+
+    }
+
+  }, [countriesData]);
+
+  const countryOptions = countriesList.map((c) => ({
+    value: c.name,
+    label: c.name,
+  }));
 
   const currencyOptions = [
     ...new Map(
@@ -100,46 +114,8 @@ const UniversalFilter = ({
     ).values(),
   ];
 
-  const countryOptions = countriesList.map((c) => ({
-    value: c.name,
-    label: c.name,
-  }));
-
-  const { data: countriesData, isFetching } = useQuery({
-    queryKey: ["universalCountries", countryPage, countrySearch],
-    queryFn: () =>
-      DashboardCountries({
-        page: countryPage,
-        limit: LIMIT,
-        search: countrySearch,
-        currency: filters.quoteCurrency || undefined
-      }),
-    keepPreviousData: true,
-  });
-
-  useEffect(() => {
-    if (countriesData?.data) {
-      const newCountries = countriesData.data;
-
-      setCountriesList((prev) =>
-        countryPage === 1 ? newCountries : [...prev, ...newCountries]
-      );
-    }
-  }, [countriesData]);
-
-  const handleCurrencyScroll = () => {
-    if (!isFetching) {
-      setCountryPage((prev) => prev + 1);
-    }
-  };
-
-  const handleCountryScroll = () => {
-    if (!isFetching) {
-      setCountryPage((prev) => prev + 1);
-    }
-  };
   /* ===============================
-     LOAD CORRIDORS
+     CORRIDORS
   =============================== */
 
   const { data: corridorData } = useQuery({
@@ -149,6 +125,7 @@ const UniversalFilter = ({
   });
 
   useEffect(() => {
+
     const corridors = corridorData?.data?.data || [];
 
     const formatted = [
@@ -160,95 +137,17 @@ const UniversalFilter = ({
     ];
 
     setCorridorOptions(formatted);
+
   }, [corridorData]);
-
-  /* ===============================
-     SYNC GLOBAL PRODUCT
-  =============================== */
-
-  /* ===============================
-    SYNC GLOBAL PRODUCT
- =============================== */
-
-  useEffect(() => {
-    if (lastReduxSync.current.productId === productId) return;
-
-    lastReduxSync.current.productId = productId;
-
-    setFilters((prev) => ({
-      ...prev,
-      product: productId || "",
-      productLabel: productLabel || "",
-    }));
-  }, [productId, productLabel]);
-
-  /* ===============================
-     SYNC GLOBAL CORRIDOR
-  =============================== */
-
-  /* ===============================
-     SYNC GLOBAL CORRIDOR
-  =============================== */
-
-  useEffect(() => {
-    if (lastReduxSync.current.partnerCode === partnerCode) return;
-
-    lastReduxSync.current.partnerCode = partnerCode;
-
-    const selected = corridorOptions.find((c) => c.value === partnerCode);
-
-    if (!selected) return;
-
-    setFilters((prev) => ({
-      ...prev,
-      partnerCode: partnerCode,
-      corridor: selected.label,
-    }));
-  }, [partnerCode, corridorOptions]);
-
-
-  /* ===============================
-     SYNC GLOBAL DATES
-  =============================== */
-
-  useEffect(() => {
-    if (
-      lastReduxSync.current.startDate === startDate &&
-      lastReduxSync.current.endDate === endDate
-    )
-      return;
-
-    lastReduxSync.current.startDate = startDate;
-    lastReduxSync.current.endDate = endDate;
-
-    setFilters((prev) => ({
-      ...prev,
-      startDate: startDate || "",
-      endDate: endDate || "",
-    }));
-  }, [startDate, endDate]);
-
-  /* ===============================
-     EMIT FILTER CHANGES
-  =============================== */
-
-  // useEffect(() => {
-  //   onChange && onChange(filters);
-  // }, [filters]);
-
-  const updateFilter = (key, value) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
 
   /* ===============================
      PRODUCT SEARCH
   =============================== */
 
   const loadProductOptions = async (inputValue) => {
+
     try {
+
       const res = await ProductDropdownSearch(inputValue || "");
       const products = res?.data || [];
 
@@ -256,46 +155,74 @@ const UniversalFilter = ({
         value: p.value,
         label: p.label,
       }));
+
     } catch (err) {
+
       console.error("Product search error:", err);
       return [];
+
     }
+
   };
+
+  /* ===============================
+   COUNTRY / CURRENCY SCROLL
+================================ */
+
+const handleCurrencyScroll = (e) => {
+
+  const bottom =
+    e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+
+  if (bottom && !isFetching) {
+    setCountryPage((prev) => prev + 1);
+  }
+
+};
+
+/* ===============================
+   COUNTRY SCROLL
+================================ */
+
+const handleCountryScroll = (e) => {
+
+  const bottom =
+    e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+
+  if (bottom && !isFetching) {
+    setCountryPage((prev) => prev + 1);
+  }
+
+};
+
+  /* ===============================
+   RESET HANDLER
+================================ */
+
+const handleReset = () => {
+  resetFilters();
+};
 
   /* ===============================
      MODAL CLOSE
   =============================== */
 
   const handleClose = () => {
+
     setIsClosing(true);
 
     setTimeout(() => {
-      if (onChange) onChange(filters);
+      onChange && onChange(filters);
     }, 300);
-  };
-
-  const handleReset = () => {
-
-    const resetFilters = {
-      corridor: corridor,
-      partnerCode: partnerCode,
-      product: "",
-      productLabel: "",
-      riskLevel: "",
-      activityStatus: "",
-      startDate: "",
-      endDate: "",
-      quoteCurrency: ""
-    };
-
-    setFilters(resetFilters);
 
   };
 
   const handleOverlayClick = (e) => {
+
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       handleClose();
     }
+
   };
 
   /* ===============================
@@ -303,24 +230,27 @@ const UniversalFilter = ({
   =============================== */
 
   useEffect(() => {
+
     document.body.style.overflow = "hidden";
+
     return () => {
       document.body.style.overflow = "";
     };
+
   }, []);
 
-  /* ===============================
-     ESC CLOSE
-  =============================== */
-
   useEffect(() => {
+
     const handleEsc = (e) => {
       if (e.key === "Escape") handleClose();
     };
 
     document.addEventListener("keydown", handleEsc);
+
     return () => document.removeEventListener("keydown", handleEsc);
+
   }, []);
+
 
   const modalContent = (
     <div
