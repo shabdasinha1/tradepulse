@@ -253,7 +253,7 @@ const DashboardProduct = () => {
           className="product-row"
           key={item.product || index}
         >
-          <span>{item.product}</span>
+          <span>{item.productCategory}</span>
 
           <span className="tp-muted text-center">
             £{Number(item.avgExportPrice).toFixed(2)}

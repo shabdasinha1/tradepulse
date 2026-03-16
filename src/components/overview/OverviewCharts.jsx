@@ -234,8 +234,8 @@ const priceData = useMemo(() => {
             title="Exporter Reliability Score"
             value={`${metrics.supplier?.score ?? 0}/${metrics.supplier?.maxScore ?? 0}`}
             footerLabel="Aggregate reliability index based on activity frequency and volatility consistency"
-            trend=""
-            trendDirection=""
+            // trend=""
+            // trendDirection=""
           />
 
         </div>

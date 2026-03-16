@@ -18,52 +18,49 @@ function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
 
   const { corridor } = useSelector((state) => state.corridor);
- const shortCorridor = useMemo(() => {
-  return corridor?.includes(",")
-    ? corridor.split(",")[0] + "..."
-    : corridor;
-}, [corridor]);
+  const shortCorridor = useMemo(() => {
+    return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
+  }, [corridor]);
   const [displayName, setDisplayName] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
-
 
   /* ===============================
      MARGIN STATE + CALCULATION
   ============================== */
 
   const [budget, setBudget] = useState(250000);
-    const deferredBudget = useDeferredValue(budget);
+  const deferredBudget = useDeferredValue(budget);
 
   const { data: marginImpactData } = useQuery({
-  queryKey: queryKeys.marginImpact(deferredBudget),
-queryFn: () => DashboardMarginImpact(deferredBudget),
-  enabled: !!deferredBudget,
-  staleTime: 1000 * 60 * 5,
-});
- 
-const fxPercent = marginImpactData?.data?.volatility ?? 0;
-const impact = marginImpactData?.data?.estimatedImpact ?? 0;
-const severity = marginImpactData?.data?.risk || "Low";
+    queryKey: queryKeys.marginImpact(deferredBudget),
+    queryFn: () => DashboardMarginImpact(deferredBudget),
+    enabled: !!deferredBudget,
+    staleTime: 1000 * 60 * 5,
+  });
 
-const severityClass = useMemo(() => {
-  if (severity === "Medium") return "tp-pill-warning";
-  if (severity === "High") return "tp-text-down";
-  return "tp-pill-success";
-}, [severity]);
+  const fxPercent = marginImpactData?.data?.volatility ?? 0;
+  const impact = marginImpactData?.data?.estimatedImpact ?? 0;
+  const severity = marginImpactData?.data?.risk || "Low";
+  const changePercent = marginImpactData?.data?.fxChangePercent;
+  const severityClass = useMemo(() => {
+    if (severity === "Medium") return "tp-pill-warning";
+    if (severity === "High") return "tp-text-down";
+    return "tp-pill-success";
+  }, [severity]);
 
   /* ===============================
      USER NAME
   ============================== */
 
-useEffect(() => {
-  const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "");
+  useEffect(() => {
+    const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "");
 
-  const first = capitalize(GetCookie("tp_user_first_name"));
-  const last = capitalize(GetCookie("tp_user_last_name"));
+    const first = capitalize(GetCookie("tp_user_first_name"));
+    const last = capitalize(GetCookie("tp_user_last_name"));
 
-  const fullName = `${first} ${last}`.trim();
-  setDisplayName(fullName || "User");
-}, []);
+    const fullName = `${first} ${last}`.trim();
+    setDisplayName(fullName || "User");
+  }, []);
 
   return (
     <>
@@ -139,8 +136,8 @@ useEffect(() => {
                       </p>
                     </div>
 
-                    <span className="tp-badge tp-badge-primary">
-                      Simple MVP
+                    <span className={`tp-pill ${severityClass}`}>
+                      {severity} Risk
                     </span>
                   </div>
 
@@ -155,17 +152,16 @@ useEffect(() => {
                       />
                     </div>
 
-                    <div className="tp-margin-result">
-                      <p className="tp-muted">Estimated FX Impact</p>
+                    <div className="tp-impact-estimator-changepercent-wrap">
+                      <div className="tp-margin-result">
+                        <p className="tp-muted">Estimated FX Impact</p>
 
-                      <h2 className="tp-margin-value">
-                        {impact >= 0 ? "+" : "-"}£
-                        {Math.abs(impact).toLocaleString()}
-                      </h2>
-
-                      <span className={`tp-pill ${severityClass}`}>
-                        {severity} Risk
-                      </span>
+                        <h2 className="tp-margin-value">
+                          {impact >= 0 ? "+" : "-"}£
+                          {Math.abs(impact).toLocaleString()}
+                        </h2>
+                      </div>
+                      <span className="tp-text-neutral tp-rate-change">{changePercent}%</span>
                     </div>
                   </div>
                 </div>

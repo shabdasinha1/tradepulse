@@ -459,7 +459,7 @@
 .tp-margin-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-md);
   margin-bottom: var(--space-lg);
   flex-wrap: wrap;
@@ -511,8 +511,8 @@
 @media (max-width: 768px) {
 
   .tp-margin-header {
-    flex-direction: column;
-    align-items: flex-start;
+    /* flex-direction: column;
+    align-items: flex-start; */
   }
 
   .tp-margin-content {
@@ -542,7 +542,10 @@
   .tp-margin-value {
     font-size: var(--fs-xl);
   }
-  
+    .tp-margin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
   
 }
 
@@ -590,4 +593,16 @@
   .tp-margin-result {
     text-align: left;
   }
+}
+
+
+.tp-rate-changepercent-wrap{
+  display: flex;
+  justify-content: space-between;
+}
+.tp-impact-estimator-changepercent-wrap{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
