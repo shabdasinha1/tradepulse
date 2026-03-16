@@ -212,7 +212,7 @@ const MarketOverview = () => {
                   </div>
 
                   <span className="tp-ship-days">
-                    {s.days ? `${s.days} Days` : "0 Days"}
+                    {s.age ? `${s.age}` : "0 Days"}
                   </span>
                 </div>
 
