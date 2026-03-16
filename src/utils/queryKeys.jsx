@@ -56,10 +56,10 @@ export const queryKeys = {
     endDate,
   ],
 
-  exchangeRates: (baseCurrency, quoteCurrency, startDate, endDate) => [
+  exchangeRates: (reporterCode,partnerCode, startDate, endDate) => [
     "exchangeRates",
-    baseCurrency,
-    quoteCurrency,
+     reporterCode,
+    partnerCode,
     startDate,
     endDate,
   ],
