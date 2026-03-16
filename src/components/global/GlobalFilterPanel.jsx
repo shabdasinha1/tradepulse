@@ -12,20 +12,20 @@ import {
   setPartnerCode,
   setPartnerCountry,
   setDateRange,
-  resetFilters
+  resetFilters,
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
+import AsyncCreatableSelect from "react-select/async-creatable";
 import {
   DashboardCorridors,
   ProductDropdownSearch,
-  DashboardCountries
+  DashboardCountries,
 } from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
 import { queryKeys } from "../../utils/queryKeys";
 
 function GlobalFilterPanel({ onClose }) {
-
   const modalRef = useRef(null);
   const dispatch = useDispatch();
 
@@ -39,18 +39,18 @@ function GlobalFilterPanel({ onClose }) {
     productId,
     productLabel,
     startDate,
-    endDate
+    endDate,
   } = useSelector((state) => state.corridor);
 
   const countries = useSelector((state) => state.country.countries);
-const countryOptions = useMemo(
-  () =>
-    countries.map((c) => ({
-      value: c.numeric,
-      label: c.name,
-    })),
-  [countries]
-);
+  const countryOptions = useMemo(
+    () =>
+      countries.map((c) => ({
+        value: c.numeric,
+        label: c.name,
+      })),
+    [countries],
+  );
 
   /* =========================
      LOCAL TEMP STATE
@@ -80,7 +80,6 @@ const countryOptions = useMemo(
   ========================== */
 
   useEffect(() => {
-
     setLocalCountry(reporterCode || "");
     setLocalCountryName(country || "");
 
@@ -98,7 +97,6 @@ const countryOptions = useMemo(
     } else {
       setLocalProduct(null);
     }
-
   }, [
     reporterCode,
     partnerCode,
@@ -106,60 +104,59 @@ const countryOptions = useMemo(
     productId,
     productLabel,
     startDate,
-    endDate
+    endDate,
   ]);
 
   /* =========================
      LOAD COUNTRIES
   ========================== */
 
- const { data: countriesData, isFetching } = useQuery({
- queryKey: queryKeys.countries(countryPage, countrySearch),
-  queryFn: () =>
-    DashboardCountries({
-      page: countryPage,
-      limit: LIMIT,
-      search: countrySearch,
-    }),
-  keepPreviousData: true,
-  staleTime: 1000 * 60 * 10,
-  cacheTime: 1000 * 60 * 30,
-});
+  const { data: countriesData, isFetching } = useQuery({
+    queryKey: queryKeys.countries(countryPage, countrySearch),
+    queryFn: () =>
+      DashboardCountries({
+        page: countryPage,
+        limit: LIMIT,
+        search: countrySearch,
+      }),
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 10,
+    cacheTime: 1000 * 60 * 30,
+  });
 
-useEffect(() => {
-  if (!countriesData?.data) return;
+  useEffect(() => {
+    if (!countriesData?.data) return;
 
-  const newCountries = countriesData.data;
+    const newCountries = countriesData.data;
 
-  dispatch(
-    setCountries(
-      countryPage === 1
-        ? newCountries
-        : Array.from(
-            new Map(
-              [...(countries || []), ...newCountries].map((c) => [
-                c.numeric,
-                c,
-              ])
-            ).values()
-          )
-    )
-  );
-}, [countriesData, countryPage, dispatch]);
+    dispatch(
+      setCountries(
+        countryPage === 1
+          ? newCountries
+          : Array.from(
+              new Map(
+                [...(countries || []), ...newCountries].map((c) => [
+                  c.numeric,
+                  c,
+                ]),
+              ).values(),
+            ),
+      ),
+    );
+  }, [countriesData, countryPage, dispatch]);
 
   /* =========================
      LOAD CORRIDORS
   ========================== */
 
   const { data: corridorData } = useQuery({
-  queryKey: queryKeys.corridors(localCountry),
-  queryFn: () => DashboardCorridors(localCountry),
-  enabled: !!localCountry,
-  staleTime: 1000 * 60 * 30,
-});
+    queryKey: queryKeys.corridors(localCountry),
+    queryFn: () => DashboardCorridors(localCountry),
+    enabled: !!localCountry,
+    staleTime: 1000 * 60 * 30,
+  });
 
   useEffect(() => {
-
     const corridors = corridorData?.data?.data || [];
 
     const formatted = corridors.map((c) => ({
@@ -168,10 +165,9 @@ useEffect(() => {
     }));
 
     setCorridorOptions((prev) => {
-  if (JSON.stringify(prev) === JSON.stringify(formatted)) return prev;
-  return formatted;
-});
-
+      if (JSON.stringify(prev) === JSON.stringify(formatted)) return prev;
+      return formatted;
+    });
   }, [corridorData]);
 
   /* =========================
@@ -186,13 +182,13 @@ useEffect(() => {
   }, []);
 
   useEffect(() => {
-  const handleEsc = (e) => {
-    if (e.key === "Escape") handleClose();
-  };
+    const handleEsc = (e) => {
+      if (e.key === "Escape") handleClose();
+    };
 
-  window.addEventListener("keydown", handleEsc);
-  return () => window.removeEventListener("keydown", handleEsc);
-}, []);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -210,7 +206,6 @@ useEffect(() => {
   ========================== */
 
   const handleApply = () => {
-
     if (localStartDate && !localEndDate) {
       alert("Please select End Date");
       return;
@@ -223,18 +218,16 @@ useEffect(() => {
 
     dispatch(setReporterCode(localCountry));
 
-    const selectedCountry = countries.find(
-      (c) => c.numeric === localCountry
-    );
+    const selectedCountry = countries.find((c) => c.numeric === localCountry);
 
     if (selectedCountry) {
-
-      dispatch(setCountry({
-        name: selectedCountry.name,
-        numeric: selectedCountry.numeric,
-        currency: selectedCountry.currency,
-      }));
-
+      dispatch(
+        setCountry({
+          name: selectedCountry.name,
+          numeric: selectedCountry.numeric,
+          currency: selectedCountry.currency,
+        }),
+      );
     }
 
     dispatch(setPartnerCode(localCorridor));
@@ -247,7 +240,7 @@ useEffect(() => {
       setDateRange({
         startDate: localStartDate,
         endDate: localEndDate,
-      })
+      }),
     );
 
     handleClose();
@@ -258,7 +251,6 @@ useEffect(() => {
   ========================== */
 
   const handleReset = () => {
-
     dispatch(resetFilters());
 
     setLocalCountry("826");
@@ -271,43 +263,54 @@ useEffect(() => {
     setLocalEndDate("");
 
     setLocalProduct(null);
-
   };
 
   /* =========================
      PRODUCT SEARCH
   ========================== */
 
-const loadProductOptions = useMemo(
-  () =>
-    debounce(async (inputValue, callback) => {
-      try {
-        const res = await ProductDropdownSearch(inputValue || "");
-        const products = res?.data || [];
+  // const loadProductOptions = useMemo(
+  //   () =>
+  //     debounce(async (inputValue, callback) => {
+  //       try {
+  //         const res = await ProductDropdownSearch(inputValue || "");
+  //         const products = res?.data || [];
 
-        callback(
-          products.map((p) => ({
-            value: p.value,
-            label: p.label,
-          }))
-        );
-      } catch (err) {
-        console.error("Product search error:", err);
-        callback([]);
-      }
-    }, 400),
-  []
-);
+  //         callback(
+  //           products.map((p) => ({
+  //             value: p.value,
+  //             label: p.label,
+  //           })),
+  //         );
+  //       } catch (err) {
+  //         console.error("Product search error:", err);
+  //         callback([]);
+  //       }
+  //     }, 400),
+  //   [],
+  // );
 
+  const loadProductOptions = async (inputValue) => {
+    try {
+      const res = await ProductDropdownSearch(inputValue || "");
+      const products = res?.data || [];
+
+      return products.map((p) => ({
+        value: p.value,
+        label: p.label,
+      }));
+    } catch (err) {
+      console.error("Product search error:", err);
+      return [];
+    }
+  };
   const handleCountryScroll = (e) => {
-
-    
-      const bottom =e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
 
     if (bottom && !isFetching) {
       setCountryPage((prev) => prev + 1);
     }
-
   };
   const corridorOptionsMemo = useMemo(() => corridorOptions, [corridorOptions]);
   const modalContent = (
@@ -406,14 +409,42 @@ const loadProductOptions = useMemo(
           <div className="tp-form-group">
             <label>Product</label>
 
-            <AsyncSelect
+            {/* <AsyncSelect
               className="tp-select"
               classNamePrefix="tp-select"
               cacheOptions
               defaultOptions
-              loadOptions={(input, callback) => loadProductOptions(input, callback)}
+              loadOptions={(input, callback) =>
+                loadProductOptions(input, callback)
+              }
               value={localProduct}
               onChange={(opt) => setLocalProduct(opt)}
+              placeholder="Search HS Code or Product"
+              isClearable
+            /> */}
+            <AsyncCreatableSelect
+              className="tp-select"
+              classNamePrefix="tp-select"
+              cacheOptions
+              defaultOptions
+              loadOptions={loadProductOptions}
+              value={localProduct}
+              onChange={(opt) => setLocalProduct(opt)}
+              onCreateOption={(inputValue) => {
+                setLocalProduct({
+                  value: inputValue,
+                  label: inputValue,
+                });
+              }}
+              formatCreateLabel={(inputValue) => `Use "${inputValue}"`}
+              allowCreateWhileLoading
+              createOptionPosition="last"
+              isValidNewOption={(inputValue, selectValue, options) =>
+                inputValue &&
+                !options.some(
+                  (opt) => opt.value.toLowerCase() === inputValue.toLowerCase(),
+                )
+              }
               placeholder="Search HS Code or Product"
               isClearable
             />

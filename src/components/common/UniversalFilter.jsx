@@ -3,12 +3,13 @@ import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
 import Select from "react-select";
+import AsyncCreatableSelect from "react-select/async-creatable";
 import { useSelector } from "react-redux";
-import AsyncSelect from "react-select/async";
+
 import {
   DashboardCorridors,
   ProductDropdownSearch,
-  DashboardCountries
+  DashboardCountries,
 } from "../../services/DashboardService";
 
 import useUniversalFilters from "../../hooks/useUniversalFilters";
@@ -26,47 +27,43 @@ const UniversalFilter = ({
   onChange,
   className = "",
 }) => {
-
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
   const { reporterCode } = useSelector((state) => state.corridor);
 
-  /* 🔥 HOOK USED HERE */
-
-  const {
-    filters,
-    setFilters,
-    updateFilter,
-    resetFilters
-  } = useUniversalFilters(defaultValues);
+  const { filters, setFilters, updateFilter, resetFilters } =
+    useUniversalFilters(defaultValues);
 
   const [countriesList, setCountriesList] = useState([]);
   const [countryPage, setCountryPage] = useState(1);
   const [countrySearch, setCountrySearch] = useState("");
+
   const LIMIT = 50;
 
   const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
   ]);
-/* ===============================
-   RISK + ACTIVITY OPTIONS
-================================ */
 
-const riskOptions = [
-  { value: "", label: "All" },
-  { value: "LOW", label: "Low" },
-  { value: "MEDIUM", label: "Medium" },
-  { value: "HIGH", label: "High" },
-];
-
-const activityOptions = [
-  { value: "", label: "Activity Status" },
-  { value: "ACTIVE", label: "Active" },
-  { value: "DORMANT", label: "Dormant" },
-];
   /* ===============================
-     COUNTRIES
+     RISK + ACTIVITY OPTIONS
+  =============================== */
+
+  const riskOptions = [
+    { value: "", label: "All" },
+    { value: "LOW", label: "Low" },
+    { value: "MEDIUM", label: "Medium" },
+    { value: "HIGH", label: "High" },
+  ];
+
+  const activityOptions = [
+    { value: "", label: "Activity Status" },
+    { value: "ACTIVE", label: "Active" },
+    { value: "DORMANT", label: "Dormant" },
+  ];
+
+  /* ===============================
+     COUNTRIES QUERY
   =============================== */
 
   const { data: countriesData, isFetching } = useQuery({
@@ -76,23 +73,19 @@ const activityOptions = [
         page: countryPage,
         limit: LIMIT,
         search: countrySearch,
-        currency: filters.quoteCurrency || undefined
+        currency: filters.quoteCurrency || undefined,
       }),
     keepPreviousData: true,
   });
 
   useEffect(() => {
-
     if (countriesData?.data) {
-
       const newCountries = countriesData.data;
 
       setCountriesList((prev) =>
-        countryPage === 1 ? newCountries : [...prev, ...newCountries]
+        countryPage === 1 ? newCountries : [...prev, ...newCountries],
       );
-
     }
-
   }, [countriesData]);
 
   const countryOptions = countriesList.map((c) => ({
@@ -110,7 +103,7 @@ const activityOptions = [
             value: c.currency,
             label: `${c.name} (${c.currency})`,
           },
-        ])
+        ]),
     ).values(),
   ];
 
@@ -125,7 +118,6 @@ const activityOptions = [
   });
 
   useEffect(() => {
-
     const corridors = corridorData?.data?.data || [];
 
     const formatted = [
@@ -137,7 +129,6 @@ const activityOptions = [
     ];
 
     setCorridorOptions(formatted);
-
   }, [corridorData]);
 
   /* ===============================
@@ -145,9 +136,7 @@ const activityOptions = [
   =============================== */
 
   const loadProductOptions = async (inputValue) => {
-
     try {
-
       const res = await ProductDropdownSearch(inputValue || "");
       const products = res?.data || [];
 
@@ -155,74 +144,96 @@ const activityOptions = [
         value: p.value,
         label: p.label,
       }));
-
     } catch (err) {
-
       console.error("Product search error:", err);
       return [];
-
     }
-
   };
 
   /* ===============================
-   COUNTRY / CURRENCY SCROLL
-================================ */
+     COUNTRY SEARCH
+  =============================== */
 
-const handleCurrencyScroll = (e) => {
+  const loadCountryOptions = async (inputValue) => {
+    try {
+      const res = await DashboardCountries({
+        page: 1,
+        limit: 50,
+        search: inputValue || "",
+        currency: filters.quoteCurrency || undefined,
+      });
 
-  const bottom =
-    e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+      const countries = res?.data || [];
 
-  if (bottom && !isFetching) {
-    setCountryPage((prev) => prev + 1);
-  }
-
-};
-
-/* ===============================
-   COUNTRY SCROLL
-================================ */
-
-const handleCountryScroll = (e) => {
-
-  const bottom =
-    e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
-
-  if (bottom && !isFetching) {
-    setCountryPage((prev) => prev + 1);
-  }
-
-};
+      return countries.map((c) => ({
+        value: c.name,
+        label: c.name,
+      }));
+    } catch (err) {
+      console.error("Country search error:", err);
+      return [];
+    }
+  };
 
   /* ===============================
-   RESET HANDLER
-================================ */
+     CREATE OPTION VALIDATION
+  =============================== */
 
-const handleReset = () => {
-  resetFilters();
-};
+  const isValidNewOption = (inputValue, selectValue, options) => {
+    return (
+      inputValue &&
+      !options.some(
+        (opt) => opt.value.toLowerCase() === inputValue.toLowerCase(),
+      )
+    );
+  };
 
   /* ===============================
-     MODAL CLOSE
+     SCROLL HANDLERS
+  =============================== */
+
+  const handleCurrencyScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+
+    if (bottom && !isFetching) {
+      setCountryPage((prev) => prev + 1);
+    }
+  };
+
+  const handleCountryScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+
+    if (bottom && !isFetching) {
+      setCountryPage((prev) => prev + 1);
+    }
+  };
+
+  /* ===============================
+     RESET
+  =============================== */
+
+  const handleReset = () => {
+    resetFilters();
+  };
+
+  /* ===============================
+     CLOSE MODAL
   =============================== */
 
   const handleClose = () => {
-
     setIsClosing(true);
 
     setTimeout(() => {
       onChange && onChange(filters);
     }, 300);
-
   };
 
   const handleOverlayClick = (e) => {
-
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       handleClose();
     }
-
   };
 
   /* ===============================
@@ -230,27 +241,20 @@ const handleReset = () => {
   =============================== */
 
   useEffect(() => {
-
     document.body.style.overflow = "hidden";
-
     return () => {
       document.body.style.overflow = "";
     };
-
   }, []);
 
   useEffect(() => {
-
     const handleEsc = (e) => {
       if (e.key === "Escape") handleClose();
     };
 
     document.addEventListener("keydown", handleEsc);
-
     return () => document.removeEventListener("keydown", handleEsc);
-
   }, []);
-
 
   const modalContent = (
     <div
@@ -258,11 +262,13 @@ const handleReset = () => {
       onClick={handleOverlayClick}
     >
       <div
-        className={`tp-filter-panel tp-card ${isClosing ? "tp-panel-exit" : ""
-          }`}
+        className={`tp-filter-panel tp-card ${
+          isClosing ? "tp-panel-exit" : ""
+        }`}
         ref={modalRef}
       >
         {/* HEADER */}
+
         <div className="tp-filter-header">
           <h3>Filters</h3>
 
@@ -276,8 +282,11 @@ const handleReset = () => {
         </div>
 
         {/* BODY */}
+
         <div className="tp-filter-body">
           <div className={`tp-universal-filter ${className}`}>
+            {/* CORRIDOR */}
+
             {showCorridor && (
               <div className="tp-form-group">
                 <label>Corridor</label>
@@ -287,7 +296,7 @@ const handleReset = () => {
                   classNamePrefix="tp-select"
                   options={corridorOptions}
                   value={corridorOptions.find(
-                    (o) => o.value === filters.partnerCode
+                    (o) => o.value === filters.partnerCode,
                   )}
                   onChange={(opt) => {
                     const partner = opt?.value || "";
@@ -305,74 +314,108 @@ const handleReset = () => {
               </div>
             )}
 
+            {/* ORIGIN */}
+
             {showOrigin && (
               <div className="tp-form-group">
                 <label>Origin</label>
 
-                <Select
+                <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
-                  options={countryOptions}
-                  value={countryOptions.find((o) => o.value === filters.origin) || null}
-                  onMenuScrollToBottom={handleCountryScroll}
-                  onInputChange={(input) => {
-                    setCountrySearch(input);
-                    setCountryPage(1);
-                  }}
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={loadCountryOptions}
+                  isValidNewOption={isValidNewOption}
+                  createOptionPosition="last"
+                  allowCreateWhileLoading
+                  value={
+                    filters.origin
+                      ? { value: filters.origin, label: filters.origin }
+                      : null
+                  }
                   onChange={(opt) =>
                     setFilters((prev) => ({
                       ...prev,
                       origin: opt?.value || "",
                     }))
                   }
+                  onCreateOption={(inputValue) => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      origin: inputValue,
+                    }));
+                  }}
+                  formatCreateLabel={(inputValue) => `Use "${inputValue}"`}
                   placeholder="Select Origin"
-                  isSearchable
+                  isClearable
                 />
               </div>
             )}
+
+            {/* DESTINATION */}
 
             {showDestination && (
               <div className="tp-form-group">
                 <label>Destination</label>
 
-                <Select
+                <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
-                  options={countryOptions}
-                  value={countryOptions.find((o) => o.value === filters.destination) || null}
-                  onMenuScrollToBottom={handleCountryScroll}
-                  onInputChange={(input) => {
-                    setCountrySearch(input);
-                    setCountryPage(1);
-                  }}
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={loadCountryOptions}
+                  isValidNewOption={isValidNewOption}
+                  createOptionPosition="last"
+                  allowCreateWhileLoading
+                  value={
+                    filters.destination
+                      ? {
+                          value: filters.destination,
+                          label: filters.destination,
+                        }
+                      : null
+                  }
                   onChange={(opt) =>
                     setFilters((prev) => ({
                       ...prev,
                       destination: opt?.value || "",
                     }))
                   }
+                  onCreateOption={(inputValue) => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      destination: inputValue,
+                    }));
+                  }}
+                  formatCreateLabel={(inputValue) => `Use "${inputValue}"`}
                   placeholder="Select Destination"
-                  isSearchable
+                  isClearable
                 />
               </div>
             )}
+
+            {/* PRODUCT */}
 
             {showProduct && (
               <div className="tp-form-group">
                 <label>Product</label>
 
-                <AsyncSelect
+                <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   cacheOptions
                   defaultOptions
                   loadOptions={loadProductOptions}
+                  isValidNewOption={isValidNewOption}
+                  createOptionPosition="last"
+                  allowCreateWhileLoading
                   value={
                     filters.product
                       ? {
-                        value: filters.product,
-                        label: filters.productLabel || filters.product,
-                      }
+                          value: filters.product,
+                          label: filters.productLabel || filters.product,
+                        }
                       : null
                   }
                   onChange={(opt) =>
@@ -382,11 +425,21 @@ const handleReset = () => {
                       productLabel: opt?.label || "",
                     }))
                   }
-                  placeholder="Search"
+                  onCreateOption={(inputValue) => {
+                    setFilters((prev) => ({
+                      ...prev,
+                      product: inputValue,
+                      productLabel: inputValue,
+                    }));
+                  }}
+                  formatCreateLabel={(inputValue) => `Use "${inputValue}"`}
+                  placeholder="Search product"
                   isClearable
                 />
               </div>
             )}
+
+            {/* QUOTE CURRENCY */}
 
             {showQuoteCurrency && (
               <div className="tp-form-group">
@@ -397,7 +450,9 @@ const handleReset = () => {
                   classNamePrefix="tp-select"
                   options={currencyOptions}
                   value={
-                    currencyOptions.find((o) => o.value === filters.quoteCurrency) || null
+                    currencyOptions.find(
+                      (o) => o.value === filters.quoteCurrency,
+                    ) || null
                   }
                   onMenuScrollToBottom={handleCurrencyScroll}
                   onInputChange={(input) => {
@@ -413,6 +468,8 @@ const handleReset = () => {
               </div>
             )}
 
+            {/* TIME RANGE */}
+
             {showTimeRange && (
               <>
                 <div className="tp-form-group">
@@ -422,9 +479,7 @@ const handleReset = () => {
                     type="date"
                     className="tp-input tp-filter-control"
                     value={filters.startDate}
-                    onChange={(e) =>
-                      updateFilter("startDate", e.target.value)
-                    }
+                    onChange={(e) => updateFilter("startDate", e.target.value)}
                   />
                 </div>
 
@@ -441,6 +496,8 @@ const handleReset = () => {
               </>
             )}
 
+            {/* RISK */}
+
             {showRiskLevel && (
               <div className="tp-form-group">
                 <label>Risk Level</label>
@@ -449,9 +506,7 @@ const handleReset = () => {
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   options={riskOptions}
-                  value={riskOptions.find(
-                    (o) => o.value === filters.riskLevel
-                  )}
+                  value={riskOptions.find((o) => o.value === filters.riskLevel)}
                   onChange={(opt) =>
                     updateFilter("riskLevel", opt?.value || "")
                   }
@@ -459,6 +514,8 @@ const handleReset = () => {
                 />
               </div>
             )}
+
+            {/* ACTIVITY */}
 
             {showActivityStatus && (
               <div className="tp-form-group">
@@ -469,7 +526,7 @@ const handleReset = () => {
                   classNamePrefix="tp-select"
                   options={activityOptions}
                   value={activityOptions.find(
-                    (o) => o.value === filters.activityStatus
+                    (o) => o.value === filters.activityStatus,
                   )}
                   onChange={(opt) =>
                     updateFilter("activityStatus", opt?.value || "")
@@ -478,28 +535,19 @@ const handleReset = () => {
                 />
               </div>
             )}
-
-
           </div>
         </div>
 
         {/* FOOTER */}
-        <div className="tp-filter-footer">
 
-          <button
-            className="tp-btn-outline"
-            onClick={handleReset}
-          >
+        <div className="tp-filter-footer">
+          <button className="tp-btn-outline" onClick={handleReset}>
             Reset Filters
           </button>
 
-          <button
-            className="tp-btn-primary"
-            onClick={handleClose}
-          >
+          <button className="tp-btn-primary" onClick={handleClose}>
             Apply Filters
           </button>
-
         </div>
       </div>
     </div>
