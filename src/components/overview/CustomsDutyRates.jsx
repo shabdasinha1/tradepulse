@@ -3,6 +3,7 @@ import TradePulseCard from "../common/TradePulseCard.jsx";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardDutySnapshot } from "../../services/DashboardService";
+import { queryKeys } from "../../utils/queryKeys";
 
 const CustomsDutyRates = () => {
 
@@ -10,8 +11,8 @@ const CustomsDutyRates = () => {
     (state) => state.corridor
   );
 
-  const { data } = useQuery({
-    queryKey: ["dutySnapshot", startDate, endDate, reporterCode],
+  const { data: duties = [] } = useQuery({
+    queryKey: queryKeys.dutySnapshot(reporterCode, startDate, endDate),
     queryFn: () =>
       DashboardDutySnapshot({
         startDate,
@@ -19,9 +20,9 @@ const CustomsDutyRates = () => {
         reporterCode,
       }),
     enabled: !!reporterCode,
+    staleTime: 1000 * 60 * 10,
+    select: (res) => res?.data || []
   });
-
-  const duties = data?.data || [];
 
   return (
     <section className="tp-section">
@@ -38,8 +39,9 @@ const CustomsDutyRates = () => {
           }
         >
           <div className="tp-grid tp-duty-grid">
-            {duties.map((item, i) => (
-              <div key={i} className="tp-duty-card">
+
+            {duties.map((item) => (
+              <div key={item.hsCode} className="tp-duty-card">
 
                 <span className="tp-duty-title">
                   {item.category}
@@ -55,6 +57,7 @@ const CustomsDutyRates = () => {
 
               </div>
             ))}
+
           </div>
         </TradePulseCard>
 

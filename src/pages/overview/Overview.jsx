@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useDeferredValue } from "react";
 import { useSelector } from "react-redux";
 import { GetCookie } from "../../utils/CookieManager.jsx";
-import { FiDollarSign, FiSliders } from "react-icons/fi";
+import { FiSliders } from "react-icons/fi";
 import { DashboardMarginImpact } from "../../services/DashboardService.jsx";
 import CustomsDutyRates from "../../components/overview/CustomsDutyRates.jsx";
 import LatestTradeNews from "../../components/overview/LatestTradeNews.jsx";
@@ -12,52 +12,58 @@ import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 // import { FiCalculator } from "react-icons/fi";
 import { IoCalculatorOutline } from "react-icons/io5";
+import { queryKeys } from "../../utils/queryKeys";
 
 function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
 
   const { corridor } = useSelector((state) => state.corridor);
-  const shortCorridor = corridor?.includes(",")
+ const shortCorridor = useMemo(() => {
+  return corridor?.includes(",")
     ? corridor.split(",")[0] + "..."
     : corridor;
+}, [corridor]);
   const [displayName, setDisplayName] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
+
 
   /* ===============================
      MARGIN STATE + CALCULATION
   ============================== */
 
   const [budget, setBudget] = useState(250000);
+    const deferredBudget = useDeferredValue(budget);
 
   const { data: marginImpactData } = useQuery({
-    queryKey: ["marginImpact", budget],
-    queryFn: () => DashboardMarginImpact(budget),
-    enabled: !!budget,
-  });
+  queryKey: queryKeys.marginImpact(deferredBudget),
+queryFn: () => DashboardMarginImpact(deferredBudget),
+  enabled: !!deferredBudget,
+  staleTime: 1000 * 60 * 5,
+});
+ 
+const fxPercent = marginImpactData?.data?.volatility ?? 0;
+const impact = marginImpactData?.data?.estimatedImpact ?? 0;
+const severity = marginImpactData?.data?.risk || "Low";
 
-  const fxPercent = marginImpactData?.data?.volatility ?? 0;
-
-  const impact = marginImpactData?.data?.estimatedImpact ?? 0;
-
-  const severity = marginImpactData?.data?.risk || "Low";
-
-  let severityClass = "tp-pill-success";
-
-  if (severity === "Medium") severityClass = "tp-pill-warning";
-  if (severity === "High") severityClass = "tp-text-down";
+const severityClass = useMemo(() => {
+  if (severity === "Medium") return "tp-pill-warning";
+  if (severity === "High") return "tp-text-down";
+  return "tp-pill-success";
+}, [severity]);
 
   /* ===============================
      USER NAME
   ============================== */
 
-  useEffect(() => {
-    const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "");
+useEffect(() => {
+  const capitalize = (s) => (s ? s[0].toUpperCase() + s.slice(1) : "");
 
-    const first = capitalize(GetCookie("tp_user_first_name"));
-    const last = capitalize(GetCookie("tp_user_last_name"));
+  const first = capitalize(GetCookie("tp_user_first_name"));
+  const last = capitalize(GetCookie("tp_user_last_name"));
 
-    setDisplayName(`${first} ${last}`.trim());
-  }, []);
+  const fullName = `${first} ${last}`.trim();
+  setDisplayName(fullName || "User");
+}, []);
 
   return (
     <>
@@ -171,7 +177,7 @@ function Overview() {
         {/* ===============================
           OTHER COMPONENTS
       ============================== */}
-        <MarketOverview corridorId={corridorId} />
+        <MarketOverview />
         <CustomsDutyRates />
 
         {filterOpen && (

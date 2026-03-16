@@ -20,6 +20,7 @@ import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
 import PageDisclaimer from "../../components/common/PageDisclaimer";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
+import { queryKeys } from "../../utils/queryKeys";
 
 /* ===============================
    SKELETON COMPONENT
@@ -114,7 +115,7 @@ const DashboardProduct = () => {
   =============================== */
 
   const { data: overviewData, isLoading: overviewLoading } = useQuery({
-  queryKey: ["productOverview", globalParams],
+  queryKey: queryKeys.productOverview(globalParams),
   queryFn: () => DashboardProductOverview(globalParams),
   enabled: !!partnerCode,
   staleTime: 1000 * 60 * 5,
@@ -124,7 +125,7 @@ const DashboardProduct = () => {
   =============================== */
 
  const { data: highlightData } = useQuery({
-  queryKey: ["productHighlights", globalParams],
+  queryKey: queryKeys.productHighlights(globalParams),
   queryFn: () => DashboardProductHighlights(globalParams),
   enabled: !!partnerCode,
   staleTime: 1000 * 60 * 5,

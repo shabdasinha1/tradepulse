@@ -7,6 +7,7 @@ import { DashboardSuppliers } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
+import { queryKeys } from "../../utils/queryKeys";
 
 const LIMIT = 20;
 
@@ -50,7 +51,7 @@ const shortCorridor = useMemo(() => {
   =============================== */
 
   const { data, isLoading, error } = useQuery({
-  queryKey: ["suppliers", reporterCode, startDate, endDate],
+  queryKey: queryKeys.suppliers(reporterCode, startDate, endDate),
   queryFn: async () => {
     const res = await DashboardSuppliers({
       reporterCode,

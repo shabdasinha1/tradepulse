@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useSelector } from "react-redux";
 import TPChart from "../common/TPChart.jsx";
 import TPMetricCard from "../common/TPMetricCard.jsx";
@@ -8,6 +8,7 @@ import {
   DashboardImportDemandTrend,
   DashboardKPIs
 } from "../../services/DashboardService.jsx";
+import { queryKeys } from "../../utils/queryKeys";
 
 const OverviewCharts = () => {
 
@@ -16,8 +17,7 @@ const OverviewCharts = () => {
 
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
-  const [priceData, setPriceData] = useState([]);
-  const [demandData, setDemandData] = useState([]);
+ 
   const [metrics, setMetrics] = useState({
     currency: null,
     shipping: null,
@@ -48,110 +48,96 @@ const OverviewCharts = () => {
   const demandStartDate = demandFilters.startDate || startDate;
   const demandEndDate = demandFilters.endDate || endDate;
 
-  const [budget, setBudget] = useState(250000);
+
 
 
   /* ===============================
      PRICE TREND
   ================================= */
 
-  const { data: priceTrendData } = useQuery({
-    queryKey: [
-      "exportPriceTrend",
-      reporterCode,
-      pricePartner,
-      priceProduct,
-      priceStartDate,
-      priceEndDate
-    ],
-    queryFn: () =>
-      DashboardExportPriceTrend({
-        reporter: reporterCode,
-        partner: pricePartner,
-        product: priceProduct,
-        startDate: priceStartDate || undefined,
-        endDate: priceEndDate || undefined
-      }),
-    enabled: !!reporterCode && !!pricePartner,
-  });
+const { data: priceTrendData } = useQuery({
+  queryKey: queryKeys.exportPriceTrend(
+  reporterCode,
+  pricePartner,
+  priceProduct,
+  priceStartDate,
+  priceEndDate
+),
+  queryFn: () =>
+    DashboardExportPriceTrend({
+      reporter: reporterCode,
+      partner: pricePartner,
+      product: priceProduct,
+      startDate: priceStartDate || undefined,
+      endDate: priceEndDate || undefined
+    }),
+  enabled: !!reporterCode && !!pricePartner,
+  staleTime: 1000 * 60 * 5
+});
 
-  useEffect(() => {
-    const trend = priceTrendData?.data || [];
+const priceData = useMemo(() => {
+  const trend = priceTrendData?.data || [];
 
-    if (!trend.length) {
-      setPriceData([]);
-      return;
-    }
-
-    const formatted = trend.map((item) => ({
-      month: item.date?.slice(0, 4),
-      value: Number(item.price?.toFixed(2)) || 0
-    }));
-
-    setPriceData(formatted);
-  }, [priceTrendData]);
+  return trend.map((item) => ({
+    month: item.date?.slice(0, 4),
+    value: Number(item.price?.toFixed(2)) || 0
+  }));
+}, [priceTrendData]);
   /* ===============================
      DEMAND TREND
   ================================= */
 
-  const { data: demandTrendData } = useQuery({
-    queryKey: [
-      "importDemandTrend",
-      reporterCode,
-      demandPartner,
-      demandProduct,
-      demandStartDate,
-      demandEndDate
-    ],
-    queryFn: () =>
-      DashboardImportDemandTrend({
-        reporter: reporterCode,
-        partner: demandPartner,
-        product: demandProduct,
-        startDate: demandStartDate || undefined,
-        endDate: demandEndDate || undefined
-      }),
-    enabled: !!reporterCode && !!demandPartner,
-  });
+ const { data: demandTrendData } = useQuery({
+  queryKey: queryKeys.importDemandTrend(
+  reporterCode,
+  demandPartner,
+  demandProduct,
+  demandStartDate,
+  demandEndDate
+),
+  queryFn: () =>
+    DashboardImportDemandTrend({
+      reporter: reporterCode,
+      partner: demandPartner,
+      product: demandProduct,
+      startDate: demandStartDate || undefined,
+      endDate: demandEndDate || undefined
+    }),
+  enabled: !!reporterCode && !!demandPartner,
+  staleTime: 1000 * 60 * 5
+});
 
-  useEffect(() => {
-    const trend = demandTrendData?.data || [];
+ const demandData = useMemo(() => {
+  const trend = demandTrendData?.data || [];
 
-    if (!trend.length) {
-      setDemandData([]);
-      return;
-    }
-
-    const formatted = trend.map((item) => ({
-      month: item.date?.slice(0, 4),
-      value: Number(item.demand?.toFixed(2)) || 0
-    }));
-
-    setDemandData(formatted);
-  }, [demandTrendData]);
+  return trend.map((item) => ({
+    month: item.date?.slice(0, 4),
+    value: Number(item.demand?.toFixed(2)) || 0
+  }));
+}, [demandTrendData]);
   /* ===============================
      KPI METRICS
   ================================= */
 
   const { data: kpiData } = useQuery({
-    queryKey: [
-      "dashboardKPIs",
-      reporterCode,
-      partnerCode,
-      productId,
-      startDate,
-      endDate
-    ],
-    queryFn: () =>
-      DashboardKPIs({
-        reporter: reporterCode,
-        partner: partnerCode,
-        product: productId || undefined,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined
-      }),
-    enabled: !!reporterCode && !!partnerCode,
-  });
+  queryKey: queryKeys.dashboardKPIs(
+  reporterCode,
+  partnerCode,
+  productId,
+  startDate,
+  endDate
+),
+  queryFn: () =>
+    DashboardKPIs({
+      reporter: reporterCode,
+      partner: partnerCode,
+      product: productId || undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined
+    }),
+  enabled: !!reporterCode && !!partnerCode,
+  staleTime: 1000 * 60 * 5
+});
 
   useEffect(() => {
     const data = kpiData?.data;
@@ -186,8 +172,8 @@ const OverviewCharts = () => {
 ================================= */
 
   const fxPercent = metrics.currency?.changePercent ?? 0;
-  const numericBudget = Number(budget) || 0;
-  const impact = (numericBudget * fxPercent) / 100;
+  
+  
 
   let severity = "Low";
   let severityClass = "tp-pill-success";

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import debounce from "lodash.debounce";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,6 +22,7 @@ import {
   DashboardCountries
 } from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
+import { queryKeys } from "../../utils/queryKeys";
 
 function GlobalFilterPanel({ onClose }) {
 
@@ -112,7 +114,7 @@ const countryOptions = useMemo(
   ========================== */
 
  const { data: countriesData, isFetching } = useQuery({
-  queryKey: ["countries", countryPage, countrySearch],
+ queryKey: queryKeys.countries(countryPage, countrySearch),
   queryFn: () =>
     DashboardCountries({
       page: countryPage,
@@ -124,32 +126,33 @@ const countryOptions = useMemo(
   cacheTime: 1000 * 60 * 30,
 });
 
-  useEffect(() => {
-    if (countriesData?.data) {
+useEffect(() => {
+  if (!countriesData?.data) return;
 
-      const newCountries = countriesData.data;
+  const newCountries = countriesData.data;
 
-      dispatch(
-  setCountries(
-    countryPage === 1
-      ? newCountries
-      : Array.from(
-          new Map(
-            [...countries, ...newCountries].map((c) => [c.numeric, c])
-          ).values()
-        )
-  )
-);
-
-    }
-  }, [countriesData]);
+  dispatch(
+    setCountries(
+      countryPage === 1
+        ? newCountries
+        : Array.from(
+            new Map(
+              [...(countries || []), ...newCountries].map((c) => [
+                c.numeric,
+                c,
+              ])
+            ).values()
+          )
+    )
+  );
+}, [countriesData, countryPage, dispatch]);
 
   /* =========================
      LOAD CORRIDORS
   ========================== */
 
   const { data: corridorData } = useQuery({
-  queryKey: ["corridors", localCountry],
+  queryKey: queryKeys.corridors(localCountry),
   queryFn: () => DashboardCorridors(localCountry),
   enabled: !!localCountry,
   staleTime: 1000 * 60 * 30,
@@ -164,7 +167,10 @@ const countryOptions = useMemo(
       label: c.label,
     }));
 
-    setCorridorOptions(formatted);
+    setCorridorOptions((prev) => {
+  if (JSON.stringify(prev) === JSON.stringify(formatted)) return prev;
+  return formatted;
+});
 
   }, [corridorData]);
 
@@ -180,13 +186,13 @@ const countryOptions = useMemo(
   }, []);
 
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === "Escape") handleClose();
-    };
+  const handleEsc = (e) => {
+    if (e.key === "Escape") handleClose();
+  };
 
-    document.addEventListener("keydown", handleEsc);
-    return () => document.removeEventListener("keydown", handleEsc);
-  }, []);
+  window.addEventListener("keydown", handleEsc);
+  return () => window.removeEventListener("keydown", handleEsc);
+}, []);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -272,38 +278,38 @@ const countryOptions = useMemo(
      PRODUCT SEARCH
   ========================== */
 
-  const loadProductOptions = async (inputValue) => {
+const loadProductOptions = useMemo(
+  () =>
+    debounce(async (inputValue, callback) => {
+      try {
+        const res = await ProductDropdownSearch(inputValue || "");
+        const products = res?.data || [];
 
-    try {
-
-      const res = await ProductDropdownSearch(inputValue || "");
-      const products = res?.data || [];
-
-      return products.map((p) => ({
-        value: p.value,
-        label: p.label,
-      }));
-
-    } catch (err) {
-
-      console.error("Product search error:", err);
-      return [];
-
-    }
-
-  };
+        callback(
+          products.map((p) => ({
+            value: p.value,
+            label: p.label,
+          }))
+        );
+      } catch (err) {
+        console.error("Product search error:", err);
+        callback([]);
+      }
+    }, 400),
+  []
+);
 
   const handleCountryScroll = (e) => {
 
-    const bottom =
-      e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+    
+      const bottom =e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;
 
     if (bottom && !isFetching) {
       setCountryPage((prev) => prev + 1);
     }
 
   };
-  
+  const corridorOptionsMemo = useMemo(() => corridorOptions, [corridorOptions]);
   const modalContent = (
     <div
       className={`tp-filter-overlay ${isClosing ? "tp-overlay-exit" : ""}`}
@@ -380,7 +386,7 @@ const countryOptions = useMemo(
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
-              options={corridorOptions}
+              options={corridorOptionsMemo}
               value={corridorOptions.find((opt) => opt.value === localCorridor)}
               onChange={(opt) => {
                 const partner = opt?.value || "";
@@ -405,7 +411,7 @@ const countryOptions = useMemo(
               classNamePrefix="tp-select"
               cacheOptions
               defaultOptions
-              loadOptions={loadProductOptions}
+              loadOptions={(input, callback) => loadProductOptions(input, callback)}
               value={localProduct}
               onChange={(opt) => setLocalProduct(opt)}
               placeholder="Search HS Code or Product"
