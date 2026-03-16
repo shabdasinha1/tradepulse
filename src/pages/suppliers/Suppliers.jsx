@@ -159,7 +159,7 @@ const shortCorridor = useMemo(() => {
                       </span>
 
                       <span className="text-center">
-                        <span className="tp-pill tp-pill-neutral">
+                        <span className="tp-pill tp-pill-primary">
                           {s.activity_level}
                         </span>
                       </span>

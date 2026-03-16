@@ -55,6 +55,14 @@ header .tp-section-title {
   font-size: var(--fs-body);
   font-weight: var(--fw-semibold);
   color: var(--text-secondary);
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--border-soft);
+  position: sticky;
+  top: -2px;
+  background: var(--bg-card-surface);
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 10px;
 }
 .tp-overview-text {
   /* font-size: var(--fs-body); */
@@ -315,6 +323,6 @@ header .tp-section-title {
   filter: invert(0.5); /* makes icon white */
   cursor: pointer;
 }
-.tp-product-disclaimer{
+.tp-product-disclaimer {
   margin-bottom: var(--space-sm);
 }
