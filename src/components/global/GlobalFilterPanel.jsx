@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FiX } from "react-icons/fi";
@@ -41,11 +41,14 @@ function GlobalFilterPanel({ onClose }) {
   } = useSelector((state) => state.corridor);
 
   const countries = useSelector((state) => state.country.countries);
-
-  const countryOptions = countries.map((c) => ({
-    value: c.numeric,
-    label: c.name,
-  }));
+const countryOptions = useMemo(
+  () =>
+    countries.map((c) => ({
+      value: c.numeric,
+      label: c.name,
+    })),
+  [countries]
+);
 
   /* =========================
      LOCAL TEMP STATE
@@ -108,16 +111,18 @@ function GlobalFilterPanel({ onClose }) {
      LOAD COUNTRIES
   ========================== */
 
-  const { data: countriesData, isFetching } = useQuery({
-    queryKey: ["countries", countryPage, countrySearch],
-    queryFn: () =>
-      DashboardCountries({
-        page: countryPage,
-        limit: LIMIT,
-        search: countrySearch,
-      }),
-    keepPreviousData: true,
-  });
+ const { data: countriesData, isFetching } = useQuery({
+  queryKey: ["countries", countryPage, countrySearch],
+  queryFn: () =>
+    DashboardCountries({
+      page: countryPage,
+      limit: LIMIT,
+      search: countrySearch,
+    }),
+  keepPreviousData: true,
+  staleTime: 1000 * 60 * 10,
+  cacheTime: 1000 * 60 * 30,
+});
 
   useEffect(() => {
     if (countriesData?.data) {
@@ -125,12 +130,16 @@ function GlobalFilterPanel({ onClose }) {
       const newCountries = countriesData.data;
 
       dispatch(
-        setCountries(
-          countryPage === 1
-            ? newCountries
-            : [...countries, ...newCountries]
+  setCountries(
+    countryPage === 1
+      ? newCountries
+      : Array.from(
+          new Map(
+            [...countries, ...newCountries].map((c) => [c.numeric, c])
+          ).values()
         )
-      );
+  )
+);
 
     }
   }, [countriesData]);
@@ -140,10 +149,11 @@ function GlobalFilterPanel({ onClose }) {
   ========================== */
 
   const { data: corridorData } = useQuery({
-    queryKey: ["corridors", localCountry],
-    queryFn: () => DashboardCorridors(localCountry),
-    enabled: !!localCountry,
-  });
+  queryKey: ["corridors", localCountry],
+  queryFn: () => DashboardCorridors(localCountry),
+  enabled: !!localCountry,
+  staleTime: 1000 * 60 * 30,
+});
 
   useEffect(() => {
 

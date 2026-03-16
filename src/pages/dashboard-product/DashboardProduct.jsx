@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import React, {
   useCallback,
   useEffect,
@@ -39,18 +39,19 @@ const DashboardProduct = () => {
   
 
 
-  const shortCorridor = corridor?.includes(",")
+  const shortCorridor = useMemo(() => {
+  return corridor?.includes(",")
     ? corridor.split(",")[0] + "..."
     : corridor;
+}, [corridor]);
 
   const observer = useRef(null);
-  const requestRef = useRef(0);
-
+  
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
   const [error, setError] = useState(null);
-  const [isTableLoading, setIsTableLoading] = useState(false);
+ 
 
   /* ===============================
    LOCAL TABLE FILTERS (HOOK)
@@ -69,11 +70,11 @@ const DashboardProduct = () => {
     productHighlights: {},
   });
 
-  const [products, setProducts] = useState([]);
+ 
   const [allProducts, setAllProducts] = useState([]);
 
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+
+
 
   const activePartner = filters.partnerCode || partnerCode;
 
@@ -82,9 +83,10 @@ const DashboardProduct = () => {
   =============================== */
 
   const { data: allProductsData } = useQuery({
-    queryKey: ["allProducts"],
-    queryFn: () => DashboardAllProductList(),
-  });
+  queryKey: ["allProducts"],
+  queryFn: () => DashboardAllProductList(),
+  staleTime: 1000 * 60 * 10,
+});
 
   useEffect(() => {
     if (allProductsData?.success) {
@@ -112,31 +114,33 @@ const DashboardProduct = () => {
   =============================== */
 
   const { data: overviewData, isLoading: overviewLoading } = useQuery({
-    queryKey: ["productOverview", globalParams],
-    queryFn: () => DashboardProductOverview(globalParams),
-    enabled: !!partnerCode,
-  });
-
+  queryKey: ["productOverview", globalParams],
+  queryFn: () => DashboardProductOverview(globalParams),
+  enabled: !!partnerCode,
+  staleTime: 1000 * 60 * 5,
+});
   /* ===============================
      HIGHLIGHTS API
   =============================== */
 
-  const { data: highlightData } = useQuery({
-    queryKey: ["productHighlights", globalParams],
-    queryFn: () => DashboardProductHighlights(globalParams),
-    enabled: !!partnerCode,
-  });
-
+ const { data: highlightData } = useQuery({
+  queryKey: ["productHighlights", globalParams],
+  queryFn: () => DashboardProductHighlights(globalParams),
+  enabled: !!partnerCode,
+  staleTime: 1000 * 60 * 5,
+});
   /* ===============================
      STORE OVERVIEW + HIGHLIGHTS
   =============================== */
 
-  useEffect(() => {
-    setProductData({
-      productOverview: overviewData?.data || {},
-      productHighlights: highlightData?.data || {},
-    });
-  }, [overviewData, highlightData]);
+ useEffect(() => {
+  if (!overviewData && !highlightData) return;
+
+  setProductData({
+    productOverview: overviewData?.data || {},
+    productHighlights: highlightData?.data || {},
+  });
+}, [overviewData, highlightData]);
 
   /* ===============================
      TABLE FILTER KEY
@@ -163,17 +167,23 @@ const DashboardProduct = () => {
      FETCH TABLE PRODUCTS
   =============================== */
 
-  const fetchProducts = async (reset = false) => {
-
-
-  if (!reporterCode || !activePartner) return;
-
-  const requestId = ++requestRef.current;
-
-  setIsTableLoading(true);
-
-  try {
-
+const {
+  data: productPages,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading: isTableLoading,
+} = useInfiniteQuery({
+  queryKey: [
+    "productTable",
+    reporterCode,
+    activePartner,
+    filters.product,
+    filters.riskLevel,
+    filters.startDate,
+    filters.endDate,
+  ],
+  queryFn: async ({ pageParam = 1 }) => {
     const params = {
       reporter: reporterCode,
       partner: activePartner,
@@ -183,83 +193,49 @@ const DashboardProduct = () => {
       risk: filters.riskLevel
         ? filters.riskLevel.toUpperCase()
         : undefined,
-      page: reset ? 1 : page,
+      page: pageParam,
       limit: 10,
     };
 
     const res = await DashboardAllProductList(params);
 
-    if (requestId !== requestRef.current) return;
+    return res?.data?.data || [];
+  },
+  getNextPageParam: (lastPage, pages) => {
+    return lastPage.length === 10 ? pages.length + 1 : undefined;
+  },
+  enabled: !!reporterCode && !!activePartner,
+});
 
-    const newData = res?.data?.data ?? [];
-
-    setProducts((prev) => {
-      if (reset) return newData;
-
-      const map = new Map(prev.map((i) => [i.product, i]));
-      newData.forEach((i) => map.set(i.product, i));
-      return Array.from(map.values());
-    });
-
-    setHasMore(newData.length === 10);
-
-  } catch (err) {
-    setError(GetApiErrorMessage(err));
-  } finally {
-    setIsTableLoading(false);
-  }
-};
-
-  /* ===============================
-     FETCH WHEN FILTERS CHANGE
-  =============================== */
-
-  useEffect(() => {
-    if (!activePartner) return;
-
-    setProducts([]);
-    setPage(1);
-    setHasMore(true);
-
-    fetchProducts(true);
-  }, [
-  reporterCode,
-  activePartner,
-  filters.product,
-  filters.riskLevel,
-  filters.startDate,
-  filters.endDate
-]);
-
-  /* ===============================
-     FETCH PAGINATION
-  =============================== */
-
-  useEffect(() => {
-    if (page === 1) return;
-    fetchProducts();
-  }, [page]);
 
   /* ===============================
      INFINITE SCROLL
   =============================== */
 
-  const lastProductRef = useCallback(
-    (node) => {
-      if (isTableLoading) return;
+const lastProductRef = useCallback(
+  (node) => {
+    if (isFetchingNextPage) return;
 
-      if (observer.current) observer.current.disconnect();
+    if (observer.current) observer.current.disconnect();
 
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prev) => prev + 1);
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
         }
-      });
+      },
+      { rootMargin: "200px" }
+    );
 
-      if (node) observer.current.observe(node);
-    },
-    [isTableLoading, hasMore],
-  );
+    if (node) observer.current.observe(node);
+  },
+  [isFetchingNextPage, hasNextPage, fetchNextPage]
+);
+
+
+  const products = useMemo(() => {
+  return productPages?.pages?.flat() || [];
+}, [productPages]);
 
   /* ===============================
      PRODUCT ROWS
@@ -317,16 +293,12 @@ const DashboardProduct = () => {
      FILTER HANDLER
   =============================== */
 
-  const handleFilterChange = (values) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...values,
-    }));
-
-    setProducts([]);
-    setPage(1);
-    setHasMore(true);
-  };
+ const handleFilterChange = useCallback((values) => {
+  setFilters((prev) => ({
+    ...prev,
+    ...values,
+  }));
+}, [setFilters]);
 
   /* ===============================
      UI
@@ -460,7 +432,7 @@ const DashboardProduct = () => {
 
                 {productRows}
 
-                {isTableLoading &&
+                {(isTableLoading || isFetchingNextPage) &&
                   [...Array(4)].map((_, i) => (
                     <div className="product-row" key={i}>
                       {[...Array(5)].map((_, j) => (

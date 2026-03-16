@@ -1,28 +1,28 @@
 import { FiBox } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
+import { useSelector } from "react-redux";
+import { useQuery } from "@tanstack/react-query";
+import { DashboardDutySnapshot } from "../../services/DashboardService";
 
-const duties = [
-  {
-    title: "Agricultural Products",
-    rate: "5–15%",
-    note: "Recently reduced",
-    trend: "down",
-  },
-  {
-    title: "Electronics",
-    rate: "10–20%",
-    note: "Standard rate",
-    trend: "neutral",
-  },
-  {
-    title: "Textiles",
-    rate: "20–35%",
-    note: "Protected sector",
-    trend: "up",
-  },
-];
+const CustomsDutyRates = () => {
 
-const CustomsDutyRates = ({ corridorId }) => {
+  const { startDate, endDate, reporterCode } = useSelector(
+    (state) => state.corridor
+  );
+
+  const { data } = useQuery({
+    queryKey: ["dutySnapshot", startDate, endDate, reporterCode],
+    queryFn: () =>
+      DashboardDutySnapshot({
+        startDate,
+        endDate,
+        reporterCode,
+      }),
+    enabled: !!reporterCode,
+  });
+
+  const duties = data?.data || [];
+
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
@@ -32,7 +32,7 @@ const CustomsDutyRates = ({ corridorId }) => {
             <div className="tp-card-header">
               <FiBox />
               <h3 className="tp-card-title">
-                UK Import Duty Snapshot (Selected Corridor)
+                UK Import Duty Snapshot
               </h3>
             </div>
           }
@@ -42,25 +42,15 @@ const CustomsDutyRates = ({ corridorId }) => {
               <div key={i} className="tp-duty-card">
 
                 <span className="tp-duty-title">
-                  {item.title}
+                  {item.category}
                 </span>
 
-                <strong
-                  className={`tp-duty-rate ${
-                    item.trend === "down"
-                      ? "tp-text-up"
-                      : item.trend === "up"
-                      ? "tp-text-down"
-                      : "tp-text-neutral"
-                  }`}
-                >
-                  {item.rate}
+                <strong className="tp-duty-rate tp-text-neutral">
+                  {item.range}
                 </strong>
 
                 <span className="tp-duty-note tp-muted">
-                  {item.trend === "down" && "↓ "}
-                  {item.trend === "up" && "↑ "}
-                  {item.note}
+                  HS Code: {item.hsCode}
                 </span>
 
               </div>

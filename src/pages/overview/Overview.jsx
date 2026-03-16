@@ -172,7 +172,7 @@ function Overview() {
           OTHER COMPONENTS
       ============================== */}
         <MarketOverview corridorId={corridorId} />
-        <CustomsDutyRates corridorId={corridorId} />
+        <CustomsDutyRates />
 
         {filterOpen && (
           <GlobalFilterPanel onClose={() => setFilterOpen(false)} />

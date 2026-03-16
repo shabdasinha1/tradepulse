@@ -34,7 +34,7 @@ export default function useUniversalFilters(defaultValues = {}) {
     destination: defaultValues.destination || "",
   });
 
-  console.log("latest local filter",filters);
+
 
   /* ===============================
      REDUX → LOCAL SYNC

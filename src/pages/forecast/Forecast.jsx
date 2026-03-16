@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import {
   DashboardForcast,
-  DemandGrowthForecast,
   ForcastAssets,
   ForcastConfidenceChart,
   ForcastPriceChart,
