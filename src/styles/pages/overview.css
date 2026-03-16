@@ -255,6 +255,31 @@
   border: 3px solid transparent;
   background-clip: content-box;
 }
+.tp-risk-badge {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+.tp-risk-low {
+  background: rgba(0,200,83,0.15);
+  color: #00c853;
+}
+
+.tp-risk-medium {
+  background: rgba(255,152,0,0.15);
+  color: #ff9800;
+}
+
+.tp-risk-high {
+  background: rgba(244,67,54,0.15);
+  color: #f44336;
+}
+
+.tp-rate-alert {
+  margin-left: 4px;
+}
 
 @media (max-width: 900px) {
   .rtx-tp-rate-card-container {

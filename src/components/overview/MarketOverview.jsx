@@ -20,7 +20,7 @@ const MarketOverview = () => {
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
   const [shipFilterOpen, setShipFilterOpen] = useState(false);
 
-  const { baseCurrency, partnerCode, startDate, endDate } =
+  const { baseCurrency,reporterCode, partnerCode, startDate, endDate } =
     useSelector((state) => state.corridor);
 
   /* ===============================
@@ -28,14 +28,14 @@ const MarketOverview = () => {
   =============================== */
 
   const [fxFilters, setFxFilters] = useState({
-    quoteCurrency: "",
-    startDate: "",
-    endDate: "",
-  });
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
 
-  const activeQuote = fxFilters.quoteCurrency || "";
-  const activeStart = fxFilters.startDate || startDate;
-  const activeEnd = fxFilters.endDate || endDate;
+const activePartner = fxFilters.partnerCode || partnerCode;
+const activeStart = fxFilters.startDate || startDate;
+const activeEnd = fxFilters.endDate || endDate;
 
   /* ===============================
      SHIPPING FILTER STATE
@@ -55,24 +55,44 @@ const MarketOverview = () => {
      EXCHANGE QUERY
   =============================== */
 
-  const { data: exchangeRates = [] } = useQuery({
-    queryKey: queryKeys.exchangeRates(
-  baseCurrency,
-  activeQuote,
-  activeStart,
-  activeEnd
-),
-    queryFn: () =>
-      DashboardExchangeRate({
-        baseCurrency,
-        quoteCurrency: activeQuote,
-        startDate: activeStart,
-        endDate: activeEnd,
-      }),
-    enabled: !!partnerCode,
-    select: (res) => res?.data || [],
-    staleTime: 1000 * 60 * 5
-  });
+const { data: exchangeRates = [] } = useQuery({
+  queryKey: queryKeys.exchangeRates(
+    reporterCode,
+    activePartner,
+    activeStart,
+    activeEnd
+  ),
+  queryFn: () =>
+    DashboardExchangeRate({
+      reporterCode,
+      partnerCode: activePartner,
+      startDate: activeStart,
+      endDate: activeEnd,
+    }),
+  enabled: !!activePartner,
+ select: (res) =>
+  (res?.data || []).map((item) => {
+    const [base, quote] = item.pair.split("/");
+
+    const volatility = item.volatility || 0;
+
+    let trend = "NEUTRAL";
+    if (volatility > 0) trend = "UP";
+    if (volatility < 0) trend = "DOWN";
+
+    return {
+      pair: item.pair,
+      currency: quote,
+      rate: item.rate,
+      changePercent: Math.abs(volatility),
+      trend,
+      riskLevel: item.risk_level,
+      alert: item.alert,
+      date: item.date,
+    };
+  }),
+  staleTime: 1000 * 60 * 5
+});
 
   /* ===============================
      SHIPPING QUERY
@@ -136,9 +156,19 @@ const MarketOverview = () => {
 
                     <div className="tp-rate-header">
 
-                      <span className="tp-rate-symbol">
-                        {r.currency}
-                      </span>
+                      <div className="tp-rate-symbol-wrap">
+  <span className="tp-rate-symbol">
+    {r.currency}
+  </span>
+
+  <span className={`tp-risk-badge tp-risk-${r.riskLevel?.toLowerCase()}`}>
+    {r.riskLevel}
+  </span>
+
+  {r.alert && (
+    <span className="tp-rate-alert">⚠</span>
+  )}
+</div>
 
                       <span
                         className={`tp-rate-change ${
@@ -248,8 +278,8 @@ const MarketOverview = () => {
 
         {fxFilterOpen && (
           <UniversalFilter
+          showCorridor
             showTimeRange
-            showQuoteCurrency
             defaultValues={fxFilters}
             onChange={(filters) => {
               setFxFilters(filters);
