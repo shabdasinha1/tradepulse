@@ -54,7 +54,7 @@ main {
 .tp-grid {
   display: grid;
   /* gap: var(--space-sm); */
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .tp-grid-2 {
@@ -67,7 +67,7 @@ main {
 
 .tp-grid-stack {
   display: grid;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 /* Section spacing variants */

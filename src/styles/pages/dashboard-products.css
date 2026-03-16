@@ -365,5 +365,5 @@ header .tp-section-title {
   cursor: pointer;
 }
 .tp-product-disclaimer {
-  margin-bottom: var(--space-sm);
+  /* margin-bottom: var(--space-sm); */
 }

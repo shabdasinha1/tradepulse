@@ -27,8 +27,15 @@
 ====================================== */
 
 .tp-name-section {
-  padding-left: 14px;
-  padding-right: 14px;
+  /* padding-left: 14px;
+  padding-right: 14px; */
+}
+.tp-name-section .tp-section{
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.tp-name-section .tp-disclaimer{
+  margin-bottom: 12px;
 }
 .tp-overview-hero-title {
   font-size: var(--fs-heading-lg); /* larger than default */
@@ -521,7 +528,7 @@
 .tp-news-margin-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
   align-items: stretch;
 }
 
