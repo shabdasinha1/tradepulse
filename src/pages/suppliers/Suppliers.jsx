@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React,{ useState,useMemo } from "react";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
@@ -14,7 +14,7 @@ const LIMIT = 20;
           SKELTON FOR SUPPLIERS
  ==========================================================*/
 
-const SupplierRowSkeleton = () => {
+const SupplierRowSkeleton = React.memo(() => {
   return (
     <div className="tp-table-row tp-table-suppliers skeleton">
       <div className="skeleton skeleton-text" />
@@ -24,7 +24,7 @@ const SupplierRowSkeleton = () => {
       <div className="skeleton skeleton-text" />
     </div>
   );
-};
+});
 
 const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
@@ -32,32 +32,42 @@ const Suppliers = () => {
   const { reporterCode, startDate, endDate, corridor } = useSelector(
     (state) => state.corridor
   );
+const skeletonRows = useMemo(
+  () =>
+    [...Array(5)].map((_, i) => (
+      <SupplierRowSkeleton key={`skeleton-${i}`} />
+    )),
+  []
+);
 
-  const shortCorridor = corridor?.includes(",")
+const shortCorridor = useMemo(() => {
+  return corridor?.includes(",")
     ? corridor.split(",")[0] + "..."
     : corridor;
-
+}, [corridor]);
   /* ===============================
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["suppliers", reporterCode, startDate, endDate],
-    queryFn: async () => {
-      const res = await DashboardSuppliers({
-        reporterCode,
-        startDate,
-        endDate,
-        page: 1,
-        limit: LIMIT,
-      });
+  queryKey: ["suppliers", reporterCode, startDate, endDate],
+  queryFn: async () => {
+    const res = await DashboardSuppliers({
+      reporterCode,
+      startDate,
+      endDate,
+      page: 1,
+      limit: LIMIT,
+    });
 
-      return res.data.suppliers || [];
-    },
-    enabled: !!reporterCode,
-  });
+    return res.data.suppliers || [];
+  },
+  enabled: !!reporterCode,
+  staleTime: 1000 * 60 * 5,
+});
 
-  const suppliers = data || [];
+  const suppliers = useMemo(() => data || [], [data]);
+
 
   return (
     <section className="tp-section tp-section--dashboard">
@@ -121,10 +131,7 @@ const Suppliers = () => {
               <div className="tp-table">
 
                 {/* LOADING SKELETON */}
-                {isLoading &&
-                  [...Array(5)].map((_, i) => (
-                    <SupplierRowSkeleton key={`skeleton-${i}`} />
-                  ))}
+                {isLoading && skeletonRows}
 
                 {/* SUPPLIERS DATA */}
                 {!isLoading &&

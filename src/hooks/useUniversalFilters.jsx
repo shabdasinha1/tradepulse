@@ -34,8 +34,6 @@ export default function useUniversalFilters(defaultValues = {}) {
     destination: defaultValues.destination || "",
   });
 
-
-
   /* ===============================
      REDUX → LOCAL SYNC
   =============================== */
@@ -57,15 +55,29 @@ export default function useUniversalFilters(defaultValues = {}) {
       endDate,
     };
 
-    setFilters((prev) => ({
-      ...prev,
-      corridor: corridor || "",
-      partnerCode: partnerCode || "",
-      product: productId || "",
-      productLabel: productLabel || "",
-      startDate: startDate || "",
-      endDate: endDate || "",
-    }));
+    setFilters((prev) => {
+
+      const next = {
+        ...prev,
+        corridor: corridor || "",
+        partnerCode: partnerCode || "",
+        product: productId || "",
+        productLabel: productLabel || "",
+        startDate: startDate || "",
+        endDate: endDate || "",
+      };
+
+      const changed =
+        prev.corridor !== next.corridor ||
+        prev.partnerCode !== next.partnerCode ||
+        prev.product !== next.product ||
+        prev.productLabel !== next.productLabel ||
+        prev.startDate !== next.startDate ||
+        prev.endDate !== next.endDate;
+
+      return changed ? next : prev;
+
+    });
 
   }, [
     partnerCode,
@@ -94,8 +106,8 @@ export default function useUniversalFilters(defaultValues = {}) {
   const resetFilters = () => {
 
     setFilters({
-      corridor: corridor,
-      partnerCode: partnerCode,
+      corridor: corridor || "",
+      partnerCode: partnerCode || "",
       product: "",
       productLabel: "",
       riskLevel: "",
