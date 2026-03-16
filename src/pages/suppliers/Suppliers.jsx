@@ -151,7 +151,7 @@ const Suppliers = () => {
               ref={bodyRef}
               onScroll={handleBodyScroll}
             >
-              <div className="tp-table">
+              {/* <div className="tp-table">
                 {suppliers.map((s, i) => (
                   <div key={i} className="tp-table-row tp-table-suppliers">
                     <div className="supplier-name">
@@ -177,7 +177,44 @@ const Suppliers = () => {
                     <strong className="text-center">{s.trade_activity}</strong>
                   </div>
                 ))}
+              </div> */}
+              <div className="tp-table">
+                {isLoading && skeletonRows}
+
+                {!isLoading &&
+                  suppliers.map((s, i) => (
+                    <div key={i} className="tp-table-row tp-table-suppliers">
+                      <div className="supplier-name">
+                        <strong>{s.exporter_name}</strong>
+                      </div>
+
+                      <span className="tp-muted text-center">
+                        {s.origin_region}
+                      </span>
+
+                      <span className="text-center">
+                        <span className="tp-pill tp-pill-success">
+                          {s.reliability_score}
+                        </span>
+                      </span>
+
+                      <span className="text-center">
+                        <span className="tp-pill tp-pill-primary">
+                          {s.activity_level}
+                        </span>
+                      </span>
+
+                      <strong className="text-center">
+                        {s.trade_activity}
+                      </strong>
+                    </div>
+                  ))}
               </div>
+              {!isLoading && suppliers.length === 0 && (
+                <div className="tp-table-row tp-table-suppliers">
+                  <span className="tp-muted">No suppliers found</span>
+                </div>
+              )}
             </div>
           </div>
         </TradePulseCard>
