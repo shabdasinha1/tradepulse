@@ -59,7 +59,7 @@ header .tp-section-title {
   border-bottom: 1px solid var(--border-soft);
   position: sticky;
   top: -2px;
-  background: var(--bg-card-surface);
+  /* background: var(--bg-card-surface); */
   z-index: 2;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   padding: 10px;
@@ -146,6 +146,47 @@ header .tp-section-title {
   background: var(--primary);
   color: #fff;
   border-color: var(--primary);
+}
+
+.product-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* HEADER SCROLL */
+.product-head-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.product-head-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* BODY SCROLL */
+.product-body-scroll {
+  max-height: 50vh;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+/* GRID */
+.product-row {
+  display: grid;
+  grid-template-columns:
+    2fr
+    1fr
+    1.4fr
+    1fr
+    1fr;
+
+  gap: var(--space-md);
+  align-items: center;
+  min-width: 900px;
 }
 @media (max-width: 768px) {
   .product-table-wrapper {

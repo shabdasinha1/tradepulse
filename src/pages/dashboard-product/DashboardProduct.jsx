@@ -37,23 +37,32 @@ const Skeleton = React.memo(({ className = "" }) => (
 const DashboardProduct = () => {
   const { reporterCode, productId, partnerCode, corridor, startDate, endDate } =
     useSelector((state) => state.corridor, shallowEqual);
-  
-
 
   const shortCorridor = useMemo(() => {
-  return corridor?.includes(",")
-    ? corridor.split(",")[0] + "..."
-    : corridor;
-}, [corridor]);
+    return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
+  }, [corridor]);
 
   const observer = useRef(null);
-  
+
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
   const [error, setError] = useState(null);
- 
 
+  const headerRef = useRef(null);
+  const bodyRef = useRef(null);
+
+  const handleHeaderScroll = () => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollLeft = headerRef.current.scrollLeft;
+    }
+  };
+
+  const handleBodyScroll = () => {
+    if (headerRef.current) {
+      headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
+    }
+  };
   /* ===============================
    LOCAL TABLE FILTERS (HOOK)
 ================================ */
@@ -71,11 +80,7 @@ const DashboardProduct = () => {
     productHighlights: {},
   });
 
- 
   const [allProducts, setAllProducts] = useState([]);
-
-
-
 
   const activePartner = filters.partnerCode || partnerCode;
 
@@ -84,10 +89,10 @@ const DashboardProduct = () => {
   =============================== */
 
   const { data: allProductsData } = useQuery({
-  queryKey: ["allProducts"],
-  queryFn: () => DashboardAllProductList(),
-  staleTime: 1000 * 60 * 10,
-});
+    queryKey: ["allProducts"],
+    queryFn: () => DashboardAllProductList(),
+    staleTime: 1000 * 60 * 10,
+  });
 
   useEffect(() => {
     if (allProductsData?.success) {
@@ -115,33 +120,33 @@ const DashboardProduct = () => {
   =============================== */
 
   const { data: overviewData, isLoading: overviewLoading } = useQuery({
-  queryKey: queryKeys.productOverview(globalParams),
-  queryFn: () => DashboardProductOverview(globalParams),
-  enabled: !!partnerCode,
-  staleTime: 1000 * 60 * 5,
-});
+    queryKey: queryKeys.productOverview(globalParams),
+    queryFn: () => DashboardProductOverview(globalParams),
+    enabled: !!partnerCode,
+    staleTime: 1000 * 60 * 5,
+  });
   /* ===============================
      HIGHLIGHTS API
   =============================== */
 
- const { data: highlightData } = useQuery({
-  queryKey: queryKeys.productHighlights(globalParams),
-  queryFn: () => DashboardProductHighlights(globalParams),
-  enabled: !!partnerCode,
-  staleTime: 1000 * 60 * 5,
-});
+  const { data: highlightData } = useQuery({
+    queryKey: queryKeys.productHighlights(globalParams),
+    queryFn: () => DashboardProductHighlights(globalParams),
+    enabled: !!partnerCode,
+    staleTime: 1000 * 60 * 5,
+  });
   /* ===============================
      STORE OVERVIEW + HIGHLIGHTS
   =============================== */
 
- useEffect(() => {
-  if (!overviewData && !highlightData) return;
+  useEffect(() => {
+    if (!overviewData && !highlightData) return;
 
-  setProductData({
-    productOverview: overviewData?.data || {},
-    productHighlights: highlightData?.data || {},
-  });
-}, [overviewData, highlightData]);
+    setProductData({
+      productOverview: overviewData?.data || {},
+      productHighlights: highlightData?.data || {},
+    });
+  }, [overviewData, highlightData]);
 
   /* ===============================
      TABLE FILTER KEY
@@ -168,75 +173,71 @@ const DashboardProduct = () => {
      FETCH TABLE PRODUCTS
   =============================== */
 
-const {
-  data: productPages,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-  isLoading: isTableLoading,
-} = useInfiniteQuery({
-  queryKey: [
-    "productTable",
-    reporterCode,
-    activePartner,
-    filters.product,
-    filters.riskLevel,
-    filters.startDate,
-    filters.endDate,
-  ],
-  queryFn: async ({ pageParam = 1 }) => {
-    const params = {
-      reporter: reporterCode,
-      partner: activePartner,
-      product: filters.product || productId || undefined,
-      startDate: filters.startDate || startDate || undefined,
-      endDate: filters.endDate || endDate || undefined,
-      risk: filters.riskLevel
-        ? filters.riskLevel.toUpperCase()
-        : undefined,
-      page: pageParam,
-      limit: 10,
-    };
+  const {
+    data: productPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isTableLoading,
+  } = useInfiniteQuery({
+    queryKey: [
+      "productTable",
+      reporterCode,
+      activePartner,
+      filters.product,
+      filters.riskLevel,
+      filters.startDate,
+      filters.endDate,
+    ],
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = {
+        reporter: reporterCode,
+        partner: activePartner,
+        product: filters.product || productId || undefined,
+        startDate: filters.startDate || startDate || undefined,
+        endDate: filters.endDate || endDate || undefined,
+        risk: filters.riskLevel ? filters.riskLevel.toUpperCase() : undefined,
+        page: pageParam,
+        limit: 10,
+      };
 
-    const res = await DashboardAllProductList(params);
+      const res = await DashboardAllProductList(params);
 
-    return res?.data?.data || [];
-  },
-  getNextPageParam: (lastPage, pages) => {
-    return lastPage.length === 10 ? pages.length + 1 : undefined;
-  },
-  enabled: !!reporterCode && !!activePartner,
-});
-
+      return res?.data?.data || [];
+    },
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.length === 10 ? pages.length + 1 : undefined;
+    },
+    enabled: !!reporterCode && !!activePartner,
+  });
 
   /* ===============================
      INFINITE SCROLL
   =============================== */
 
-const lastProductRef = useCallback(
-  (node) => {
-    if (isFetchingNextPage) return;
+  const lastProductRef = useCallback(
+    (node) => {
+      if (isFetchingNextPage) return;
 
-    if (observer.current) observer.current.disconnect();
+      if (observer.current) observer.current.disconnect();
 
-    observer.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      },
-      { rootMargin: "200px" }
-    );
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage) {
+            fetchNextPage();
+          }
+        },
+        { rootMargin: "200px" },
+      );
 
-    if (node) observer.current.observe(node);
-  },
-  [isFetchingNextPage, hasNextPage, fetchNextPage]
-);
-
+      if (node) observer.current.observe(node);
+    },
+    [isFetchingNextPage, hasNextPage, fetchNextPage],
+  );
 
   const products = useMemo(() => {
-  return productPages?.pages?.flat() || [];
-}, [productPages]);
+    return productPages?.pages?.flat() || [];
+  }, [productPages]);
 
   /* ===============================
      PRODUCT ROWS
@@ -294,12 +295,15 @@ const lastProductRef = useCallback(
      FILTER HANDLER
   =============================== */
 
- const handleFilterChange = useCallback((values) => {
-  setFilters((prev) => ({
-    ...prev,
-    ...values,
-  }));
-}, [setFilters]);
+  const handleFilterChange = useCallback(
+    (values) => {
+      setFilters((prev) => ({
+        ...prev,
+        ...values,
+      }));
+    },
+    [setFilters],
+  );
 
   /* ===============================
      UI
@@ -413,7 +417,12 @@ const lastProductRef = useCallback(
           </div>
 
           <div className="product-table-wrapper">
-            <div className="product-table">
+            {/* HEADER */}
+            <div
+              className="product-head-scroll"
+              ref={headerRef}
+              onScroll={handleHeaderScroll}
+            >
               <div className="product-row product-head">
                 <span>Product</span>
                 <span className="text-center">Avg Export Price</span>
@@ -421,7 +430,14 @@ const lastProductRef = useCallback(
                 <span className="text-center">Export Activity Level</span>
                 <span className="text-center">Volatility Risk</span>
               </div>
+            </div>
 
+            {/* BODY */}
+            <div
+              className="product-body-scroll"
+              ref={bodyRef}
+              onScroll={handleBodyScroll}
+            >
               <VerticalScroll>
                 {products.length === 0 && !isTableLoading && (
                   <div className="product-row tp-empty-row">

@@ -1,4 +1,4 @@
-import React,{ useState,useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
@@ -31,44 +31,56 @@ const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
 
   const { reporterCode, startDate, endDate, corridor } = useSelector(
-    (state) => state.corridor
+    (state) => state.corridor,
   );
-const skeletonRows = useMemo(
-  () =>
-    [...Array(5)].map((_, i) => (
-      <SupplierRowSkeleton key={`skeleton-${i}`} />
-    )),
-  []
-);
+  const skeletonRows = useMemo(
+    () =>
+      [...Array(5)].map((_, i) => (
+        <SupplierRowSkeleton key={`skeleton-${i}`} />
+      )),
+    [],
+  );
 
-const shortCorridor = useMemo(() => {
-  return corridor?.includes(",")
-    ? corridor.split(",")[0] + "..."
-    : corridor;
-}, [corridor]);
+  const headerRef = useRef(null);
+  const bodyRef = useRef(null);
+
+  const handleHeaderScroll = () => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollLeft = headerRef.current.scrollLeft;
+    }
+  };
+
+  const handleBodyScroll = () => {
+    if (headerRef.current) {
+      headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
+    }
+  };
+
+  const shortCorridor = useMemo(() => {
+    return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
+  }, [corridor]);
   /* ===============================
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
   const { data, isLoading, error } = useQuery({
-  queryKey: queryKeys.suppliers(reporterCode, startDate, endDate),
-  queryFn: async () => {
-    const res = await DashboardSuppliers({
-      reporterCode,
-      startDate,
-      endDate,
-      page: 1,
-      limit: LIMIT,
-    });
+    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate),
+    queryFn: async () => {
+      const res = await DashboardSuppliers({
+        reporterCode,
+        startDate,
+        endDate,
+        page: 1,
+        limit: LIMIT,
+      });
 
-    return res.data.suppliers || [];
-  },
-  enabled: !!reporterCode,
-  staleTime: 1000 * 60 * 5,
-});
+      return res.data.suppliers || [];
+    },
+    enabled: !!reporterCode,
+    staleTime: 1000 * 60 * 5,
+  });
 
   const suppliers = useMemo(() => data || [], [data]);
-
 
   return (
     <section className="tp-section tp-section--dashboard">
@@ -118,82 +130,60 @@ const shortCorridor = useMemo(() => {
           }
         >
           <div className="tp-table-wrapper-suppliers">
-            <div className="tp-table-hr-scroll">
+            {/* HEADER SCROLL */}
+            <div
+              className="tp-table-head-scroll"
+              ref={headerRef}
+              onScroll={handleHeaderScroll}
+            >
               <div className="tp-table-head tp-table-suppliers">
                 <span>Exporter Name</span>
                 <span className="text-center">Origin Country</span>
                 <span className="text-center">Reliability Score</span>
                 <span className="text-center">Activity Level</span>
-                <span className="text-center">
-                  Shipment Frequency 
-                </span>
+                <span className="text-center">Shipment Frequency</span>
               </div>
+            </div>
 
+            {/* BODY SCROLL */}
+            <div
+              className="tp-table-body-scroll"
+              ref={bodyRef}
+              onScroll={handleBodyScroll}
+            >
               <div className="tp-table">
-
-                {/* LOADING SKELETON */}
-                {isLoading && skeletonRows}
-
-                {/* SUPPLIERS DATA */}
-                {!isLoading &&
-                  suppliers?.map((s, i) => (
-                    <div key={i} className="tp-table-row tp-table-suppliers">
-
-                      <div className="supplier-name">
-                        <strong>{s.exporter_name}</strong>
-                      </div>
-
-                      <span className="tp-muted text-center">
-                        {s.origin_region}
-                      </span>
-
-                      <span className="text-center">
-                        <span
-                          className={`tp-pill ${
-                            s.reliability_score >= 70
-                              ? "tp-pill-success"
-                              : "tp-pill-warning"
-                          }`}
-                        >
-                          {s.reliability_score}
-                        </span>
-                      </span>
-
-                      <span className="text-center">
-                        <span className="tp-pill tp-pill-primary">
-                          {s.activity_level}
-                        </span>
-                      </span>
-
-                      <strong className="text-center">
-                        {s.trade_activity}
-                      </strong>
-
+                {suppliers.map((s, i) => (
+                  <div key={i} className="tp-table-row tp-table-suppliers">
+                    <div className="supplier-name">
+                      <strong>{s.exporter_name}</strong>
                     </div>
-                  ))}
 
-                {/* NO DATA */}
-                {!isLoading && suppliers.length === 0 && (
-                  <div className="text-center tp-muted" style={{ padding: 20 }}>
-                    No suppliers found
-                  </div>
-                )}
+                    <span className="tp-muted text-center">
+                      {s.origin_region}
+                    </span>
 
-                {/* ERROR */}
-                {error && (
-                  <div className="text-center tp-text-danger">
-                    {GetApiErrorMessage(error)}
+                    <span className="text-center">
+                      <span className="tp-pill tp-pill-success">
+                        {s.reliability_score}
+                      </span>
+                    </span>
+
+                    <span className="text-center">
+                      <span className="tp-pill tp-pill-primary">
+                        {s.activity_level}
+                      </span>
+                    </span>
+
+                    <strong className="text-center">{s.trade_activity}</strong>
                   </div>
-                )}
+                ))}
               </div>
             </div>
           </div>
         </TradePulseCard>
       </div>
 
-      {filterOpen && (
-        <GlobalFilterPanel onClose={() => setFilterOpen(false)} />
-      )}
+      {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
     </section>
   );
 };
