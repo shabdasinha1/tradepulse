@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
 import { DashboardSuppliers } from "../../services/DashboardService.jsx";
@@ -43,6 +43,7 @@ const Suppliers = () => {
 
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
+  const observer = useRef(null);
 
   const handleHeaderScroll = () => {
     if (bodyRef.current) {
@@ -63,25 +64,53 @@ const Suppliers = () => {
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate),
-    queryFn: async () => {
-      const res = await DashboardSuppliers({
-        reporterCode,
-        startDate,
-        endDate,
-        page: 1,
-        limit: LIMIT,
-      });
+ const {
+  data: supplierPages,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+} = useInfiniteQuery({
+  queryKey: queryKeys.suppliers(reporterCode, startDate, endDate),
 
-      return res.data.suppliers || [];
-    },
-    enabled: !!reporterCode,
-    staleTime: 1000 * 60 * 5,
-  });
+  queryFn: async ({ pageParam = 1 }) => {
+    const res = await DashboardSuppliers({
+      reporterCode,
+      startDate,
+      endDate,
+      page: pageParam,
+      limit: LIMIT,
+    });
 
-  const suppliers = useMemo(() => data || [], [data]);
+    return res?.data?.suppliers || [];
+  },
 
+  getNextPageParam: (lastPage, pages) => {
+    return lastPage.length === LIMIT ? pages.length + 1 : undefined;
+  },
+
+  enabled: !!reporterCode,
+});
+
+const suppliers = useMemo(() => {
+  return supplierPages?.pages?.flat() || [];
+}, [supplierPages]);
+const lastSupplierRef = React.useCallback(
+  (node) => {
+    if (isFetchingNextPage) return;
+
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    });
+
+    if (node) observer.current.observe(node);
+  },
+  [isFetchingNextPage, hasNextPage, fetchNextPage]
+);
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -182,8 +211,15 @@ const Suppliers = () => {
                 {isLoading && skeletonRows}
 
                 {!isLoading &&
-                  suppliers.map((s, i) => (
-                    <div key={i} className="tp-table-row tp-table-suppliers">
+                  suppliers.map((s, i) => {
+                    const isLast = suppliers.length === i + 1;
+                    return(
+                    
+                    <div
+  key={i}
+  ref={isLast ? lastSupplierRef : null}
+  className="tp-table-row tp-table-suppliers"
+>
                       <div className="supplier-name">
                         <strong>{s.exporter_name}</strong>
                       </div>
@@ -208,7 +244,8 @@ const Suppliers = () => {
                         {s.trade_activity}
                       </strong>
                     </div>
-                  ))}
+                  )})}
+                  {isFetchingNextPage && skeletonRows}
               </div>
               {!isLoading && suppliers.length === 0 && (
                 <div className="tp-table-row tp-table-suppliers">
