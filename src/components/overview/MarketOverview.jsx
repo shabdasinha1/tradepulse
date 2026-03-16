@@ -11,16 +11,15 @@ import UniversalFilter from "../common/UniversalFilter";
 
 import {
   DashboardExchangeRate,
-  DashboardShippingCosts
+  DashboardShippingCosts,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
 
 const MarketOverview = () => {
-
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
   const [shipFilterOpen, setShipFilterOpen] = useState(false);
 
-  const { baseCurrency,reporterCode, partnerCode, startDate, endDate } =
+  const { baseCurrency, reporterCode, partnerCode, startDate, endDate } =
     useSelector((state) => state.corridor);
 
   /* ===============================
@@ -28,14 +27,14 @@ const MarketOverview = () => {
   =============================== */
 
   const [fxFilters, setFxFilters] = useState({
-  partnerCode: "",
-  startDate: "",
-  endDate: "",
-});
+    partnerCode: "",
+    startDate: "",
+    endDate: "",
+  });
 
-const activePartner = fxFilters.partnerCode || partnerCode;
-const activeStart = fxFilters.startDate || startDate;
-const activeEnd = fxFilters.endDate || endDate;
+  const activePartner = fxFilters.partnerCode || partnerCode;
+  const activeStart = fxFilters.startDate || startDate;
+  const activeEnd = fxFilters.endDate || endDate;
 
   /* ===============================
      SHIPPING FILTER STATE
@@ -55,44 +54,44 @@ const activeEnd = fxFilters.endDate || endDate;
      EXCHANGE QUERY
   =============================== */
 
-const { data: exchangeRates = [] } = useQuery({
-  queryKey: queryKeys.exchangeRates(
-    reporterCode,
-    activePartner,
-    activeStart,
-    activeEnd
-  ),
-  queryFn: () =>
-    DashboardExchangeRate({
+  const { data: exchangeRates = [] } = useQuery({
+    queryKey: queryKeys.exchangeRates(
       reporterCode,
-      partnerCode: activePartner,
-      startDate: activeStart,
-      endDate: activeEnd,
-    }),
-  enabled: !!activePartner,
- select: (res) =>
-  (res?.data || []).map((item) => {
-    const [base, quote] = item.pair.split("/");
+      activePartner,
+      activeStart,
+      activeEnd,
+    ),
+    queryFn: () =>
+      DashboardExchangeRate({
+        reporterCode,
+        partnerCode: activePartner,
+        startDate: activeStart,
+        endDate: activeEnd,
+      }),
+    enabled: !!activePartner,
+    select: (res) =>
+      (res?.data || []).map((item) => {
+        const [base, quote] = item.pair.split("/");
 
-    const volatility = item.volatility || 0;
+        const volatility = item.volatility || 0;
 
-    let trend = "NEUTRAL";
-    if (volatility > 0) trend = "UP";
-    if (volatility < 0) trend = "DOWN";
+        let trend = "NEUTRAL";
+        if (volatility > 0) trend = "UP";
+        if (volatility < 0) trend = "DOWN";
 
-    return {
-      pair: item.pair,
-      currency: quote,
-      rate: item.rate,
-      changePercent: Math.abs(volatility),
-      trend,
-      riskLevel: item.risk_level,
-      alert: item.alert,
-      date: item.date,
-    };
-  }),
-  staleTime: 1000 * 60 * 5
-});
+        return {
+          pair: item.pair,
+          currency: quote,
+          rate: item.rate,
+          changePercent: Math.abs(volatility),
+          trend,
+          riskLevel: item.risk_level,
+          alert: item.alert,
+          date: item.date,
+        };
+      }),
+    staleTime: 1000 * 60 * 5,
+  });
 
   /* ===============================
      SHIPPING QUERY
@@ -100,11 +99,11 @@ const { data: exchangeRates = [] } = useQuery({
 
   const { data: shippingData = [] } = useQuery({
     queryKey: queryKeys.shippingCosts(
-  shipStart,
-  shipEnd,
-  shipFilters.origin,
-  shipFilters.destination
-),
+      shipStart,
+      shipEnd,
+      shipFilters.origin,
+      shipFilters.destination,
+    ),
     queryFn: () =>
       DashboardShippingCosts({
         page: 1,
@@ -115,19 +114,17 @@ const { data: exchangeRates = [] } = useQuery({
         destination: shipFilters.destination || "",
       }),
     select: (res) => res?.data || [],
-    staleTime: 1000 * 60 * 5
+    staleTime: 1000 * 60 * 5,
   });
 
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
-
         {/* ================= EXCHANGE ================= */}
 
         <TradePulseCard
           header={
             <div className="tp-card-header tp-card-filter-header">
-
               <div className="tp-card-title-wrap">
                 <MdOutlineCurrencyPound />
                 <h3 className="tp-card-title">
@@ -142,59 +139,46 @@ const { data: exchangeRates = [] } = useQuery({
                 <CiFilter />
                 Filters
               </button>
-
             </div>
           }
         >
           <div className="tp-grid tp-rates-grid">
             <VerticalScroll className="rtx-vertical-scroll">
-
               <div className="rtx-tp-rate-card-container">
-
                 {exchangeRates.map((r, index) => (
                   <div key={index} className="tp-rate-card">
-
                     <div className="tp-rate-header">
-
                       <div className="tp-rate-symbol-wrap">
-  <span className="tp-rate-symbol">
-    {r.currency}
-  </span>
+                        <span className="tp-rate-symbol">{r.currency}</span>
+                      </div>
 
-  <span className={`tp-risk-badge tp-risk-${r.riskLevel?.toLowerCase()}`}>
-    {r.riskLevel}
-  </span>
+                      <span
+                        className={`tp-risk-badge tp-risk-${r.riskLevel?.toLowerCase()}`}
+                      >
+                        {r.riskLevel} <span>Risk</span>
+                      </span>
 
-  {r.alert && (
-    <span className="tp-rate-alert">⚠</span>
-  )}
-</div>
+                      {r.alert && <span className="tp-rate-alert">⚠</span>}
+                    </div>
 
+                    <span className="tp-rate-pair">{r.pair}</span>
+                    <div className="tp-rate-changepercent-wrap">
+                      <strong className="tp-rate-value">{r.rate}</strong>
                       <span
                         className={`tp-rate-change ${
                           r.trend === "UP"
                             ? "tp-text-up"
                             : r.trend === "DOWN"
-                            ? "tp-text-down"
-                            : "tp-text-neutral"
+                              ? "tp-text-down"
+                              : "tp-text-neutral"
                         }`}
                       >
                         {r.changePercent}%
                       </span>
-
                     </div>
-
-                    <span className="tp-rate-pair">{r.pair}</span>
-
-                    <strong className="tp-rate-value">
-                      {r.rate}
-                    </strong>
-
                   </div>
                 ))}
-
               </div>
-
             </VerticalScroll>
           </div>
         </TradePulseCard>
@@ -204,12 +188,9 @@ const { data: exchangeRates = [] } = useQuery({
         <TradePulseCard
           header={
             <div className="tp-card-header tp-card-filter-header">
-
               <div className="tp-card-title-wrap">
                 <FiTruck />
-                <h3 className="tp-card-title">
-                  Latest Shipping Costs
-                </h3>
+                <h3 className="tp-card-title">Latest Shipping Costs</h3>
               </div>
 
               <button
@@ -219,38 +200,25 @@ const { data: exchangeRates = [] } = useQuery({
                 <CiFilter />
                 Filters
               </button>
-
             </div>
           }
         >
-
           <div className="tp-grid tp-ship-grid">
-
             {shippingData.map((s, i) => (
               <div key={i} className="tp-ship-card">
-
                 <div className="tp-ship-header">
-
                   <div>
-                    <h4 className="tp-ship-route">
-                      {s.corridor}
-                    </h4>
-
-                    <span className="tp-ship-port">
-                      {s.currency}
-                    </span>
+                    <h4 className="tp-ship-route">{s.corridor}</h4>
                   </div>
 
                   <span className="tp-ship-days">
                     {s.days ? `${s.days} Days` : "0 Days"}
                   </span>
-
                 </div>
 
                 <div className="tp-ship-footer">
-
                   <strong className="tp-ship-price">
-                    {s.currency} {s.cost}
+                    <span className="tp-ship-port">{s.currency}</span> {s.cost}
                   </strong>
 
                   <span
@@ -264,21 +232,17 @@ const { data: exchangeRates = [] } = useQuery({
                   >
                     {s.changePercent}%
                   </span>
-
                 </div>
-
               </div>
             ))}
-
           </div>
-
         </TradePulseCard>
 
         {/* ================= FX FILTER ================= */}
 
         {fxFilterOpen && (
           <UniversalFilter
-          showCorridor
+            showCorridor
             showTimeRange
             defaultValues={fxFilters}
             onChange={(filters) => {
@@ -302,7 +266,6 @@ const { data: exchangeRates = [] } = useQuery({
             }}
           />
         )}
-
       </div>
     </section>
   );
