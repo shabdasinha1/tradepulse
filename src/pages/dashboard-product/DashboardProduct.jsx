@@ -415,49 +415,40 @@ const DashboardProduct = () => {
               Filters
             </button>
           </div>
-
-          <div className="product-table-wrapper">
+          <div className="tp-table-wrapper-suppliers">
             {/* HEADER */}
             <div
-              className="product-head-scroll"
+              className="tp-table-head-scroll"
               ref={headerRef}
               onScroll={handleHeaderScroll}
             >
-              <div className="product-row product-head">
+              <div className="tp-table-head tp-table-suppliers">
                 <span>Product</span>
                 <span className="text-center">Avg Export Price</span>
-                <span className="text-center">UK Import Demand Trend</span>
-                <span className="text-center">Export Activity Level</span>
+                <span className="text-center">Import Demand Trend</span>
+                <span className="text-center">Export Activity</span>
                 <span className="text-center">Volatility Risk</span>
               </div>
             </div>
 
             {/* BODY */}
             <div
-              className="product-body-scroll"
+              className="tp-table-body-scroll"
               ref={bodyRef}
               onScroll={handleBodyScroll}
             >
-              <VerticalScroll>
-                {products.length === 0 && !isTableLoading && (
-                  <div className="product-row tp-empty-row">
-                    <span className="tp-muted tp-empty-text">
-                      Product not found
-                    </span>
-                  </div>
-                )}
-
+              <div className="tp-table">
                 {productRows}
 
                 {(isTableLoading || isFetchingNextPage) &&
                   [...Array(4)].map((_, i) => (
-                    <div className="product-row" key={i}>
+                    <div className="tp-table-row tp-table-suppliers" key={i}>
                       {[...Array(5)].map((_, j) => (
                         <Skeleton key={j} className="sk-table-cell" />
                       ))}
                     </div>
                   ))}
-              </VerticalScroll>
+              </div>
             </div>
           </div>
         </div>
