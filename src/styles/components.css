@@ -1027,3 +1027,9 @@ input::placeholder {
   text-overflow: ellipsis;
   
 }
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}

@@ -5,14 +5,14 @@ const THEME_KEY = "tp-theme";
 const isBrowser = typeof window !== "undefined";
 
 const getSystemTheme = () => {
-  if (!isBrowser || !window.matchMedia) return "dark";
+  if (!isBrowser || !window.matchMedia) return "light";
   return window.matchMedia("(prefers-color-scheme: light)").matches
     ? "light"
     : "dark";
 };
 
 export const useTheme = () => {
-  const [theme, setTheme] = useState("dark");
+  const [theme, setTheme] = useState("light");
 
   const applyTheme = (nextTheme, persist = true) => {
     if (!isBrowser) return;
@@ -33,18 +33,19 @@ export const useTheme = () => {
     applyTheme(theme === "dark" ? "light" : "dark");
   };
 
-  /* INIT THEME */
-  useEffect(() => {
-    if (!isBrowser) return;
 
-    const savedTheme = localStorage.getItem(THEME_KEY);
+ /* INIT THEME */
+useEffect(() => {
+  if (!isBrowser) return;
 
-    if (savedTheme === "light" || savedTheme === "dark") {
-      applyTheme(savedTheme);
-    } else {
-      applyTheme(getSystemTheme(), false);
-    }
-  }, []);
+  const savedTheme = localStorage.getItem(THEME_KEY);
+
+  if (savedTheme === "light" || savedTheme === "dark") {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme("light", false); // default theme
+  }
+}, []);
 
   /* SYNC ACROSS TABS */
   useEffect(() => {
