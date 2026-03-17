@@ -555,7 +555,7 @@
 
 .tp-news-margin-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2.5fr 1fr;
   gap: var(--space-lg);
   align-items: stretch;
 }
@@ -578,7 +578,7 @@
 /* Tablet */
 @media (max-width: 1024px) {
   .tp-news-margin-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: var(--space-lg);
   }
 }
