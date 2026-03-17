@@ -41,6 +41,7 @@ function GlobalFilterPanel({ onClose }) {
     startDate,
     endDate,
   } = useSelector((state) => state.corridor);
+ 
 
   const countries = useSelector((state) => state.country.countries);
   const countryOptions = useMemo(
@@ -345,6 +346,10 @@ function GlobalFilterPanel({ onClose }) {
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
+              components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
               options={countryOptions}
               value={
                 countryOptions.find((opt) => opt.value === reporterCode) || {
@@ -389,8 +394,18 @@ function GlobalFilterPanel({ onClose }) {
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
+              components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
               options={corridorOptionsMemo}
-              value={corridorOptions.find((opt) => opt.value === localCorridor)}
+              value={
+  corridorOptions.find(
+    (opt) => String(opt.value) === String(localCorridor)
+  ) || (localCorridor
+    ? { value: localCorridor, label: localCorridorLabel }
+    : null)
+}
               onChange={(opt) => {
                 const partner = opt?.value || "";
                 const corridorLabel = opt?.label || "";
@@ -425,6 +440,10 @@ function GlobalFilterPanel({ onClose }) {
             <AsyncCreatableSelect
               className="tp-select"
               classNamePrefix="tp-select"
+              components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
               cacheOptions
               defaultOptions
               loadOptions={loadProductOptions}

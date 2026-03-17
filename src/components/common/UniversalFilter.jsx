@@ -294,6 +294,10 @@ const UniversalFilter = ({
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   options={corridorOptions}
                   value={corridorOptions.find(
                     (o) => o.value === filters.partnerCode,
@@ -323,6 +327,10 @@ const UniversalFilter = ({
                 <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   cacheOptions
                   defaultOptions
                   loadOptions={loadCountryOptions}
@@ -362,6 +370,10 @@ const UniversalFilter = ({
                 <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   cacheOptions
                   defaultOptions
                   loadOptions={loadCountryOptions}
@@ -404,6 +416,10 @@ const UniversalFilter = ({
                 <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   cacheOptions
                   defaultOptions
                   loadOptions={loadProductOptions}
@@ -448,6 +464,10 @@ const UniversalFilter = ({
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   options={currencyOptions}
                   value={
                     currencyOptions.find(
@@ -505,6 +525,10 @@ const UniversalFilter = ({
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   options={riskOptions}
                   value={riskOptions.find((o) => o.value === filters.riskLevel)}
                   onChange={(opt) =>
@@ -524,6 +548,10 @@ const UniversalFilter = ({
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  components={{
+    DropdownIndicator: () => null,
+    IndicatorSeparator: () => null,
+  }}
                   options={activityOptions}
                   value={activityOptions.find(
                     (o) => o.value === filters.activityStatus,

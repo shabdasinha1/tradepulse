@@ -1033,3 +1033,8 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
+
+.tp-select .tp-select__dropdown-indicator,
+.tp-select .tp-select__indicator-separator {
+  display: none !important;
+}
