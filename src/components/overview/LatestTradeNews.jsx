@@ -3,28 +3,39 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardTradeNews } from "../../services/DashboardService.jsx";
 import { FiGlobe } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
+import { useSelector } from "react-redux";
+import { queryKeys } from "../../utils/queryKeys";
 
 const LatestTradeNews = () => {
+  const {
+  reporterCode,
+  partnerCode,
+  startDate,
+  endDate,
+} = useSelector((state) => state.corridor);
   const scrollRef = useRef(null);
 
-  /* ===============================
-     STATIC PARAMS
-  ============================== */
+
   const params = {
-    startDate: "2022-01-01",
-    endDate: "2022-01-01",
-    reporter: 826,
-    partner: 566,
-  };
+  startDate,
+  endDate,
+  reporter: reporterCode,
+  partner: partnerCode,
+};
 
   /* ===============================
      FETCH DATA (React Query)
   ============================== */
   const { data, isLoading, error } = useQuery({
-    queryKey: ["corridor-news", params],
-    queryFn: () => DashboardTradeNews(params),
-    enabled: true, // ✅ always run
-  });
+  queryKey: queryKeys.corridorNews(
+    reporterCode,
+    partnerCode,
+    startDate,
+    endDate
+  ),
+  queryFn: () => DashboardTradeNews(params),
+  enabled: !!reporterCode && !!partnerCode,
+});
 
   /* ===============================
      FORMAT DATA

@@ -71,4 +71,11 @@ export const queryKeys = {
     origin,
     destination,
   ],
+  corridorNews: (reporter, partner, startDate, endDate) => [
+  "corridorNews",
+  reporter,
+  partner,
+  startDate,
+  endDate,
+],
 };
