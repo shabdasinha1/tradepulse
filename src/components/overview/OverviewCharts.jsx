@@ -6,18 +6,44 @@ import TPMetricCard from "../common/TPMetricCard.jsx";
 import {
   DashboardExportPriceTrend,
   DashboardImportDemandTrend,
-  DashboardKPIs
+  DashboardKPIs,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
+const fillMissingYears = (data, valueKey = "value") => {
+  if (!data?.length) return [];
 
+  // Convert to year-based structure
+  const formatted = data.map((item) => ({
+    year: Number(item.month),
+    [valueKey]: item[valueKey],
+  }));
+
+  const map = new Map();
+  formatted.forEach((item) => {
+    map.set(item.year, item[valueKey]);
+  });
+
+  const years = formatted.map((item) => item.year);
+  const minYear = Math.min(...years);
+  const maxYear = Math.max(...years);
+
+  const result = [];
+  for (let y = minYear; y <= maxYear; y++) {
+    result.push({
+      year: y,
+      [valueKey]: map.get(y) ?? 0,
+    });
+  }
+
+  return result;
+};
 const OverviewCharts = () => {
-
   const { corridor, reporterCode, partnerCode, productId, startDate, endDate } =
     useSelector((state) => state.corridor);
 
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
- 
+
   const [metrics, setMetrics] = useState({
     currency: null,
     shipping: null,
@@ -29,14 +55,14 @@ const OverviewCharts = () => {
     partnerCode: "",
     product: "",
     startDate: "",
-    endDate: ""
+    endDate: "",
   });
 
   const [demandFilters, setDemandFilters] = useState({
     partnerCode: "",
     product: "",
     startDate: "",
-    endDate: ""
+    endDate: "",
   });
   const pricePartner = priceFilters.partnerCode || partnerCode;
   const priceProduct = priceFilters.product || productId;
@@ -48,96 +74,115 @@ const OverviewCharts = () => {
   const demandStartDate = demandFilters.startDate || startDate;
   const demandEndDate = demandFilters.endDate || endDate;
 
-
-
-
   /* ===============================
      PRICE TREND
   ================================= */
 
-const { data: priceTrendData } = useQuery({
-  queryKey: queryKeys.exportPriceTrend(
-  reporterCode,
-  pricePartner,
-  priceProduct,
-  priceStartDate,
-  priceEndDate
-),
-  queryFn: () =>
-    DashboardExportPriceTrend({
-      reporter: reporterCode,
-      partner: pricePartner,
-      product: priceProduct,
-      startDate: priceStartDate || undefined,
-      endDate: priceEndDate || undefined
-    }),
-  enabled: !!reporterCode && !!pricePartner,
-  staleTime: 1000 * 60 * 5
-});
+  const { data: priceTrendData } = useQuery({
+    queryKey: queryKeys.exportPriceTrend(
+      reporterCode,
+      pricePartner,
+      priceProduct,
+      priceStartDate,
+      priceEndDate,
+    ),
+    queryFn: () =>
+      DashboardExportPriceTrend({
+        reporter: reporterCode,
+        partner: pricePartner,
+        product: priceProduct,
+        startDate: priceStartDate || undefined,
+        endDate: priceEndDate || undefined,
+      }),
+    enabled: !!reporterCode && !!pricePartner,
+    staleTime: 1000 * 60 * 5,
+  });
 
-const priceData = useMemo(() => {
-  const trend = priceTrendData?.data || [];
+  // const priceData = useMemo(() => {
+  //   const trend = priceTrendData?.data || [];
 
-  return trend.map((item) => ({
-    month: item.date?.slice(0, 4),
-    value: Number(item.price?.toFixed(2)) || 0
-  }));
-}, [priceTrendData]);
+  //   return trend.map((item) => ({
+  //     month: item.date?.slice(0, 4),
+  //     value: Number(item.price?.toFixed(2)) || 0,
+  //   }));
+  // }, [priceTrendData]);
+  const priceData = useMemo(() => {
+    const trend = priceTrendData?.data || [];
+
+    const mapped = trend.map((item) => ({
+      month: item.date?.slice(0, 4),
+      value: Number(item.price?.toFixed(2)) || 0,
+    }));
+
+    return fillMissingYears(mapped);
+  }, [priceTrendData]);
+
   /* ===============================
      DEMAND TREND
   ================================= */
 
- const { data: demandTrendData } = useQuery({
-  queryKey: queryKeys.importDemandTrend(
-  reporterCode,
-  demandPartner,
-  demandProduct,
-  demandStartDate,
-  demandEndDate
-),
-  queryFn: () =>
-    DashboardImportDemandTrend({
-      reporter: reporterCode,
-      partner: demandPartner,
-      product: demandProduct,
-      startDate: demandStartDate || undefined,
-      endDate: demandEndDate || undefined
-    }),
-  enabled: !!reporterCode && !!demandPartner,
-  staleTime: 1000 * 60 * 5
-});
+  const { data: demandTrendData } = useQuery({
+    queryKey: queryKeys.importDemandTrend(
+      reporterCode,
+      demandPartner,
+      demandProduct,
+      demandStartDate,
+      demandEndDate,
+    ),
+    queryFn: () =>
+      DashboardImportDemandTrend({
+        reporter: reporterCode,
+        partner: demandPartner,
+        product: demandProduct,
+        startDate: demandStartDate || undefined,
+        endDate: demandEndDate || undefined,
+      }),
+    enabled: !!reporterCode && !!demandPartner,
+    staleTime: 1000 * 60 * 5,
+  });
 
- const demandData = useMemo(() => {
-  const trend = demandTrendData?.data || [];
+  // const demandData = useMemo(() => {
+  //   const trend = demandTrendData?.data || [];
 
-  return trend.map((item) => ({
-    month: item.date?.slice(0, 4),
-    value: Number(item.demand?.toFixed(2)) || 0
-  }));
-}, [demandTrendData]);
+  //   return trend.map((item) => ({
+  //     month: item.date?.slice(0, 4),
+  //     value: Number(item.demand?.toFixed(2)) || 0,
+  //   }));
+  // }, [demandTrendData]);
+  const demandData = useMemo(() => {
+    const trend = demandTrendData?.data || [];
+
+    const mapped = trend.map((item) => ({
+      month: item.date?.slice(0, 4),
+      value: Number(item.demand?.toFixed(2)) || 0,
+    }));
+
+    return fillMissingYears(mapped);
+  }, [demandTrendData]);
+
   /* ===============================
      KPI METRICS
   ================================= */
 
   const { data: kpiData } = useQuery({
-  queryKey: queryKeys.dashboardKPIs(
-  reporterCode,
-  partnerCode,
-  productId,
-  startDate,
-  endDate
-),
-  queryFn: () =>
-    DashboardKPIs({
-      reporter: reporterCode,
-      partner: partnerCode,
-      product: productId || undefined,
-      startDate: startDate || undefined,
-      endDate: endDate || undefined
-    }),
-  enabled: !!reporterCode && !!partnerCode,
-  staleTime: 1000 * 60 * 5
-});
+    queryKey: queryKeys.dashboardKPIs(
+      reporterCode,
+      partnerCode,
+      productId,
+      startDate,
+      endDate,
+    ),
+    queryFn: () =>
+      DashboardKPIs({
+        reporter: reporterCode,
+        partner: partnerCode,
+        product: productId || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      }),
+    enabled: !!reporterCode && !!partnerCode,
+    staleTime: 1000 * 60 * 5,
+  });
 
   useEffect(() => {
     const data = kpiData?.data;
@@ -162,18 +207,15 @@ const priceData = useMemo(() => {
       },
       supplier: {
         score: data.exporterReliabilityScore?.value ?? 0,
-        maxScore: data.exporterReliabilityScore?.max ?? 0
-      }
+        maxScore: data.exporterReliabilityScore?.max ?? 0,
+      },
     });
-
   }, [kpiData]);
   /* ===============================
    MARGIN IMPACT CALCULATION
 ================================= */
 
   const fxPercent = metrics.currency?.changePercent ?? 0;
-  
-  
 
   let severity = "Low";
   let severityClass = "tp-pill-success";
@@ -191,9 +233,7 @@ const priceData = useMemo(() => {
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
-
         <div className="tp-metrics-row">
-
           <TPMetricCard
             title={`FX Impact (${corridor || "Selected Corridor"})`}
             value={metrics.currency?.rate ?? 0}
@@ -223,7 +263,10 @@ const priceData = useMemo(() => {
           <TPMetricCard
             title="UK Import Demand Signal"
             value={`${metrics.demand?.percent ?? 0}`}
-            footerLabel={metrics.demand?.product || "Trend of UK import demand for selected product"}
+            footerLabel={
+              metrics.demand?.product ||
+              "Trend of UK import demand for selected product"
+            }
             trend={`${metrics.demand?.changePercent ?? 0}`}
             trendDirection={
               (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
@@ -237,7 +280,6 @@ const priceData = useMemo(() => {
             // trend=""
             // trendDirection=""
           />
-
         </div>
 
         <div className="tp-grid tp-grid-2">
@@ -245,12 +287,13 @@ const priceData = useMemo(() => {
             title="Export Price Trend"
             type="line"
             data={priceData}
+              xKey="year" 
             series={[{ key: "value", label: "Price" }]}
             activeFilters={{
               partnerCode: pricePartner,
               product: priceProduct,
               startDate: priceStartDate,
-              endDate: priceEndDate
+              endDate: priceEndDate,
             }}
             onFilterChange={(filters) => setPriceFilters(filters)}
           />
@@ -258,18 +301,17 @@ const priceData = useMemo(() => {
             title="UK Import Demand Trend"
             type="area"
             data={demandData}
+              xKey="year" 
             series={[{ key: "value", label: "Demand" }]}
             activeFilters={{
               partnerCode: demandPartner,
               product: demandProduct,
               startDate: demandStartDate,
-              endDate: demandEndDate
+              endDate: demandEndDate,
             }}
             onFilterChange={(filters) => setDemandFilters(filters)}
           />
-
         </div>
-
       </div>
     </section>
   );

@@ -1,39 +1,45 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { DashboardTradeNews } from "../../services/DashboardService.jsx";
 import { FiGlobe } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 
-const LatestTradeNews = ({ corridorId }) => {
-  const [news, setNews] = useState([]);
+const LatestTradeNews = () => {
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    if (!corridorId) return;
+  /* ===============================
+     STATIC PARAMS
+  ============================== */
+  const params = {
+    startDate: "2022-01-01",
+    endDate: "2022-01-01",
+    reporter: 826,
+    partner: 566,
+  };
 
-    const fetchNews = async () => {
-      try {
-        const res = await DashboardTradeNews({
-          corridor_id: corridorId,
-        });
+  /* ===============================
+     FETCH DATA (React Query)
+  ============================== */
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["corridor-news", params],
+    queryFn: () => DashboardTradeNews(params),
+    enabled: true, // ✅ always run
+  });
 
-        if (res?.success) {
-          const formatted = res.data.map((item) => ({
-            title: item.title,
-            time: formatTimeAgo(item.published_at),
-            tag: item.category,
-          }));
+  /* ===============================
+     FORMAT DATA
+  ============================== */
+  const news =
+    data?.data?.map((item) => ({
+      title: item.title,
+      time: item.description,
+      tag: item.type,
+      severity: item.severity,
+    })) || [];
 
-          setNews(formatted);
-        }
-      } catch (err) {
-        console.error("Trade News Error:", err);
-        setNews([]);
-      }
-    };
-
-    fetchNews();
-  }, [corridorId]);
-
+  /* ===============================
+     AUTO SCROLL LOGIC (UNCHANGED)
+  ============================== */
   useEffect(() => {
     const el = scrollRef.current;
 
@@ -72,20 +78,9 @@ const LatestTradeNews = ({ corridorId }) => {
     };
   }, [news]);
 
-  const formatTimeAgo = (dateString) => {
-    const now = new Date();
-    const published = new Date(dateString);
-    const diffMs = now - published;
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-
-    if (diffHours < 1) return "Just now";
-    if (diffHours < 24)
-      return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  };
-
+  /* ===============================
+     RENDER
+  ============================== */
   return (
     <TradePulseCard
       header={
@@ -99,24 +94,42 @@ const LatestTradeNews = ({ corridorId }) => {
     >
       <div className="tp-news-viewport">
         <div ref={scrollRef} className="tp-news-scroll">
-          {(news.length > 3 ? [...news, ...news] : news).map((item, i) => (
-            <div key={i} className="tp-news-item">
-              <div className="tp-news-content">
-                <p className="tp-news-title">{item.title}</p>
-                <span className="tp-news-time">{item.time}</span>
-              </div>
-
-              <span className="tp-badge tp-badge-primary">
-                {item.tag}
-              </span>
-            </div>
-          ))}
-
-          {news.length === 0 && (
+          {/* 🔄 Loading */}
+          {isLoading && (
             <div className="tp-news-item">
-              <p className="tp-news-title">
-                No trade updates available
-              </p>
+              <p className="tp-news-title">Loading...</p>
+            </div>
+          )}
+
+          {/* ❌ Error */}
+          {error && (
+            <div className="tp-news-item">
+              <p className="tp-news-title">Failed to load updates</p>
+            </div>
+          )}
+
+          {/* ✅ Data */}
+          {!isLoading &&
+            !error &&
+            (news.length > 3 ? [...news, ...news] : news).map((item, i) => (
+              <div key={i} className="tp-news-item">
+                <div className="tp-news-content">
+                  <p className="tp-news-title">{item.title}</p>
+                  <span className="tp-news-time">{item.time}</span>
+                </div>
+
+                <span
+                  className={`tp-badge tp-badge-${item.severity || "primary"}`}
+                >
+                  {item.tag}
+                </span>
+              </div>
+            ))}
+
+          {/* 💤 Empty */}
+          {!isLoading && !error && news.length === 0 && (
+            <div className="tp-news-item">
+              <p className="tp-news-title">No trade updates available</p>
             </div>
           )}
         </div>

@@ -10,17 +10,17 @@
   flex-wrap: wrap;
 }
 
-
 .tp-overview-filter-btn {
   padding: 12px 22px;
   font-size: 15px;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
 .tp-overview-filter-btn svg {
-  font-size: 20px;      /* slightly bigger icon */
+  font-size: 20px; /* slightly bigger icon */
 }
 /* ======================================
    OVERVIEW HERO TITLE (BIGGER)
@@ -30,11 +30,11 @@
   /* padding-left: 14px;
   padding-right: 14px; */
 }
-.tp-name-section .tp-section{
+.tp-name-section .tp-section {
   padding-top: 12px;
   padding-bottom: 12px;
 }
-.tp-name-section .tp-disclaimer{
+.tp-name-section .tp-disclaimer {
   margin-bottom: 12px;
 }
 .tp-overview-hero-title {
@@ -109,7 +109,7 @@
 
 .tp-news-content {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   gap: 4px;
   max-width: 520px;
 }
@@ -145,7 +145,6 @@
   overflow: hidden; /* IMPORTANT */
 }
 
-
 .tp-news-scroll {
   display: flex;
   flex-direction: column;
@@ -153,8 +152,6 @@
 
   will-change: transform; /* IMPORTANT for smooth GPU animation */
 }
-
-
 
 /* ======================================
    OVERVIEW CHARTS 
@@ -232,7 +229,6 @@
   /* smooth scroll behavior */
   scroll-behavior: smooth;
 
-
   display: block;
 }
 .rtx-tp-rate-card-container {
@@ -263,17 +259,17 @@
 }
 
 .tp-risk-low {
-  background: rgba(0,200,83,0.15);
+  background: rgba(0, 200, 83, 0.15);
   color: #00c853;
 }
 
 .tp-risk-medium {
-  background: rgba(255,152,0,0.15);
+  background: rgba(255, 152, 0, 0.15);
   color: #ff9800;
 }
 
 .tp-risk-high {
-  background: rgba(244,67,54,0.15);
+  background: rgba(244, 67, 54, 0.15);
   color: #f44336;
 }
 
@@ -445,7 +441,6 @@
   }
 }
 
-
 /* ======================================
    MARGIN IMPACT ESTIMATOR
 ====================================== */
@@ -482,7 +477,6 @@
 .tp-margin-input {
   max-width: 260px;
   width: 100%;
-  
 }
 
 /* Result */
@@ -509,7 +503,6 @@
 
 /* Tablet */
 @media (max-width: 768px) {
-
   .tp-margin-header {
     /* flex-direction: column;
     align-items: flex-start; */
@@ -534,7 +527,6 @@
 
 /* Small Phones */
 @media (max-width: 480px) {
-
   .tp-margin-estimator {
     padding: var(--space-md);
   }
@@ -542,11 +534,10 @@
   .tp-margin-value {
     font-size: var(--fs-xl);
   }
-    .tp-margin-header {
+  .tp-margin-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
 }
 
 /* ======================================
@@ -595,12 +586,11 @@
   }
 }
 
-
-.tp-rate-changepercent-wrap{
+.tp-rate-changepercent-wrap {
   display: flex;
   justify-content: space-between;
 }
-.tp-impact-estimator-changepercent-wrap{
+.tp-impact-estimator-changepercent-wrap {
   width: 100%;
   display: flex;
   justify-content: space-between;

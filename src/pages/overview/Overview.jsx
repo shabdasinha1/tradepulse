@@ -47,7 +47,6 @@ function Overview() {
     if (severity === "High") return "tp-text-down";
     return "tp-pill-success";
   }, [severity]);
-
   /* ===============================
      USER NAME
   ============================== */
@@ -161,7 +160,9 @@ function Overview() {
                           {Math.abs(impact).toLocaleString()}
                         </h2>
                       </div>
-                      <span className="tp-text-neutral tp-rate-change">{changePercent}%</span>
+                      <span className="tp-text-neutral tp-rate-change">
+                        {changePercent}%
+                      </span>
                     </div>
                   </div>
                 </div>

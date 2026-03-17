@@ -52,7 +52,7 @@ header .tp-section-title {
   border-bottom: 1px solid var(--border-soft);
   font-size: var(--fs-body);
 
-  min-width: 900px; /* enables horizontal scroll */
+  min-width: 830px; /* enables horizontal scroll */
 }
 
 /* ======================================

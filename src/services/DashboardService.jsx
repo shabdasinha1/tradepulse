@@ -6,7 +6,7 @@ import Api from "../api/Api";
 
 const cleanParams = (params = {}) =>
   Object.fromEntries(
-    Object.entries(params).filter(([_, v]) => v !== undefined && v !== "")
+    Object.entries(params).filter(([_, v]) => v !== undefined && v !== ""),
   );
 
 /* ===============================
@@ -183,9 +183,14 @@ export const ForecastOverview = async () => {
    DASHBOARD TRADE NEWS
 ================================ */
 
-export const DashboardTradeNews = async (countryCode) => {
-  return Api.get("/trade/news", {
-    params: cleanParams({ countryCode }),
+// export const DashboardTradeNews = async (countryCode) => {
+//   return Api.get("/trade/news", {
+//     params: cleanParams({ countryCode }),
+//   });
+// };
+export const DashboardTradeNews = async (params = {}) => {
+  return Api.get("/dashboard/corridor-news", {
+    params: cleanParams(params),
   });
 };
 
