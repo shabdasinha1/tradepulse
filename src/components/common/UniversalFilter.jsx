@@ -262,9 +262,8 @@ const UniversalFilter = ({
       onClick={handleOverlayClick}
     >
       <div
-        className={`tp-filter-panel tp-card ${
-          isClosing ? "tp-panel-exit" : ""
-        }`}
+        className={`tp-filter-panel tp-card ${isClosing ? "tp-panel-exit" : ""
+          }`}
         ref={modalRef}
       >
         {/* HEADER */}
@@ -295,21 +294,21 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   options={corridorOptions}
-                value={
-  corridorOptions.find(
-    (o) => String(o.value) === String(filters.partnerCode)
-  ) ||
-  (filters.partnerCode
-    ? {
-        value: filters.partnerCode,
-        label: filters.corridor,
-      }
-    : null)
-}
+                  value={
+                    corridorOptions.find(
+                      (o) => String(o.value) === String(filters.partnerCode)
+                    ) ||
+                    (filters.partnerCode
+                      ? {
+                        value: filters.partnerCode,
+                        label: filters.corridor,
+                      }
+                      : null)
+                  }
                   onChange={(opt) => {
                     const partner = opt?.value || "";
                     const corridorLabel = opt?.label || "";
@@ -336,9 +335,9 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   cacheOptions
                   defaultOptions
                   loadOptions={loadCountryOptions}
@@ -379,9 +378,9 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   cacheOptions
                   defaultOptions
                   loadOptions={loadCountryOptions}
@@ -391,9 +390,9 @@ const UniversalFilter = ({
                   value={
                     filters.destination
                       ? {
-                          value: filters.destination,
-                          label: filters.destination,
-                        }
+                        value: filters.destination,
+                        label: filters.destination,
+                      }
                       : null
                   }
                   onChange={(opt) =>
@@ -425,9 +424,9 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   cacheOptions
                   defaultOptions
                   loadOptions={loadProductOptions}
@@ -437,9 +436,9 @@ const UniversalFilter = ({
                   value={
                     filters.product
                       ? {
-                          value: filters.product,
-                          label: filters.productLabel || filters.product,
-                        }
+                        value: filters.product,
+                        label: filters.productLabel || filters.product,
+                      }
                       : null
                   }
                   onChange={(opt) =>
@@ -473,9 +472,9 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   options={currencyOptions}
                   value={
                     currencyOptions.find(
@@ -534,9 +533,9 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   options={riskOptions}
                   value={riskOptions.find((o) => o.value === filters.riskLevel)}
                   onChange={(opt) =>
@@ -557,9 +556,9 @@ const UniversalFilter = ({
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
                   components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
                   options={activityOptions}
                   value={activityOptions.find(
                     (o) => o.value === filters.activityStatus,
