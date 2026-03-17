@@ -299,9 +299,17 @@ const UniversalFilter = ({
     IndicatorSeparator: () => null,
   }}
                   options={corridorOptions}
-                  value={corridorOptions.find(
-                    (o) => o.value === filters.partnerCode,
-                  )}
+                value={
+  corridorOptions.find(
+    (o) => String(o.value) === String(filters.partnerCode)
+  ) ||
+  (filters.partnerCode
+    ? {
+        value: filters.partnerCode,
+        label: filters.corridor,
+      }
+    : null)
+}
                   onChange={(opt) => {
                     const partner = opt?.value || "";
                     const corridorLabel = opt?.label || "";

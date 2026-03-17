@@ -18,6 +18,7 @@ export default function useUniversalFilters(defaultValues = {}) {
     productId,
     startDate,
     endDate,
+    corridor,
   });
 
   const [filters, setFilters] = useState({
@@ -44,7 +45,8 @@ export default function useUniversalFilters(defaultValues = {}) {
       lastReduxSync.current.partnerCode !== partnerCode ||
       lastReduxSync.current.productId !== productId ||
       lastReduxSync.current.startDate !== startDate ||
-      lastReduxSync.current.endDate !== endDate;
+      lastReduxSync.current.endDate !== endDate ||
+      lastReduxSync.current.corridor !== corridor;
 
     if (!shouldSync) return;
 
@@ -53,6 +55,7 @@ export default function useUniversalFilters(defaultValues = {}) {
       productId,
       startDate,
       endDate,
+       corridor,
     };
 
     setFilters((prev) => {
