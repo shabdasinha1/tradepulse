@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import React ,{ useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardTradeNews } from "../../services/DashboardService.jsx";
 import { FiGlobe } from "react-icons/fi";
@@ -6,7 +6,7 @@ import TradePulseCard from "../common/TradePulseCard.jsx";
 import { useSelector } from "react-redux";
 import { queryKeys } from "../../utils/queryKeys";
 
-const LatestTradeNews = () => {
+const LatestTradeNews = React.memo(() => {
   const {
   reporterCode,
   partnerCode,
@@ -40,14 +40,16 @@ const LatestTradeNews = () => {
   /* ===============================
      FORMAT DATA
   ============================== */
-  const news =
+const news = useMemo(() => {
+  return (
     data?.data?.map((item) => ({
       title: item.title,
       time: item.description,
       tag: item.type,
       severity: item.severity,
-    })) || [];
-
+    })) || []
+  );
+}, [data]);
   /* ===============================
      AUTO SCROLL LOGIC (UNCHANGED)
   ============================== */
@@ -147,6 +149,6 @@ const LatestTradeNews = () => {
       </div>
     </TradePulseCard>
   );
-};
+});
 
 export default LatestTradeNews;

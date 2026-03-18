@@ -114,7 +114,7 @@ function Overview() {
             <div className="tp-news-margin-layout">
               {/* LEFT 50% – NEWS */}
               <div className="tp-news-column">
-                <LatestTradeNews corridorId={corridorId} />
+                <LatestTradeNews  />
               </div>
 
               {/* RIGHT 50% – MARGIN */}
