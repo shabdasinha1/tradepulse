@@ -7,7 +7,7 @@ import { queryKeys } from "../../utils/queryKeys";
 
 const CustomsDutyRates = () => {
 
-  const { startDate, endDate, reporterCode } = useSelector(
+  const {country ,startDate, endDate, reporterCode } = useSelector(
     (state) => state.corridor
   );
 
@@ -33,7 +33,7 @@ const CustomsDutyRates = () => {
             <div className="tp-card-header">
               <FiBox />
               <h3 className="tp-card-title">
-                UK Import Duty Snapshot
+                {country || "UK"} Import Duty Snapshot
               </h3>
             </div>
           }
