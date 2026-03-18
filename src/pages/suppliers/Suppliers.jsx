@@ -126,7 +126,7 @@ const Suppliers = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              <div className="tp-corridor-pill">
+              {/* <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
 
                 <span
@@ -135,7 +135,7 @@ const Suppliers = () => {
                 >
                   {shortCorridor}
                 </span>
-              </div>
+              </div> */}
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
