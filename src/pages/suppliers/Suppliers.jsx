@@ -195,7 +195,7 @@ const Suppliers = () => {
                         className="tp-table-row tp-table-suppliers"
                       >
                         <div className="supplier-name">
-                          <strong>{s.name}</strong>
+                          {s.name}
                         </div>
 
                         <span className="tp-muted text-center">
@@ -214,9 +214,9 @@ const Suppliers = () => {
                           </span>
                         </span>
 
-                        <strong className="text-center">
+                        <span className="text-center">
                           {s.shipments}
-                        </strong>
+                        </span>
                       </div>
                     );
                   })}
