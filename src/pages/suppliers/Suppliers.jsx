@@ -220,7 +220,8 @@ const Suppliers = () => {
                         className="tp-table-row tp-table-suppliers"
                       >
                         <div className="supplier-name">
-                          <strong>{s.exporter_name}</strong>
+                          {/* <strong>{s.exporter_name}</strong> */}
+                          {s.exporter_name}
                         </div>
 
                         <span className="tp-muted text-center">
@@ -239,9 +240,9 @@ const Suppliers = () => {
                           </span>
                         </span>
 
-                        <strong className="text-center">
+                        <span className="text-center">
                           {s.trade_activity}
-                        </strong>
+                        </span>
                       </div>
                     );
                   })}
