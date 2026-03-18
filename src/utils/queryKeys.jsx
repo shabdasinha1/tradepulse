@@ -3,12 +3,13 @@ export const queryKeys = {
 
   corridors: (reporterCode) => ["corridors", reporterCode],
 
-  suppliers: (reporterCode, startDate, endDate) => [
-    "suppliers",
-    reporterCode,
-    startDate,
-    endDate,
-  ],
+  suppliers: (reporterCode, startDate, endDate, tradeflow) => [
+  "suppliers",
+  reporterCode,
+  startDate,
+  endDate,
+  tradeflow,
+],
 
   marginImpact: (budget) => ["marginImpact", budget],
 
