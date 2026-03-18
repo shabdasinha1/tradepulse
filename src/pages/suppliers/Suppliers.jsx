@@ -30,7 +30,7 @@ const SupplierRowSkeleton = React.memo(() => {
 const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const { reporterCode, startDate, endDate, corridor } = useSelector(
+  const { tradeflow,reporterCode, startDate, endDate, corridor } = useSelector(
     (state) => state.corridor,
   );
   const skeletonRows = useMemo(
@@ -71,13 +71,14 @@ const Suppliers = () => {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate),
+    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate,tradeflow),
 
     queryFn: async ({ pageParam = 1 }) => {
       const res = await DashboardSuppliers({
         reporterCode,
         startDate,
         endDate,
+         tradeflow,
         page: pageParam,
         limit: LIMIT,
       });
@@ -180,33 +181,7 @@ const Suppliers = () => {
               ref={bodyRef}
               onScroll={handleBodyScroll}
             >
-              {/* <div className="tp-table">
-                {suppliers.map((s, i) => (
-                  <div key={i} className="tp-table-row tp-table-suppliers">
-                    <div className="supplier-name">
-                      <strong>{s.exporter_name}</strong>
-                    </div>
-
-                    <span className="tp-muted text-center">
-                      {s.origin_region}
-                    </span>
-
-                    <span className="text-center">
-                      <span className="tp-pill tp-pill-success">
-                        {s.reliability_score}
-                      </span>
-                    </span>
-
-                    <span className="text-center">
-                      <span className="tp-pill tp-pill-primary">
-                        {s.activity_level}
-                      </span>
-                    </span>
-
-                    <strong className="text-center">{s.trade_activity}</strong>
-                  </div>
-                ))}
-              </div> */}
+             
               <div className="tp-table">
                 {isLoading && skeletonRows}
 
@@ -220,29 +195,28 @@ const Suppliers = () => {
                         className="tp-table-row tp-table-suppliers"
                       >
                         <div className="supplier-name">
-                          {/* <strong>{s.exporter_name}</strong> */}
-                          {s.exporter_name}
+                          <strong>{s.name}</strong>
                         </div>
 
                         <span className="tp-muted text-center">
-                          {s.origin_region}
+                          {s.region}
                         </span>
 
                         <span className="text-center">
                           <span className="tp-pill tp-pill-success">
-                            {s.reliability_score}
+                            {s.reliabilityScore}
                           </span>
                         </span>
 
                         <span className="text-center">
                           <span className="tp-pill tp-pill-primary">
-                            {s.activity_level}
+                            {s.activityLevel}
                           </span>
                         </span>
 
-                        <span className="text-center">
-                          {s.trade_activity}
-                        </span>
+                        <strong className="text-center">
+                          {s.shipments}
+                        </strong>
                       </div>
                     );
                   })}
