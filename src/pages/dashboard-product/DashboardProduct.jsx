@@ -250,7 +250,8 @@ const DashboardProduct = () => {
       return (
         <div
           ref={isLast ? lastProductRef : null}
-          className="product-row"
+          // className="product-row"
+          className="tp-table-row tp-table-suppliers"
           key={item.product || index}
         >
           <span>{item.productCategory}</span>

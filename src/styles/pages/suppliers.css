@@ -40,6 +40,8 @@
 
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* 🔥 KEY FIX */
+  padding-right: 6px; 
 }
 
 .tp-table-head-scroll::-webkit-scrollbar {
@@ -55,6 +57,7 @@
   overflow-x: auto;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 /* ===============================
@@ -71,7 +74,7 @@
     1fr;
   align-items: center;
   gap: var(--space-md);
-  min-width: 900px;
+  min-width: 830px;
 }
 
 /* ===============================
@@ -88,6 +91,7 @@
   z-index: 2;
   background: var(--card-bg);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: var(--space-md) 0;
 }
 
 /* ===============================
