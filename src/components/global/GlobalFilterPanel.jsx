@@ -41,7 +41,6 @@ function GlobalFilterPanel({ onClose }) {
     startDate,
     endDate,
   } = useSelector((state) => state.corridor);
- 
 
   const countries = useSelector((state) => state.country.countries);
   const countryOptions = useMemo(
@@ -169,6 +168,16 @@ function GlobalFilterPanel({ onClose }) {
       if (JSON.stringify(prev) === JSON.stringify(formatted)) return prev;
       return formatted;
     });
+    // ✅ AUTO SELECT FIRST ITEM (ONLY IF NOT ALREADY SELECTED)
+    if (formatted.length > 0 && !localCorridor) {
+      const first = formatted[0];
+
+      setLocalCorridor(first.value);
+      setLocalCorridorLabel(first.label);
+
+      const partnerCountry = first.label.split("↔")[1]?.trim();
+      setLocalPartnerCountry(partnerCountry);
+    }
   }, [corridorData]);
 
   /* =========================
@@ -347,9 +356,9 @@ function GlobalFilterPanel({ onClose }) {
               className="tp-select"
               classNamePrefix="tp-select"
               components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                DropdownIndicator: () => null,
+                IndicatorSeparator: () => null,
+              }}
               options={countryOptions}
               value={
                 countryOptions.find((opt) => opt.value === reporterCode) || {
@@ -395,17 +404,18 @@ function GlobalFilterPanel({ onClose }) {
               className="tp-select"
               classNamePrefix="tp-select"
               components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                DropdownIndicator: () => null,
+                IndicatorSeparator: () => null,
+              }}
               options={corridorOptionsMemo}
               value={
-  corridorOptions.find(
-    (opt) => String(opt.value) === String(localCorridor)
-  ) || (localCorridor
-    ? { value: localCorridor, label: localCorridorLabel }
-    : null)
-}
+                corridorOptions.find(
+                  (opt) => String(opt.value) === String(localCorridor),
+                ) ||
+                (localCorridor
+                  ? { value: localCorridor, label: localCorridorLabel }
+                  : null)
+              }
               onChange={(opt) => {
                 const partner = opt?.value || "";
                 const corridorLabel = opt?.label || "";
@@ -441,9 +451,9 @@ function GlobalFilterPanel({ onClose }) {
               className="tp-select"
               classNamePrefix="tp-select"
               components={{
-    DropdownIndicator: () => null,
-    IndicatorSeparator: () => null,
-  }}
+                DropdownIndicator: () => null,
+                IndicatorSeparator: () => null,
+              }}
               cacheOptions
               defaultOptions
               loadOptions={loadProductOptions}
