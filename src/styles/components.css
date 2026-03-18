@@ -1038,3 +1038,7 @@ select {
 .tp-select .tp-select__indicator-separator {
   display: none !important;
 }
+
+.tp-margin-bottom{
+  margin-bottom: var(--space-sm);
+}

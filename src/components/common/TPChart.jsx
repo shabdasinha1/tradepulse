@@ -213,7 +213,7 @@ left: parseInt(styles.getPropertyValue("--chart-margin-left")),
           <div className="tp-chart-header tp-chart-filter-header">
             <h4 className="tp-section-title">{title}</h4>
             <button
-              className="tp-btn-outline tp-overview-filter-btn"
+              className="tp-btn-outline tp-overview-filter-btn tp-margin-bottom"
               onClick={() => setFilterOpen(true)}
             >
               <CiFilter />

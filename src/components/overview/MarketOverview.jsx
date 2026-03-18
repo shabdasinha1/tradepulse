@@ -133,7 +133,7 @@ const MarketOverview = () => {
               </div>
 
               <button
-                className="tp-btn-outline tp-overview-filter-btn"
+                className="tp-btn-outline tp-overview-filter-btn tp-margin-bottom"
                 onClick={() => setFxFilterOpen(true)}
               >
                 <CiFilter />
@@ -194,7 +194,7 @@ const MarketOverview = () => {
               </div>
 
               <button
-                className="tp-btn-outline tp-overview-filter-btn"
+                className="tp-btn-outline tp-overview-filter-btn tp-margin-bottom"
                 onClick={() => setShipFilterOpen(true)}
               >
                 <CiFilter />
