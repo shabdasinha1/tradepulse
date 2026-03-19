@@ -14,6 +14,8 @@ const initialState = {
   endDate: null,
   baseCurrency: "GBP",
   currencySymbol: getSymbolFromCurrency("GBP"),
+  quoteCurrency: "NGN", // default based on Nigeria
+quoteCurrencySymbol: getSymbolFromCurrency("NGN"),
   tradeflow: "EXPORT", // ✅ added
 };
 
@@ -67,7 +69,10 @@ const corridorSlice = createSlice({
     setTradeflow: (state, action) => {
       state.tradeflow = action.payload;
     },
-    
+    setQuoteCurrency: (state, action) => {
+  state.quoteCurrency = action.payload;
+  state.quoteCurrencySymbol = getSymbolFromCurrency(action.payload);
+},
     resetFilters: (state) => {
       state.country = "United Kingdom";
       state.reporterCode = "826";
@@ -81,6 +86,8 @@ const corridorSlice = createSlice({
       state.endDate = null;
       state.baseCurrency = "GBP";
       state.currencySymbol = getSymbolFromCurrency("GBP");
+      state.quoteCurrency = "NGN";
+state.quoteCurrencySymbol = getSymbolFromCurrency("NGN");
       state.tradeflow = "EXPORT"; // ✅ added
     },
   },
@@ -96,6 +103,7 @@ export const {
   setTimeRange,
   setDateRange,
   setTradeflow,
+  setQuoteCurrency,
   resetFilters,
 } = corridorSlice.actions;
 

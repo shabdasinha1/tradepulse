@@ -15,9 +15,9 @@ import { IoCalculatorOutline } from "react-icons/io5";
 import { queryKeys } from "../../utils/queryKeys";
 
 function Overview() {
-  const corridorId = useSelector((state) => state.corridor.corridorId);
+  
 
-  const { corridor } = useSelector((state) => state.corridor);
+  const { corridor,baseCurrency, quoteCurrency } = useSelector((state) => state.corridor);
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
   }, [corridor]);
@@ -31,12 +31,21 @@ function Overview() {
   const [budget, setBudget] = useState(250000);
   const deferredBudget = useDeferredValue(budget);
 
-  const { data: marginImpactData } = useQuery({
-    queryKey: queryKeys.marginImpact(deferredBudget),
-    queryFn: () => DashboardMarginImpact(deferredBudget),
-    enabled: !!deferredBudget,
-    staleTime: 1000 * 60 * 5,
-  });
+ const { data: marginImpactData } = useQuery({
+  queryKey: queryKeys.marginImpact(
+    deferredBudget,
+    baseCurrency,
+    quoteCurrency
+  ),
+  queryFn: () =>
+    DashboardMarginImpact({
+      budget: deferredBudget,
+      baseCurrency,
+      quoteCurrency,
+    }),
+  enabled: !!deferredBudget && !!baseCurrency && !!quoteCurrency,
+  staleTime: 1000 * 60 * 5,
+});
 
   const fxPercent = marginImpactData?.data?.volatility ?? 0;
   const impact = marginImpactData?.data?.estimatedImpact ?? 0;
