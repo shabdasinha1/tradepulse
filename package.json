@@ -13,6 +13,7 @@
     "@reduxjs/toolkit": "^2.11.2",
     "@tanstack/react-query": "^5.90.21",
     "axios": "^1.13.2",
+    "currency-symbol-map": "^5.1.0",
     "js-cookie": "^3.0.5",
     "libphonenumber-js": "^1.12.34",
     "lodash.throttle": "^4.1.1",

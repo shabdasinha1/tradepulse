@@ -168,7 +168,7 @@ const Suppliers = () => {
             >
               <div className="tp-table-head tp-table-suppliers">
                 <span>Exporter Name</span>
-                <span className="text-center">Origin Country</span>
+                <span className="text-center">Origin Region</span>
                 <span className="text-center">Reliability Score</span>
                 <span className="text-center">Activity Level</span>
                 <span className="text-center">Shipment Frequency</span>

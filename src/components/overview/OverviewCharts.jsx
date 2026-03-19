@@ -38,7 +38,7 @@ const fillMissingYears = (data, valueKey = "value") => {
   return result;
 };
 const OverviewCharts = () => {
-  const { corridor, reporterCode, partnerCode, productId, startDate, endDate } =
+  const { country,corridor, reporterCode, partnerCode, productId, startDate, endDate } =
     useSelector((state) => state.corridor);
 
   const [priceHsCode, setPriceHsCode] = useState("27");
@@ -261,7 +261,7 @@ const OverviewCharts = () => {
           />
 
           <TPMetricCard
-            title="UK Import Demand Signal"
+            title={`${country || ""} Import Demand Signal`}
             value={`${metrics.demand?.percent ?? 0}`}
             footerLabel={
               metrics.demand?.product ||
@@ -298,7 +298,7 @@ const OverviewCharts = () => {
             onFilterChange={(filters) => setPriceFilters(filters)}
           />
           <TPChart
-            title="UK Import Demand Trend"
+            title={`${country || ""} Import Demand Trend`}
             type="area"
             data={demandData}
               xKey="year" 
