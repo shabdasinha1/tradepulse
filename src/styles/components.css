@@ -491,7 +491,12 @@ input::placeholder {
   align-items: center;
   justify-content: space-between;
 }
-
+.tp-metric-header .tp-risk-badge{
+  margin-left: 0;
+}
+.tp-trend-width{
+  width: 50%;
+}
 .tp-metric-title {
   font-size: var(--fs-label);
   color: var(--text-secondary);
@@ -801,6 +806,10 @@ input::placeholder {
   }
   .tp-forcast-filter input {
     max-width: 100%;
+  }
+  .tp-card-title-wrap{
+    flex-shrink: 1;
+    /* align-items: first baseline; */
   }
 }
 
