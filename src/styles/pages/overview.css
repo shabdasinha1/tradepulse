@@ -483,10 +483,13 @@
   max-width: 260px;
   width: 100%;
 }
-
+.tp-estimator-fxpair{
+  margin-top: 0;
+  margin-bottom: var(--space-xl);
+}
 /* Result */
 .tp-margin-result {
-  text-align: right;
+  text-align: left;
   /* min-width: 220px; */
 }
 

@@ -16,9 +16,9 @@ import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
 
 function Overview() {
-  
-
-  const { corridor,baseCurrency, quoteCurrency } = useSelector((state) => state.corridor);
+  const { corridor, baseCurrency, quoteCurrency } = useSelector(
+    (state) => state.corridor,
+  );
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
   }, [corridor]);
@@ -32,26 +32,36 @@ function Overview() {
   const [budget, setBudget] = useState(250000);
   const deferredBudget = useDeferredValue(budget);
 
- const { data: marginImpactData } = useQuery({
-  queryKey: queryKeys.marginImpact(
-    deferredBudget,
-    baseCurrency,
-    quoteCurrency
-  ),
-  queryFn: () =>
-    DashboardMarginImpact({
-      budget: deferredBudget,
+  const { data: marginImpactData } = useQuery({
+    queryKey: queryKeys.marginImpact(
+      deferredBudget,
       baseCurrency,
       quoteCurrency,
-    }),
-  enabled: !!deferredBudget && !!baseCurrency && !!quoteCurrency,
-  staleTime: 1000 * 60 * 5,
-});
+    ),
+    queryFn: () =>
+      DashboardMarginImpact({
+        budget: deferredBudget,
+        baseCurrency,
+        quoteCurrency,
+      }),
+    enabled: !!deferredBudget && !!baseCurrency && !!quoteCurrency,
+    staleTime: 1000 * 60 * 5,
+  });
 
   const fxPercent = marginImpactData?.data?.volatility ?? 0;
   const impact = marginImpactData?.data?.estimatedImpact ?? 0;
   const severity = marginImpactData?.data?.risk || "Low";
   const changePercent = marginImpactData?.data?.fxChangePercent;
+  const fxPair = marginImpactData?.data?.fxPair;
+  const message = marginImpactData?.data?.message;
+
+  const changeClass =
+    changePercent > 0
+      ? "tp-text-up"
+      : changePercent < 0
+        ? "tp-text-down"
+        : "tp-text-neutral";
+
   const severityClass = useMemo(() => {
     if (severity === "Medium") return "tp-pill-warning";
     if (severity === "High") return "tp-text-down";
@@ -140,6 +150,7 @@ function Overview() {
                           Margin Impact Estimator
                         </h3>
                       </span>
+                      <p className="tp-estimator-fxpair tp-muted">{fxPair}</p>
                       <p className="tp-muted">
                         Estimate FX impact on your import exposure
                       </p>
@@ -166,15 +177,18 @@ function Overview() {
                         <p className="tp-muted">Estimated FX Impact</p>
 
                         {marginImpactData?.data ? (
-                          <h2 className="tp-margin-value">
-                            {impact >= 0 ? "+" : "-"}£
-                            {Math.abs(impact).toLocaleString()}
-                          </h2>
+                          <>
+                            <h2 className="tp-margin-value">
+                              {impact >= 0 ? "+" : "-"}£
+                              {Math.abs(impact).toLocaleString()}
+                            </h2>
+                            <p className="tp-muted">{message}</p>
+                          </>
                         ) : (
                           <EmptyState message="No margin data available" />
                         )}
                       </div>
-                      <span className="tp-text-neutral tp-rate-change">
+                      <span className={`tp-rate-change ${changeClass}`}>
                         {changePercent}%
                       </span>
                     </div>
