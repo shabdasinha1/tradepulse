@@ -378,50 +378,50 @@ const DashboardProduct = () => {
             <>
               <div className="tp-card">
                 <p className="tp-muted">Most Imported Product ({corridor})</p>
-                <h3 className="tp-overview-text">
-                  {productData?.productOverview?.totalProducts ? (
+                {productData?.productOverview?.totalProducts ? (
+                  <h3 className="tp-overview-text">
                     <span className="tp-overview-text">
                       {productData.productOverview.totalProducts}
                     </span>
-                  ) : (
-                    <EmptyState message="No imported product found" />
-                  )}
-                </h3>
+                  </h3>
+                ) : (
+                  <EmptyState message="No imported product found" />
+                )}
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Fastest Growing Demand ({corridor})</p>
-                <h3 className="tp-overview-text">
-                  {productData?.productOverview?.activeProducts ? (
-                    productData?.productOverview?.activeProducts
-                  ) : (
-                    <EmptyState message="No demand data found" />
-                  )}
-                </h3>
+                {productData?.productOverview?.activeProducts ? (
+                  <h3 className="tp-overview-text">
+                    {productData?.productOverview?.activeProducts}
+                  </h3>
+                ) : (
+                  <EmptyState message="No demand data found" />
+                )}
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Price Volatility</p>
-                <h3 className="tp-text-up tp-overview-text">
-                  {productData?.productOverview?.topValueProduct ? (
-                    productData?.productOverview?.topValueProduct?.split(",")[0]
-                  ) : (
-                    <EmptyState message="No volatility found" />
-                  )}
-                </h3>
+                {productData?.productOverview?.topValueProduct ? (
+                  <h3 className="tp-text-up tp-overview-text">
+                    {productData?.productOverview?.topValueProduct?.split(",")[0]}
+                  </h3>
+                ) : (
+                  <EmptyState message="No volatility found" />
+                )}
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Risk Product</p>
-                <h3 className="tp-text-down tp-overview-text">
                   {productData?.productOverview?.lowestValueProduct ? (
-                    productData?.productOverview?.lowestValueProduct?.split(
+                    <h3 className="tp-text-down tp-overview-text">
+                    {productData?.productOverview?.lowestValueProduct?.split(
                       ",",
-                    )[0]
+                    )[0]}
+                </h3>
                   ) : (
                     <EmptyState message="No risk data found" />
                   )}
-                </h3>
               </div>
             </>
           )}
