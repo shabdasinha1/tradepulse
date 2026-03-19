@@ -352,7 +352,7 @@
 }
 
 .tp-ship-change {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-caption);
   font-weight: var(--fw-medium);
 }
 
