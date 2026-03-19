@@ -149,7 +149,8 @@ const MarketOverview = () => {
                   <div key={index} className="tp-rate-card">
                     <div className="tp-rate-header">
                       <div className="tp-rate-symbol-wrap">
-                        <span className="tp-rate-symbol">{r.currency}</span>
+                        {/* <span className="tp-rate-symbol">{r.currency}</span> */}
+                        <strong className="tp-kpi-card-highliter">{r.pair}</strong>
                       </div>
 
                       <span
@@ -161,9 +162,10 @@ const MarketOverview = () => {
                       {r.alert && <span className="tp-rate-alert">⚠</span>}
                     </div>
 
-                    <span className="tp-rate-pair">{r.pair}</span>
+                    {/* <span className="tp-rate-pair">{r.pair}</span> */}
+                    {/* <span className="tp-rate-pair"><br /></span> */}
                     <div className="tp-rate-changepercent-wrap">
-                      <strong className="tp-rate-value">{r.rate}</strong>
+                      <strong className="tp-kpi-card-highliter">{r.rate}</strong>
                       <span
                         className={`tp-rate-change ${
                           r.trend === "UP"
@@ -208,7 +210,7 @@ const MarketOverview = () => {
               <div key={i} className="tp-ship-card">
                 <div className="tp-ship-header">
                   <div>
-                    <h4 className="tp-ship-route">{s.corridor}</h4>
+                    <span className="tp-ship-route tp-kpi-card-highliter">{s.corridor}</span>
                   </div>
 
                   <span className="tp-ship-days">
@@ -217,8 +219,8 @@ const MarketOverview = () => {
                 </div>
 
                 <div className="tp-ship-footer">
-                  <strong className="tp-ship-price">
-                    <span className="tp-ship-port">{s.currency}</span> {s.cost}
+                  <strong className="tp-kpi-card-highliter">
+                    <span className="tp-ship-port ">{s.currency}</span> {s.cost}
                   </strong>
 
                   <span
