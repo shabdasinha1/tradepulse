@@ -85,7 +85,7 @@ const MarketOverview = () => {
           pair: item.pair,
           currency: quote,
           rate: item.rate,
-          changePercent: Math.abs(volatility),
+          changePercent: volatility,
           trend,
           riskLevel: item.risk_level,
           alert: item.alert,
@@ -119,6 +119,7 @@ const MarketOverview = () => {
     staleTime: 1000 * 60 * 5,
   });
 const { convert } = useCurrencyConverter(exchangeRates);
+console.log(exchangeRates)
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
