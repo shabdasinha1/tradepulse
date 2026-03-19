@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import getSymbolFromCurrency from "currency-symbol-map";
 
 const initialState = {
   country: "United Kingdom",
@@ -12,6 +13,7 @@ const initialState = {
   startDate: null,
   endDate: null,
   baseCurrency: "GBP",
+  currencySymbol: getSymbolFromCurrency("GBP"),
   tradeflow: "EXPORT", // ✅ added
 };
 
@@ -25,6 +27,7 @@ const corridorSlice = createSlice({
       state.country = name;
       state.reporterCode = numeric;
       state.baseCurrency = currency;
+      state.currencySymbol = getSymbolFromCurrency(currency); 
     },
 
     setReporterCode: (state, action) => {
@@ -77,6 +80,7 @@ const corridorSlice = createSlice({
       state.startDate = null;
       state.endDate = null;
       state.baseCurrency = "GBP";
+      state.currencySymbol = getSymbolFromCurrency("GBP");
       state.tradeflow = "EXPORT"; // ✅ added
     },
   },

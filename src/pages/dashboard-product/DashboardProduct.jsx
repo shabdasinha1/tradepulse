@@ -35,7 +35,7 @@ const Skeleton = React.memo(({ className = "" }) => (
 ================================ */
 
 const DashboardProduct = () => {
-  const { reporterCode, productId, partnerCode, corridor, startDate, endDate } =
+  const { currencySymbol,reporterCode, productId, partnerCode, corridor, startDate, endDate } =
     useSelector((state) => state.corridor, shallowEqual);
 
   const shortCorridor = useMemo(() => {
@@ -257,7 +257,7 @@ const DashboardProduct = () => {
           <span>{item.productCategory}</span>
 
           <span className="tp-muted text-center">
-            £{Number(item.avgExportPrice).toFixed(2)}
+            {currencySymbol || ""}{Number(item.avgExportPrice).toFixed(2)}
           </span>
 
           <span className="text-center">
