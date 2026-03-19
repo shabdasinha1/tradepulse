@@ -1055,3 +1055,21 @@ select {
 .tp-margin-bottom {
   margin-bottom: var(--space-sm);
 }
+/* ================================================ */
+/*                   Empty State css                               */
+/* ================================================ */
+.tp-empty-state {
+  width: 100%;
+  min-height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.tp-empty-text {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+}

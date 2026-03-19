@@ -8,6 +8,7 @@ import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 import { queryKeys } from "../../utils/queryKeys";
+import EmptyState from "../../components/common/EmptyState";
 
 const LIMIT = 20;
 
@@ -30,7 +31,7 @@ const SupplierRowSkeleton = React.memo(() => {
 const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const { tradeflow,reporterCode, startDate, endDate, corridor } = useSelector(
+  const { tradeflow, reporterCode, startDate, endDate, corridor } = useSelector(
     (state) => state.corridor,
   );
   const skeletonRows = useMemo(
@@ -71,14 +72,14 @@ const Suppliers = () => {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate,tradeflow),
+    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate, tradeflow),
 
     queryFn: async ({ pageParam = 1 }) => {
       const res = await DashboardSuppliers({
         reporterCode,
         startDate,
         endDate,
-         tradeflow,
+        tradeflow,
         page: pageParam,
         limit: LIMIT,
       });
@@ -181,7 +182,6 @@ const Suppliers = () => {
               ref={bodyRef}
               onScroll={handleBodyScroll}
             >
-             
               <div className="tp-table">
                 {isLoading && skeletonRows}
 
@@ -194,13 +194,9 @@ const Suppliers = () => {
                         ref={isLast ? lastSupplierRef : null}
                         className="tp-table-row tp-table-suppliers"
                       >
-                        <div className="supplier-name">
-                          {s.name}
-                        </div>
+                        <div className="supplier-name">{s.name}</div>
 
-                        <span className="tp-muted text-center">
-                          {s.region}
-                        </span>
+                        <span className="tp-muted text-center">{s.region}</span>
 
                         <span className="text-center">
                           <span className="tp-pill tp-pill-success">
@@ -214,18 +210,14 @@ const Suppliers = () => {
                           </span>
                         </span>
 
-                        <span className="text-center">
-                          {s.shipments}
-                        </span>
+                        <span className="text-center">{s.shipments}</span>
                       </div>
                     );
                   })}
                 {isFetchingNextPage && skeletonRows}
               </div>
               {!isLoading && suppliers.length === 0 && (
-                <div className="tp-table-row tp-table-suppliers">
-                  <span className="tp-muted">No suppliers found</span>
-                </div>
+                <EmptyState message="No suppliers found" />
               )}
             </div>
           </div>

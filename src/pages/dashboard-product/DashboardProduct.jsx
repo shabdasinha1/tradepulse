@@ -21,6 +21,7 @@ import PageDisclaimer from "../../components/common/PageDisclaimer";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { queryKeys } from "../../utils/queryKeys";
+import EmptyState from "../../components/common/EmptyState";
 
 /* ===============================
    SKELETON COMPONENT
@@ -35,8 +36,15 @@ const Skeleton = React.memo(({ className = "" }) => (
 ================================ */
 
 const DashboardProduct = () => {
-  const { currencySymbol,reporterCode, productId, partnerCode, corridor, startDate, endDate } =
-    useSelector((state) => state.corridor, shallowEqual);
+  const {
+    currencySymbol,
+    reporterCode,
+    productId,
+    partnerCode,
+    corridor,
+    startDate,
+    endDate,
+  } = useSelector((state) => state.corridor, shallowEqual);
 
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
@@ -257,7 +265,8 @@ const DashboardProduct = () => {
           <span>{item.productCategory}</span>
 
           <span className="tp-muted text-center">
-            {currencySymbol || ""}{Number(item.avgExportPrice).toFixed(2)}
+            {currencySymbol || ""}
+            {Number(item.avgExportPrice).toFixed(2)}
           </span>
 
           <span className="text-center">
@@ -370,32 +379,48 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Most Imported Product ({corridor})</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.totalProducts || "-"}
+                  {productData?.productOverview?.totalProducts ? (
+                    <span className="tp-overview-text">
+                      {productData.productOverview.totalProducts}
+                    </span>
+                  ) : (
+                    <EmptyState message="No imported product found" />
+                  )}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Fastest Growing Demand ({corridor})</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.activeProducts || "-"}
+                  {productData?.productOverview?.activeProducts ? (
+                    productData?.productOverview?.activeProducts
+                  ) : (
+                    <EmptyState message="No demand data found" />
+                  )}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Price Volatility</p>
                 <h3 className="tp-text-up tp-overview-text">
-                  {productData?.productOverview?.topValueProduct?.split(",")[0]}
+                  {productData?.productOverview?.topValueProduct ? (
+                    productData?.productOverview?.topValueProduct?.split(",")[0]
+                  ) : (
+                    <EmptyState message="No volatility found" />
+                  )}
                 </h3>
               </div>
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Risk Product</p>
                 <h3 className="tp-text-down tp-overview-text">
-                  {
+                  {productData?.productOverview?.lowestValueProduct ? (
                     productData?.productOverview?.lowestValueProduct?.split(
                       ",",
                     )[0]
-                  }
+                  ) : (
+                    <EmptyState message="No risk data found" />
+                  )}
                 </h3>
               </div>
             </>
@@ -439,7 +464,11 @@ const DashboardProduct = () => {
               onScroll={handleBodyScroll}
             >
               <div className="tp-table">
-                {productRows}
+                {products.length === 0 && !isTableLoading ? (
+                  <EmptyState message="No Products Found" />
+                ) : (
+                  productRows
+                )}
 
                 {(isTableLoading || isFetchingNextPage) &&
                   [...Array(4)].map((_, i) => (
@@ -460,15 +489,24 @@ const DashboardProduct = () => {
           <div className="tp-card">
             <p className="tp-muted">Most Imported Product ({corridor})</p>
             <h3 className="tp-overview-text">
-              {productData?.productHighlights?.mostTradedProduct || "N/A"}
+              {productData?.productHighlights?.mostTradedProduct ? (
+                <h3 className="tp-overview-text">
+                  {productData.productHighlights.mostTradedProduct}
+                </h3>
+              ) : (
+                <EmptyState message="No Insights Found" />
+              )}
             </h3>
           </div>
 
           <div className="tp-card">
             <p className="tp-muted">Highest Price Volatility ({corridor})</p>
             <h3 className="tp-overview-text">
-              {productData?.productHighlights?.highestVolatilityProduct ||
-                "N/A"}
+              {productData?.productHighlights?.highestVolatilityProduct ? (
+                productData?.productHighlights?.highestVolatilityProduct
+              ) : (
+                <EmptyState message="No volatility data found" />
+              )}
             </h3>
           </div>
         </div>
