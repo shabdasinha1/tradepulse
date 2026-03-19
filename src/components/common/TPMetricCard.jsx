@@ -29,7 +29,6 @@ const TPMetricCard = ({
     if (trend.toLowerCase() === "up") trendClass = "tp-text-up";
     else if (trend.toLowerCase() === "down") trendClass = "tp-text-down";
   }
-
   return (
     <TradePulseCard className={`tp-metric-card ${className}`}>
       {/* Header */}
@@ -53,15 +52,15 @@ const TPMetricCard = ({
       {/* Footer */}
       <div className="tp-metric-footer">
         {footerLabel && (
-          <span className={`tp-muted tp-trend-width`}>
-            {footerLabel}
-          </span>
+          <span className={`tp-muted tp-trend-width`}>{footerLabel}</span>
         )}
 
         {/* 🔽 BOTTOM RIGHT TREND */}
         {trend !== undefined && trend !== null && (
-          <span className={`${trendClass} `}>
-            {isStringTrend ? `${capitalize(trend)} Trend` : trend}
+          <span
+            className={`${isStringTrend ? `tp-risk-badge tp-risk-${capitalize(trend) === "Down" ? "high" : "low"}` : ""} ${trendClass} `}
+          >
+            {isStringTrend ? `${capitalize(trend)} Trend` : trend + "%"}
           </span>
         )}
       </div>

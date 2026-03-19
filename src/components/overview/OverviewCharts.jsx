@@ -239,7 +239,6 @@ const OverviewCharts = () => {
     severityClass = "tp-text-down";
   }
 
-  console.log(metrics.supplier);
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
