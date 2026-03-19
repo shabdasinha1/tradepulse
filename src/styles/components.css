@@ -491,7 +491,17 @@ input::placeholder {
   align-items: center;
   justify-content: space-between;
 }
-
+.tp-metric-header .tp-risk-badge {
+  margin-left: 0;
+}
+.tp-footer-trend {
+  display: flex;
+  align-items: flex-end;
+  text-align: end;
+}
+.tp-trend-width {
+  width: 50%;
+}
 .tp-metric-title {
   font-size: var(--fs-label);
   color: var(--text-secondary);
@@ -524,9 +534,9 @@ input::placeholder {
 .tp-metric-footer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   font-size: var(--fs-caption);
   gap: var(--space-md);
+  align-items: flex-end;
 }
 
 .tp-metrics-row {
@@ -802,6 +812,10 @@ input::placeholder {
   .tp-forcast-filter input {
     max-width: 100%;
   }
+  .tp-card-title-wrap {
+    flex-shrink: 1;
+    /* align-items: first baseline; */
+  }
 }
 
 /* ===============================
@@ -1025,7 +1039,6 @@ input::placeholder {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  
 }
 
 select {
@@ -1039,6 +1052,6 @@ select {
   display: none !important;
 }
 
-.tp-margin-bottom{
+.tp-margin-bottom {
   margin-bottom: var(--space-sm);
 }

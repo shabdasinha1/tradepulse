@@ -38,8 +38,15 @@ const fillMissingYears = (data, valueKey = "value") => {
   return result;
 };
 const OverviewCharts = () => {
-  const { country,corridor, reporterCode, partnerCode, productId, startDate, endDate } =
-    useSelector((state) => state.corridor);
+  const {
+    country,
+    corridor,
+    reporterCode,
+    partnerCode,
+    productId,
+    startDate,
+    endDate,
+  } = useSelector((state) => state.corridor);
 
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
@@ -208,6 +215,8 @@ const OverviewCharts = () => {
       supplier: {
         score: data.exporterReliabilityScore?.value ?? 0,
         maxScore: data.exporterReliabilityScore?.max ?? 0,
+        trend: data.exporterReliabilityScore?.trend,
+        risk: data.exporterReliabilityScore?.risk,
       },
     });
   }, [kpiData]);
@@ -244,9 +253,9 @@ const OverviewCharts = () => {
                 : "Current exchange rate movement affecting UK import cost."
             }
             trend={`${metrics.currency?.changePercent ?? 0}`}
-            trendDirection={
-              (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
-            }
+            // trendDirection={
+            //   (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
+            // }
           />
 
           <TPMetricCard
@@ -255,9 +264,9 @@ const OverviewCharts = () => {
             unit={`${metrics.shipping?.unit || ""} per container`}
             footerLabel="Average container cost within selected trade corridor."
             trend={`${metrics.shipping?.changePercent ?? 0}`}
-            trendDirection={
-              (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
-            }
+            // trendDirection={
+            //   (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
+            // }
           />
 
           <TPMetricCard
@@ -268,17 +277,18 @@ const OverviewCharts = () => {
               "Trend of UK import demand for selected product"
             }
             trend={`${metrics.demand?.changePercent ?? 0}`}
-            trendDirection={
-              (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
-            }
+            // trendDirection={
+            //   (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
+            // }
           />
 
           <TPMetricCard
             title="Exporter Reliability Score"
             value={`${metrics.supplier?.score ?? 0}/${metrics.supplier?.maxScore ?? 0}`}
             footerLabel="Aggregate reliability index based on activity frequency and volatility consistency"
-            // trend=""
-            // trendDirection=""
+            trend={metrics.supplier?.trend}
+            risk={metrics.supplier?.risk}
+            className="tp-kpi-expoter-reliability"
           />
         </div>
 
@@ -287,7 +297,7 @@ const OverviewCharts = () => {
             title="Export Price Trend"
             type="line"
             data={priceData}
-              xKey="year" 
+            xKey="year"
             series={[{ key: "value", label: "Price" }]}
             activeFilters={{
               partnerCode: pricePartner,
@@ -301,7 +311,7 @@ const OverviewCharts = () => {
             title={`${country || ""} Import Demand Trend`}
             type="area"
             data={demandData}
-              xKey="year" 
+            xKey="year"
             series={[{ key: "value", label: "Demand" }]}
             activeFilters={{
               partnerCode: demandPartner,

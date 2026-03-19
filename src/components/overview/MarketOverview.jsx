@@ -126,10 +126,13 @@ const MarketOverview = () => {
           header={
             <div className="tp-card-header tp-card-filter-header">
               <div className="tp-card-title-wrap">
-                {currencySymbol || ""}
+                <MdOutlineCurrencyPound />
+                <div className="tp-card-title-parent">
+
                 <h3 className="tp-card-title">
                   Corridor FX & Cost Impact Monitor
                 </h3>
+                </div>
               </div>
 
               <button
