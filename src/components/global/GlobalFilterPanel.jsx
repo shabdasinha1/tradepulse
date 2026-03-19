@@ -12,6 +12,7 @@ import {
   setPartnerCode,
   setPartnerCountry,
   setDateRange,
+  setQuoteCurrency,
   resetFilters,
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
@@ -40,6 +41,8 @@ function GlobalFilterPanel({ onClose }) {
     productLabel,
     startDate,
     endDate,
+     quoteCurrency,
+     quoteCurrencySymbol
   } = useSelector((state) => state.corridor);
 
   const countries = useSelector((state) => state.country.countries);
@@ -243,6 +246,25 @@ function GlobalFilterPanel({ onClose }) {
     dispatch(setPartnerCode(localCorridor));
     dispatch(setCorridor(localCorridorLabel));
     dispatch(setPartnerCountry(localPartnerCountry));
+    // ✅ extract partner country name from corridor label
+const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
+
+if (partnerCountryName) {
+  DashboardCountries({
+    page: 1,
+    limit: 1,
+    search: partnerCountryName,
+  })
+    .then((res) => {
+      const countryData = res?.data?.[0];
+      if (countryData?.currency) {
+        dispatch(setQuoteCurrency(countryData.currency));
+      }
+    })
+    .catch((err) => {
+      console.error("Quote currency fetch failed:", err);
+    });
+}
 
     dispatch(setProduct(localProduct || { value: "", label: "" }));
 
@@ -314,6 +336,7 @@ function GlobalFilterPanel({ onClose }) {
       return [];
     }
   };
+
   const handleCountryScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop <= e.target.clientHeight + 5;

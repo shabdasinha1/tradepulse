@@ -11,7 +11,12 @@ export const queryKeys = {
   tradeflow,
 ],
 
-  marginImpact: (budget) => ["marginImpact", budget],
+ marginImpact: (budget, baseCurrency, quoteCurrency) => [
+  "marginImpact",
+  budget,
+  baseCurrency,
+  quoteCurrency,
+],
 
   productOverview: (params) => ["productOverview", params],
 

@@ -49,9 +49,17 @@ export const DashboardImportDemandTrend = async (params = {}) => {
    DASHBOARD MARGIN IMPACT
 ================================ */
 
-export const DashboardMarginImpact = async (budget) => {
+export const DashboardMarginImpact = async ({
+  budget,
+  baseCurrency,
+  quoteCurrency,
+}) => {
   return Api.get("/dashboard/margin-impact", {
-    params: cleanParams({ budget }),
+    params: cleanParams({
+      budget,
+      baseCurrency,
+      quoteCurrency,
+    }),
   });
 };
 
