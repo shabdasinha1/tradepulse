@@ -19,7 +19,7 @@ const MarketOverview = () => {
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
   const [shipFilterOpen, setShipFilterOpen] = useState(false);
 
-  const { baseCurrency, reporterCode, partnerCode, startDate, endDate } =
+  const { currencySymbol,baseCurrency, reporterCode, partnerCode, startDate, endDate } =
     useSelector((state) => state.corridor);
 
   /* ===============================
@@ -126,7 +126,7 @@ const MarketOverview = () => {
           header={
             <div className="tp-card-header tp-card-filter-header">
               <div className="tp-card-title-wrap">
-                <MdOutlineCurrencyPound />
+                {currencySymbol || ""}
                 <h3 className="tp-card-title">
                   Corridor FX & Cost Impact Monitor
                 </h3>
