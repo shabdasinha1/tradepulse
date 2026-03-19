@@ -8,6 +8,7 @@ import { useState } from "react";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
 import UniversalFilter from "../common/UniversalFilter";
+import EmptyState from "../common/EmptyState.jsx";
 
 import {
   DashboardExchangeRate,
@@ -128,10 +129,9 @@ const MarketOverview = () => {
               <div className="tp-card-title-wrap">
                 <MdOutlineCurrencyPound />
                 <div className="tp-card-title-parent">
-
-                <h3 className="tp-card-title">
-                  Corridor FX & Cost Impact Monitor
-                </h3>
+                  <h3 className="tp-card-title">
+                    Corridor FX & Cost Impact Monitor
+                  </h3>
                 </div>
               </div>
 
@@ -147,43 +147,48 @@ const MarketOverview = () => {
         >
           <div className="tp-grid tp-rates-grid">
             <VerticalScroll className="rtx-vertical-scroll">
-              <div className="rtx-tp-rate-card-container">
-                {exchangeRates.map((r, index) => (
-                  <div key={index} className="tp-rate-card">
-                    <div className="tp-rate-header">
-                      <div className="tp-rate-symbol-wrap">
-                        {/* <span className="tp-rate-symbol">{r.currency}</span> */}
-                        <strong className="tp-kpi-card-highliter">{r.pair}</strong>
+              {exchangeRates.length === 0 ? (
+                <EmptyState message="No exchange rate data available" />
+              ) : (
+                <div className="rtx-tp-rate-card-container">
+                  {exchangeRates.map((r, index) => (
+                    <div key={index} className="tp-rate-card">
+                      <div className="tp-rate-header">
+                        <div className="tp-rate-symbol-wrap">
+                          <strong className="tp-kpi-card-highliter">
+                            {r.pair}
+                          </strong>
+                        </div>
+
+                        <span
+                          className={`tp-risk-badge tp-risk-${r.riskLevel?.toLowerCase()}`}
+                        >
+                          {r.riskLevel} <span>Risk</span>
+                        </span>
+
+                        {r.alert && <span className="tp-rate-alert">⚠</span>}
                       </div>
 
-                      <span
-                        className={`tp-risk-badge tp-risk-${r.riskLevel?.toLowerCase()}`}
-                      >
-                        {r.riskLevel} <span>Risk</span>
-                      </span>
-
-                      {r.alert && <span className="tp-rate-alert">⚠</span>}
+                      <div className="tp-rate-changepercent-wrap">
+                        <strong className="tp-kpi-card-highliter">
+                          {r.rate}
+                        </strong>
+                        <span
+                          className={`tp-rate-change ${
+                            r.trend === "UP"
+                              ? "tp-text-up"
+                              : r.trend === "DOWN"
+                                ? "tp-text-down"
+                                : "tp-text-neutral"
+                          }`}
+                        >
+                          {r.changePercent}%
+                        </span>
+                      </div>
                     </div>
-
-                    {/* <span className="tp-rate-pair">{r.pair}</span> */}
-                    {/* <span className="tp-rate-pair"><br /></span> */}
-                    <div className="tp-rate-changepercent-wrap">
-                      <strong className="tp-kpi-card-highliter">{r.rate}</strong>
-                      <span
-                        className={`tp-rate-change ${
-                          r.trend === "UP"
-                            ? "tp-text-up"
-                            : r.trend === "DOWN"
-                              ? "tp-text-down"
-                              : "tp-text-neutral"
-                        }`}
-                      >
-                        {r.changePercent}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </VerticalScroll>
           </div>
         </TradePulseCard>
@@ -208,39 +213,46 @@ const MarketOverview = () => {
             </div>
           }
         >
-          <div className="tp-grid tp-ship-grid">
-            {shippingData.map((s, i) => (
-              <div key={i} className="tp-ship-card">
-                <div className="tp-ship-header">
-                  <div>
-                    <span className="tp-ship-route tp-kpi-card-highliter">{s.corridor}</span>
+          {shippingData.length === 0 ? (
+            <EmptyState message="No shipping data available" />
+          ) : (
+            <div className="tp-grid tp-ship-grid">
+              {shippingData.map((s, i) => (
+                <div key={i} className="tp-ship-card">
+                  <div className="tp-ship-header">
+                    <div>
+                      <span className="tp-ship-route tp-kpi-card-highliter">
+                        {s.corridor}
+                      </span>
+                    </div>
+
+                    <span className="tp-ship-days">
+                      {s.age ? `${s.age}` : "0 Days"}
+                    </span>
                   </div>
 
-                  <span className="tp-ship-days">
-                    {s.age ? `${s.age}` : "0 Days"}
-                  </span>
-                </div>
+                  <div className="tp-ship-footer">
+                    <strong className="tp-kpi-card-highliter">
+                      <span className="tp-ship-port">{s.currency}</span>{" "}
+                      {s.cost}
+                    </strong>
 
-                <div className="tp-ship-footer">
-                  <strong className="tp-kpi-card-highliter">
-                    <span className="tp-ship-port ">{s.currency}</span> {s.cost}
-                  </strong>
-
-                  <span
-                    className={`tp-ship-change ${
-                      s.changePercent !== 0
-                        ? s.changePercent > 0
-                          ? "tp-text-up"
-                          : "tp-text-down"
-                        : "tp-muted"
-                    }`}
-                  >
-                    {s.changePercent}%
-                  </span>
+                    <span
+                      className={`tp-ship-change ${
+                        s.changePercent !== 0
+                          ? s.changePercent > 0
+                            ? "tp-text-up"
+                            : "tp-text-down"
+                          : "tp-muted"
+                      }`}
+                    >
+                      {s.changePercent}%
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </TradePulseCard>
 
         {/* ================= FX FILTER ================= */}

@@ -5,6 +5,7 @@ import { FiGlobe } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import { useSelector } from "react-redux";
 import { queryKeys } from "../../utils/queryKeys";
+import EmptyState from "../common/EmptyState.jsx";
 
 const LatestTradeNews = React.memo(() => {
   const {
@@ -141,9 +142,7 @@ const news = useMemo(() => {
 
           {/* 💤 Empty */}
           {!isLoading && !error && news.length === 0 && (
-            <div className="tp-news-item">
-              <p className="tp-news-title">No trade updates available</p>
-            </div>
+            <EmptyState message="No margin data available" />
           )}
         </div>
       </div>

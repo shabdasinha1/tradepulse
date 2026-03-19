@@ -4,11 +4,11 @@ import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardDutySnapshot } from "../../services/DashboardService";
 import { queryKeys } from "../../utils/queryKeys";
+import EmptyState from "../common/EmptyState.jsx";
 
 const CustomsDutyRates = () => {
-
-  const {country ,startDate, endDate, reporterCode } = useSelector(
-    (state) => state.corridor
+  const { country, startDate, endDate, reporterCode } = useSelector(
+    (state) => state.corridor,
   );
 
   const { data: duties = [] } = useQuery({
@@ -21,13 +21,12 @@ const CustomsDutyRates = () => {
       }),
     enabled: !!reporterCode,
     staleTime: 1000 * 60 * 10,
-    select: (res) => res?.data || []
+    select: (res) => res?.data || [],
   });
 
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
-
         <TradePulseCard
           header={
             <div className="tp-card-header">
@@ -38,29 +37,26 @@ const CustomsDutyRates = () => {
             </div>
           }
         >
-          <div className="tp-grid tp-duty-grid">
+          {duties.length === 0 ? (
+            <EmptyState message="No duty data available" />
+          ) : (
+            <div className="tp-grid tp-duty-grid">
+              {duties.map((item) => (
+                <div key={item.hsCode} className="tp-duty-card">
+                  <span className="tp-duty-title">{item.category}</span>
 
-            {duties.map((item) => (
-              <div key={item.hsCode} className="tp-duty-card">
+                  <strong className="tp-duty-rate tp-text-neutral">
+                    {item.range}
+                  </strong>
 
-                <span className="tp-duty-title">
-                  {item.category}
-                </span>
-
-                <strong className="tp-duty-rate tp-text-neutral">
-                  {item.range}
-                </strong>
-
-                <span className="tp-duty-note tp-muted">
-                  HS Code: {item.hsCode}
-                </span>
-
-              </div>
-            ))}
-
-          </div>
+                  <span className="tp-duty-note tp-muted">
+                    HS Code: {item.hsCode}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </TradePulseCard>
-
       </div>
     </section>
   );

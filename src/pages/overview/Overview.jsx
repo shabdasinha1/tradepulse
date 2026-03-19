@@ -13,6 +13,7 @@ import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 // import { FiCalculator } from "react-icons/fi";
 import { IoCalculatorOutline } from "react-icons/io5";
 import { queryKeys } from "../../utils/queryKeys";
+import EmptyState from "../../components/common/EmptyState";
 
 function Overview() {
   const corridorId = useSelector((state) => state.corridor.corridorId);
@@ -114,7 +115,7 @@ function Overview() {
             <div className="tp-news-margin-layout">
               {/* LEFT 50% – NEWS */}
               <div className="tp-news-column">
-                <LatestTradeNews  />
+                <LatestTradeNews />
               </div>
 
               {/* RIGHT 50% – MARGIN */}
@@ -155,10 +156,14 @@ function Overview() {
                       <div className="tp-margin-result">
                         <p className="tp-muted">Estimated FX Impact</p>
 
-                        <h2 className="tp-margin-value">
-                          {impact >= 0 ? "+" : "-"}£
-                          {Math.abs(impact).toLocaleString()}
-                        </h2>
+                        {marginImpactData?.data ? (
+                          <h2 className="tp-margin-value">
+                            {impact >= 0 ? "+" : "-"}£
+                            {Math.abs(impact).toLocaleString()}
+                          </h2>
+                        ) : (
+                          <EmptyState message="No margin data available" />
+                        )}
                       </div>
                       <span className="tp-text-neutral tp-rate-change">
                         {changePercent}%
