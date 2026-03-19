@@ -119,7 +119,6 @@ const MarketOverview = () => {
     staleTime: 1000 * 60 * 5,
   });
 const { convert } = useCurrencyConverter(exchangeRates);
-console.log(exchangeRates)
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
