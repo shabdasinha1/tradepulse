@@ -14,6 +14,7 @@ import {
   DashboardShippingCosts,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
+import useCurrencyConverter from "../../hooks/useCurrencyConverter";
 
 const MarketOverview = () => {
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
@@ -116,7 +117,7 @@ const MarketOverview = () => {
     select: (res) => res?.data || [],
     staleTime: 1000 * 60 * 5,
   });
-
+const { convert } = useCurrencyConverter(exchangeRates);
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -126,7 +127,7 @@ const MarketOverview = () => {
           header={
             <div className="tp-card-header tp-card-filter-header">
               <div className="tp-card-title-wrap">
-                <MdOutlineCurrencyPound />
+               {currencySymbol || ""}
                 <div className="tp-card-title-parent">
 
                 <h3 className="tp-card-title">
@@ -223,7 +224,8 @@ const MarketOverview = () => {
 
                 <div className="tp-ship-footer">
                   <strong className="tp-kpi-card-highliter">
-                    <span className="tp-ship-port ">{s.currency}</span> {s.cost}
+                    {/* <span className="tp-ship-port ">{s.currency}</span> {s.cost} */}
+                    {currencySymbol} {convert(s.cost, s.currency).toFixed(0)}
                   </strong>
 
                   <span

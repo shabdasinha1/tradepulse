@@ -67,7 +67,7 @@ const corridorSlice = createSlice({
     setTradeflow: (state, action) => {
       state.tradeflow = action.payload;
     },
-
+    
     resetFilters: (state) => {
       state.country = "United Kingdom";
       state.reporterCode = "826";
