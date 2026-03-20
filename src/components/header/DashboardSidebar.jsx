@@ -10,6 +10,7 @@ import {
   FiMoon,
   FiChevronLeft,
   FiChevronRight,
+  FiMessageSquare
 } from "react-icons/fi";
 
 import { HiOutlineViewGrid } from "react-icons/hi";
@@ -28,6 +29,7 @@ const ICON_MAP = {
   "/reports": <TbReportAnalytics />,
   "/watchlist": <BsBookmark />,
   "/ai-assistant": <AiOutlineRobot />,
+  "/feedback-data": <FiMessageSquare />,
   "/settings": <FiSettings />,
 };
 

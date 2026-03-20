@@ -262,7 +262,7 @@ const DashboardProduct = () => {
           className="tp-table-row tp-table-suppliers"
           key={item.product || index}
         >
-          <span>{item.productCategory}</span>
+          <span>{item.categoryHs2} - {item.productCategory}</span>
 
           <span className="tp-muted text-center">
             {currencySymbol || ""}
@@ -377,11 +377,11 @@ const DashboardProduct = () => {
           ) : (
             <>
               <div className="tp-card">
-                <p className="tp-muted">Most Imported Product ({corridor})</p>
+                <p className="tp-muted">Active Products ({corridor})</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.totalProducts ? (
+                  {productData?.productOverview?.activeProducts ? (
                     <span className="tp-overview-text">
-                      {productData.productOverview.totalProducts}
+                      {productData.productOverview.activeProducts}
                     </span>
                   ) : (
                     <EmptyState message="No imported product found" />
@@ -392,8 +392,8 @@ const DashboardProduct = () => {
               <div className="tp-card">
                 <p className="tp-muted">Fastest Growing Demand ({corridor})</p>
                 <h3 className="tp-overview-text">
-                  {productData?.productOverview?.activeProducts ? (
-                    productData?.productOverview?.activeProducts
+                  {productData?.productOverview?.fastestGrowingProduct ? (
+                    productData?.productOverview?.fastestGrowingProduct
                   ) : (
                     <EmptyState message="No demand data found" />
                   )}

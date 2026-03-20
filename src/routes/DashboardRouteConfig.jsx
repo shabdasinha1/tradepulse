@@ -13,6 +13,7 @@ const Report = lazy(() => import("../pages/report/Report.jsx"));
 const Suppliers = lazy(() => import("../pages/suppliers/Suppliers.jsx"));
 const TradeAssistant = lazy(()=> import("../pages/assistant/TradeAssistant.jsx"));
 const Settings = lazy(() => import("../pages/settings/Settings.jsx"));
+const Feedback = lazy(() => import("../pages/feedback/Feedback.jsx"));
 
 export const DASHBOARD_ROUTES = [
   {
@@ -50,6 +51,11 @@ export const DASHBOARD_ROUTES = [
   //   path: "/ai-assistant",
   //   component: TradeAssistant,
   // },
+  {
+  label: "Feedback",
+  path: "/feedback-data",
+  component: Feedback,
+},
   {
     label: "Settings",
     path: "/settings",
