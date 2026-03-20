@@ -31,9 +31,9 @@ const SupplierRowSkeleton = React.memo(() => {
 const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const { tradeflow, reporterCode, startDate, endDate, corridor } = useSelector(
-    (state) => state.corridor,
-  );
+  const { tradeflow, reporterCode, startDate, endDate, corridor, partnerCode, region } = useSelector(
+  (state) => state.corridor,
+);
   const skeletonRows = useMemo(
     () =>
       [...Array(5)].map((_, i) => (
@@ -72,20 +72,28 @@ const Suppliers = () => {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: queryKeys.suppliers(reporterCode, startDate, endDate, tradeflow),
+    queryKey: queryKeys.suppliers(
+  reporterCode,
+  startDate,
+  endDate,
+  tradeflow,
+  region
+),
 
-    queryFn: async ({ pageParam = 1 }) => {
-      const res = await DashboardSuppliers({
-        reporterCode,
-        startDate,
-        endDate,
-        tradeflow,
-        page: pageParam,
-        limit: LIMIT,
-      });
+   queryFn: async ({ pageParam = 1 }) => {
+  const res = await DashboardSuppliers({
+    reporterCode,
+    partnerCode,
+    startDate,
+    endDate,
+    tradeFlow: tradeflow, // ⚠️ API expects tradeFlow (camelCase)
+    originRegion: region, // ✅ region param
+    page: pageParam,
+    limit: LIMIT,
+  });
 
-      return res?.data?.suppliers || [];
-    },
+  return res?.data?.suppliers || [];
+},
 
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length === LIMIT ? pages.length + 1 : undefined;
@@ -127,7 +135,7 @@ const Suppliers = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              {/* <div className="tp-corridor-pill">
+              <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
 
                 <span
@@ -136,7 +144,7 @@ const Suppliers = () => {
                 >
                   {shortCorridor}
                 </span>
-              </div> */}
+              </div>
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"

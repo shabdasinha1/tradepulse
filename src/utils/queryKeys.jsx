@@ -3,13 +3,14 @@ export const queryKeys = {
 
   corridors: (reporterCode) => ["corridors", reporterCode],
 
-  suppliers: (reporterCode, startDate, endDate, tradeflow) => [
-    "suppliers",
-    reporterCode,
-    startDate,
-    endDate,
-    tradeflow,
-  ],
+  suppliers: (reporterCode, startDate, endDate, tradeflow, region) => [
+  "suppliers",
+  reporterCode,
+  startDate,
+  endDate,
+  tradeflow,
+  region, 
+],
   
   feedback: (page, limit) => ["feedback", page, limit],
 
