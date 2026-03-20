@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import TradePulseCard from "../../components/common/TradePulseCard";
 
 /* ===============================
    API BASE (TOP CONFIG)
@@ -41,8 +42,7 @@ const Scheduler = () => {
         cronExpression: "0 0 3 * * ?",
         timezone: "UTC",
         executionType: "DOCKER",
-        executionPath:
-          "registry.gitlab.com/iniperor-group/sample:latest",
+        executionPath: "registry.gitlab.com/iniperor-group/sample:latest",
         parametersJson: JSON.stringify({ selector: "all" }),
         status: "ACTIVE",
         maxRetries: 2,
@@ -69,7 +69,6 @@ const Scheduler = () => {
       console.error("Trigger failed", err);
     }
   };
-
   /* ===============================
      MANUAL SCHEDULE (UPDATE)
   ================================ */
@@ -87,7 +86,6 @@ const Scheduler = () => {
       console.error("Update failed", err);
     }
   };
-
   /* ===============================
      INIT LOAD
   ================================ */
@@ -95,76 +93,141 @@ const Scheduler = () => {
     fetchJobs();
   }, []);
 
+  const headerRef = useRef(null);
+  const bodyRef = useRef(null);
+
+  const handleHeaderScroll = () => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollLeft = headerRef.current.scrollLeft;
+    }
+  };
+
+  const handleBodyScroll = () => {
+    if (headerRef.current) {
+      headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
+    }
+  };
   return (
-    <div className="tp-section">
-      <div className="tp-flex tp-justify-between tp-align-center">
-        <h2>Scheduler</h2>
+    <section className="tp-section tp-section--dashboard">
+      <div className="tp-dashboard-container tp-grid-stack">
+        {/* HEADER */}
+        <header>
+          <div className="tp-overview-sub-row">
+            <div>
+              <h1 className="tp-section-title">
+                Scheduler <span>Control Panel</span>
+              </h1>
 
-        <button
-          className="tp-btn-primary"
-          onClick={handleCreateJob}
-          disabled={creating}
+              <p className="tp-section-sub">
+                Manage, trigger, and monitor scheduled orchestration jobs.
+              </p>
+            </div>
+
+            <div className="tp-filter-btn-wrapper">
+              <button
+                className="tp-btn-primary"
+                onClick={handleCreateJob}
+                disabled={creating}
+              >
+                {creating ? "Creating..." : "Create Job"}
+              </button>
+            </div>
+          </div>
+        </header>
+
+        {/* ================= TABLE ================= */}
+        <TradePulseCard
+          header={
+            <div className="tp-card-header">
+              <h3 className="tp-card-title">Job Directory</h3>
+            </div>
+          }
         >
-          {creating ? "Creating..." : "Create Job"}
-        </button>
-      </div>
+          <div className="tp-table-wrapper tp-scheduler-table">
+            {loading ? (
+              <p className="tp-loading-text">Loading jobs...</p>
+            ) : (
+              <div className="tp-table-wrapper-feedback">
+                {/* HEADER */}
+                <div
+                  className="tp-table-head-scroll"
+                  ref={headerRef}
+                  onScroll={handleHeaderScroll}
+                >
+                  <div className="tp-table-head tp-table-scheduler">
+                    <span>Job Name</span>
+                    <span className="text-center">Cron</span>
+                    <span className="text-center">Status</span>
+                    <span className="text-center">Timezone</span>
+                    <span className="text-center">Actions</span>
+                  </div>
+                </div>
 
-      {/* ================= TABLE ================= */}
-      <div className="tp-table-wrapper" style={{ marginTop: "20px" }}>
-        {loading ? (
-          <p>Loading jobs...</p>
-        ) : (
-          <table className="tp-table">
-            <thead>
-              <tr>
-                <th>Job Name</th>
-                <th>Cron</th>
-                <th>Status</th>
-                <th>Timezone</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {jobs.length === 0 ? (
-                <tr>
-                  <td colSpan="5">No jobs found</td>
-                </tr>
-              ) : (
-                jobs.map((job) => (
-                  <tr key={job.id}>
-                    <td>{job.jobName}</td>
-                    <td>{job.cronExpression}</td>
-                    <td>{job.status}</td>
-                    <td>{job.timezone}</td>
-
-                    <td>
-                      <div className="tp-flex" style={{ gap: "10px" }}>
-                        {/* TRIGGER */}
-                        <button
-                          className="tp-btn-secondary"
-                          onClick={() => handleTrigger(job.id)}
+                {/* BODY */}
+                <div
+                  className="tp-table-body-scroll"
+                  ref={bodyRef}
+                  onScroll={handleBodyScroll}
+                >
+                  <div className="tp-table">
+                    {loading ? (
+                      <p className="tp-loading-text">Loading jobs...</p>
+                    ) : jobs.length === 0 ? (
+                      <div className="tp-empty">No jobs found</div>
+                    ) : (
+                      jobs.map((job) => (
+                        <div
+                          key={job.id}
+                          className="tp-table-row tp-table-scheduler"
                         >
-                          Trigger
-                        </button>
+                          <div className="tp-text-strong">{job.jobName}</div>
 
-                        {/* MANUAL SCHEDULE */}
-                        <button
-                          className="tp-btn-outline"
-                          onClick={() => handleManualSchedule(job)}
-                        >
-                          Manual Schedule
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        )}
+                          <span className="text-center tp-mono">
+                            {job.cronExpression}
+                          </span>
+
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                job.status === "ACTIVE"
+                                  ? "tp-pill-success"
+                                  : "tp-pill-danger"
+                              }`}
+                            >
+                              {job.status}
+                            </span>
+                          </span>
+
+                          <span className="text-center">{job.timezone}</span>
+
+                          <span className="text-center">
+                            <div className="tp-flex tp-actions">
+                              <button
+                                className="tp-btn-primary"
+                                // onClick={() => handleTrigger(job.id)}
+                              >
+                                Trigger
+                              </button>
+
+                              <button
+                                className="tp-btn-outline"
+                                // onClick={() => handleManualSchedule(job)}
+                              >
+                                Manual Schedule
+                              </button>
+                            </div>
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </TradePulseCard>
       </div>
-    </div>
+    </section>
   );
 };
 

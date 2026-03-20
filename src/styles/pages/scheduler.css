@@ -1,0 +1,100 @@
+/* ===============================
+   SCHEDULER UI
+================================ */
+.tp-table-scheduler {
+  display: grid;
+  grid-template-columns:
+    1.5fr /* Job Name */
+    1.5fr /* Cron */
+    1fr /* Status */
+    1fr /* Timezone */
+    1.5fr; /* Actions */
+
+  gap: var(--space-md);
+  align-items: center;
+  min-width: 950px;
+}
+.tp-scheduler-table {
+  overflow-x: auto;
+}
+
+/* TEXT */
+.tp-text-strong {
+  font-weight: var(--fw-semibold);
+}
+
+.tp-mono {
+  font-family: monospace;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* ACTIONS */
+.tp-actions {
+  gap: 8px;
+}
+
+/* BUTTONS */
+.tp-btn-secondary,
+.tp-btn-outline {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+/* EMPTY */
+.tp-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+}
+
+/* LOADING */
+.tp-loading-text {
+  padding: 20px;
+  text-align: center;
+}
+
+/* Match feedback table wrapper */
+.tp-scheduler-table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Make header scroll sync feel same */
+.tp-table-wrapper {
+  overflow-x: auto;
+}
+
+/* Improve spacing like feedback */
+.tp-scheduler-table-ui td,
+.tp-scheduler-table-ui th {
+  padding: 16px;
+}
+
+/* Better row feel */
+.tp-scheduler-table-ui tbody tr {
+  transition: background 0.2s ease;
+}
+
+/* Actions spacing */
+.tp-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Mobile scroll */
+@media (max-width: 900px) {
+  .tp-scheduler-table-ui {
+    min-width: 900px;
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .tp-scheduler-table-ui {
+    min-width: 900px;
+  }
+}
