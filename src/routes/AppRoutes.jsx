@@ -73,9 +73,9 @@ const AppRoutes = () => {
           ))}
 
           {/* 🔒 DASHBOARD ROUTES */}
-          {DASHBOARD_ROUTES.map(({ path, component: Component }) => {
-  // Block feedback route for non-admin
-  if (path === "/feedback-data" && !isAdminUser()) {
+        {DASHBOARD_ROUTES.map(({ path, component: Component, adminOnly }) => {
+  // 🔥 Block admin routes
+  if (adminOnly && !isAdminUser()) {
     return null;
   }
 

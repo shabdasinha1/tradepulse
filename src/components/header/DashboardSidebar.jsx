@@ -10,7 +10,8 @@ import {
   FiMoon,
   FiChevronLeft,
   FiChevronRight,
-  FiMessageSquare
+  FiMessageSquare,
+  FiCalendar 
 } from "react-icons/fi";
 
 import { HiOutlineViewGrid } from "react-icons/hi";
@@ -31,6 +32,7 @@ const ICON_MAP = {
   "/watchlist": <BsBookmark />,
   "/ai-assistant": <AiOutlineRobot />,
   "/feedback-data": <FiMessageSquare />,
+  "/scheduler": <FiCalendar />,
   "/settings": <FiSettings />,
 };
 
@@ -198,12 +200,13 @@ const location = useLocation();
 
           {/* ================= NAV ================= */}
           <nav className="tp-sidebar-nav">
-           {DASHBOARD_ROUTES
+
+{DASHBOARD_ROUTES
   .filter((r) => {
     if (r.hidden) return false;
 
-    // Hide feedback for non-admin
-    if (r.path === "/feedback-data" && !isAdminUser()) {
+    // 🔥 Generic admin check
+    if (r.adminOnly && !isAdminUser()) {
       return false;
     }
 
