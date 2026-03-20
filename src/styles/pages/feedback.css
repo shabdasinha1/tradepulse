@@ -34,8 +34,6 @@
   margin: 0 auto;
 }
 
-
-
 @media (max-width: 768px) {
   .tp-form-group {
     /* width: 100%; */
@@ -56,3 +54,46 @@
     padding: var(--space-sm);
   }
 }
+
+/* 
+==============================================================================
+            DASHBOARD FEEDBACK PAGE START
+==============================================================================
+*/
+
+/* ===============================
+   FEEDBACK TABLE
+================================ */
+
+.tp-table-wrapper-feedback {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tp-table-feedback {
+  display: grid;
+  grid-template-columns:
+    1fr
+    1fr
+    1fr
+    1.5fr
+    1.2fr
+    1fr
+    1fr;
+  gap: var(--space-md);
+  align-items: center;
+  min-width: 950px;
+}
+
+/* Mobile scroll */
+@media (max-width: 900px) {
+  .tp-table-feedback {
+    min-width: 950px;
+  }
+}
+/* 
+==============================================================================
+            DASHBOARD FEEDBACK PAGE END
+==============================================================================
+*/

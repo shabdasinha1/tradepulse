@@ -231,3 +231,12 @@ export const DashboardSuppliers = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+
+/* ===============================
+   DASHBOARD FEEDBACK
+================================ */
+export const DashboardFeedback = async (params = {}) => {
+  return Api.get("/feedback/get", {
+    params: cleanParams(params),
+  });
+};

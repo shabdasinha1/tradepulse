@@ -262,7 +262,9 @@ const DashboardProduct = () => {
           className="tp-table-row tp-table-suppliers"
           key={item.product || index}
         >
-          <span>{item.categoryHs2} - {item.productCategory}</span>
+          <span>
+            {item.categoryHs2} - {item.productCategory}
+          </span>
 
           <span className="tp-muted text-center">
             {currencySymbol || ""}
@@ -378,8 +380,8 @@ const DashboardProduct = () => {
             <>
               <div className="tp-card">
                 <p className="tp-muted">Active Products ({corridor})</p>
-                <h3 className="tp-overview-text">
-                  {productData?.productOverview?.activeProducts ? (
+                {productData?.productOverview?.activeProducts ? (
+                  <h3 className="tp-overview-text">
                     <span className="tp-overview-text">
                       {productData.productOverview.activeProducts}
                     </span>
@@ -404,7 +406,11 @@ const DashboardProduct = () => {
                 <p className="tp-muted">Highest Price Volatility</p>
                 {productData?.productOverview?.topValueProduct ? (
                   <h3 className="tp-text-up tp-overview-text">
-                    {productData?.productOverview?.topValueProduct?.split(",")[0]}
+                    {
+                      productData?.productOverview?.topValueProduct?.split(
+                        ",",
+                      )[0]
+                    }
                   </h3>
                 ) : (
                   <EmptyState message="No volatility found" />
@@ -413,15 +419,17 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Risk Product</p>
-                  {productData?.productOverview?.lowestValueProduct ? (
-                    <h3 className="tp-text-down tp-overview-text">
-                    {productData?.productOverview?.lowestValueProduct?.split(
-                      ",",
-                    )[0]}
-                </h3>
-                  ) : (
-                    <EmptyState message="No risk data found" />
-                  )}
+                {productData?.productOverview?.lowestValueProduct ? (
+                  <h3 className="tp-text-down tp-overview-text">
+                    {
+                      productData?.productOverview?.lowestValueProduct?.split(
+                        ",",
+                      )[0]
+                    }
+                  </h3>
+                ) : (
+                  <EmptyState message="No risk data found" />
+                )}
               </div>
             </>
           )}
