@@ -62,7 +62,7 @@ const Feedback = () => {
       limit: LIMIT,
     });
 
-    return res?.data?.data?.data || [];
+    return res?.data?.data|| [];
   },
 
   getNextPageParam: (lastPage, pages) => {
