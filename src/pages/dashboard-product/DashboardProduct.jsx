@@ -262,7 +262,7 @@ const DashboardProduct = () => {
           className="tp-table-row tp-table-suppliers"
           key={item.product || index}
         >
-          <span>{item.productCategory}</span>
+          <span>{item.categoryHs2} - {item.productCategory}</span>
 
           <span className="tp-muted text-center">
             {currencySymbol || ""}
@@ -377,11 +377,11 @@ const DashboardProduct = () => {
           ) : (
             <>
               <div className="tp-card">
-                <p className="tp-muted">Most Imported Product ({corridor})</p>
-                {productData?.productOverview?.totalProducts ? (
-                  <h3 className="tp-overview-text">
+                <p className="tp-muted">Active Products ({corridor})</p>
+                <h3 className="tp-overview-text">
+                  {productData?.productOverview?.activeProducts ? (
                     <span className="tp-overview-text">
-                      {productData.productOverview.totalProducts}
+                      {productData.productOverview.activeProducts}
                     </span>
                   </h3>
                 ) : (
@@ -391,13 +391,13 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">Fastest Growing Demand ({corridor})</p>
-                {productData?.productOverview?.activeProducts ? (
-                  <h3 className="tp-overview-text">
-                    {productData?.productOverview?.activeProducts}
-                  </h3>
-                ) : (
-                  <EmptyState message="No demand data found" />
-                )}
+                <h3 className="tp-overview-text">
+                  {productData?.productOverview?.fastestGrowingProduct ? (
+                    productData?.productOverview?.fastestGrowingProduct
+                  ) : (
+                    <EmptyState message="No demand data found" />
+                  )}
+                </h3>
               </div>
 
               <div className="tp-card">

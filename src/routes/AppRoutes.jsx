@@ -16,6 +16,7 @@ import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import PublicOnlyRoute from "./PublicOnlyRoute.jsx";
 import { ToastContainer } from "react-toastify";
 import { ToastProvider } from "../components/common/toast/ToastProvider.jsx";
+import { isAdminUser } from "../utils/AdminHelper.jsx";
 
 /* Simple loader */
 const PageLoader = () => (
@@ -72,19 +73,26 @@ const AppRoutes = () => {
           ))}
 
           {/* 🔒 DASHBOARD ROUTES */}
-          {DASHBOARD_ROUTES.map(({ path, component: Component }) => (
-            <Route
-              key={path}
-              path={path}
-              element={
-                <ProtectedRoute>
-                  <PrivateLayout>
-                    <Component />
-                  </PrivateLayout>
-                </ProtectedRoute>
-              }
-            />
-          ))}
+          {DASHBOARD_ROUTES.map(({ path, component: Component }) => {
+  // Block feedback route for non-admin
+  if (path === "/feedback-data" && !isAdminUser()) {
+    return null;
+  }
+
+  return (
+    <Route
+      key={path}
+      path={path}
+      element={
+        <ProtectedRoute>
+          <PrivateLayout>
+            <Component />
+          </PrivateLayout>
+        </ProtectedRoute>
+      }
+    />
+  );
+})}
 
           {/* 🚫 404 */}
           <Route
