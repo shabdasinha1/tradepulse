@@ -83,8 +83,8 @@ const isSupplierPage = location.pathname.includes("suppliers");
   const LIMIT = 50;
 
   const [corridorOptions, setCorridorOptions] = useState([]);
-  const [localRegion, setLocalRegion] = useState(region || "Africa");
-const [regionOptions, setRegionOptions] = useState([]);
+  const [localRegion, setLocalRegion] = useState(region || "");
+
 
   /* =========================
      SYNC REDUX → LOCAL
@@ -99,6 +99,7 @@ const [regionOptions, setRegionOptions] = useState([]);
 
     setLocalStartDate(startDate || "");
     setLocalEndDate(endDate || "");
+    setLocalRegion(region || "");
 
     if (productId) {
       setLocalProduct({
@@ -157,29 +158,10 @@ const [regionOptions, setRegionOptions] = useState([]);
     );
   }, [countriesData, countryPage, dispatch]);
 
-
-  const { data: regionsData } = useQuery({
+  const { data: regionData } = useQuery({
   queryKey: ["regions"],
-  queryFn: DashboardRegions,
-  staleTime: 1000 * 60 * 30,
-  enabled: isSupplierPage, // ✅ only for supplier page
+  queryFn: () => DashboardRegions(),
 });
-
-useEffect(() => {
-  const regions = regionsData?.data || [];
-
-  const formatted = regions.map((r) => ({
-    value: r,
-    label: r,
-  }));
-
-  setRegionOptions(formatted);
-}, [regionsData]);
-
-// ✅ separate sync
-useEffect(() => {
-  setLocalRegion(region || "Africa");
-}, [region]);
 
   /* =========================
      LOAD CORRIDORS
@@ -216,6 +198,15 @@ useEffect(() => {
     }
   }, [corridorData]);
 
+  const regionOptions = [
+  { value: "", label: "All Regions" },
+  ...(regionData?.data || [])
+    .filter((r) => r)
+    .map((r) => ({
+      value: r,
+      label: r,
+    })),
+];
   /* =========================
      MODAL BEHAVIOR
   ========================== */
@@ -275,11 +266,13 @@ useEffect(() => {
         }),
       );
     }
+dispatch(setRegion(localRegion));
+
 
     dispatch(setPartnerCode(localCorridor));
     dispatch(setCorridor(localCorridorLabel));
     dispatch(setPartnerCountry(localPartnerCountry));
-    dispatch(setRegion(localRegion));
+ 
     // ✅ extract partner country name from corridor label
 const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
 
@@ -308,7 +301,6 @@ if (partnerCountryName) {
         endDate: localEndDate,
       }),
     );
-
     handleClose();
   };
 
@@ -321,7 +313,7 @@ if (partnerCountryName) {
 
     setLocalCountry("826");
     setLocalCountryName("United Kingdom");
-
+setLocalRegion("Africa");
     setLocalCorridor(566);
     setLocalCorridorLabel("UK ↔ Nigeria");
 
@@ -329,7 +321,7 @@ if (partnerCountryName) {
     setLocalEndDate("");
 
     setLocalProduct(null);
-    setLocalRegion("Africa");
+  
   };
 
   /* =========================
@@ -407,33 +399,25 @@ if (partnerCountryName) {
 
         {/* BODY */}
         <div className="tp-filter-body">
-          {isSupplierPage && (
-  <div className="tp-form-group">
-    <label>Region</label>
+       <div className="tp-form-group">
+  <label>Region</label>
 
-    <Select
-      className="tp-select"
-      classNamePrefix="tp-select"
-      components={{
-        DropdownIndicator: () => null,
-        IndicatorSeparator: () => null,
-      }}
-      options={regionOptions}
-      value={
-        regionOptions.find((opt) => opt.value === localRegion) || {
-          value: localRegion,
-          label: localRegion,
-        }
-      }
-      onChange={(opt) => {
-        const selected = opt?.value || "";
-        setLocalRegion(selected);
-      }}
-      placeholder="Select Region"
-      isSearchable
-    />
-  </div>
-)}
+  <Select
+    className="tp-select"
+    classNamePrefix="tp-select"
+    components={{
+      DropdownIndicator: () => null,
+      IndicatorSeparator: () => null,
+    }}
+    options={regionOptions}
+    value={regionOptions.find((o) => o.value === localRegion) || null}
+    onChange={(opt) => {
+      setLocalRegion(opt?.value || "");
+    }}
+    placeholder="Select Region"
+    isSearchable
+  />
+</div>
           <div className="tp-form-group">
             <label>Country</label>
 

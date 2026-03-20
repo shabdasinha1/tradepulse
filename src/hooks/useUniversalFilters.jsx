@@ -42,11 +42,11 @@ export default function useUniversalFilters(defaultValues = {}) {
   useEffect(() => {
 
     const shouldSync =
-      lastReduxSync.current.partnerCode !== partnerCode ||
-      lastReduxSync.current.productId !== productId ||
-      lastReduxSync.current.startDate !== startDate ||
-      lastReduxSync.current.endDate !== endDate ||
-      lastReduxSync.current.corridor !== corridor;
+  lastReduxSync.current.partnerCode !== partnerCode ||
+  lastReduxSync.current.productId !== productId ||
+  lastReduxSync.current.startDate !== startDate ||
+  lastReduxSync.current.endDate !== endDate ||
+  lastReduxSync.current.corridor !== corridor;
 
     if (!shouldSync) return;
 
@@ -62,8 +62,15 @@ export default function useUniversalFilters(defaultValues = {}) {
 
       const next = {
         ...prev,
-        corridor: corridor || "",
-        partnerCode: partnerCode || "",
+       corridor:
+  window.location.pathname.includes("suppliers")
+    ? ""
+    : corridor || "",
+
+partnerCode:
+  window.location.pathname.includes("suppliers")
+    ? ""
+    : partnerCode || "",
         product: productId || "",
         productLabel: productLabel || "",
         startDate: startDate || "",

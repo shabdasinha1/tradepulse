@@ -350,7 +350,7 @@ const DashboardProduct = () => {
                 onClick={() => setFilterOpen(true)}
               >
                 <FiSliders />
-                Filters
+               Global Filters
               </button>
             </div>
           </div>

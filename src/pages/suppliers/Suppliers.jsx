@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useEffect,useState, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
@@ -34,6 +34,9 @@ const SupplierRowSkeleton = React.memo(() => {
 const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const hasMounted = useRef(false);
+  const hasFetchedInitially = useRef(false);
 
   const {
     tradeflow,
@@ -81,37 +84,51 @@ const Suppliers = () => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useInfiniteQuery({
-    queryKey: queryKeys.suppliers(
-      reporterCode,
-      startDate,
-      endDate,
-      tradeflow,
-      region,
-    ),
-
-    queryFn: async ({ pageParam = 1 }) => {
-      const res = await DashboardSuppliers({
+  } =useInfiniteQuery({
+  queryKey: isInitialLoad
+    ? ["suppliers", "initial", region]
+    : [
+        "suppliers",
+        "filtered",
         reporterCode,
         partnerCode,
         startDate,
         endDate,
-        tradeFlow: tradeflow, // ⚠️ API expects tradeFlow (camelCase)
-        originRegion: region, // ✅ region param
-        page: pageParam,
-        limit: LIMIT,
-      });
+        tradeflow,
+        region,
+      ],
 
-      return res?.data?.suppliers || [];
-    },
+ queryFn: async ({ pageParam = 1 }) => {
+  let params = {
+    page: pageParam,
+    limit: LIMIT,
+  };
 
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage.length === LIMIT ? pages.length + 1 : undefined;
-    },
+  if (isInitialLoad) {
+    params.originRegion = region;
+  } else {
+    params = {
+      ...params,
+      reporterCode,
+      partnerCode,
+      startDate,
+      endDate,
+      tradeFlow: tradeflow,
+      originRegion: region,
+    };
+  }
 
-    enabled: !!reporterCode,
-  });
+  const res = await DashboardSuppliers(params);
+  return res?.data?.suppliers || [];
+},
+  getNextPageParam: (lastPage, pages) =>
+    lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
+  enabled: isInitialLoad ? !!region : !!reporterCode,
+
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+});
   const suppliers = useMemo(() => {
     return supplierPages?.pages?.flat() || [];
   }, [supplierPages]);
@@ -131,6 +148,8 @@ const Suppliers = () => {
     },
     [isFetchingNextPage, hasNextPage, fetchNextPage],
   );
+
+
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -145,7 +164,7 @@ const Suppliers = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              <div className="tp-corridor-pill">
+              {/* <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor : </span>
 
                 <span
@@ -154,7 +173,7 @@ const Suppliers = () => {
                 >
                   {shortCorridor}
                 </span>
-              </div>
+              </div> */}
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
@@ -256,8 +275,12 @@ const Suppliers = () => {
           showCorridor
           showTimeRange
           showPartner
+         
           onClose={() => setTableFilterOpen(false)}
-          onChange={() => setTableFilterOpen(false)}
+          onChange={() => {
+    setIsInitialLoad(false); // ✅ IMPORTANT
+    setTableFilterOpen(false);
+  }}
         />
       )}
     </section>

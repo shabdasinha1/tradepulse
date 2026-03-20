@@ -4,15 +4,19 @@ import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
 import Select from "react-select";
 import AsyncCreatableSelect from "react-select/async-creatable";
-import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
+
 
 import {
   DashboardCorridors,
   ProductDropdownSearch,
   DashboardCountries,
+
 } from "../../services/DashboardService";
 
 import useUniversalFilters from "../../hooks/useUniversalFilters";
+import { useDispatch, useSelector } from "react-redux";
+
 
 const UniversalFilter = ({
   showCorridor = false,
@@ -27,8 +31,13 @@ const UniversalFilter = ({
   onChange,
   className = "",
 }) => {
+
+  const location = useLocation();
+  const isSupplierPage = location.pathname.includes("suppliers");
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
+
+  const dispatch = useDispatch();
 
   const { reporterCode } = useSelector((state) => state.corridor);
 
@@ -40,7 +49,7 @@ const UniversalFilter = ({
   const [countrySearch, setCountrySearch] = useState("");
 
   const LIMIT = 50;
-
+  const [hasUserSelectedCorridor, setHasUserSelectedCorridor] = useState(false);
   const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
   ]);
@@ -107,6 +116,7 @@ const UniversalFilter = ({
     ).values(),
   ];
 
+
   /* ===============================
      CORRIDORS
   =============================== */
@@ -130,6 +140,7 @@ const UniversalFilter = ({
 
     setCorridorOptions(formatted);
   }, [corridorData]);
+
 
   /* ===============================
      PRODUCT SEARCH
@@ -284,6 +295,10 @@ const UniversalFilter = ({
 
         <div className="tp-filter-body">
           <div className={`tp-universal-filter ${className}`}>
+
+
+
+
             {/* CORRIDOR */}
 
             {showCorridor && (
@@ -298,21 +313,23 @@ const UniversalFilter = ({
                     IndicatorSeparator: () => null,
                   }}
                   options={corridorOptions}
-                  value={
-                    corridorOptions.find(
-                      (o) => String(o.value) === String(filters.partnerCode)
-                    ) ||
-                    (filters.partnerCode
-                      ? {
-                        value: filters.partnerCode,
-                        label: filters.corridor,
-                      }
-                      : null)
-                  }
+                 value={
+  isSupplierPage && !hasUserSelectedCorridor
+    ? null // ✅ only empty initially
+    : corridorOptions.find(
+        (o) => String(o.value) === String(filters.partnerCode)
+      ) ||
+      (filters.partnerCode
+        ? {
+            value: filters.partnerCode,
+            label: filters.corridor,
+          }
+        : null)
+}
                   onChange={(opt) => {
                     const partner = opt?.value || "";
                     const corridorLabel = opt?.label || "";
-
+                    setHasUserSelectedCorridor(true);
                     setFilters((prev) => ({
                       ...prev,
                       partnerCode: partner,
