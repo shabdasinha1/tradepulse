@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FiX } from "react-icons/fi";
+import { useLocation } from "react-router-dom";
 import {
   setCorridor,
   setProduct,
@@ -13,6 +14,7 @@ import {
   setPartnerCountry,
   setDateRange,
   setQuoteCurrency,
+  setRegion,
   resetFilters,
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
@@ -22,6 +24,7 @@ import {
   DashboardCorridors,
   ProductDropdownSearch,
   DashboardCountries,
+  DashboardRegions
 } from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
 import { queryKeys } from "../../utils/queryKeys";
@@ -29,6 +32,8 @@ import { queryKeys } from "../../utils/queryKeys";
 function GlobalFilterPanel({ onClose }) {
   const modalRef = useRef(null);
   const dispatch = useDispatch();
+  const location = useLocation();
+const isSupplierPage = location.pathname.includes("suppliers");
 
   const [isClosing, setIsClosing] = useState(false);
 
@@ -41,6 +46,7 @@ function GlobalFilterPanel({ onClose }) {
     productLabel,
     startDate,
     endDate,
+    region,
      quoteCurrency,
      quoteCurrencySymbol
   } = useSelector((state) => state.corridor);
@@ -77,6 +83,8 @@ function GlobalFilterPanel({ onClose }) {
   const LIMIT = 50;
 
   const [corridorOptions, setCorridorOptions] = useState([]);
+  const [localRegion, setLocalRegion] = useState(region || "Africa");
+const [regionOptions, setRegionOptions] = useState([]);
 
   /* =========================
      SYNC REDUX → LOCAL
@@ -114,6 +122,7 @@ function GlobalFilterPanel({ onClose }) {
      LOAD COUNTRIES
   ========================== */
 
+
   const { data: countriesData, isFetching } = useQuery({
     queryKey: queryKeys.countries(countryPage, countrySearch),
     queryFn: () =>
@@ -147,6 +156,30 @@ function GlobalFilterPanel({ onClose }) {
       ),
     );
   }, [countriesData, countryPage, dispatch]);
+
+
+  const { data: regionsData } = useQuery({
+  queryKey: ["regions"],
+  queryFn: DashboardRegions,
+  staleTime: 1000 * 60 * 30,
+  enabled: isSupplierPage, // ✅ only for supplier page
+});
+
+useEffect(() => {
+  const regions = regionsData?.data || [];
+
+  const formatted = regions.map((r) => ({
+    value: r,
+    label: r,
+  }));
+
+  setRegionOptions(formatted);
+}, [regionsData]);
+
+// ✅ separate sync
+useEffect(() => {
+  setLocalRegion(region || "Africa");
+}, [region]);
 
   /* =========================
      LOAD CORRIDORS
@@ -246,6 +279,7 @@ function GlobalFilterPanel({ onClose }) {
     dispatch(setPartnerCode(localCorridor));
     dispatch(setCorridor(localCorridorLabel));
     dispatch(setPartnerCountry(localPartnerCountry));
+    dispatch(setRegion(localRegion));
     // ✅ extract partner country name from corridor label
 const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
 
@@ -295,6 +329,7 @@ if (partnerCountryName) {
     setLocalEndDate("");
 
     setLocalProduct(null);
+    setLocalRegion("Africa");
   };
 
   /* =========================
@@ -372,6 +407,33 @@ if (partnerCountryName) {
 
         {/* BODY */}
         <div className="tp-filter-body">
+          {isSupplierPage && (
+  <div className="tp-form-group">
+    <label>Region</label>
+
+    <Select
+      className="tp-select"
+      classNamePrefix="tp-select"
+      components={{
+        DropdownIndicator: () => null,
+        IndicatorSeparator: () => null,
+      }}
+      options={regionOptions}
+      value={
+        regionOptions.find((opt) => opt.value === localRegion) || {
+          value: localRegion,
+          label: localRegion,
+        }
+      }
+      onChange={(opt) => {
+        const selected = opt?.value || "";
+        setLocalRegion(selected);
+      }}
+      placeholder="Select Region"
+      isSearchable
+    />
+  </div>
+)}
           <div className="tp-form-group">
             <label>Country</label>
 
