@@ -9,6 +9,9 @@ import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
+import UniversalFilter from "../../components/common/UniversalFilter";
+import useUniversalFilters from "../../hooks/useUniversalFilters";
+import { CiFilter } from "react-icons/ci";
 
 const LIMIT = 20;
 
@@ -30,10 +33,17 @@ const SupplierRowSkeleton = React.memo(() => {
 
 const Suppliers = () => {
   const [filterOpen, setFilterOpen] = useState(false);
+  const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
-  const { tradeflow, reporterCode, startDate, endDate, corridor, partnerCode, region } = useSelector(
-  (state) => state.corridor,
-);
+  const {
+    tradeflow,
+    reporterCode,
+    startDate,
+    endDate,
+    corridor,
+    partnerCode,
+    region,
+  } = useSelector((state) => state.corridor);
   const skeletonRows = useMemo(
     () =>
       [...Array(5)].map((_, i) => (
@@ -73,27 +83,27 @@ const Suppliers = () => {
     isLoading,
   } = useInfiniteQuery({
     queryKey: queryKeys.suppliers(
-  reporterCode,
-  startDate,
-  endDate,
-  tradeflow,
-  region
-),
+      reporterCode,
+      startDate,
+      endDate,
+      tradeflow,
+      region,
+    ),
 
-   queryFn: async ({ pageParam = 1 }) => {
-  const res = await DashboardSuppliers({
-    reporterCode,
-    partnerCode,
-    startDate,
-    endDate,
-    tradeFlow: tradeflow, // ⚠️ API expects tradeFlow (camelCase)
-    originRegion: region, // ✅ region param
-    page: pageParam,
-    limit: LIMIT,
-  });
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await DashboardSuppliers({
+        reporterCode,
+        partnerCode,
+        startDate,
+        endDate,
+        tradeFlow: tradeflow, // ⚠️ API expects tradeFlow (camelCase)
+        originRegion: region, // ✅ region param
+        page: pageParam,
+        limit: LIMIT,
+      });
 
-  return res?.data?.suppliers || [];
-},
+      return res?.data?.suppliers || [];
+    },
 
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length === LIMIT ? pages.length + 1 : undefined;
@@ -151,7 +161,7 @@ const Suppliers = () => {
                 onClick={() => setFilterOpen(true)}
               >
                 <FiSliders />
-                Filters
+                Global Filters
               </button>
             </div>
           </div>
@@ -165,6 +175,14 @@ const Suppliers = () => {
           header={
             <div className="tp-card-header tp-supplier-header">
               <h3 className="tp-card-title">Supplier Directory</h3>
+
+              <button
+                className="tp-btn-outline tp-overview-filter-btn"
+                onClick={() => setTableFilterOpen(true)}
+              >
+                <CiFilter />
+                Filters
+              </button>
             </div>
           }
         >
@@ -233,6 +251,15 @@ const Suppliers = () => {
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
+      {tableFilterOpen && (
+        <UniversalFilter
+          showCorridor
+          showTimeRange
+          showPartner
+          onClose={() => setTableFilterOpen(false)}
+          onChange={() => setTableFilterOpen(false)}
+        />
+      )}
     </section>
   );
 };
