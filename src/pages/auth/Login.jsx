@@ -7,6 +7,7 @@ import { SetCookie } from "../../utils/CookieManager.jsx";
 
 const USER_FIRST_NAME_KEY = "tp_user_first_name";
 const USER_LAST_NAME_KEY = "tp_user_last_name";
+const USER_EMAIL_KEY = "tp_user_email";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,6 +57,8 @@ const Login = () => {
         SetToken(token);
         const firstName = res.data?.user?.first_name;
         const lastName = res.data?.user?.last_name;
+        const email = res.data?.user?.email;
+
 
         if (firstName) {
           SetCookie(USER_FIRST_NAME_KEY, firstName);
@@ -64,6 +67,9 @@ const Login = () => {
         if (lastName) {
           SetCookie(USER_LAST_NAME_KEY, lastName);
         }
+        if (email) {
+  SetCookie(USER_EMAIL_KEY, email);
+}
 
         navigate("/overview", { replace: true });
         return;

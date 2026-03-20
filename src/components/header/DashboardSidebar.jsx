@@ -20,6 +20,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { RiLineChartLine } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { BsBookmark } from "react-icons/bs";
+import { isAdminUser } from "../../utils/AdminHelper.jsx";
 
 const ICON_MAP = {
   "/overview": <HiOutlineViewGrid />,
@@ -197,7 +198,18 @@ const location = useLocation();
 
           {/* ================= NAV ================= */}
           <nav className="tp-sidebar-nav">
-            {DASHBOARD_ROUTES.filter((r) => !r.hidden).map((r) => (
+           {DASHBOARD_ROUTES
+  .filter((r) => {
+    if (r.hidden) return false;
+
+    // Hide feedback for non-admin
+    if (r.path === "/feedback-data" && !isAdminUser()) {
+      return false;
+    }
+
+    return true;
+  })
+  .map((r) => (
               <NavLink
   key={r.path}
   to={r.path}
