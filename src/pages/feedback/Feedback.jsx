@@ -47,28 +47,23 @@ const Feedback = () => {
   /* ===============================
      FETCH DATA
   =============================== */
-  const {
-  data,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-  isLoading,
-} = useInfiniteQuery({
-  queryKey: queryKeys.feedback(LIMIT),
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: queryKeys.feedback(LIMIT),
 
-  queryFn: async ({ pageParam = 1 }) => {
-    const res = await DashboardFeedback({
-      page: pageParam,
-      limit: LIMIT,
+      queryFn: async ({ pageParam = 1 }) => {
+        const res = await DashboardFeedback({
+          page: pageParam,
+          limit: LIMIT,
+        });
+
+        return res?.data?.data || [];
+      },
+
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.length === LIMIT ? pages.length + 1 : undefined;
+      },
     });
-
-    return res?.data?.data?.data || [];
-  },
-
-  getNextPageParam: (lastPage, pages) => {
-    return lastPage.length === LIMIT ? pages.length + 1 : undefined;
-  },
-});
 
   const feedbacks = useMemo(() => {
     return data?.pages?.flat() || [];
@@ -105,7 +100,7 @@ const Feedback = () => {
         {/* ================= HEADER ================= */}
         <header>
           <h1 className="tp-section-title">
-            User Feedback <span>Intelligence</span>
+            User <span>Feedback Data</span>
           </h1>
 
           <p className="tp-section-sub">
@@ -131,11 +126,12 @@ const Feedback = () => {
             >
               <div className="tp-table-head tp-table-feedback">
                 <span>Role</span>
-                <span className="text-center">Company</span>
+                <span className="text-center">Company Size</span>
                 <span className="text-center">Country</span>
                 <span className="text-center">Challenge</span>
                 <span className="text-center">Need</span>
                 <span className="text-center">Intent</span>
+                <span className="text-center">Email</span>
                 <span className="text-center">Date</span>
               </div>
             </div>
@@ -166,23 +162,28 @@ const Feedback = () => {
                         <span className="text-center">{f.country}</span>
 
                         <span className="text-center">
-                          <span className="tp-pill tp-pill-warning">
+                          <span className="tp-pill tp-pill-warning tp-feedback-pill">
                             {f.challenge}
                           </span>
                         </span>
 
                         <span className="text-center">
-                          <span className="tp-pill tp-pill-primary">
+                          <span className="tp-pill tp-pill-primary tp-feedback-pill">
                             {f.help}
                           </span>
                         </span>
 
                         <span className="text-center">
-                          <span className="tp-pill tp-pill-success">
+                          <span className="tp-pill tp-pill-success tp-feedback-pill">
                             {f.this_platform}
                           </span>
                         </span>
-
+                        <span
+                          className="text-center tp-email-cell"
+                          title={f.email} // 👈 shows full email on hover
+                        >
+                          {f.email?.slice(0, 14)}...
+                        </span>
                         <span className="text-center tp-muted">
                           {new Date(f.created_dt).toLocaleDateString()}
                         </span>
