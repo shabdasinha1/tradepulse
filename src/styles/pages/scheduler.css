@@ -34,14 +34,6 @@
   gap: 8px;
 }
 
-/* BUTTONS */
-.tp-btn-secondary,
-.tp-btn-outline {
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 6px;
-}
-
 /* EMPTY */
 .tp-empty {
   text-align: center;
