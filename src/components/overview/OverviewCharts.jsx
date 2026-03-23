@@ -322,20 +322,30 @@ const OverviewCharts = () => {
             tooltip={metrics?.shipping?.description}
           />
 
-          <TPMetricCard
-            title={`${country || ""} Import Demand Signal`}
-            // value={`${metrics.demand?.percent ?? 0}`}
-            footerLabel={
-              metrics.demand?.product ||
-              "Trend of UK import demand for selected product"
-            }
-            trend={`${metrics.demand?.changePercent ?? 0}`}
-            // trendDirection={
-            //   (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
-            // }
-            fxPairs={metrics.demand?.demandData}
-          />
-
+         <TPMetricCard
+  title={`${country || ""} Import Demand Signal`}
+  footerLabel={
+    metrics.demand?.product ||
+    "Trend of UK import demand for selected product"
+  }
+  trend={`${metrics.demand?.changePercent ?? 0}`}
+  fxPairs={
+    metrics.demand?.demandData
+      ? [
+          {
+            pair: `${metrics.demand.demandData.current.currentYear}`,
+            value: metrics.demand.demandData.current.currentValue,
+            changePercent: metrics.demand.changePercent,
+          },
+          {
+            pair: `${metrics.demand.demandData.previous.previousYear}`,
+            value: metrics.demand.demandData.previous.previousValue,
+            changePercent: 0,
+          },
+        ]
+      : []
+  }
+/>
           <TPMetricCard
             title="Exporter Reliability Score"
             value={`${metrics.supplier?.score ?? 0}/${metrics.supplier?.maxScore ?? 0}`}
