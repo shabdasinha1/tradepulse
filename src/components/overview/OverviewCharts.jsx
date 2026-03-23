@@ -9,7 +9,8 @@ import {
   DashboardKPIs,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
-import useCurrencyConverter from "../../hooks/useCurrencyConverter"; 
+import useCurrencyConverter from "../../hooks/useCurrencyConverter";
+import { CiLight } from "react-icons/ci";
 const fillMissingYears = (data, valueKey = "value") => {
   if (!data?.length) return [];
 
@@ -47,10 +48,10 @@ const OverviewCharts = () => {
     productId,
     startDate,
     endDate,
-    baseCurrency, 
+    baseCurrency,
     currencySymbol,
   } = useSelector((state) => state.corridor);
-const exchangeRates = useMemo(() => [], []);
+  const exchangeRates = useMemo(() => [], []);
   const { convert } = useCurrencyConverter(exchangeRates);
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
@@ -195,43 +196,60 @@ const exchangeRates = useMemo(() => [], []);
     staleTime: 1000 * 60 * 5,
   });
 
- 
 
-useEffect(() => {
-  const data = kpiData?.data;
 
-  if (!data) return;
+  useEffect(() => {
+    const data = kpiData?.data;
 
-  const rawShipping = data.avgShippingCost?.value ?? 0;
-  const shippingCurrency = data.avgShippingCost?.unit || "USD";
+    if (!data) return;
 
-  const convertedShipping = convert(rawShipping, shippingCurrency);
+    const rawShipping = data.avgShippingCost?.value ?? 0;
+    const shippingCurrency = data.avgShippingCost?.unit || "USD";
 
-  setMetrics({
-    currency: {
-      rate: data.fxImpact?.value ?? 0,
-      changePercent: data.fxImpact?.changePercent ?? 0,
-      pair: data.fxImpact?.pair ?? "",
-    },
-    shipping: {
-      average: Number(convertedShipping.toFixed(2)),
-      changePercent: data.avgShippingCost?.changePercent ?? 0,
-      unit: baseCurrency,
-    },
-    demand: {
-      percent: data.importDemandSignal?.value ?? 0,
-      changePercent: data.importDemandSignal?.changePercent ?? 0,
-      product: "Import Demand",
-    },
-    supplier: {
-      score: data.exporterReliabilityScore?.value ?? 0,
-      maxScore: data.exporterReliabilityScore?.max ?? 0,
-      trend: data.exporterReliabilityScore?.trend,
-      risk: data.exporterReliabilityScore?.risk,
-      description: data.exporterReliabilityScore?.description ?? "",
-    },
-  });
-}, [kpiData, baseCurrency]);
+    const convertedShipping = convert(rawShipping, shippingCurrency);
+
+    setMetrics({
+      currency: {
+        // rate: data.fxImpact?.value ?? 0,
+        // changePercent: data.fxImpact?.changePercent ?? 0,
+        // pair: data.fxImpact?.pair ?? "",
+        pairs: data.fxImpact?.pairs || []
+      },
+      shipping: {
+        average: Number(convertedShipping.toFixed(2)),
+        changePercent: data.avgShippingCost?.changePercent ?? 0,
+        unit: baseCurrency,
+        description: data.avgShippingCost?.note ?? ""
+      },
+      // demand: {
+      //   percent: data.importDemandSignal?.value ?? 0,
+      //   changePercent: data.importDemandSignal?.changePercent ?? 0,
+      //   product: "Import Demand",
+      // },
+      demand: {
+        demandData: {
+          current: {
+            currentYear: data.importDemandSignal.currentYear,
+            currentValue: data.importDemandSignal.currentValue,
+          },
+          previous: {
+            previousYear: data.importDemandSignal.previousYear,
+            previousValue: data.importDemandSignal.previousValue,
+          },
+
+        },
+        changePercent: data.importDemandSignal.changePercent,
+        trend: data.importDemandSignal.trend,
+      },
+      supplier: {
+        score: data.exporterReliabilityScore?.value ?? 0,
+        maxScore: data.exporterReliabilityScore?.max ?? 0,
+        trend: data.exporterReliabilityScore?.trend,
+        risk: data.exporterReliabilityScore?.risk,
+        description: data.exporterReliabilityScore?.description ?? "",
+      },
+    });
+  }, [kpiData, baseCurrency]);
   /* ===============================
    MARGIN IMPACT CALCULATION
 ================================= */
@@ -250,12 +268,11 @@ useEffect(() => {
     severity = "High";
     severityClass = "tp-text-down";
   }
-
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
         <div className="tp-metrics-row">
-          <TPMetricCard
+          {/* <TPMetricCard
             title={`FX Impact (${corridor || "Selected Corridor"})`}
             value={metrics.currency?.rate ?? 0}
             unit={metrics.currency?.pair || ""}
@@ -268,9 +285,18 @@ useEffect(() => {
           // trendDirection={
           //   (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
           // }
+          /> */}
+          <TPMetricCard
+            title={`FX Impact (${corridor || "Selected Corridor"})`}
+            fxPairs={metrics.currency?.pairs}
+            footerLabel={
+              metrics.currency?.direction === "Up"
+                ? "Recent FX movement affecting UK import costs"
+                : "Current exchange rate movement affecting UK import cost."
+            }
           />
 
-          <TPMetricCard
+          {/* <TPMetricCard
             title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
             value={`${currencySymbol}${metrics.shipping?.average ?? 0}`}
             unit={` per container`}
@@ -279,19 +305,35 @@ useEffect(() => {
           // trendDirection={
           //   (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
           // }
+          /> */}
+          <TPMetricCard
+            title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
+            shippingData={{
+              // route: kpiData?.data?.avgShippingCost?.route,
+              internalRoute: kpiData?.data?.avgShippingCost?.internalRoute,
+              value: `${currencySymbol}${metrics.shipping?.average}`, // ✅ formatted
+              unit: "", // optional (since symbol included)
+              // changePercent: kpiData?.data?.avgShippingCost?.changePercent,
+              lastUpdated: kpiData?.data?.avgShippingCost?.lastUpdated,
+            }}
+            // currencySymbol={currencySymbol}
+            trend={`${metrics.shipping?.changePercent ?? 0}`}
+            footerLabel="Average container cost within selected trade corridor."
+            tooltip={metrics?.shipping?.description}
           />
 
           <TPMetricCard
             title={`${country || ""} Import Demand Signal`}
-            value={`${metrics.demand?.percent ?? 0}`}
+            // value={`${metrics.demand?.percent ?? 0}`}
             footerLabel={
               metrics.demand?.product ||
               "Trend of UK import demand for selected product"
             }
             trend={`${metrics.demand?.changePercent ?? 0}`}
-          // trendDirection={
-          //   (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
-          // }
+            // trendDirection={
+            //   (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
+            // }
+            fxPairs={metrics.demand?.demandData}
           />
 
           <TPMetricCard

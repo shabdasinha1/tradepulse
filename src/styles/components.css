@@ -484,6 +484,7 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+  
 }
 
 .tp-metric-header {
