@@ -45,7 +45,6 @@ const Suppliers = () => {
     endDate,
     corridor,
     partnerCode,
-    region,
   } = useSelector((state) => state.corridor);
   const skeletonRows = useMemo(
     () =>
@@ -85,18 +84,17 @@ const Suppliers = () => {
     isFetchingNextPage,
     isLoading,
   } =useInfiniteQuery({
-  queryKey: isInitialLoad
-    ? ["suppliers", "initial", region]
-    : [
-        "suppliers",
-        "filtered",
-        reporterCode,
-        partnerCode,
-        startDate,
-        endDate,
-        tradeflow,
-        region,
-      ],
+ queryKey: isInitialLoad
+  ? ["suppliers", "initial"]
+  : [
+      "suppliers",
+      "filtered",
+      reporterCode,
+      partnerCode,
+      startDate,
+      endDate,
+      tradeflow,
+    ],
 
  queryFn: async ({ pageParam = 1 }) => {
   let params = {
@@ -104,19 +102,16 @@ const Suppliers = () => {
     limit: LIMIT,
   };
 
-  if (isInitialLoad) {
-    params.originRegion = region;
-  } else {
-    params = {
-      ...params,
-      reporterCode,
-      partnerCode,
-      startDate,
-      endDate,
-      tradeFlow: tradeflow,
-      originRegion: region,
-    };
-  }
+ if (!isInitialLoad) {
+  params = {
+    ...params,
+    reporterCode,
+    partnerCode,
+    startDate,
+    endDate,
+    tradeFlow: tradeflow,
+  };
+}
 
   const res = await DashboardSuppliers(params);
   return res?.data?.suppliers || [];
@@ -124,7 +119,7 @@ const Suppliers = () => {
   getNextPageParam: (lastPage, pages) =>
     lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-  enabled: isInitialLoad ? !!region : !!reporterCode,
+  enabled: !!reporterCode,
 
   refetchOnMount: false,
   refetchOnWindowFocus: false,

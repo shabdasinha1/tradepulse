@@ -23,7 +23,6 @@ import {
   DashboardCorridors,
   ProductDropdownSearch,
   DashboardCountries,
-  
 } from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
 import { queryKeys } from "../../utils/queryKeys";
@@ -32,7 +31,7 @@ function GlobalFilterPanel({ onClose }) {
   const modalRef = useRef(null);
   const dispatch = useDispatch();
   const location = useLocation();
-const isSupplierPage = location.pathname.includes("suppliers");
+  const isSupplierPage = location.pathname.includes("suppliers");
 
   const [isClosing, setIsClosing] = useState(false);
 
@@ -45,8 +44,8 @@ const isSupplierPage = location.pathname.includes("suppliers");
     productLabel,
     startDate,
     endDate,
-     quoteCurrency,
-     quoteCurrencySymbol
+    quoteCurrency,
+    quoteCurrencySymbol,
   } = useSelector((state) => state.corridor);
 
   const countries = useSelector((state) => state.country.countries);
@@ -82,8 +81,6 @@ const isSupplierPage = location.pathname.includes("suppliers");
 
   const [corridorOptions, setCorridorOptions] = useState([]);
 
-
-
   /* =========================
      SYNC REDUX → LOCAL
   ========================== */
@@ -97,7 +94,6 @@ const isSupplierPage = location.pathname.includes("suppliers");
 
     setLocalStartDate(startDate || "");
     setLocalEndDate(endDate || "");
- 
 
     if (productId) {
       setLocalProduct({
@@ -120,7 +116,6 @@ const isSupplierPage = location.pathname.includes("suppliers");
   /* =========================
      LOAD COUNTRIES
   ========================== */
-
 
   const { data: countriesData, isFetching } = useQuery({
     queryKey: queryKeys.countries(countryPage, countrySearch),
@@ -156,7 +151,6 @@ const isSupplierPage = location.pathname.includes("suppliers");
     );
   }, [countriesData, countryPage, dispatch]);
 
- 
   /* =========================
      LOAD CORRIDORS
   ========================== */
@@ -192,7 +186,6 @@ const isSupplierPage = location.pathname.includes("suppliers");
     }
   }, [corridorData]);
 
- 
   /* =========================
      MODAL BEHAVIOR
   ========================== */
@@ -249,35 +242,34 @@ const isSupplierPage = location.pathname.includes("suppliers");
           name: selectedCountry.name,
           numeric: selectedCountry.numeric,
           currency: selectedCountry.currency,
+          region: selectedCountry.region,
         }),
       );
     }
 
-
-
     dispatch(setPartnerCode(localCorridor));
     dispatch(setCorridor(localCorridorLabel));
     dispatch(setPartnerCountry(localPartnerCountry));
- 
-    // ✅ extract partner country name from corridor label
-const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
 
-if (partnerCountryName) {
-  DashboardCountries({
-    page: 1,
-    limit: 1,
-    search: partnerCountryName,
-  })
-    .then((res) => {
-      const countryData = res?.data?.[0];
-      if (countryData?.currency) {
-        dispatch(setQuoteCurrency(countryData.currency));
-      }
-    })
-    .catch((err) => {
-      console.error("Quote currency fetch failed:", err);
-    });
-}
+    // ✅ extract partner country name from corridor label
+    const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
+
+    if (partnerCountryName) {
+      DashboardCountries({
+        page: 1,
+        limit: 1,
+        search: partnerCountryName,
+      })
+        .then((res) => {
+          const countryData = res?.data?.[0];
+          if (countryData?.currency) {
+            dispatch(setQuoteCurrency(countryData.currency));
+          }
+        })
+        .catch((err) => {
+          console.error("Quote currency fetch failed:", err);
+        });
+    }
 
     dispatch(setProduct(localProduct || { value: "", label: "" }));
 
@@ -307,7 +299,6 @@ if (partnerCountryName) {
     setLocalEndDate("");
 
     setLocalProduct(null);
-  
   };
 
   /* =========================
@@ -385,7 +376,6 @@ if (partnerCountryName) {
 
         {/* BODY */}
         <div className="tp-filter-body">
-      
           <div className="tp-form-group">
             <label>Country</label>
 
@@ -408,27 +398,34 @@ if (partnerCountryName) {
                 setCountrySearch(input);
                 setCountryPage(1);
               }}
-              onChange={(opt) => {
-                const code = opt?.value || "";
-                const name = opt?.label || "";
+             onChange={(opt) => {
+  const code = opt?.value || "";
+  const name = opt?.label || "";
 
-                setLocalCountry(code);
-                setLocalCountryName(name);
+  setLocalCountry(code);
+  setLocalCountryName(name);
 
-                dispatch(setReporterCode(code));
-                dispatch(
-                  setCountry({
-                    name,
-                    numeric: code,
-                    currency:
-                      countries.find((c) => c.numeric === code)?.currency || "",
-                  }),
-                );
+  const selected = countries.find((c) => c.numeric === code);
 
-                setLocalCorridor("");
-                setLocalCorridorLabel("");
-                setLocalProduct(null);
-              }}
+  dispatch(
+    setCountry({
+      name,
+      numeric: code,
+      currency: selected?.currency || "",
+      region: selected?.region || "",
+    }),
+  );
+
+  // reset dependent fields
+  setLocalCorridor("");
+  setLocalCorridorLabel("");
+  setLocalProduct(null);
+
+  dispatch(setPartnerCode(null));
+  dispatch(setPartnerCountry(null));
+  dispatch(setCorridor(null));
+  dispatch(setProduct({ value: "", label: "" }));
+}}
               placeholder="Select Country"
               isSearchable
             />
