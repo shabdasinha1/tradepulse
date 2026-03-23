@@ -148,7 +148,7 @@ const TPMetricCard = ({
                       <span className="tp-fx-pair">{item.pair}</span>
                       <span className="tp-fx-value-wraper">
                         <span className="tp-fx-value">
-                          {Number(item.value).toFixed(2)}
+                          {item.value}
                         </span>
                         {item.changePercent !== null && item.changePercent !== undefined && (
                           <span
