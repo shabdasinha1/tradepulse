@@ -1,5 +1,6 @@
 import React from "react";
 import TradePulseCard from "../common/TradePulseCard";
+import { FiInfo } from "react-icons/fi";
 
 const capitalize = (value) => {
   if (!value || typeof value !== "string") return "";
@@ -15,6 +16,7 @@ const TPMetricCard = ({
   risk,
   icon,
   className = "",
+  tooltip,
 }) => {
   const numericTrend = Number(trend);
   const isStringTrend = Number.isNaN(numericTrend);
@@ -33,7 +35,16 @@ const TPMetricCard = ({
     <TradePulseCard className={`tp-metric-card ${className}`}>
       {/* Header */}
       <div className="tp-metric-header">
-        <span className="tp-metric-title">{title}</span>
+        <div className="tp-metric-title">
+          <span>{title}</span>
+
+          {tooltip && (
+            <span className="tp-tooltip-wrapper">
+              <FiInfo size={14} />
+              <span className="tp-tooltip-text">{tooltip}</span>
+            </span>
+          )}
+        </div>
 
         {/* 🔴 TOP RIGHT RISK */}
         {risk && (

@@ -19,8 +19,10 @@
 }
 
 .tp-overview-filter-btn svg {
-  font-size: 20px; /* slightly bigger icon */
+  font-size: 20px;
+  /* slightly bigger icon */
 }
+
 /* ======================================
    OVERVIEW HERO TITLE (BIGGER)
 ====================================== */
@@ -29,15 +31,19 @@
   /* padding-left: 14px;
   padding-right: 14px; */
 }
+
 .tp-name-section .tp-section {
   padding-top: 12px;
   padding-bottom: 12px;
 }
+
 .tp-name-section .tp-disclaimer {
   margin-bottom: 12px;
 }
+
 .tp-overview-hero-title {
-  font-size: var(--fs-heading-lg); /* larger than default */
+  font-size: var(--fs-heading-lg);
+  /* larger than default */
   line-height: 1.1;
 }
 
@@ -83,11 +89,14 @@
   justify-content: space-between;
   gap: var(--space-md);
 
-  padding: var(--space-md); /* ✅ uniform padding */
-  margin-inline: calc(var(--space-md) * -1); /* ✅ extend hover area cleanly */
+  padding: var(--space-md);
+  /* ✅ uniform padding */
+  margin-inline: calc(var(--space-md) * -1);
+  /* ✅ extend hover area cleanly */
 
   border-bottom: 1px solid var(--border-soft);
-  border-radius: var(--radius-md); /* ✅ smooth hover */
+  border-radius: var(--radius-md);
+  /* ✅ smooth hover */
 
   transition: background var(--transition-fast);
   align-items: center;
@@ -99,7 +108,8 @@
 
 .tp-news-item:hover {
   background: var(--bg-card-hover);
-  border-radius: var(--radius-md); /* ✅ smooth hover */
+  border-radius: var(--radius-md);
+  /* ✅ smooth hover */
 }
 
 /* ===============================
@@ -123,6 +133,7 @@
   font-size: var(--fs-caption);
   color: var(--text-muted);
 }
+
 /* ===============================
    RESPONSIVE
 ================================ */
@@ -141,7 +152,8 @@
 .tp-news-viewport {
   position: relative;
   height: 320px;
-  overflow: hidden; /* IMPORTANT */
+  overflow: hidden;
+  /* IMPORTANT */
 }
 
 .tp-news-scroll {
@@ -149,7 +161,8 @@
   flex-direction: column;
   padding: var(--space-md);
 
-  will-change: transform; /* IMPORTANT for smooth GPU animation */
+  will-change: transform;
+  /* IMPORTANT for smooth GPU animation */
 }
 
 /* ======================================
@@ -166,6 +179,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 /* ===============================
    EXCHANGE RATES
 ================================ */
@@ -188,10 +202,12 @@
   flex-direction: column;
   gap: var(--space-md);
 }
-.tp-kpi-card-highliter{
-    font-size: var(--fs-label);
-    font-weight: var(--fw-semibold);
+
+.tp-kpi-card-highliter {
+  font-size: var(--fs-label);
+  font-weight: var(--fw-semibold);
 }
+
 .tp-rate-header {
   display: flex;
   align-items: center;
@@ -220,10 +236,14 @@
 }
 
 .rtx-vertical-scroll {
-  max-height: 20vh; /* set your desired height */
-  overflow-y: auto; /* enable vertical scroll */
-  overflow-x: hidden; /* prevent horizontal scroll */
-  padding-right: 6px; /* optional: space for scrollbar */
+  max-height: 20vh;
+  /* set your desired height */
+  overflow-y: auto;
+  /* enable vertical scroll */
+  overflow-x: hidden;
+  /* prevent horizontal scroll */
+  padding-right: 6px;
+  /* optional: space for scrollbar */
 
   /* smooth scroll on mobile */
   -webkit-overflow-scrolling: touch;
@@ -233,12 +253,14 @@
 
   display: block;
 }
+
 .rtx-tp-rate-card-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   /* gap: var(--space-sm); */
   gap: var(--space-md);
 }
+
 .rtx-vertical-scroll::-webkit-scrollbar {
   width: 10px;
 }
@@ -253,6 +275,7 @@
   border: 3px solid transparent;
   background-clip: content-box;
 }
+
 .tp-risk-badge {
   font-size: 11px;
   padding: 2px 6px;
@@ -283,15 +306,18 @@
   .rtx-tp-rate-card-container {
     grid-template-columns: 1fr 1fr;
   }
+
   .rtx-vertical-scroll {
     max-height: 35vh;
   }
 }
+
 @media (max-width: 426px) {
   .rtx-tp-rate-card-container {
     grid-template-columns: 1fr;
   }
-  .tp-overview-filter-btn{
+
+  .tp-overview-filter-btn {
     padding: 10px;
   }
 }
@@ -361,21 +387,25 @@
 ================================ */
 
 @media (max-width: 640px) {
+
   .tp-rate-card,
   .tp-ship-card {
     padding: var(--space-lg);
   }
 }
+
 @media (max-width: 900px) {
   .tp-ship-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 426px) {
   .tp-ship-grid {
     grid-template-columns: repeat(1, 1fr);
   }
 }
+
 /* ===============================
    CUSTOM DUTY RATES
 ================================ */
@@ -432,6 +462,7 @@
     padding: var(--space-xl);
   }
 }
+
 /* =======================================
         RESPONSIVE
 ======================================= */
@@ -440,6 +471,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
 @media (max-width: 426px) {
   .tp-duty-grid {
     grid-template-columns: repeat(1, 1fr);
@@ -483,10 +515,12 @@
   max-width: 260px;
   width: 100%;
 }
-.tp-estimator-fxpair{
+
+.tp-estimator-fxpair {
   margin-top: 0;
   margin-bottom: var(--space-xl);
 }
+
 /* Result */
 .tp-margin-result {
   text-align: left;
@@ -542,6 +576,7 @@
   .tp-margin-value {
     font-size: var(--fs-xl);
   }
+
   .tp-margin-header {
     flex-direction: column;
     align-items: flex-start;
@@ -588,6 +623,7 @@
     grid-template-columns: 1fr;
   }
 }
+
 @media (max-width: 443px) {
   .tp-margin-result {
     text-align: left;
@@ -598,9 +634,52 @@
   display: flex;
   justify-content: space-between;
 }
+
 .tp-impact-estimator-changepercent-wrap {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+}
+
+
+
+.tp-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #888;
+}
+
+.tp-tooltip-text {
+  visibility: hidden;
+  width: 300px;
+  background-color: var(--bg-card-hover);
+  color: var(--text-secondary);
+  font-size: var(--fs-caption);
+  text-align: left;
+  border-radius: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 10;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.tp-tooltip-wrapper:hover .tp-tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+@media (max-width: 426px) {
+
+  .tp-tooltip-text {
+    width: 250px;
+    left: -170%;
+  }
 }

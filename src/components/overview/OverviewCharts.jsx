@@ -217,6 +217,7 @@ const OverviewCharts = () => {
         maxScore: data.exporterReliabilityScore?.max ?? 0,
         trend: data.exporterReliabilityScore?.trend,
         risk: data.exporterReliabilityScore?.risk,
+        description: data.exporterReliabilityScore?.description ?? "",
       },
     });
   }, [kpiData]);
@@ -253,9 +254,9 @@ const OverviewCharts = () => {
                 : "Current exchange rate movement affecting UK import cost."
             }
             trend={`${metrics.currency?.changePercent ?? 0}`}
-            // trendDirection={
-            //   (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
-            // }
+          // trendDirection={
+          //   (metrics.currency?.changePercent ?? 0) < 0 ? "down" : "up"
+          // }
           />
 
           <TPMetricCard
@@ -264,9 +265,9 @@ const OverviewCharts = () => {
             unit={`${metrics.shipping?.unit || ""} per container`}
             footerLabel="Average container cost within selected trade corridor."
             trend={`${metrics.shipping?.changePercent ?? 0}`}
-            // trendDirection={
-            //   (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
-            // }
+          // trendDirection={
+          //   (metrics.shipping?.changePercent ?? 0) < 0 ? "down" : "up"
+          // }
           />
 
           <TPMetricCard
@@ -277,9 +278,9 @@ const OverviewCharts = () => {
               "Trend of UK import demand for selected product"
             }
             trend={`${metrics.demand?.changePercent ?? 0}`}
-            // trendDirection={
-            //   (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
-            // }
+          // trendDirection={
+          //   (metrics.demand?.changePercent ?? 0) < 0 ? "down" : "up"
+          // }
           />
 
           <TPMetricCard
@@ -289,6 +290,7 @@ const OverviewCharts = () => {
             trend={metrics.supplier?.trend}
             risk={metrics.supplier?.risk}
             className="tp-kpi-expoter-reliability"
+            tooltip={metrics.supplier?.description}
           />
         </div>
 
