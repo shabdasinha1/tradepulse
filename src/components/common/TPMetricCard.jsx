@@ -17,6 +17,8 @@ const TPMetricCard = ({
   icon,
   className = "",
   tooltip,
+  fxPairs,
+  shippingData,
 }) => {
   const numericTrend = Number(trend);
   const isStringTrend = Number.isNaN(numericTrend);
@@ -55,9 +57,65 @@ const TPMetricCard = ({
       </div>
 
       {/* Main Value */}
-      <div className="tp-metric-value-wrap">
+      {/* <div className="tp-metric-value-wrap">
         <span className="tp-metric-value">{value}</span>
         {unit && <span className="tp-metric-unit">{unit}</span>}
+      </div> */}
+      <div className="tp-metric-value-wrap">
+        {shippingData ? (
+          <div className="tp-shipping-data">
+            <div className="tp-shipping-row">
+              <span className="tp-ship-route">{shippingData.route}</span>
+            </div>
+
+            <div className="tp-shipping-row">
+              <span className="tp-ship-port">{shippingData.internalRoute}</span>
+            </div>
+
+            <div className="tp-shipping-row">
+              <span className="tp-ship-price">
+                {shippingData.value ? `${shippingData.value}` : "--"}
+              </span>
+              <span>{shippingData.unit}</span>
+            </div>
+          </div>
+        ) : fxPairs?.length ? (
+          <div className="tp-fx-pairs">
+            {fxPairs.map((item, index) => {
+              const isUp = item.changePercent > 0;
+              const isDown = item.changePercent < 0;
+
+              return (
+                <div key={index} className="tp-fx-row tp-card">
+                  <span className="tp-fx-pair">{item.pair}</span>
+                  <span className="tp-fx-value-wraper">
+                    <span className="tp-fx-value">
+                      {Number(item.value).toFixed(4)}
+                    </span>
+                    <span
+                      className={
+                        isUp
+                          ? "tp-text-up"
+                          : isDown
+                            ? "tp-text-down"
+                            : "tp-text-neutral"
+                      }
+                    >
+                      {item.changePercent > 0
+                        ? `+${item.changePercent}%`
+                        : `${item.changePercent}%`}
+                    </span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <>
+            <span className="tp-metric-value">{value}</span>
+            {unit && <span className="tp-metric-unit">{unit}</span>}
+          </>
+        )}
       </div>
 
       {/* Footer */}
