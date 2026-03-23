@@ -384,7 +384,7 @@ const DashboardProduct = () => {
           ) : (
             <>
               <div className="tp-card">
-                <p className="tp-muted">Active Products ({corridor})</p>
+                <p className="tp-muted">Active Products Count ({corridor})</p>
                 {productData?.productOverview?.activeProducts ? (
                   <h3 className="tp-overview-text">
                     <span className="tp-overview-text">
@@ -444,7 +444,7 @@ const DashboardProduct = () => {
 
         <div className="tp-card">
           <div className="tp-table-header">
-            <h3 className="tp-table-title">Product List</h3>
+            <h3 className="tp-table-title">Active Product List</h3>
 
             <button
               className="tp-btn-outline tp-overview-filter-btn"

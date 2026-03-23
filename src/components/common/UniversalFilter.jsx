@@ -6,19 +6,14 @@ import Select from "react-select";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { useLocation } from "react-router-dom";
 
-
-import { setRegion } from "../../store/slices/corridorSlice";
 import {
   DashboardCorridors,
   ProductDropdownSearch,
-  DashboardCountries,
-  DashboardRegions
-
+  DashboardCountries
 } from "../../services/DashboardService";
 
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { useDispatch, useSelector } from "react-redux";
-
 
 const UniversalFilter = ({
   showCorridor = false,
@@ -42,7 +37,7 @@ const UniversalFilter = ({
 
   const dispatch = useDispatch();
 
-const { reporterCode, region } = useSelector((state) => state.corridor);
+  const { reporterCode } = useSelector((state) => state.corridor);
 
   const { filters, setFilters, updateFilter, resetFilters } =
     useUniversalFilters(defaultValues);
@@ -50,7 +45,6 @@ const { reporterCode, region } = useSelector((state) => state.corridor);
   const [countriesList, setCountriesList] = useState([]);
   const [countryPage, setCountryPage] = useState(1);
   const [countrySearch, setCountrySearch] = useState("");
-  const [regionOptions, setRegionOptions] = useState([]);
 
   const LIMIT = 50;
 
@@ -120,27 +114,6 @@ const { reporterCode, region } = useSelector((state) => state.corridor);
     ).values(),
   ];
 
-/* ===============================
-   REGIONS
-================================ */
-
-const { data: regionsData } = useQuery({
-  queryKey: ["regions"],
-  queryFn: DashboardRegions,
-});
-
-useEffect(() => {
-  const regions = regionsData?.data|| [];
-
-  const formatted = regions
-    .filter((r) => r) // remove empty string
-    .map((r) => ({
-      value: r,
-      label: r,
-    }));
-
-  setRegionOptions(formatted);
-}, [regionsData]);
   /* ===============================
      CORRIDORS
   =============================== */
@@ -164,7 +137,6 @@ useEffect(() => {
 
     setCorridorOptions(formatted);
   }, [corridorData]);
-
 
   /* ===============================
      PRODUCT SEARCH
@@ -319,40 +291,7 @@ useEffect(() => {
 
         <div className="tp-filter-body">
           <div className={`tp-universal-filter ${className}`}>
-{/* REGION */}
 
-{showRegion && (
-  <div className="tp-form-group">
-    <label>Region</label>
-
-    <Select
-      className="tp-select tp-filter-control"
-      classNamePrefix="tp-select"
-      components={{
-        DropdownIndicator: () => null,
-        IndicatorSeparator: () => null,
-      }}
-      options={regionOptions}
-      value={
-  regionOptions.find((o) => o.value === region) || null
-}
-      onChange={(opt) => {
-  const selectedRegion = opt?.value || "";
-
-  // local filter
-  setFilters((prev) => ({
-    ...prev,
-    region: selectedRegion,
-  }));
-
-  // redux update
-  dispatch(setRegion(selectedRegion));
-}}
-      placeholder="Select Region"
-      isSearchable
-    />
-  </div>
-)}
 
 
 

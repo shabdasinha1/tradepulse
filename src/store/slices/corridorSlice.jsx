@@ -17,23 +17,26 @@ const initialState = {
   quoteCurrency: "NGN",
 quoteCurrencySymbol: getSymbolFromCurrency("NGN"),
   tradeflow: "EXPORT", 
- region: "Africa",
+ region: "Europe",
 };
 
 const corridorSlice = createSlice({
   name: "corridor",
   initialState,
   reducers: {
-    setCountry: (state, action) => {
-  const { name, numeric, currency} = action.payload;
+   setCountry: (state, action) => {
+  const { name, numeric, currency, region } = action.payload;
 
   state.country = name;
   state.reporterCode = numeric;
   state.baseCurrency = currency;
   state.currencySymbol = getSymbolFromCurrency(currency);
 
+  // ✅ ONLY UPDATE REGION IF PROVIDED
+  if (region !== undefined) {
+    state.region = region;
+  }
 },
-
     setReporterCode: (state, action) => {
       state.reporterCode = action.payload;
       state.partnerCode = null;
@@ -93,7 +96,7 @@ const corridorSlice = createSlice({
       state.quoteCurrency = "NGN";
 state.quoteCurrencySymbol = getSymbolFromCurrency("NGN");
       state.tradeflow = "EXPORT";
-     state.region = "Africa";
+     state.region = "Europe";
     },
   },
 });

@@ -118,7 +118,7 @@ if (!isInitialLoad) {
   getNextPageParam: (lastPage, pages) =>
     lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-  enabled: isInitialLoad ? !!region : !!reporterCode,
+enabled: !!region,
 
   refetchOnMount: false,
   refetchOnWindowFocus: false,
@@ -269,12 +269,17 @@ if (!isInitialLoad) {
           showCorridor
           showTimeRange
           showPartner
-         showRegion
+      
           onClose={() => setTableFilterOpen(false)}
-          onChange={() => {
-    setIsInitialLoad(false); // ✅ IMPORTANT
-    setTableFilterOpen(false);
-  }}
+          onChange={(filters) => {
+  if (!filters.partnerCode) {
+    setIsInitialLoad(true);   // ✅ RESET FLOW
+  } else {
+    setIsInitialLoad(false);
+  }
+
+  setTableFilterOpen(false);
+}}
         />
       )}
     </section>

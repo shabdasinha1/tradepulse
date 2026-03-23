@@ -94,20 +94,20 @@ export default function useUniversalFilters(defaultValues = {}) {
   =============================== */
 
   const resetFilters = () => {
-    setFilters({
-      corridor: corridor || "",
-      partnerCode: partnerCode || "",
-      product: "",
-      productLabel: "",
-      riskLevel: "",
-      activityStatus: "",
-      startDate: "",
-      endDate: "",
-      quoteCurrency: "",
-      origin: "",
-      destination: "",
-    });
-  };
+  setFilters({
+    corridor: "",            // ✅ force empty
+    partnerCode: "",         // ✅ force empty
+    product: "",
+    productLabel: "",
+    riskLevel: "",
+    activityStatus: "",
+    startDate: "",
+    endDate: "",
+    quoteCurrency: "",
+    origin: "",
+    destination: "",
+  });
+};
 
   return {
     filters,

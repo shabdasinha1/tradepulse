@@ -4,9 +4,14 @@ const USER_EMAIL_KEY = "tp_user_email";
 
 export const isAdminUser = () => {
   const userEmail = GetCookie(USER_EMAIL_KEY);
-  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+  const adminEmails = import.meta.env.VITE_ADMIN_EMAILS;
 
-  if (!userEmail || !adminEmail) return false;
+  if (!userEmail || !adminEmails) return false;
 
-  return userEmail.toLowerCase() === adminEmail.toLowerCase();
+  // Convert env string → array
+  const adminEmailList = adminEmails
+    .split(",")
+    .map(email => email.trim().toLowerCase());
+
+  return adminEmailList.includes(userEmail.toLowerCase());
 };
