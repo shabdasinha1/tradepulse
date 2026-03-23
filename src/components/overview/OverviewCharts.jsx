@@ -9,6 +9,7 @@ import {
   DashboardKPIs,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
+import useCurrencyConverter from "../../hooks/useCurrencyConverter"; 
 const fillMissingYears = (data, valueKey = "value") => {
   if (!data?.length) return [];
 
@@ -46,8 +47,11 @@ const OverviewCharts = () => {
     productId,
     startDate,
     endDate,
+    baseCurrency, 
+    currencySymbol,
   } = useSelector((state) => state.corridor);
-
+const exchangeRates = useMemo(() => [], []);
+  const { convert } = useCurrencyConverter(exchangeRates);
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
 
@@ -191,36 +195,43 @@ const OverviewCharts = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  useEffect(() => {
-    const data = kpiData?.data;
+ 
 
-    if (!data) return;
+useEffect(() => {
+  const data = kpiData?.data;
 
-    setMetrics({
-      currency: {
-        rate: data.fxImpact?.value ?? 0,
-        changePercent: data.fxImpact?.changePercent ?? 0,
-        pair: data.fxImpact?.pair ?? "",
-      },
-      shipping: {
-        average: data.avgShippingCost?.value ?? 0,
-        changePercent: data.avgShippingCost?.changePercent ?? 0,
-        unit: data.avgShippingCost?.unit ?? "",
-      },
-      demand: {
-        percent: data.importDemandSignal?.value ?? 0,
-        changePercent: data.importDemandSignal?.changePercent ?? 0,
-        product: "Import Demand",
-      },
-      supplier: {
-        score: data.exporterReliabilityScore?.value ?? 0,
-        maxScore: data.exporterReliabilityScore?.max ?? 0,
-        trend: data.exporterReliabilityScore?.trend,
-        risk: data.exporterReliabilityScore?.risk,
-        description: data.exporterReliabilityScore?.description ?? "",
-      },
-    });
-  }, [kpiData]);
+  if (!data) return;
+
+  const rawShipping = data.avgShippingCost?.value ?? 0;
+  const shippingCurrency = data.avgShippingCost?.unit || "USD";
+
+  const convertedShipping = convert(rawShipping, shippingCurrency);
+
+  setMetrics({
+    currency: {
+      rate: data.fxImpact?.value ?? 0,
+      changePercent: data.fxImpact?.changePercent ?? 0,
+      pair: data.fxImpact?.pair ?? "",
+    },
+    shipping: {
+      average: Number(convertedShipping.toFixed(2)),
+      changePercent: data.avgShippingCost?.changePercent ?? 0,
+      unit: baseCurrency,
+    },
+    demand: {
+      percent: data.importDemandSignal?.value ?? 0,
+      changePercent: data.importDemandSignal?.changePercent ?? 0,
+      product: "Import Demand",
+    },
+    supplier: {
+      score: data.exporterReliabilityScore?.value ?? 0,
+      maxScore: data.exporterReliabilityScore?.max ?? 0,
+      trend: data.exporterReliabilityScore?.trend,
+      risk: data.exporterReliabilityScore?.risk,
+      description: data.exporterReliabilityScore?.description ?? "",
+    },
+  });
+}, [kpiData, baseCurrency]);
   /* ===============================
    MARGIN IMPACT CALCULATION
 ================================= */
@@ -261,8 +272,8 @@ const OverviewCharts = () => {
 
           <TPMetricCard
             title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
-            value={`${metrics.shipping?.average ?? 0}`}
-            unit={`${metrics.shipping?.unit || ""} per container`}
+            value={`${currencySymbol}${metrics.shipping?.average ?? 0}`}
+            unit={` per container`}
             footerLabel="Average container cost within selected trade corridor."
             trend={`${metrics.shipping?.changePercent ?? 0}`}
           // trendDirection={
