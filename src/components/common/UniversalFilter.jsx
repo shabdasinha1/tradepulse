@@ -33,11 +33,11 @@ const UniversalFilter = ({
 }) => {
 
   const location = useLocation();
-  const isSupplierPage = location.pathname.includes("suppliers");
+
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
-  const dispatch = useDispatch();
+  
 
   const { reporterCode } = useSelector((state) => state.corridor);
 
@@ -49,7 +49,7 @@ const UniversalFilter = ({
   const [countrySearch, setCountrySearch] = useState("");
 
   const LIMIT = 50;
-  const [hasUserSelectedCorridor, setHasUserSelectedCorridor] = useState(false);
+
   const [corridorOptions, setCorridorOptions] = useState([
     { value: "", label: "Corridor" },
   ]);
@@ -313,23 +313,21 @@ const UniversalFilter = ({
                     IndicatorSeparator: () => null,
                   }}
                   options={corridorOptions}
-                 value={
-  isSupplierPage && !hasUserSelectedCorridor
-    ? null // ✅ only empty initially
-    : corridorOptions.find(
-        (o) => String(o.value) === String(filters.partnerCode)
-      ) ||
-      (filters.partnerCode
-        ? {
-            value: filters.partnerCode,
-            label: filters.corridor,
-          }
-        : null)
+                value={
+  corridorOptions.find(
+    (o) => String(o.value) === String(filters.partnerCode)
+  ) ||
+  (filters.partnerCode
+    ? {
+        value: filters.partnerCode,
+        label: filters.corridor,
+      }
+    : null)
 }
                   onChange={(opt) => {
                     const partner = opt?.value || "";
                     const corridorLabel = opt?.label || "";
-                    setHasUserSelectedCorridor(true);
+                    
                     setFilters((prev) => ({
                       ...prev,
                       partnerCode: partner,

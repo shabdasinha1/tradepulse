@@ -244,8 +244,13 @@ const DashboardProduct = () => {
   );
 
   const products = useMemo(() => {
-    return productPages?.pages?.flat() || [];
-  }, [productPages]);
+  const rawProducts = productPages?.pages?.flat() || [];
+
+  return rawProducts.filter(
+    (item) =>
+      item?.categoryHs2 && item?.productCategory // both must exist
+  );
+}, [productPages]);
 
   /* ===============================
      PRODUCT ROWS

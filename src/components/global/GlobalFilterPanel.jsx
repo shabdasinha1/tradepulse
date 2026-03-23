@@ -14,7 +14,6 @@ import {
   setPartnerCountry,
   setDateRange,
   setQuoteCurrency,
-  setRegion,
   resetFilters,
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
@@ -24,7 +23,7 @@ import {
   DashboardCorridors,
   ProductDropdownSearch,
   DashboardCountries,
-  DashboardRegions
+  
 } from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
 import { queryKeys } from "../../utils/queryKeys";
@@ -46,7 +45,6 @@ const isSupplierPage = location.pathname.includes("suppliers");
     productLabel,
     startDate,
     endDate,
-    region,
      quoteCurrency,
      quoteCurrencySymbol
   } = useSelector((state) => state.corridor);
@@ -83,7 +81,7 @@ const isSupplierPage = location.pathname.includes("suppliers");
   const LIMIT = 50;
 
   const [corridorOptions, setCorridorOptions] = useState([]);
-  const [localRegion, setLocalRegion] = useState(region || "");
+
 
 
   /* =========================
@@ -99,7 +97,7 @@ const isSupplierPage = location.pathname.includes("suppliers");
 
     setLocalStartDate(startDate || "");
     setLocalEndDate(endDate || "");
-    setLocalRegion(region || "");
+ 
 
     if (productId) {
       setLocalProduct({
@@ -158,11 +156,7 @@ const isSupplierPage = location.pathname.includes("suppliers");
     );
   }, [countriesData, countryPage, dispatch]);
 
-  const { data: regionData } = useQuery({
-  queryKey: ["regions"],
-  queryFn: () => DashboardRegions(),
-});
-
+ 
   /* =========================
      LOAD CORRIDORS
   ========================== */
@@ -198,15 +192,7 @@ const isSupplierPage = location.pathname.includes("suppliers");
     }
   }, [corridorData]);
 
-  const regionOptions = [
-  { value: "", label: "All Regions" },
-  ...(regionData?.data || [])
-    .filter((r) => r)
-    .map((r) => ({
-      value: r,
-      label: r,
-    })),
-];
+ 
   /* =========================
      MODAL BEHAVIOR
   ========================== */
@@ -266,7 +252,7 @@ const isSupplierPage = location.pathname.includes("suppliers");
         }),
       );
     }
-dispatch(setRegion(localRegion));
+
 
 
     dispatch(setPartnerCode(localCorridor));
@@ -313,7 +299,7 @@ if (partnerCountryName) {
 
     setLocalCountry("826");
     setLocalCountryName("United Kingdom");
-setLocalRegion("Africa");
+
     setLocalCorridor(566);
     setLocalCorridorLabel("UK ↔ Nigeria");
 
@@ -399,25 +385,7 @@ setLocalRegion("Africa");
 
         {/* BODY */}
         <div className="tp-filter-body">
-       <div className="tp-form-group">
-  <label>Region</label>
-
-  <Select
-    className="tp-select"
-    classNamePrefix="tp-select"
-    components={{
-      DropdownIndicator: () => null,
-      IndicatorSeparator: () => null,
-    }}
-    options={regionOptions}
-    value={regionOptions.find((o) => o.value === localRegion) || null}
-    onChange={(opt) => {
-      setLocalRegion(opt?.value || "");
-    }}
-    placeholder="Select Region"
-    isSearchable
-  />
-</div>
+      
           <div className="tp-form-group">
             <label>Country</label>
 

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 
 export default function useUniversalFilters(defaultValues = {}) {
-
   const {
     reporterCode,
     partnerCode,
@@ -40,13 +39,12 @@ export default function useUniversalFilters(defaultValues = {}) {
   =============================== */
 
   useEffect(() => {
-
     const shouldSync =
-  lastReduxSync.current.partnerCode !== partnerCode ||
-  lastReduxSync.current.productId !== productId ||
-  lastReduxSync.current.startDate !== startDate ||
-  lastReduxSync.current.endDate !== endDate ||
-  lastReduxSync.current.corridor !== corridor;
+      lastReduxSync.current.partnerCode !== partnerCode ||
+      lastReduxSync.current.productId !== productId ||
+      lastReduxSync.current.startDate !== startDate ||
+      lastReduxSync.current.endDate !== endDate ||
+      lastReduxSync.current.corridor !== corridor;
 
     if (!shouldSync) return;
 
@@ -55,28 +53,19 @@ export default function useUniversalFilters(defaultValues = {}) {
       productId,
       startDate,
       endDate,
-       corridor,
+      corridor,
     };
 
     setFilters((prev) => {
-
       const next = {
         ...prev,
-       corridor:
-  window.location.pathname.includes("suppliers")
-    ? ""
-    : corridor || "",
-
-partnerCode:
-  window.location.pathname.includes("suppliers")
-    ? ""
-    : partnerCode || "",
+        corridor: corridor || "",
+        partnerCode: partnerCode || "",
         product: productId || "",
         productLabel: productLabel || "",
         startDate: startDate || "",
         endDate: endDate || "",
       };
-
       const changed =
         prev.corridor !== next.corridor ||
         prev.partnerCode !== next.partnerCode ||
@@ -86,17 +75,8 @@ partnerCode:
         prev.endDate !== next.endDate;
 
       return changed ? next : prev;
-
     });
-
-  }, [
-    partnerCode,
-    productId,
-    productLabel,
-    startDate,
-    endDate,
-    corridor
-  ]);
+  }, [partnerCode, productId, productLabel, startDate, endDate, corridor]);
 
   /* ===============================
      UPDATE FILTER
@@ -114,7 +94,6 @@ partnerCode:
   =============================== */
 
   const resetFilters = () => {
-
     setFilters({
       corridor: corridor || "",
       partnerCode: partnerCode || "",
@@ -128,7 +107,6 @@ partnerCode:
       origin: "",
       destination: "",
     });
-
   };
 
   return {
