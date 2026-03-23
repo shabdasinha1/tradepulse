@@ -241,3 +241,11 @@ export const DashboardFeedback = async (params = {}) => {
   });
 };
 
+
+/* ===============================
+   DASHBOARD REGIONS
+================================ */
+
+export const DashboardRegions = async () => {
+  return Api.get("/company/regions");
+};

@@ -242,7 +242,6 @@ function GlobalFilterPanel({ onClose }) {
           name: selectedCountry.name,
           numeric: selectedCountry.numeric,
           currency: selectedCountry.currency,
-          region: selectedCountry.region,
         }),
       );
     }
@@ -411,8 +410,7 @@ function GlobalFilterPanel({ onClose }) {
     setCountry({
       name,
       numeric: code,
-      currency: selected?.currency || "",
-      region: selected?.region || "",
+      currency: selected?.currency || ""
     }),
   );
 

@@ -25,13 +25,13 @@ const corridorSlice = createSlice({
   initialState,
   reducers: {
     setCountry: (state, action) => {
-  const { name, numeric, currency, region } = action.payload;
+  const { name, numeric, currency} = action.payload;
 
   state.country = name;
   state.reporterCode = numeric;
   state.baseCurrency = currency;
   state.currencySymbol = getSymbolFromCurrency(currency);
-  state.region = region; // ✅ now correct
+
 },
 
     setReporterCode: (state, action) => {

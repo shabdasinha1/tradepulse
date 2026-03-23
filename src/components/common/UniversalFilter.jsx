@@ -7,10 +7,12 @@ import AsyncCreatableSelect from "react-select/async-creatable";
 import { useLocation } from "react-router-dom";
 
 
+import { setRegion } from "../../store/slices/corridorSlice";
 import {
   DashboardCorridors,
   ProductDropdownSearch,
   DashboardCountries,
+  DashboardRegions
 
 } from "../../services/DashboardService";
 
@@ -27,6 +29,7 @@ const UniversalFilter = ({
   showQuoteCurrency = false,
   showOrigin = false,
   showDestination = false,
+  showRegion = false,
   defaultValues = {},
   onChange,
   className = "",
@@ -37,9 +40,9 @@ const UniversalFilter = ({
   const modalRef = useRef(null);
   const [isClosing, setIsClosing] = useState(false);
 
-  
+  const dispatch = useDispatch();
 
-  const { reporterCode } = useSelector((state) => state.corridor);
+const { reporterCode, region } = useSelector((state) => state.corridor);
 
   const { filters, setFilters, updateFilter, resetFilters } =
     useUniversalFilters(defaultValues);
@@ -47,6 +50,7 @@ const UniversalFilter = ({
   const [countriesList, setCountriesList] = useState([]);
   const [countryPage, setCountryPage] = useState(1);
   const [countrySearch, setCountrySearch] = useState("");
+  const [regionOptions, setRegionOptions] = useState([]);
 
   const LIMIT = 50;
 
@@ -116,7 +120,27 @@ const UniversalFilter = ({
     ).values(),
   ];
 
+/* ===============================
+   REGIONS
+================================ */
 
+const { data: regionsData } = useQuery({
+  queryKey: ["regions"],
+  queryFn: DashboardRegions,
+});
+
+useEffect(() => {
+  const regions = regionsData?.data|| [];
+
+  const formatted = regions
+    .filter((r) => r) // remove empty string
+    .map((r) => ({
+      value: r,
+      label: r,
+    }));
+
+  setRegionOptions(formatted);
+}, [regionsData]);
   /* ===============================
      CORRIDORS
   =============================== */
@@ -295,7 +319,40 @@ const UniversalFilter = ({
 
         <div className="tp-filter-body">
           <div className={`tp-universal-filter ${className}`}>
+{/* REGION */}
 
+{showRegion && (
+  <div className="tp-form-group">
+    <label>Region</label>
+
+    <Select
+      className="tp-select tp-filter-control"
+      classNamePrefix="tp-select"
+      components={{
+        DropdownIndicator: () => null,
+        IndicatorSeparator: () => null,
+      }}
+      options={regionOptions}
+      value={
+  regionOptions.find((o) => o.value === region) || null
+}
+      onChange={(opt) => {
+  const selectedRegion = opt?.value || "";
+
+  // local filter
+  setFilters((prev) => ({
+    ...prev,
+    region: selectedRegion,
+  }));
+
+  // redux update
+  dispatch(setRegion(selectedRegion));
+}}
+      placeholder="Select Region"
+      isSearchable
+    />
+  </div>
+)}
 
 
 
