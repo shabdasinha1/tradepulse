@@ -518,7 +518,9 @@ input::placeholder {
   align-items: baseline;
   gap: var(--space-xs);
 }
-
+:focus{
+  outline: none;
+}
 .tp-metric-value {
   /* font-size: clamp(var(--fs-xl), 2.5vw, var(--fs-3xl)); */
   font-size: var(--fs-xl);
