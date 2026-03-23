@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TradePulseCard from "../common/TradePulseCard";
 import { FiInfo } from "react-icons/fi";
 
@@ -14,6 +14,7 @@ const TPMetricCard = ({
   footerLabel,
   trend,
   risk,
+  lastUpdated,
   icon,
   className = "",
   tooltip,
@@ -23,6 +24,8 @@ const TPMetricCard = ({
 }) => {
   const numericTrend = Number(trend);
   const isStringTrend = Number.isNaN(numericTrend);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
 
   // Trend color logic
   let trendClass = "tp-text-neutral";
@@ -34,26 +37,58 @@ const TPMetricCard = ({
     if (trend.toLowerCase() === "up") trendClass = "tp-text-up";
     else if (trend.toLowerCase() === "down") trendClass = "tp-text-down";
   }
+  const handleMouseMove = (e) => {
+    setTooltipPos({
+      x: e.clientX + 12, // small offset from cursor
+      y: e.clientY + 12,
+    });
+  };
 
+  const handleMouseEnter = () => setShowTooltip(true);
+  const handleMouseLeave = () => setShowTooltip(false);
   return (
-    <TradePulseCard className={`tp-metric-card ${className}`}>
+    <TradePulseCard
+      className={`tp-metric-card ${className}`}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       {/* Header */}
       <div className="tp-metric-header">
         <div className="tp-metric-title">
-          <span>{title}</span>
+          <span className="tp-title-with-icon">
+            {title}
 
-          {tooltip && (
+            {tooltip && (
+              <span
+                className="tp-info-icon"
+                onMouseMove={handleMouseMove}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <FiInfo size={14} />
+              </span>
+            )}
+          </span>
+
+          {/* {tooltip && (
             <span className="tp-tooltip-wrapper">
               <FiInfo size={14} />
-              <span className="tp-tooltip-text">{tooltip}</span>
             </span>
-          )}
+          )} */}
+          {/* <span className="tp-tooltip-text">{tooltip}</span> */}
+          
         </div>
 
         {/* 🔴 TOP RIGHT RISK */}
         {risk && (
           <span className={`tp-risk-badge tp-risk-${risk.toLowerCase()}`}>
             {capitalize(risk)} Risk
+          </span>
+        )}
+        {lastUpdated && (
+          <span className={`tp-risk-badge`}>
+            {lastUpdated}
           </span>
         )}
       </div>
@@ -67,14 +102,14 @@ const TPMetricCard = ({
             </div>
 
             <div className="tp-shipping-row">
-              <span className="tp-ship-port">{shippingData.internalRoute}</span>
+              <span className="tp-ship-port">{"Internal Route: "}  </span>
+              <span className="tp-ship-port">{" "}{shippingData.internalRoute}</span>
             </div>
 
             <div className="tp-shipping-row">
               <span className="tp-ship-price">
-                {shippingData.value ? `${shippingData.value}` : "--"}
+                {shippingData?.value ? `${shippingData?.value}` : "--"}
               </span>
-              <span>{shippingData.unit}</span>
             </div>
           </div>
         ) : demandData ? ( // ✅ added block
@@ -112,21 +147,23 @@ const TPMetricCard = ({
                   <span className="tp-fx-pair">{item.pair}</span>
                   <span className="tp-fx-value-wraper">
                     <span className="tp-fx-value">
-                      {Number(item.value).toFixed(4)}
+                      {Number(item.value).toFixed(2)}
                     </span>
-                    <span
-                      className={
-                        isUp
-                          ? "tp-text-up"
-                          : isDown
-                          ? "tp-text-down"
-                          : "tp-text-neutral"
-                      }
-                    >
-                      {item.changePercent > 0
-                        ? `+${item.changePercent}%`
-                        : `${item.changePercent}%`}
-                    </span>
+                    {item.changePercent !== null && item.changePercent !== undefined && (
+                      <span
+                        className={
+                          isUp
+                            ? "tp-text-up"
+                            : isDown
+                              ? "tp-text-down"
+                              : "tp-text-neutral"
+                        }
+                      >
+                        {item.changePercent > 0
+                          ? `+${item.changePercent}%`
+                          : `${item.changePercent}%`}
+                      </span>
+                    )}
                   </span>
                 </div>
               );
@@ -151,13 +188,11 @@ const TPMetricCard = ({
         {/* 🔽 BOTTOM RIGHT TREND */}
         {trend !== undefined && trend !== null && (
           <span
-            className={`${
-              isStringTrend
-                ? `tp-risk-badge tp-risk-${
-                    capitalize(trend) === "Down" ? "high" : "low"
-                  }`
-                : ""
-            } ${trendClass} `}
+            className={`${isStringTrend
+              ? `tp-risk-badge tp-risk-${capitalize(trend) === "Down" ? "high" : "low"
+              }`
+              : ""
+              } ${trendClass} `}
           >
             {isStringTrend
               ? `${capitalize(trend)} Trend`

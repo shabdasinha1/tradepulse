@@ -644,14 +644,6 @@
 
 
 
-.tp-tooltip-wrapper {
-  position: relative;
-  display: inline-block;
-  margin-left: 6px;
-  cursor: pointer;
-  font-size: 12px;
-  color: #888;
-}
 
 .tp-tooltip-text {
   visibility: hidden;
@@ -664,17 +656,13 @@
   padding: 8px;
   position: absolute;
   z-index: 10;
-  bottom: 125%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.tp-tooltip-wrapper:hover .tp-tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
 
 @media (max-width: 426px) {
 
@@ -728,4 +716,33 @@
 .tp-shipping-row {
   display: flex;
   justify-content: space-between;
+  gap: 3px;
+}
+
+.tp-tooltip-floating {
+  position: fixed;
+  z-index: 9999;
+  background: var(--bg-card-hover);
+  color: var(--text-secondary);
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: var(--fs-caption);
+  max-width: 260px;
+  pointer-events: none;
+  /* 🔥 important */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  white-space: pre-line;
+  transition: opacity 0.1s ease;
+}
+
+.tp-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tp-info-icon {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }

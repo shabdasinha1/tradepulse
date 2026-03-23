@@ -268,6 +268,15 @@ const OverviewCharts = () => {
     severity = "High";
     severityClass = "tp-text-down";
   }
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container">
@@ -294,6 +303,7 @@ const OverviewCharts = () => {
                 ? "Recent FX movement affecting UK import costs"
                 : "Current exchange rate movement affecting UK import cost."
             }
+            tooltip={"Indicates how currency movements affect import/export costs  "}
           />
 
           {/* <TPMetricCard
@@ -307,45 +317,45 @@ const OverviewCharts = () => {
           // }
           /> */}
           <TPMetricCard
-            title={`Avg Shipping Cost (${corridor || "Selected Corridor"})`}
+            title={`Avg Shipping Cost (${kpiData?.data?.avgShippingCost?.route || "Selected Corridor"})`}
             shippingData={{
               // route: kpiData?.data?.avgShippingCost?.route,
               internalRoute: kpiData?.data?.avgShippingCost?.internalRoute,
               value: `${currencySymbol}${metrics.shipping?.average}`, // ✅ formatted
-              unit: "", // optional (since symbol included)
-              // changePercent: kpiData?.data?.avgShippingCost?.changePercent,
-              lastUpdated: kpiData?.data?.avgShippingCost?.lastUpdated,
+              // lastUpdated: kpiData?.data?.avgShippingCost?.lastUpdated,
             }}
+            lastUpdated={formatDate(kpiData?.data?.avgShippingCost?.lastUpdated)}
             // currencySymbol={currencySymbol}
             trend={`${metrics.shipping?.changePercent ?? 0}`}
             footerLabel="Average container cost within selected trade corridor."
             tooltip={metrics?.shipping?.description}
           />
 
-         <TPMetricCard
-  title={`${country || ""} Import Demand Signal`}
-  footerLabel={
-    metrics.demand?.product ||
-    "Trend of UK import demand for selected product"
-  }
-  trend={`${metrics.demand?.changePercent ?? 0}`}
-  fxPairs={
-    metrics.demand?.demandData
-      ? [
-          {
-            pair: `${metrics.demand.demandData.current.currentYear}`,
-            value: metrics.demand.demandData.current.currentValue,
-            changePercent: metrics.demand.changePercent,
-          },
-          {
-            pair: `${metrics.demand.demandData.previous.previousYear}`,
-            value: metrics.demand.demandData.previous.previousValue,
-            changePercent: 0,
-          },
-        ]
-      : []
-  }
-/>
+          <TPMetricCard
+            title={`${country || ""} Import Demand Signal`}
+            footerLabel={
+              metrics.demand?.product ||
+              "Trend of UK import demand for selected product"
+            }
+            trend={`${metrics.demand?.changePercent ?? 0}`}
+            fxPairs={
+              metrics.demand?.demandData
+                ? [
+                  {
+                    pair: `${metrics.demand.demandData.current.currentYear}`,
+                    value: metrics.demand.demandData.current.currentValue,
+
+                  },
+                  {
+                    pair: `${metrics.demand.demandData.previous.previousYear}`,
+                    value: metrics.demand.demandData.previous.previousValue,
+
+                  },
+                ]
+                : []
+            }
+            tooltip={"Represents total import demand for selected product "}
+          />
           <TPMetricCard
             title="Exporter Reliability Score"
             value={`${metrics.supplier?.score ?? 0}/${metrics.supplier?.maxScore ?? 0}`}

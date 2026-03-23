@@ -540,6 +540,7 @@ input::placeholder {
   font-size: var(--fs-caption);
   gap: var(--space-md);
   align-items: flex-end;
+  margin-top: auto;
 }
 
 .tp-metrics-row {
