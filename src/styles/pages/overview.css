@@ -646,7 +646,7 @@
 
 
 .tp-tooltip-text {
-  visibility: hidden;
+  /* visibility: hidden; */
   width: 300px;
   background-color: var(--bg-card-hover);
   color: var(--text-secondary);
@@ -745,4 +745,9 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+}
+
+.tp-metric-wrapper {
+  height: 100%;
+  display: flex;
 }
