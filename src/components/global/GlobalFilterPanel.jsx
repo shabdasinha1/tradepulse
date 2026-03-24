@@ -28,6 +28,7 @@ import {
 } from "../../services/DashboardService";
 import { setCountries } from "../../store/slices/countrySlice";
 import { queryKeys } from "../../utils/queryKeys";
+import { useToast } from "../common/toast/ToastProvider";
 
 
 function GlobalFilterPanel({ onClose }) {
@@ -35,13 +36,14 @@ function GlobalFilterPanel({ onClose }) {
   const dispatch = useDispatch();
   const location = useLocation();
   const debouncedSetSearch = useMemo(
-  () =>
-    debounce((value, setState) => {
-      setState(value);
-    }, 400),
-  [],
-);
+    () =>
+      debounce((value, setState) => {
+        setState(value);
+      }, 400),
+    [],
+  );
 
+  const { addToast } = useToast();
   const isSupplierPage = location.pathname.includes("suppliers");
 
   const [isClosing, setIsClosing] = useState(false);
@@ -132,23 +134,23 @@ function GlobalFilterPanel({ onClose }) {
      LOAD COUNTRIES
   ========================== */
 
-const finalSearch = countrySearch?.trim()
-  ? countrySearch
-  : localRegion;
+  const finalSearch = countrySearch?.trim()
+    ? countrySearch
+    : localRegion;
 
-const { data: countriesData, isFetching } = useQuery({
-  queryKey: queryKeys.countries(countryPage, finalSearch),
-  queryFn: () =>
-    DashboardCountries({
-      page: countryPage,
-      limit: LIMIT,
-      search: finalSearch,
-    }),
-  enabled: !!localRegion,
-  keepPreviousData: true,
-  staleTime: 1000 * 60 * 10,
-  cacheTime: 1000 * 60 * 30,
-});
+  const { data: countriesData, isFetching } = useQuery({
+    queryKey: queryKeys.countries(countryPage, finalSearch),
+    queryFn: () =>
+      DashboardCountries({
+        page: countryPage,
+        limit: LIMIT,
+        search: finalSearch,
+      }),
+    enabled: !!localRegion,
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 10,
+    cacheTime: 1000 * 60 * 30,
+  });
 
   useEffect(() => {
     if (!countriesData?.data) return;
@@ -160,13 +162,13 @@ const { data: countriesData, isFetching } = useQuery({
         countryPage === 1
           ? newCountries
           : Array.from(
-              new Map(
-                [...(countries || []), ...newCountries].map((c) => [
-                  c.numeric,
-                  c,
-                ]),
-              ).values(),
-            ),
+            new Map(
+              [...(countries || []), ...newCountries].map((c) => [
+                c.numeric,
+                c,
+              ]),
+            ).values(),
+          ),
       ),
     );
 
@@ -213,7 +215,7 @@ const { data: countriesData, isFetching } = useQuery({
      LOAD CORRIDORS
   ========================== */
 
- const { data: corridorData, isFetching: isCorridorFetching } = useQuery({
+  const { data: corridorData, isFetching: isCorridorFetching } = useQuery({
     queryKey: queryKeys.corridors(localCountry),
     queryFn: () => DashboardCorridors(localCountry),
     enabled: !!localCountry,
@@ -257,39 +259,43 @@ const { data: countriesData, isFetching } = useQuery({
 
   useEffect(() => {
     const handleEsc = (e) => {
-  if (e.key === "Escape") {
-    if (!localRegion || !localCountry || !localCorridor) {
-      alert("Please complete required filters");
-      return;
-    }
-    handleClose();
-  }
-};
+      if (e.key === "Escape") {
+        if (!localRegion || !localCountry || !localCorridor) {
+
+          // alert("Please complete required filters");
+          addToast("Please complete required filters","error");
+          return;
+        }
+        handleClose();
+      }
+    };
 
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
   const handleClose = () => {
-  // ✅ BLOCK CLOSE IF REQUIRED FIELDS NOT SELECTED
-  if (!localRegion || !localCountry || !localCorridor) {
-    alert("Please select Region, Country and Corridor before closing");
-    return;
-  }
-
-  setIsClosing(true);
-  setTimeout(() => onClose(), 300);
-};
-
- const handleOverlayClick = (e) => {
-  if (modalRef.current && !modalRef.current.contains(e.target)) {
+    // ✅ BLOCK CLOSE IF REQUIRED FIELDS NOT SELECTED
     if (!localRegion || !localCountry || !localCorridor) {
-      alert("Please complete required filters");
+      // alert("Please select Region, Country and Corridor before closing");
+      addToast("Please select Region, Country and Corridor before closing","error");
       return;
     }
-    handleClose();
-  }
-};
+
+    setIsClosing(true);
+    setTimeout(() => onClose(), 300);
+  };
+
+  const handleOverlayClick = (e) => {
+    if (modalRef.current && !modalRef.current.contains(e.target)) {
+      if (!localRegion || !localCountry || !localCorridor) {
+        // alert("Please complete required filters");
+        addToast("Please complete required filters","error");
+        return;
+      }
+      handleClose();
+    }
+  };
 
   /* =========================
      APPLY FILTERS
@@ -298,17 +304,18 @@ const { data: countriesData, isFetching } = useQuery({
   const handleApply = () => {
     // ✅ REQUIRED VALIDATION
     if (!localRegion || !localCountry || !localCorridor) {
-      alert("Region, Country and Corridor are required");
+      // alert("Region, Country and Corridor are required");
+      addToast("Region, Country and Corridor are required","error");
       return;
     }
 
     if (localStartDate && !localEndDate) {
-      alert("Please select End Date");
+      addToast("Please select End Date","error");
       return;
     }
 
     if (localStartDate && localEndDate && localStartDate > localEndDate) {
-      alert("Start date cannot be after End date");
+      addToast("Start date cannot be after End date","error");
       return;
     }
 
@@ -380,12 +387,12 @@ const { data: countriesData, isFetching } = useQuery({
     setLocalRegion("Africa");
     setLocalProduct(null);
   };
-useEffect(() => {
-  return () => {
-    debouncedSetSearch.cancel();
-  };
-}, [debouncedSetSearch]);
-  
+  useEffect(() => {
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [debouncedSetSearch]);
+
 
   const loadProductOptions = async (inputValue) => {
     try {
@@ -417,9 +424,8 @@ useEffect(() => {
       onClick={handleOverlayClick}
     >
       <div
-        className={`tp-filter-panel tp-card ${
-          isClosing ? "tp-panel-exit" : ""
-        }`}
+        className={`tp-filter-panel tp-card ${isClosing ? "tp-panel-exit" : ""
+          }`}
         ref={modalRef}
       >
         {/* HEADER */}
@@ -438,7 +444,7 @@ useEffect(() => {
         {/* BODY */}
         <div className="tp-filter-body">
           <div className="tp-form-group">
-            <label>Region</label>
+            <label>Region<span className="tp-required-star">*</span></label>
 
             <Select
               className="tp-select"
@@ -483,15 +489,15 @@ useEffect(() => {
             />
           </div>
           <div className="tp-form-group">
-            <label>Country</label>
+            <label>Country<span className="tp-required-star">*</span></label>
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
               isLoading={isFetching}
-loadingMessage={() => "Loading countries..."}
-noOptionsMessage={() =>
-  isFetching ? "Loading..." : "No countries found"
-}
+              loadingMessage={() => "Loading countries..."}
+              noOptionsMessage={() =>
+                isFetching ? "Loading..." : "No countries found"
+              }
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -543,7 +549,7 @@ noOptionsMessage={() =>
           </div>
 
           <div className="tp-form-group">
-            <label>Corridor</label>
+            <label>Corridor<span className="tp-required-star">*</span></label>
 
             <Select
               className="tp-select"
@@ -554,10 +560,10 @@ noOptionsMessage={() =>
               }}
               options={corridorOptionsMemo}
               isLoading={isCorridorFetching}
-loadingMessage={() => "Loading corridors..."}
-noOptionsMessage={() =>
-  isCorridorFetching ? "Loading..." : "No corridors found"
-}
+              loadingMessage={() => "Loading corridors..."}
+              noOptionsMessage={() =>
+                isCorridorFetching ? "Loading..." : "No corridors found"
+              }
               value={
                 corridorOptions.find(
                   (opt) => String(opt.value) === String(localCorridor),

@@ -1077,3 +1077,6 @@ select {
   font-size: var(--fs-body);
   color: var(--text-muted);
 }
+.tp-required-star{
+  color: red;
+}
