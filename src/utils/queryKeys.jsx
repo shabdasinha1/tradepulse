@@ -90,11 +90,10 @@ shippingCosts: (reporterCode, partnerCode, startDate, endDate) => [
   startDate,
   endDate,
 ],
-  corridorNews: (reporter, partner, startDate, endDate) => [
-    "corridorNews",
-    reporter,
-    partner,
-    startDate,
-    endDate,
-  ],
+ corridorNews: (countryCode, page = 0, size = 10) => [
+  "corridorNews",
+  countryCode,
+  page,
+  size,
+],
 };

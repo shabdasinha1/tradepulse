@@ -1,6 +1,6 @@
 import React ,{ useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { DashboardTradeNews } from "../../services/DashboardService.jsx";
+import { DashboardTradeNewsExternal } from "../../services/DashboardService.jsx";
 import { FiGlobe } from "react-icons/fi";
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import { useSelector } from "react-redux";
@@ -13,29 +13,23 @@ const LatestTradeNews = React.memo(() => {
   partnerCode,
   startDate,
   endDate,
+  countryCode,
 } = useSelector((state) => state.corridor);
   const scrollRef = useRef(null);
 
 
-  const params = {
-  startDate,
-  endDate,
-  reporter: reporterCode,
-  partner: partnerCode,
-};
+ 
 
   /* ===============================
      FETCH DATA (React Query)
   ============================== */
   const { data, isLoading, error } = useQuery({
-  queryKey: queryKeys.corridorNews(
-    reporterCode,
-    partnerCode,
-    startDate,
-    endDate
-  ),
-  queryFn: () => DashboardTradeNews(params),
-  enabled: !!reporterCode && !!partnerCode,
+  queryKey: queryKeys.corridorNews(countryCode),
+queryFn: () =>
+  DashboardTradeNewsExternal({
+    countryCode,
+  }),
+enabled: !!countryCode,
 });
 
   /* ===============================
@@ -43,11 +37,11 @@ const LatestTradeNews = React.memo(() => {
   ============================== */
 const news = useMemo(() => {
   return (
-    data?.data?.map((item) => ({
+    data?.data?.content?.map((item) => ({
       title: item.title,
-      time: item.description,
-      tag: item.type,
-      severity: item.severity,
+      time: item.summary,
+      tag: item.sector,
+      severity: item.alertType?.toLowerCase(),
     })) || []
   );
 }, [data]);
