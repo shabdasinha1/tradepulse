@@ -444,7 +444,7 @@ const DashboardProduct = () => {
 
         <div className="tp-card">
           <div className="tp-table-header">
-            <h3 className="tp-table-title">Active Product List</h3>
+            <h3 className="tp-table-title">Active Products List</h3>
 
             <button
               className="tp-btn-outline tp-overview-filter-btn"

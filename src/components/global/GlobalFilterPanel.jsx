@@ -132,20 +132,23 @@ function GlobalFilterPanel({ onClose }) {
      LOAD COUNTRIES
   ========================== */
 
-  const { data: countriesData, isFetching } = useQuery({
-    queryKey: queryKeys.countries(countryPage, countrySearch, localRegion), // ✅ ADD REGION
-    queryFn: () =>
-      DashboardCountries({
-        page: countryPage,
-        limit: LIMIT,
-        search: countrySearch,
-region: localRegion, // ✅ REGION AS SEARCH
-      }),
-      enabled: !!localRegion,
-    keepPreviousData: true,
-    staleTime: 1000 * 60 * 10,
-    cacheTime: 1000 * 60 * 30,
-  });
+const finalSearch = countrySearch?.trim()
+  ? countrySearch
+  : localRegion;
+
+const { data: countriesData, isFetching } = useQuery({
+  queryKey: queryKeys.countries(countryPage, finalSearch),
+  queryFn: () =>
+    DashboardCountries({
+      page: countryPage,
+      limit: LIMIT,
+      search: finalSearch,
+    }),
+  enabled: !!localRegion,
+  keepPreviousData: true,
+  staleTime: 1000 * 60 * 10,
+  cacheTime: 1000 * 60 * 30,
+});
 
   useEffect(() => {
     if (!countriesData?.data) return;
@@ -382,30 +385,7 @@ useEffect(() => {
     debouncedSetSearch.cancel();
   };
 }, [debouncedSetSearch]);
-  /* =========================
-     PRODUCT SEARCH
-  ========================== */
-
-  // const loadProductOptions = useMemo(
-  //   () =>
-  //     debounce(async (inputValue, callback) => {
-  //       try {
-  //         const res = await ProductDropdownSearch(inputValue || "");
-  //         const products = res?.data || [];
-
-  //         callback(
-  //           products.map((p) => ({
-  //             value: p.value,
-  //             label: p.label,
-  //           })),
-  //         );
-  //       } catch (err) {
-  //         console.error("Product search error:", err);
-  //         callback([]);
-  //       }
-  //     }, 400),
-  //   [],
-  // );
+  
 
   const loadProductOptions = async (inputValue) => {
     try {

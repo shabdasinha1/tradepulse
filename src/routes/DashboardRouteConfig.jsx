@@ -59,7 +59,7 @@ export const DASHBOARD_ROUTES = [
     adminOnly: true,
   },
   {
-    label: "Scheduler",
+    label: "Source Scheduler",
     path: "/scheduler",
     component: Scheduler,
     adminOnly: true,

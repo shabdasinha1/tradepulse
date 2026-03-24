@@ -17,6 +17,7 @@ import PublicOnlyRoute from "./PublicOnlyRoute.jsx";
 import { ToastContainer } from "react-toastify";
 import { ToastProvider } from "../components/common/toast/ToastProvider.jsx";
 import { isAdminUser } from "../utils/AdminHelper.jsx";
+import AdminRoute from "./AdminRoute.jsx";
 
 /* Simple loader */
 const PageLoader = () => (
@@ -44,7 +45,7 @@ const AppRoutes = () => {
             }
           />
 
-          {AUTH_ROUTES.map(({ path, component: Component }) => ( 
+          {AUTH_ROUTES.map(({ path, component: Component }) => (
             <Route
               key={path}
               path={path}
@@ -73,26 +74,27 @@ const AppRoutes = () => {
           ))}
 
           {/* 🔒 DASHBOARD ROUTES */}
-        {DASHBOARD_ROUTES.map(({ path, component: Component, adminOnly }) => {
-  // 🔥 Block admin routes
-  if (adminOnly && !isAdminUser()) {
-    return null;
-  }
-
-  return (
-    <Route
-      key={path}
-      path={path}
-      element={
-        <ProtectedRoute>
-          <PrivateLayout>
-            <Component />
-          </PrivateLayout>
-        </ProtectedRoute>
-      }
-    />
-  );
-})}
+          {DASHBOARD_ROUTES.map(({ path, component: Component, adminOnly }) => (
+            <Route
+              key={path}
+              path={path}
+              element={
+                <ProtectedRoute>
+                  {adminOnly ? (
+                    <AdminRoute>
+                      <PrivateLayout>
+                        <Component />
+                      </PrivateLayout>
+                    </AdminRoute>
+                  ) : (
+                    <PrivateLayout>
+                      <Component />
+                    </PrivateLayout>
+                  )}
+                </ProtectedRoute>
+              }
+            />
+          ))}
 
           {/* 🚫 404 */}
           <Route
