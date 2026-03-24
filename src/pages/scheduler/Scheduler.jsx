@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import TradePulseCard from "../../components/common/TradePulseCard";
+import { useToast } from "../../components/common/toast/ToastProvider";
 
 /* ===============================
    API BASE (TOP CONFIG)
@@ -15,6 +16,7 @@ const Scheduler = () => {
   const [loading, setLoading] = useState(false);
   const [creating, setCreating] = useState(false);
 
+  const { addToast } = useToast();
   /* ===============================
      FETCH ALL JOBS
   ================================ */
@@ -64,7 +66,7 @@ const Scheduler = () => {
   const handleTrigger = async (jobId) => {
     try {
       await axios.post(`${API_BASE}/${jobId}/trigger`);
-      alert("Job triggered successfully");
+      addToast("Job triggered successfully","success");
     } catch (err) {
       console.error("Trigger failed", err);
     }

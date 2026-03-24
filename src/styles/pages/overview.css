@@ -178,6 +178,9 @@
   .tp-overview-charts {
     grid-template-columns: repeat(2, 1fr);
   }
+  .tp-news-viewport{
+    height: 420px;
+  }
 }
 
 /* ===============================
