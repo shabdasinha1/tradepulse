@@ -65,12 +65,12 @@ export const DASHBOARD_ROUTES = [
     component: Scheduler,
     adminOnly: true,
   },
-  {
-    label: "Suppliers Management",
-    path: "/suppliers-manage",
-    component: SuppliersManage,
-     adminOnly: true,
-  },
+  // {
+  //   label: "Suppliers Management",
+  //   path: "/suppliers-manage",
+  //   component: SuppliersManage,
+  //    adminOnly: true,
+  // },
   {
     label: "Settings",
     path: "/settings",

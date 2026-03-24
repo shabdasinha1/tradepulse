@@ -152,7 +152,7 @@ const LatestTradeNews = React.memo(() => {
 
           {/* 💤 Empty */}
           {!isLoading && !error && news.length === 0 && (
-            <EmptyState message="No margin data available" />
+            <EmptyState message="No corridor alerts available" />
           )}
         </div>
       </div>
