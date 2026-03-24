@@ -11,6 +11,7 @@ const DashboardProduct = lazy(() => import("../pages/dashboard-product/Dashboard
 const Forecast = lazy(() => import("../pages/forecast/Forecast.jsx"));
 const Report = lazy(() => import("../pages/report/Report.jsx"));
 const Suppliers = lazy(() => import("../pages/suppliers/Suppliers.jsx"));
+const SuppliersManage = lazy(() => import("../pages/suppliers/SuppliersManagement.jsx"));
 const TradeAssistant = lazy(()=> import("../pages/assistant/TradeAssistant.jsx"));
 const Settings = lazy(() => import("../pages/settings/Settings.jsx"));
 const Feedback = lazy(() => import("../pages/feedback/Feedback.jsx"));
@@ -65,9 +66,16 @@ export const DASHBOARD_ROUTES = [
     adminOnly: true,
   },
   {
+    label: "Suppliers Management",
+    path: "/suppliers-manage",
+    component: SuppliersManage,
+     adminOnly: true,
+  },
+  {
     label: "Settings",
     path: "/settings",
     component: Settings,
     hidden: true,
   },
+  
 ];
