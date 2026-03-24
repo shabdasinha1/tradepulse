@@ -196,8 +196,6 @@ const OverviewCharts = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-
-
   useEffect(() => {
     const data = kpiData?.data;
 
@@ -213,13 +211,13 @@ const OverviewCharts = () => {
         // rate: data.fxImpact?.value ?? 0,
         // changePercent: data.fxImpact?.changePercent ?? 0,
         // pair: data.fxImpact?.pair ?? "",
-        pairs: data.fxImpact?.pairs || []
+        pairs: data.fxImpact?.pairs || [],
       },
       shipping: {
         average: Number(convertedShipping.toFixed(2)),
         changePercent: data.avgShippingCost?.changePercent ?? 0,
         unit: baseCurrency,
-        description: data.avgShippingCost?.note ?? ""
+        description: data.avgShippingCost?.note ?? "",
       },
       // demand: {
       //   percent: data.importDemandSignal?.value ?? 0,
@@ -228,15 +226,14 @@ const OverviewCharts = () => {
       // },
       demand: {
         demandData: {
-          current: {
-            currentYear: data.importDemandSignal.currentYear,
-            currentValue: data.importDemandSignal.currentValue,
-          },
           previous: {
-            previousYear: data.importDemandSignal.previousYear,
+            previousYear: formatDate(data.importDemandSignal.previousDate),
             previousValue: data.importDemandSignal.previousValue,
           },
-
+          current: {
+            currentYear: formatDate(data.importDemandSignal.currentDate),
+            currentValue: data.importDemandSignal.currentValue,
+          },
         },
         changePercent: data.importDemandSignal.changePercent,
         trend: data.importDemandSignal.trend,
@@ -303,7 +300,9 @@ const OverviewCharts = () => {
                 ? "Recent FX movement affecting UK import costs"
                 : "Current exchange rate movement affecting UK import cost."
             }
-            tooltip={"Indicates how currency movements affect import/export costs  "}
+            tooltip={
+              "Indicates how currency movements affect import/export costs  "
+            }
           />
 
           {/* <TPMetricCard
@@ -317,14 +316,16 @@ const OverviewCharts = () => {
           // }
           /> */}
           <TPMetricCard
-            title={`Avg Shipping Cost (${kpiData?.data?.avgShippingCost?.route || "Selected Corridor"})`}
+            title={<>Avg Shipping Cost <br /> (${kpiData?.data?.avgShippingCost?.route || "Selected Corridor"})</>}
             shippingData={{
               // route: kpiData?.data?.avgShippingCost?.route,
               // internalRoute: kpiData?.data?.avgShippingCost?.internalRoute,
               value: `${currencySymbol}${metrics?.shipping?.average ?? 0}`, // ✅ formatted
               // lastUpdated: kpiData?.data?.avgShippingCost?.lastUpdated,
             }}
-            lastUpdated={formatDate(kpiData?.data?.avgShippingCost?.lastUpdated)}
+            lastUpdated={formatDate(
+              kpiData?.data?.avgShippingCost?.lastUpdated,
+            )}
             // currencySymbol={currencySymbol}
             trend={`${metrics.shipping?.changePercent ?? 0}`}
             footerLabel="Average container cost within selected trade corridor."
@@ -341,17 +342,15 @@ const OverviewCharts = () => {
             fxPairs={
               metrics.demand?.demandData
                 ? [
-                  {
-                    pair: `${metrics.demand.demandData.current.currentYear}`,
-                    value: metrics.demand.demandData.current.currentValue,
-
-                  },
-                  {
-                    pair: `${metrics.demand.demandData.previous.previousYear}`,
-                    value: metrics.demand.demandData.previous.previousValue,
-
-                  },
-                ]
+                    {
+                      pair: `${metrics.demand.demandData.previous.previousYear}`,
+                      value: metrics.demand.demandData.previous.previousValue,
+                    },
+                    {
+                      pair: `${metrics.demand.demandData.current.currentYear}`,
+                      value: metrics.demand.demandData.current.currentValue,
+                    },
+                  ]
                 : []
             }
             tooltip={"Represents total import demand for selected product "}
