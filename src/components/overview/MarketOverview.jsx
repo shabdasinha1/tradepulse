@@ -98,26 +98,33 @@ const MarketOverview = () => {
   /* ===============================
      SHIPPING QUERY
   =============================== */
-
-  const { data: shippingData = [] } = useQuery({
-    queryKey: queryKeys.shippingCosts(
-      shipStart,
-      shipEnd,
-      shipFilters.origin,
-      shipFilters.destination,
-    ),
-    queryFn: () =>
-      DashboardShippingCosts({
-        page: 1,
-        limit: 50,
-        startDate: shipStart,
-        endDate: shipEnd,
-        origin: shipFilters.origin || "",
-        destination: shipFilters.destination || "",
-      }),
-    select: (res) => res?.data || [],
-    staleTime: 1000 * 60 * 5,
-  });
+const { data: shippingData = [] } = useQuery({
+  queryKey: queryKeys.shippingCosts(
+    reporterCode,
+    partnerCode,
+    shipStart,
+    shipEnd
+  ),
+  queryFn: () =>
+    DashboardShippingCosts({
+      reporterCode,
+      partnerCode,
+      startDate: shipStart,
+      endDate: shipEnd,
+    }),
+  select: (res) =>
+    (res?.data || []).map((item) => ({
+      corridor: item.route,
+      internalRoute: item.internalRoute,
+      cost: item.value,
+      currency: item.unit,
+      changePercent: item.changePercent,
+      trend: item.trend?.toUpperCase(),
+      lastUpdated: item.lastUpdated,
+    })),
+  enabled: !!reporterCode && !!partnerCode,
+  staleTime: 1000 * 60 * 5,
+});
 const { convert } = useCurrencyConverter(exchangeRates);
   return (
     <section className="tp-section">
@@ -274,8 +281,7 @@ const { convert } = useCurrencyConverter(exchangeRates);
 
         {shipFilterOpen && (
           <UniversalFilter
-            showOrigin
-            showDestination
+            showCorridor
             showTimeRange
             defaultValues={shipFilters}
             onChange={(filters) => {
