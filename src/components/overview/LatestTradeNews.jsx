@@ -1,4 +1,4 @@
-import React ,{ useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { DashboardTradeNewsExternal } from "../../services/DashboardService.jsx";
 import { FiGlobe } from "react-icons/fi";
@@ -8,43 +8,38 @@ import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../common/EmptyState.jsx";
 
 const LatestTradeNews = React.memo(() => {
-  const {
-  reporterCode,
-  partnerCode,
-  startDate,
-  endDate,
-  countryCode,
-} = useSelector((state) => state.corridor);
+  const { reporterCode, partnerCode, startDate, endDate, countryCode } =
+    useSelector((state) => state.corridor);
   const scrollRef = useRef(null);
-
-
- 
 
   /* ===============================
      FETCH DATA (React Query)
   ============================== */
   const { data, isLoading, error } = useQuery({
-  queryKey: queryKeys.corridorNews(countryCode),
-queryFn: () =>
-  DashboardTradeNewsExternal({
-    countryCode,
-  }),
-enabled: !!countryCode,
-});
+    queryKey: queryKeys.corridorNews(countryCode),
+    queryFn: () =>
+      DashboardTradeNewsExternal({
+        countryCode,
+      }),
+    enabled: !!countryCode,
+  });
 
   /* ===============================
      FORMAT DATA
   ============================== */
-const news = useMemo(() => {
-  return (
-    data?.data?.content?.map((item) => ({
-      title: item.title,
-      time: item.summary,
-      tag: item.sector,
-      severity: item.alertType?.toLowerCase(),
-    })) || []
-  );
-}, [data]);
+  const news = useMemo(() => {
+    return (
+      data?.data?.content?.map((item) => ({
+        title: item.title,
+        summary: item.summary,
+        source: item.source,
+        url: item.url,
+        date: item.publishedAt,
+        tag: item.sector,
+        severity: item.alertType?.toLowerCase(),
+      })) || []
+    );
+  }, [data]);
   /* ===============================
      AUTO SCROLL LOGIC (UNCHANGED)
   ============================== */
@@ -121,11 +116,32 @@ const news = useMemo(() => {
             !error &&
             (news.length > 3 ? [...news, ...news] : news).map((item, i) => (
               <div key={i} className="tp-news-item">
-                <div className="tp-news-content">
+                {/* <div className="tp-news-content">
                   <p className="tp-news-title">{item.title}</p>
                   <span className="tp-news-time">{item.time}</span>
-                </div>
+                </div> */}
+                <div className="tp-news-content">
+                  {/* Title (clickable) */}
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tp-news-title tp-news-link"
+                  >
+                    {item.title}
+                  </a>
 
+                  {/* Summary */}
+                  <p className="tp-news-summary">{item.summary}</p>
+
+                  {/* Meta row (source + date) */}
+                  <div className="tp-news-meta">
+                    <span className="tp-news-source">{item.source}</span>
+                    <span className="tp-news-date">
+                      {new Date(item.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
                 <span
                   className={`tp-badge tp-badge-${item.severity || "primary"}`}
                 >
