@@ -83,13 +83,13 @@ export const queryKeys = {
     endDate,
   ],
 
-  shippingCosts: (startDate, endDate, origin, destination) => [
-    "shippingCosts",
-    startDate,
-    endDate,
-    origin,
-    destination,
-  ],
+shippingCosts: (reporterCode, partnerCode, startDate, endDate) => [
+  "shippingCosts",
+  reporterCode,
+  partnerCode,
+  startDate,
+  endDate,
+],
   corridorNews: (reporter, partner, startDate, endDate) => [
     "corridorNews",
     reporter,
