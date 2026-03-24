@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useQuery } from "@tanstack/react-query";
 import { FiTruck } from "react-icons/fi";
 import { MdOutlineCurrencyPound } from "react-icons/md";
-import { CiFilter } from "react-icons/ci";
+import { CiFilter, CiLight } from "react-icons/ci";
 import { useState } from "react";
 
 import TradePulseCard from "../common/TradePulseCard.jsx";
@@ -21,7 +21,7 @@ const MarketOverview = () => {
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
   const [shipFilterOpen, setShipFilterOpen] = useState(false);
 
-  const { currencySymbol,baseCurrency, reporterCode, partnerCode, startDate, endDate } =
+  const { currencySymbol, baseCurrency, reporterCode, partnerCode, startDate, endDate } =
     useSelector((state) => state.corridor);
 
   /* ===============================
@@ -98,34 +98,43 @@ const MarketOverview = () => {
   /* ===============================
      SHIPPING QUERY
   =============================== */
-const { data: shippingData = [] } = useQuery({
-  queryKey: queryKeys.shippingCosts(
-    reporterCode,
-    partnerCode,
-    shipStart,
-    shipEnd
-  ),
-  queryFn: () =>
-    DashboardShippingCosts({
+  const { data: shippingData = [] } = useQuery({
+    queryKey: queryKeys.shippingCosts(
       reporterCode,
       partnerCode,
-      startDate: shipStart,
-      endDate: shipEnd,
-    }),
-  select: (res) =>
-    (res?.data || []).map((item) => ({
-      corridor: item.route,
-      internalRoute: item.internalRoute,
-      cost: item.value,
-      currency: item.unit,
-      changePercent: item.changePercent,
-      trend: item.trend?.toUpperCase(),
-      lastUpdated: item.lastUpdated,
-    })),
-  enabled: !!reporterCode && !!partnerCode,
-  staleTime: 1000 * 60 * 5,
-});
-const { convert } = useCurrencyConverter(exchangeRates);
+      shipStart,
+      shipEnd
+    ),
+    queryFn: () =>
+      DashboardShippingCosts({
+        reporterCode,
+        partnerCode,
+        startDate: shipStart,
+        endDate: shipEnd,
+      }),
+    select: (res) =>
+      (res?.data || []).map((item) => ({
+        corridor: item.route,
+        internalRoute: item.internalRoute,
+        cost: item.value,
+        currency: item.unit,
+        changePercent: item.changePercent,
+        trend: item.trend?.toUpperCase(),
+        lastUpdated: item.lastUpdated,
+      })),
+    enabled: !!reporterCode && !!partnerCode,
+    staleTime: 1000 * 60 * 5,
+  });
+  const { convert } = useCurrencyConverter(exchangeRates);
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -135,7 +144,7 @@ const { convert } = useCurrencyConverter(exchangeRates);
           header={
             <div className="tp-card-header tp-card-filter-header">
               <div className="tp-card-title-wrap">
-               {currencySymbol || ""}
+                {currencySymbol || ""}
                 <div className="tp-card-title-parent">
                   <h3 className="tp-card-title">
                     Corridor FX & Cost Impact Monitor
@@ -182,13 +191,12 @@ const { convert } = useCurrencyConverter(exchangeRates);
                           {r.rate}
                         </strong>
                         <span
-                          className={`tp-rate-change ${
-                            r.trend === "UP"
+                          className={`tp-rate-change ${r.trend === "UP"
                               ? "tp-text-up"
                               : r.trend === "DOWN"
                                 ? "tp-text-down"
                                 : "tp-text-neutral"
-                          }`}
+                            }`}
                         >
                           {r.changePercent}%
                         </span>
@@ -235,24 +243,23 @@ const { convert } = useCurrencyConverter(exchangeRates);
                     </div>
 
                     <span className="tp-ship-days">
-                      {s.age ? `${s.age}` : "0 Days"}
+                      {s.lastUpdated ? `${formatDate(s.lastUpdated)}` : ""}
                     </span>
                   </div>
 
-                <div className="tp-ship-footer">
-                  <strong className="tp-kpi-card-highliter">
-                    {/* <span className="tp-ship-port ">{s.currency}</span> {s.cost} */}
-                    {currencySymbol} {convert(s.cost, s.currency).toFixed(0)}
-                  </strong>
+                  <div className="tp-ship-footer">
+                    <strong className="tp-kpi-card-highliter">
+                      {/* <span className="tp-ship-port ">{s.currency}</span> {s.cost} */}
+                      {currencySymbol} {convert(s.cost, s.currency).toFixed(0)}
+                    </strong>
 
                     <span
-                      className={`tp-ship-change ${
-                        s.changePercent !== 0
+                      className={`tp-ship-change ${s.changePercent !== 0
                           ? s.changePercent > 0
                             ? "tp-text-up"
                             : "tp-text-down"
                           : "tp-muted"
-                      }`}
+                        }`}
                     >
                       {s.changePercent}%
                     </span>

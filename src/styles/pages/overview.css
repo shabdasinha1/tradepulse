@@ -174,13 +174,18 @@
   gap: var(--space-lg);
 }
 
+@media (max-width: 1440px) {
+  .tp-news-viewport {
+    height: 430px;
+  }
+}
+
 @media (min-width: 1024px) {
   .tp-overview-charts {
     grid-template-columns: repeat(2, 1fr);
   }
-  .tp-news-viewport{
-    height: 420px;
-  }
+
+
 }
 
 /* ===============================
@@ -543,6 +548,10 @@
 @media (max-width: 1024px) {
   .tp-margin-content {
     gap: var(--space-lg);
+  }
+
+  .tp-news-viewport {
+    height: 430px;
   }
 }
 
