@@ -320,7 +320,7 @@ const OverviewCharts = () => {
             title={`Avg Shipping Cost (${kpiData?.data?.avgShippingCost?.route || "Selected Corridor"})`}
             shippingData={{
               // route: kpiData?.data?.avgShippingCost?.route,
-              internalRoute: kpiData?.data?.avgShippingCost?.internalRoute,
+              // internalRoute: kpiData?.data?.avgShippingCost?.internalRoute,
               value: `${currencySymbol}${metrics?.shipping?.average ?? 0}`, // ✅ formatted
               // lastUpdated: kpiData?.data?.avgShippingCost?.lastUpdated,
             }}

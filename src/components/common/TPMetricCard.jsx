@@ -101,12 +101,12 @@ const TPMetricCard = ({
                 <div className="tp-shipping-row">
                   <span className="tp-ship-route">{shippingData.route}</span>
                 </div>
-
-                <div className="tp-shipping-row">
-                  <span className="tp-ship-port">{"Internal Route: "}</span>
-                  <span className="tp-ship-port">{" "}{shippingData.internalRoute}</span>
-                </div>
-
+                {shippingData.internalRoute && (
+                  <div className="tp-shipping-row">
+                    <span className="tp-ship-port">{"Internal Route: "}</span>
+                    <span className="tp-ship-port">{" "}{shippingData.internalRoute}</span>
+                  </div>
+                )}
                 <div className="tp-shipping-row">
                   <span className="tp-ship-price">
                     {shippingData?.value ? `${shippingData?.value}` : "--"}
@@ -156,8 +156,8 @@ const TPMetricCard = ({
                               isUp
                                 ? "tp-text-up"
                                 : isDown
-                                ? "tp-text-down"
-                                : "tp-text-neutral"
+                                  ? "tp-text-down"
+                                  : "tp-text-neutral"
                             }
                           >
                             {item.changePercent > 0
@@ -189,8 +189,8 @@ const TPMetricCard = ({
             {trend !== undefined && trend !== null && (
               <span
                 className={`${isStringTrend
-                    ? `tp-risk-badge tp-risk-${capitalize(trend) === "Down" ? "high" : "low"}`
-                    : ""
+                  ? `tp-risk-badge tp-risk-${capitalize(trend) === "Down" ? "high" : "low"}`
+                  : ""
                   } ${trendClass}`}
               >
                 {isStringTrend
