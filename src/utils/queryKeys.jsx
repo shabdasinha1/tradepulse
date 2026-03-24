@@ -1,5 +1,5 @@
 export const queryKeys = {
-  countries: (page, search) => ["countries", page, search],
+  countries: (page, search, region) => ["countries", page, search, region],
 
   corridors: (reporterCode) => ["corridors", reporterCode],
 

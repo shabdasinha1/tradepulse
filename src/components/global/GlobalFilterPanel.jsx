@@ -132,17 +132,15 @@ function GlobalFilterPanel({ onClose }) {
      LOAD COUNTRIES
   ========================== */
 
-const finalSearch = countrySearch?.trim()
-  ? countrySearch
-  : localRegion;
 
 const { data: countriesData, isFetching } = useQuery({
-  queryKey: queryKeys.countries(countryPage, finalSearch),
+  queryKey: queryKeys.countries(countryPage, countrySearch, localRegion), // ✅ updated
   queryFn: () =>
     DashboardCountries({
       page: countryPage,
       limit: LIMIT,
-      search: finalSearch,
+      search: countrySearch || "", // ✅ only search text
+      region: localRegion || "",   // ✅ region separate
     }),
   enabled: !!localRegion,
   keepPreviousData: true,
