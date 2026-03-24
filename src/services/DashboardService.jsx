@@ -1,4 +1,5 @@
 import Api from "../api/Api";
+import NewsApi from "../api/NewsApi";
 
 /* ===============================
    PARAM CLEANER
@@ -248,4 +249,21 @@ export const DashboardFeedback = async (params = {}) => {
 
 export const DashboardRegions = async () => {
   return Api.get("/company/regions");
+};
+
+/* ===============================
+   TRADE NEWS (EXTERNAL API)
+================================ */
+export const DashboardTradeNewsExternal = async ({
+  countryCode,
+  page = 0,
+  size = 10,
+}) => {
+  return NewsApi.get(`/news-int/api/news`, {
+    params: {
+      country: countryCode, // ✅ alpha3 भेज रहे हैं
+      page,
+      size,
+    },
+  });
 };

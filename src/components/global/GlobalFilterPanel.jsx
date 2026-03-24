@@ -63,14 +63,16 @@ function GlobalFilterPanel({ onClose }) {
   } = useSelector((state) => state.corridor);
 
   const countries = useSelector((state) => state.country.countries);
-  const countryOptions = useMemo(
-    () =>
-      countries.map((c) => ({
-        value: c.numeric,
-        label: c.name,
-      })),
-    [countries],
-  );
+ const countryOptions = useMemo(
+  () =>
+    countries.map((c) => ({
+      value: c.numeric,
+      label: c.name,
+      alpha3: c.alpha3, // ✅ ADD THIS
+      currency: c.currency, // (safe, already used later)
+    })),
+  [countries],
+);
 
   /* =========================
      LOCAL TEMP STATE
@@ -178,13 +180,14 @@ const { data: countriesData, isFetching } = useQuery({
       setLocalCountryName(first.name);
 
       dispatch(
-        setCountry({
-          name: first.name,
-          numeric: first.numeric,
-          currency: first.currency,
-          region: localRegion, // ✅ ADD THIS
-        }),
-      );
+  setCountry({
+    name: first.name,
+    numeric: first.numeric,
+    currency: first.currency,
+    region: localRegion,
+    alpha3: first.alpha3, // ✅ ADD THIS
+  }),
+);
     }
   }, [countriesData, countryPage, dispatch]);
 
@@ -322,18 +325,24 @@ const { data: countriesData, isFetching } = useQuery({
     const selectedCountry = countries.find((c) => c.numeric === localCountry);
 
     if (selectedCountry) {
-      dispatch(
-        setCountry({
-          name: selectedCountry.name,
-          numeric: selectedCountry.numeric,
-          currency: selectedCountry.currency,
-        }),
-      );
-    }
+  dispatch(
+    setCountry({
+      name: selectedCountry.name,
+      numeric: selectedCountry.numeric,
+      currency: selectedCountry.currency,
+      alpha3: selectedCountry.alpha3, // ✅ ADD THIS
+    }),
+  );
+}
 
     dispatch(setPartnerCode(localCorridor));
     dispatch(setCorridor(localCorridorLabel));
-    dispatch(setPartnerCountry(localPartnerCountry));
+   dispatch(
+  setPartnerCountry({
+    name: localPartnerCountry,
+    alpha3: "", // will update after API
+  }),
+);
     dispatch(setRegion(localRegion));
 
     const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
@@ -349,6 +358,15 @@ const { data: countriesData, isFetching } = useQuery({
           if (countryData?.currency) {
             dispatch(setQuoteCurrency(countryData.currency));
           }
+         
+if (countryData?.alpha3) {
+  dispatch(
+    setPartnerCountry({
+      name: countryData.name,
+      alpha3: countryData.alpha3,
+    }),
+  );
+}
         })
         .catch((err) => {
           console.error("Quote currency fetch failed:", err);
@@ -475,6 +493,7 @@ const { data: countriesData, isFetching } = useQuery({
                     numeric: "",
                     currency: "",
                     region: regionVal,
+                     alpha3: "",
                   }),
                 );
                 dispatch(setPartnerCode(null));
@@ -522,14 +541,15 @@ const { data: countriesData, isFetching } = useQuery({
 
                 const selected = countries.find((c) => c.numeric === code);
 
-                dispatch(
-                  setCountry({
-                    name,
-                    numeric: code,
-                    currency: selected?.currency || "",
-                    region: localRegion, // ✅ ADD THIS
-                  }),
-                );
+dispatch(
+  setCountry({
+    name,
+    numeric: code,
+    currency: selected?.currency || "",
+    region: localRegion,
+    alpha3: selected?.alpha3, // ✅ ADD THIS
+  }),
+);
 
                 // reset dependent fields
                 setLocalCorridor("");
