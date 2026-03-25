@@ -16,7 +16,7 @@ import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
 
 function Overview() {
-  const { corridor, baseCurrency, quoteCurrency } = useSelector(
+  const { corridor, baseCurrency, quoteCurrency,currencySymbol } = useSelector(
     (state) => state.corridor,
   );
   const shortCorridor = useMemo(() => {
@@ -163,7 +163,7 @@ function Overview() {
 
                   <div className="tp-margin-content">
                     <div className="tp-form-group tp-margin-input">
-                      <label>Estimated Import Budget (£)</label>
+                      <label>Estimated Import Budget ({currencySymbol})</label>
                       <input
                         type="number"
                         className="tp-input"
@@ -179,7 +179,7 @@ function Overview() {
                         {marginImpactData?.data ? (
                           <>
                             <h2 className="tp-margin-value">
-                              {impact >= 0 ? "+" : "-"}£
+                              {impact >= 0 ? "+" : "-"} {currencySymbol}
                               {Math.abs(impact).toLocaleString()}
                             </h2>
                             <p className="tp-muted">{message}</p>

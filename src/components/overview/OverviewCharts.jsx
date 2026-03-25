@@ -316,11 +316,11 @@ const OverviewCharts = () => {
           // }
           /> */}
           <TPMetricCard
-            title={<>Avg Shipping Cost <br /> (${kpiData?.data?.avgShippingCost?.route || "Selected Corridor"})</>}
+            title={<>Avg Shipping Cost <br /> ({kpiData?.data?.avgShippingCost?.route || "Selected Corridor"})</>}
             shippingData={{
               // route: kpiData?.data?.avgShippingCost?.route,
               // internalRoute: kpiData?.data?.avgShippingCost?.internalRoute,
-              value: `${currencySymbol}${metrics?.shipping?.average ?? 0}`, // ✅ formatted
+              value: `${currencySymbol} ${metrics?.shipping?.average ?? 0}`, // ✅ formatted
               // lastUpdated: kpiData?.data?.avgShippingCost?.lastUpdated,
             }}
             lastUpdated={formatDate(
@@ -344,11 +344,11 @@ const OverviewCharts = () => {
                 ? [
                     {
                       pair: `${metrics.demand.demandData.previous.previousYear}`,
-                      value: metrics.demand.demandData.previous.previousValue,
+                      value: `${currencySymbol} ${metrics.demand.demandData.previous.previousValue}`,
                     },
                     {
                       pair: `${metrics.demand.demandData.current.currentYear}`,
-                      value: metrics.demand.demandData.current.currentValue,
+                      value: `${currencySymbol} ${metrics.demand.demandData.current.currentValue}`,
                     },
                   ]
                 : []

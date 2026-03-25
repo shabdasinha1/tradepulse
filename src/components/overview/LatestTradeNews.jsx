@@ -8,22 +8,36 @@ import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../common/EmptyState.jsx";
 
 const LatestTradeNews = React.memo(() => {
-  const { reporterCode, partnerCode, startDate, endDate, countryCode } =
+  const { reporterCode, partnerCode, startDate, endDate, countryCode ,partnerCountryCode} =
     useSelector((state) => state.corridor);
   const scrollRef = useRef(null);
 
   /* ===============================
      FETCH DATA (React Query)
   ============================== */
-  const { data, isLoading, error } = useQuery({
-    queryKey: queryKeys.corridorNews(countryCode),
-    queryFn: () =>
+const { data, isLoading, error } = useQuery({
+  queryKey: queryKeys.corridorNews(countryCode, partnerCountryCode),
+  queryFn: async () => {
+    const [countryRes, partnerRes] = await Promise.all([
       DashboardTradeNewsExternal({
         countryCode,
       }),
-    enabled: !!countryCode,
-  });
+      DashboardTradeNewsExternal({
+        countryCode: partnerCountryCode,
+      }),
+    ]);
 
+    return {
+      data: {
+        content: [
+          ...(countryRes?.data?.content || []),
+          ...(partnerRes?.data?.content || []),
+        ],
+      },
+    };
+  },
+  enabled: !!countryCode || !!partnerCountryCode,
+});
   /* ===============================
      FORMAT DATA
   ============================== */
