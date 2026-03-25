@@ -317,3 +317,8 @@ export const SuggestSuppliers = async (name) => {
     params: cleanParams({ name }),
   });
 };
+export const GetDataSources = async (name) => {
+  return NewsApi.get("/supplier-dir-int/api/suppliers/meta/data-source", {
+    params: cleanParams({ name }),
+  });
+};

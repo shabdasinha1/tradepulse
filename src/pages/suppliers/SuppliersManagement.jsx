@@ -1,81 +1,89 @@
-import { useRef, useState,useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard";
-import { GetSuppliers,CreateSupplier,VerifySupplier,GetSupplierVerificationStatuses  } from "../../services/DashboardService";
+import {
+  GetSuppliers,
+  CreateSupplier,
+  VerifySupplier,
+  GetSupplierVerificationStatuses,
+  GetDataSources,
+} from "../../services/DashboardService";
 import { FiX } from "react-icons/fi";
 
 const SuppliersManagement = () => {
-
-
   /* ===============================
      MODAL STATE
   ================================ */
   const [openModal, setOpenModal] = useState(false);
 
   /* ===============================
-     FORM STATE
+     FORM STATE (UPDATED)
   ================================ */
   const [formData, setFormData] = useState({
-    id: "",
     companyName: "",
     countryIso3: "",
     sector: "",
     verificationStatus: "PENDING",
-    reliabilityScore: "",
-    sanctionsFlag: false,
-    sanctionsMatchedName: "",
-    sanctionsScore: "",
-    sanctionsSource: "NONE",
-    leiCode: "",
+
+    hsCodes: [],
+    registrationNumber: "",
+    dataSource: "",
   });
-const [suppliers, setSuppliers] = useState([]);
-const [loading, setLoading] = useState(false);
-const [verificationOptions, setVerificationOptions] = useState([]);
-const [search, setSearch] = useState("");
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
+  const [suppliers, setSuppliers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [verificationOptions, setVerificationOptions] = useState([]);
+  const [search, setSearch] = useState("");
+  const [dataSources, setDataSources] = useState([]);
 
-      const [supplierRes, verificationRes] = await Promise.all([
-        GetSuppliers({ page: 0, size: 10 }),
-        GetSupplierVerificationStatuses(),
-      ]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-      setSuppliers(
-        supplierRes?.data?.content || supplierRes?.data || []
-      );
+        const [supplierRes, verificationRes, dataSourcesRes] =
+          await Promise.all([
+            GetSuppliers({ page: 0, size: 10 }),
+            GetSupplierVerificationStatuses(),
+            GetDataSources(),
+          ]);
 
-      setVerificationOptions(
-        verificationRes?.data || []
-      );
-    } catch (error) {
-      console.error("Error fetching suppliers/meta:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setDataSources(dataSourcesRes?.data || dataSourcesRes || []);
+        if (dataSourcesRes?.data?.length) {
+  setFormData((prev) => ({
+    ...prev,
+    dataSource: dataSourcesRes.data[0], // ✅ default selected
+  }));
+}
+        setSuppliers(supplierRes?.data?.content || supplierRes?.data || []);
+        setVerificationOptions(verificationRes?.data || []);
+      } catch (error) {
+        console.error("Error fetching suppliers/meta:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchData();
-}, []);
+    fetchData();
+  }, []);
 
-useEffect(() => {
-  const delayDebounce = setTimeout(async () => {
-    try {
-      const res = await GetSuppliers({
-        page: 0,
-        size: 10,
-        query: search,
-      });
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      try {
+        const res = await GetSuppliers({
+          page: 0,
+          size: 10,
+          query: search,
+        });
 
-      setSuppliers(res?.data?.content || res?.data || []);
-    } catch (error) {
-      console.error("Error searching suppliers:", error);
-    }
-  }, 500); // debounce 500ms
+        setSuppliers(res?.data?.content || res?.data || []);
+      } catch (error) {
+        console.error("Error searching suppliers:", error);
+      }
+    }, 500);
 
-  return () => clearTimeout(delayDebounce);
-}, [search]);
+    return () => clearTimeout(delayDebounce);
+  }, [search]);
+
   /* ===============================
      HANDLE CHANGE
   ================================ */
@@ -91,62 +99,55 @@ useEffect(() => {
   /* ===============================
      SUBMIT
   ================================ */
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const payload = {
-      ...formData,
-      reliabilityScore: Number(formData.reliabilityScore),
-      sanctionsScore: Number(formData.sanctionsScore),
-    };
+    try {
+      const payload = {
+        ...formData,
+      };
+      console.log(payload);
 
-    await CreateSupplier(payload);
+      await CreateSupplier(payload);
 
-    // refresh list after adding
-    const res = await GetSuppliers({
-      page: 0,
-      size: 10,
-    });
+      const res = await GetSuppliers({
+        page: 0,
+        size: 10,
+      });
 
-    setSuppliers(res?.data?.content || res?.data || []);
+      setSuppliers(res?.data?.content || res?.data || []);
+      setOpenModal(false);
 
-    setOpenModal(false);
+      /* RESET UPDATED */
+      setFormData({
+  companyName: "",
+  countryIso3: "",
+  sector: "",
+  verificationStatus: "PENDING",
+  hsCodes: [],
+  registrationNumber: "",
+  dataSource: "",
+});
+    } catch (error) {
+      console.error("Error creating supplier:", error);
+    }
+  };
 
-    // reset form (optional but good UX)
-    setFormData({
-      id: "",
-      companyName: "",
-      countryIso3: "",
-      sector: "",
-      verificationStatus: "PENDING",
-      reliabilityScore: "",
-      sanctionsFlag: false,
-      sanctionsMatchedName: "",
-      sanctionsScore: "",
-      sanctionsSource: "NONE",
-      leiCode: "",
-    });
-  } catch (error) {
-    console.error("Error creating supplier:", error);
-  }
-};
+  const handleVerify = async (id) => {
+    try {
+      await VerifySupplier(id);
 
-const handleVerify = async (id) => {
-  try {
-    await VerifySupplier(id);
+      const res = await GetSuppliers({
+        page: 0,
+        size: 10,
+      });
 
-    // refresh list
-    const res = await GetSuppliers({
-      page: 0,
-      size: 10,
-    });
+      setSuppliers(res?.data?.content || res?.data || []);
+    } catch (error) {
+      console.error("Error verifying supplier:", error);
+    }
+  };
 
-    setSuppliers(res?.data?.content || res?.data || []);
-  } catch (error) {
-    console.error("Error verifying supplier:", error);
-  }
-};
   /* ===============================
      SCROLL SYNC
   ================================ */
@@ -168,7 +169,6 @@ const handleVerify = async (id) => {
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
-        {/* HEADER */}
         <header>
           <div className="tp-overview-sub-row">
             <div>
@@ -182,24 +182,23 @@ const handleVerify = async (id) => {
             </div>
 
             <div className="tp-filter-btn-wrapper tp-flex tp-gap-sm">
-  <input
-    className="tp-input"
-    placeholder="Search suppliers..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-  />
+              <input
+                className="tp-input"
+                placeholder="Search suppliers..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
 
-  <button
-    className="tp-btn-primary"
-    onClick={() => setOpenModal(true)}
-  >
-    Add Supplier
-  </button>
-</div>
+              <button
+                className="tp-btn-primary"
+                onClick={() => setOpenModal(true)}
+              >
+                Add Supplier
+              </button>
+            </div>
           </div>
         </header>
 
-        {/* TABLE (UNCHANGED) */}
         <TradePulseCard
           header={
             <div className="tp-card-header">
@@ -209,7 +208,6 @@ const handleVerify = async (id) => {
         >
           <div className="tp-table-wrapper tp-supplier-table">
             <div className="tp-table-wrapper-feedback">
-              {/* HEADER */}
               <div
                 className="tp-table-head-scroll"
                 ref={headerRef}
@@ -224,7 +222,6 @@ const handleVerify = async (id) => {
                 </div>
               </div>
 
-              {/* BODY */}
               <div
                 className="tp-table-body-scroll"
                 ref={bodyRef}
@@ -246,28 +243,28 @@ const handleVerify = async (id) => {
 
                       <span className="text-center">{supplier.sector}</span>
 
-                    <span className="text-center">
-  <div className="tp-flex tp-gap-sm tp-align-center tp-justify-center">
-    <span
-      className={`tp-pill ${
-        supplier.verificationStatus === "VERIFIED"
-          ? "tp-pill-success"
-          : "tp-pill-warning"
-      }`}
-    >
-      {supplier.verificationStatus}
-    </span>
+                      <span className="text-center">
+                        <div className="tp-flex tp-gap-sm tp-align-center tp-justify-center">
+                          <span
+                            className={`tp-pill ${
+                              supplier.verificationStatus === "VERIFIED"
+                                ? "tp-pill-success"
+                                : "tp-pill-warning"
+                            }`}
+                          >
+                            {supplier.verificationStatus}
+                          </span>
 
-    {supplier.verificationStatus !== "VERIFIED" && (
-      <button
-        className="tp-btn-secondary tp-btn-sm"
-        onClick={() => handleVerify(supplier.id)}
-      >
-        Verify
-      </button>
-    )}
-  </div>
-</span>
+                          {supplier.verificationStatus !== "VERIFIED" && (
+                            <button
+                              className="tp-btn-secondary tp-btn-sm"
+                              onClick={() => handleVerify(supplier.id)}
+                            >
+                              Verify
+                            </button>
+                          )}
+                        </div>
+                      </span>
 
                       <span className="text-center">
                         {(supplier.reliabilityScore * 100).toFixed(0)}%
@@ -280,7 +277,6 @@ const handleVerify = async (id) => {
           </div>
         </TradePulseCard>
 
-        {/* ================= MODAL ================= */}
         {openModal && (
           <div className="tp-modal-overlay">
             <div className="tp-modal">
@@ -291,20 +287,17 @@ const handleVerify = async (id) => {
                 <button
                   className="tp-filter-close"
                   onClick={() => setOpenModal(false)}
-                  aria-label="Close Filters"
                 >
                   <FiX />
                 </button>
               </div>
 
               <form className="tp-form tp-form-grid" onSubmit={handleSubmit}>
-                {/* ROW 1 */}
                 <div className="tp-form-group">
                   <label>Company Name</label>
                   <input
                     name="companyName"
                     className="tp-input"
-                    placeholder="Enter company name"
                     value={formData.companyName}
                     onChange={handleChange}
                     required
@@ -316,19 +309,16 @@ const handleVerify = async (id) => {
                   <input
                     name="countryIso3"
                     className="tp-input"
-                    placeholder="e.g. USA, IND"
                     value={formData.countryIso3}
                     onChange={handleChange}
                   />
                 </div>
 
-                {/* ROW 2 */}
                 <div className="tp-form-group">
                   <label>Sector</label>
                   <input
                     name="sector"
                     className="tp-input"
-                    placeholder="e.g. Agriculture"
                     value={formData.sector}
                     onChange={handleChange}
                   />
@@ -342,67 +332,67 @@ const handleVerify = async (id) => {
                     value={formData.verificationStatus}
                     onChange={handleChange}
                   >
-                   <option value="">Select status</option>
-{verificationOptions.map((status) => (
-  <option key={status} value={status}>
-    {status}
-  </option>
-))}
+                    {verificationOptions.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
                   </select>
                 </div>
-
-                {/* ROW 3 */}
                 <div className="tp-form-group">
-                  <label>Reliability Score</label>
+                  <label>Data Source</label>
+                 <select
+  name="dataSource"
+  className="tp-input tp-select"
+  value={formData.dataSource}
+  onChange={handleChange}
+>
+  <option value="">Select Data Source</option> {/* ✅ important */}
+
+  {dataSources.map((ds) => (
+    <option key={ds} value={ds}>
+      {ds}
+    </option>
+  ))}
+</select>
+                </div>
+                <div className="tp-form-group">
+  <label>Registration Number</label>
+  <input
+    name="registrationNumber"
+    className="tp-input"
+    value={formData.registrationNumber}
+    onChange={handleChange}
+  />
+</div>
+
+                <div className="tp-form-group">
+                  <label>HS Code</label>
                   <input
-                    type="number"
-                    step="0.1"
-                    name="reliabilityScore"
+                    type="text"
+                    name="hsCodes"
                     className="tp-input"
-                    placeholder="0.0 - 1.0"
-                    value={formData.reliabilityScore}
-                    onChange={handleChange}
+                    value={formData.hsCodes.join(",")}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        hsCodes: e.target.value.split(","),
+                      }))
+                    }
                   />
                 </div>
 
-                <div className="tp-form-group">
+                {/* <div className="tp-form-group">
                   <label>Sanctions Score</label>
                   <input
                     type="number"
                     name="sanctionsScore"
                     className="tp-input"
-                    placeholder="Enter score"
                     value={formData.sanctionsScore}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
 
-                {/* FULL WIDTH ROW */}
-                <div className="tp-form-group tp-form-span-2">
-                  <label>LEI Code</label>
-                  <input
-                    name="leiCode"
-                    className="tp-input"
-                    placeholder="Optional"
-                    value={formData.leiCode}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                {/* SWITCH (ALIGNED LIKE REGISTER CHECKBOX) */}
-                <div className="tp-form-group tp-form-span-2 tp-privacy">
-                  <label className="tp-privacy-label">
-                    <input
-                      type="checkbox"
-                      name="sanctionsFlag"
-                      checked={formData.sanctionsFlag}
-                      onChange={handleChange}
-                    />
-                    <span>Sanctions Flag Enabled</span>
-                  </label>
-                </div>
-
-                {/* ACTIONS */}
                 <div className="tp-form-group tp-form-span-2 tp-actions">
                   <button type="submit" className="tp-btn-primary">
                     Save
