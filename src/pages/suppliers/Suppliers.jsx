@@ -1,9 +1,9 @@
-import React, { useEffect,useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
-import { DashboardSuppliers } from "../../services/DashboardService.jsx";
+import { DashboardCompanySuppliers } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
@@ -46,6 +46,7 @@ const Suppliers = () => {
     corridor,
     partnerCode,
     region,
+    partnerRegion,
   } = useSelector((state) => state.corridor);
   const skeletonRows = useMemo(
     () =>
@@ -78,51 +79,35 @@ const Suppliers = () => {
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
-  const {
-    data: supplierPages,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } =useInfiniteQuery({
- queryKey: queryKeys.suppliers({
-  reporterCode,
-  partnerCode,
-  startDate,
-  endDate,
-  tradeflow,
-  region,
-  isInitialLoad,
-}),
+const {
+  data: supplierPages,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+} = useInfiniteQuery({
+  queryKey: queryKeys.suppliers({ partnerRegion }),
 
- queryFn: async ({ pageParam = 1 }) => {
-let params = {
-  page: pageParam,
-  limit: LIMIT,
-  originRegion: region,
-};
+  queryFn: async ({ pageParam = 1 }) => {
+    const res = await DashboardCompanySuppliers({
+      page: pageParam,
+      limit: LIMIT,
+      region: partnerRegion, // ✅ ONLY THIS PARAM
+    });
 
-if (!isInitialLoad) {
-  params = {
-    ...params,
-    reporterCode,
-    partnerCode,
-    startDate,
-    endDate,
-    tradeFlow: tradeflow,
-  };
-}
-  const res = await DashboardSuppliers(params);
-  return res?.data?.suppliers || [];
-},
+    return res?.data?.suppliers || [];
+  },
+
   getNextPageParam: (lastPage, pages) =>
     lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-enabled: !!region,
+  enabled: !!partnerRegion,
 
   refetchOnMount: false,
   refetchOnWindowFocus: false,
 });
+
+
   const suppliers = useMemo(() => {
     return supplierPages?.pages?.flat() || [];
   }, [supplierPages]);
@@ -233,23 +218,23 @@ enabled: !!region,
                         ref={isLast ? lastSupplierRef : null}
                         className="tp-table-row tp-table-suppliers"
                       >
-                        <div className="supplier-name">{s.name}</div>
+                        <div className="supplier-name">{s.company_name}</div>
 
-                        <span className="tp-muted text-center">{s.region}</span>
+<span className="tp-muted text-center">{s.region}</span>
 
-                        <span className="text-center">
-                          <span className="tp-pill tp-pill-success">
-                            {s.reliabilityScore}
-                          </span>
-                        </span>
+<span className="text-center">
+  <span className="tp-pill tp-pill-success">
+    {s.reliability_score}
+  </span>
+</span>
 
-                        <span className="text-center">
-                          <span className="tp-pill tp-pill-primary">
-                            {s.activityLevel}
-                          </span>
-                        </span>
+<span className="text-center">
+  <span className="tp-pill tp-pill-primary">
+    {s.verification_status}
+  </span>
+</span>
 
-                        <span className="text-center">{s.shipments}</span>
+<span className="text-center">{s.product_count}</span>
                       </div>
                     );
                   })}
@@ -269,17 +254,17 @@ enabled: !!region,
           showCorridor
           showTimeRange
           showPartner
-      
+
           onClose={() => setTableFilterOpen(false)}
           onChange={(filters) => {
-  if (!filters.partnerCode) {
-    setIsInitialLoad(true);   // ✅ RESET FLOW
-  } else {
-    setIsInitialLoad(false);
-  }
+            if (!filters.partnerCode) {
+              setIsInitialLoad(true);   // ✅ RESET FLOW
+            } else {
+              setIsInitialLoad(false);
+            }
 
-  setTableFilterOpen(false);
-}}
+            setTableFilterOpen(false);
+          }}
         />
       )}
     </section>

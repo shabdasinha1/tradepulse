@@ -234,6 +234,16 @@ export const DashboardSuppliers = async (params = {}) => {
 };
 
 /* ===============================
+   COMPANY SUPPLIERS (FILTERED BY REGION)
+================================ */
+
+export const DashboardCompanySuppliers = async (params = {}) => {
+  return Api.get("/company/company-suppliers", {
+    params: cleanParams(params),
+  });
+};
+
+/* ===============================
    DASHBOARD FEEDBACK
 ================================ */
 export const DashboardFeedback = async (params = {}) => {
