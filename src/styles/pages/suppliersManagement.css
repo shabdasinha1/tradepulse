@@ -15,7 +15,10 @@
   align-items: center;
   min-width: 900px;
 }
-
+.tp-form-group input::placeholder,
+select option {
+  color: var(--text-muted);
+}
 .tp-supplier-table {
   display: flex;
   flex-direction: column;
@@ -73,15 +76,6 @@
   box-shadow: var(--shadow-card);
 }
 
-/* Mobile full screen */
-@media (max-width: 640px) {
-  .tp-modal {
-    height: 100%;
-    max-height: 100%;
-    border-radius: 0;
-  }
-}
-
 .tp-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -98,16 +92,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-@media (max-width: 640px) {
-  .tp-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .tp-form-grid .tp-form-actions,
-  .tp-form-grid .tp-checkbox-group {
-    grid-column: span 1;
-  }
 }
 
 .tp-select {
@@ -128,7 +112,86 @@
   gap: var(--space-sm);
   margin-top: var(--space-md);
 }
-.tp-supplier-modal-header{
-    display: flex;
-    justify-content: space-between;
+.tp-supplier-modal-header {
+  display: flex;
+  justify-content: space-between;
+}
+.tp-supplier-header-input {
+  width: 50%;
+}
+.tp-supplier-header-btn {
+  justify-content: end;
+}
+
+/* ===============================
+   REACT SELECT (MATCH TP DESIGN)
+================================ */
+
+.tp-select__control {
+  min-height: 44px;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+}
+
+.tp-select__control--is-focused {
+  border-color: var(--clr-primary);
+  box-shadow: var(--shadow-glow);
+}
+
+.tp-select__value-container {
+  padding: 0 12px;
+}
+
+.tp-select__single-value {
+  color: var(--text-primary);
+  font-size: var(--fs-body);
+}
+
+.tp-select__placeholder {
+  color: var(--text-secondary);
+}
+
+.tp-select__menu {
+  background: #fff;
+  border-radius: var(--radius-md);
+  z-index: 999;
+}
+
+.tp-select__option {
+  font-size: var(--fs-body);
+  padding: 10px 12px;
+}
+
+.tp-select__option--is-focused {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.tp-select__option--is-selected {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+/* Mobile full screen */
+@media (max-width: 640px) {
+  .tp-modal {
+    height: 85vh;
+    max-height: 100%;
+  }
+  .tp-supplier-header-input {
+    /* width: 100%; */
+  }
+  .tp-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-form-grid .tp-form-actions,
+  .tp-form-grid .tp-checkbox-group {
+    grid-column: span 1;
+  }
+  .tp-supplier-header-btn{
+    flex-direction: row;
+    justify-content: flex-start;
+  }
 }

@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard";
+import Select from "react-select";
 import {
   GetSuppliers,
   CreateSupplier,
@@ -35,6 +36,16 @@ const SuppliersManagement = () => {
   const [search, setSearch] = useState("");
   const [dataSources, setDataSources] = useState([]);
 
+  const verificationSelectOptions = verificationOptions.map((status) => ({
+    value: status,
+    label: status,
+  }));
+
+  const dataSourceOptions = dataSources.map((ds) => ({
+    value: ds,
+    label: ds,
+  }));
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -49,11 +60,11 @@ const SuppliersManagement = () => {
 
         setDataSources(dataSourcesRes?.data || dataSourcesRes || []);
         if (dataSourcesRes?.data?.length) {
-  setFormData((prev) => ({
-    ...prev,
-    dataSource: dataSourcesRes.data[0], // ✅ default selected
-  }));
-}
+          setFormData((prev) => ({
+            ...prev,
+            dataSource: dataSourcesRes.data[0], // ✅ default selected
+          }));
+        }
         setSuppliers(supplierRes?.data?.content || supplierRes?.data || []);
         setVerificationOptions(verificationRes?.data || []);
       } catch (error) {
@@ -120,14 +131,14 @@ const SuppliersManagement = () => {
 
       /* RESET UPDATED */
       setFormData({
-  companyName: "",
-  countryIso3: "",
-  sector: "",
-  verificationStatus: "PENDING",
-  hsCodes: [],
-  registrationNumber: "",
-  dataSource: "",
-});
+        companyName: "",
+        countryIso3: "",
+        sector: "",
+        verificationStatus: "PENDING",
+        hsCodes: [],
+        registrationNumber: "",
+        dataSource: "",
+      });
     } catch (error) {
       console.error("Error creating supplier:", error);
     }
@@ -181,9 +192,9 @@ const SuppliersManagement = () => {
               </p>
             </div>
 
-            <div className="tp-filter-btn-wrapper tp-flex tp-gap-sm">
+            <div className="tp-filter-btn-wrapper tp-flex tp-gap-sm tp-supplier-header-btn">
               <input
-                className="tp-input"
+                className="tp-input tp-supplier-header-input"
                 placeholder="Search suppliers..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -292,12 +303,13 @@ const SuppliersManagement = () => {
                 </button>
               </div>
 
-              <form className="tp-form tp-form-grid" onSubmit={handleSubmit}>
+              <form className="tp-form-grid" onSubmit={handleSubmit}>
                 <div className="tp-form-group">
                   <label>Company Name</label>
                   <input
                     name="companyName"
                     className="tp-input"
+                    placeholder="Enter company name (e.g. ABC Cocoa Ltd)"
                     value={formData.companyName}
                     onChange={handleChange}
                     required
@@ -309,6 +321,7 @@ const SuppliersManagement = () => {
                   <input
                     name="countryIso3"
                     className="tp-input"
+                    placeholder="Enter ISO3 code (e.g. GHA, IND, USA)"
                     value={formData.countryIso3}
                     onChange={handleChange}
                   />
@@ -319,6 +332,7 @@ const SuppliersManagement = () => {
                   <input
                     name="sector"
                     className="tp-input"
+                    placeholder="Enter sector (e.g. Agriculture, Manufacturing)"
                     value={formData.sector}
                     onChange={handleChange}
                   />
@@ -326,45 +340,79 @@ const SuppliersManagement = () => {
 
                 <div className="tp-form-group">
                   <label>Verification Status</label>
-                  <select
+                  {/* Verification Status */}
+                  {/* <select
                     name="verificationStatus"
                     className="tp-input tp-select"
                     value={formData.verificationStatus}
                     onChange={handleChange}
                   >
+                    <option value="">Select verification status</option>
                     {verificationOptions.map((status) => (
                       <option key={status} value={status}>
                         {status}
                       </option>
                     ))}
-                  </select>
+                  </select> */}
+                  <Select
+                    classNamePrefix="tp-select"
+                    placeholder="Select verification status"
+                    options={verificationSelectOptions}
+                    value={
+                      verificationSelectOptions.find(
+                        (opt) => opt.value === formData.verificationStatus,
+                      ) || null
+                    }
+                    onChange={(selectedOption) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        verificationStatus: selectedOption?.value || "",
+                      }))
+                    }
+                  />
                 </div>
                 <div className="tp-form-group">
                   <label>Data Source</label>
-                 <select
-  name="dataSource"
-  className="tp-input tp-select"
-  value={formData.dataSource}
-  onChange={handleChange}
->
-  <option value="">Select Data Source</option> {/* ✅ important */}
-
-  {dataSources.map((ds) => (
-    <option key={ds} value={ds}>
-      {ds}
-    </option>
-  ))}
-</select>
+                  {/* <select
+                    name="dataSource"
+                    className="tp-input tp-select"
+                    value={formData.dataSource}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select data source</option>
+                    {dataSources.map((ds) => (
+                      <option key={ds} value={ds}>
+                        {ds}
+                      </option>
+                    ))}
+                  </select> */}
+                  <Select
+                    classNamePrefix="tp-select"
+                    placeholder="Select data source"
+                    options={dataSourceOptions}
+                    value={
+                      dataSourceOptions.find(
+                        (opt) => opt.value === formData.dataSource,
+                      ) || null
+                    }
+                    onChange={(selectedOption) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        dataSource: selectedOption?.value || "",
+                      }))
+                    }
+                  />
                 </div>
                 <div className="tp-form-group">
-  <label>Registration Number</label>
-  <input
-    name="registrationNumber"
-    className="tp-input"
-    value={formData.registrationNumber}
-    onChange={handleChange}
-  />
-</div>
+                  <label>Registration Number</label>
+                  <input
+                    name="registrationNumber"
+                    className="tp-input"
+                    placeholder="Enter registration number (e.g. GH12345)"
+                    value={formData.registrationNumber}
+                    onChange={handleChange}
+                  />
+                </div>
 
                 <div className="tp-form-group">
                   <label>HS Code</label>
@@ -372,6 +420,7 @@ const SuppliersManagement = () => {
                     type="text"
                     name="hsCodes"
                     className="tp-input"
+                    placeholder="Enter HS codes separated by commas (e.g. 1801, 0901)"
                     value={formData.hsCodes.join(",")}
                     onChange={(e) =>
                       setFormData((prev) => ({

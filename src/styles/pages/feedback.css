@@ -36,8 +36,8 @@
 
 @media (max-width: 768px) {
   .tp-form-group {
-    /* width: 100%; */
-    width: 40%;
+    width: 100%;
+    /* width: 40%; */
   }
   .tp-feedback-page-card {
     max-width: 90%;
