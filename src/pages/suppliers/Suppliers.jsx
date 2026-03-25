@@ -244,7 +244,18 @@ const Suppliers = () => {
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
-
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "VERIFIED":
+        return "tp-pill-success";
+      case "PARTIAL":
+        return "tp-pill-warning";
+      case "UNVERIFIED":
+        return "tp-pill-danger";
+      default:
+        return "tp-pill-primary";
+    }
+  };
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -358,14 +369,24 @@ const Suppliers = () => {
 
                         {/* RELIABILITY */}
                         <span className="text-center">
-                          <span className="tp-pill tp-pill-success">
+                          <span
+                            className={`tp-pill ${
+                              s.reliability_score < 0.3
+                                ? "tp-pill-danger"
+                                : s.reliability_score < 0.5
+                                  ? "tp-pill-warning"
+                                  : "tp-pill-success"
+                            }`}
+                          >
                             {s.reliability_score}
                           </span>
                         </span>
 
                         {/* STATUS */}
                         <span className="text-center">
-                          <span className="tp-pill tp-pill-primary">
+                          <span
+                            className={`tp-pill ${getStatusClass(s.verification_status)}`}
+                          >
                             {s.verification_status}
                           </span>
                         </span>
