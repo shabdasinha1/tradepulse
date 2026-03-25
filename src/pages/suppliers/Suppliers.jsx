@@ -14,6 +14,115 @@ import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { CiFilter } from "react-icons/ci";
 
 const LIMIT = 20;
+/* ==========================================================
+          MODAL FOR SUPPLIERS TABLE
+ ==========================================================*/
+const SupplierModal = ({ data, onClose }) => {
+  if (!data) return null;
+
+  return (
+    <div className="tp-supplier-modal-overlay" onClick={onClose}>
+      <div
+        className="tp-supplier-modal tp-supplier-modal-upgraded"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ================= HEADER ================= */}
+        <div className="tp-supplier-modal-header upgraded">
+          <div>
+            <h2>{data.company_name}</h2>
+            <p className="tp-modal-sub">
+              {data.country_iso3} • {data.region} • {data.sector}
+            </p>
+          </div>
+
+          <div className="tp-modal-header-right">
+            <span className="tp-pill tp-pill-primary">
+              {data.verification_status}
+            </span>
+
+            <button onClick={onClose} className="tp-filter-close">
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* ================= BODY ================= */}
+        <div className="tp-supplier-modal-body upgraded">
+          {/* ===== METRICS ===== */}
+          <div className="tp-modal-metrics">
+            <div className="tp-modal-metric">
+              <span className="tp-modal-metric-value">
+                {data.reliability_score}
+              </span>
+              <span className="tp-modal-metric-label">Reliability</span>
+            </div>
+
+            <div className="tp-modal-metric">
+              <span className="tp-modal-metric-value">
+                {data.product_count}
+              </span>
+              <span className="tp-modal-metric-label">Shipments</span>
+            </div>
+
+            <div className="tp-modal-metric">
+              <span className="tp-modal-metric-value">
+                {data.products?.length || 0}
+              </span>
+              <span className="tp-modal-metric-label">Products</span>
+            </div>
+          </div>
+
+          {/* ===== DETAILS GRID ===== */}
+          <div className="tp-modal-grid">
+            <div>
+              <span className="tp-modal-label">Country</span>
+              <span>{data.country_iso3}</span>
+            </div>
+
+            <div>
+              <span className="tp-modal-label">Sector</span>
+              <span>{data.sector}</span>
+            </div>
+
+            <div>
+              <span className="tp-modal-label">Region</span>
+              <span>{data.region}</span>
+            </div>
+
+            <div>
+              <span className="tp-modal-label">Status</span>
+              <span>{data.verification_status}</span>
+            </div>
+          </div>
+
+          {/* ===== PRODUCTS ===== */}
+          <div className="tp-modal-products">
+            <div className="tp-modal-section-title">Products</div>
+
+            <div className="tp-modal-product-list">
+              {data.products?.length ? (
+                data.products.map((p, i) => (
+                  <div key={i} className="tp-modal-product-item">
+                    {p}
+                  </div>
+                ))
+              ) : (
+                <div className="tp-empty-text">No products available</div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ================= FOOTER ================= */}
+        <div className="tp-supplier-modal-footer">
+          <button className="tp-btn-outline" onClick={onClose}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 /* ==========================================================
           SKELTON FOR SUPPLIERS
@@ -37,6 +146,8 @@ const Suppliers = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const hasMounted = useRef(false);
   const hasFetchedInitially = useRef(false);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     tradeflow,
@@ -79,34 +190,33 @@ const Suppliers = () => {
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
-const {
-  data: supplierPages,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-  isLoading,
-} = useInfiniteQuery({
-  queryKey: queryKeys.suppliers({ partnerRegion }),
+  const {
+    data: supplierPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: queryKeys.suppliers({ partnerRegion }),
 
-  queryFn: async ({ pageParam = 1 }) => {
-    const res = await DashboardCompanySuppliers({
-      page: pageParam,
-      limit: LIMIT,
-      region: partnerRegion, // ✅ ONLY THIS PARAM
-    });
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await DashboardCompanySuppliers({
+        page: pageParam,
+        limit: LIMIT,
+        region: partnerRegion, // ✅ ONLY THIS PARAM
+      });
 
-    return res?.data?.suppliers || [];
-  },
+      return res?.data?.suppliers || [];
+    },
 
-  getNextPageParam: (lastPage, pages) =>
-    lastPage.length === LIMIT ? pages.length + 1 : undefined,
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-  enabled: !!partnerRegion,
+    enabled: !!partnerRegion,
 
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
-});
-
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
 
   const suppliers = useMemo(() => {
     return supplierPages?.pages?.flat() || [];
@@ -127,7 +237,13 @@ const {
     },
     [isFetchingNextPage, hasNextPage, fetchNextPage],
   );
-
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
 
   return (
     <section className="tp-section tp-section--dashboard">
@@ -174,13 +290,13 @@ const {
             <div className="tp-card-header tp-supplier-header">
               <h3 className="tp-card-title">Supplier Directory</h3>
 
-              <button
+              {/* <button
                 className="tp-btn-outline tp-overview-filter-btn"
                 onClick={() => setTableFilterOpen(true)}
               >
                 <CiFilter />
                 Filters
-              </button>
+              </button> */}
             </div>
           }
         >
@@ -191,12 +307,15 @@ const {
               ref={headerRef}
               onScroll={handleHeaderScroll}
             >
-              <div className="tp-table-head tp-table-suppliers">
-                <span>Exporter Name</span>
-                <span className="text-center">Origin Region</span>
-                <span className="text-center">Reliability Score</span>
-                <span className="text-center">Activity Level</span>
-                <span className="text-center">Shipment Frequency</span>
+              <div className="tp-table-head tp-table-suppliers-dashboard">
+                <span>Company Name</span>
+                <span className="text-center">Country</span>
+                <span className="text-center">Region</span>
+                <span className="text-center">Sector</span>
+                <span className="text-center">Reliability</span>
+                <span className="text-center">Status</span>
+                <span className="text-center">Products</span>
+                <span className="text-center">Shipment Count</span>
               </div>
             </div>
 
@@ -216,25 +335,57 @@ const {
                       <div
                         key={i}
                         ref={isLast ? lastSupplierRef : null}
-                        className="tp-table-row tp-table-suppliers"
+                        className="tp-table-row tp-table-suppliers-dashboard"
+                        onClick={() => {
+                          setSelectedSupplier(s);
+                          setIsModalOpen(true);
+                        }}
+                        style={{ cursor: "pointer" }}
                       >
+                        {/* NAME */}
                         <div className="supplier-name">{s.company_name}</div>
 
-<span className="tp-muted text-center">{s.region}</span>
+                        {/* COUNTRY */}
+                        <span className="tp-muted text-center">
+                          {s.country_iso3}
+                        </span>
 
-<span className="text-center">
-  <span className="tp-pill tp-pill-success">
-    {s.reliability_score}
-  </span>
-</span>
+                        {/* REGION */}
+                        <span className="tp-muted text-center">{s.region}</span>
 
-<span className="text-center">
-  <span className="tp-pill tp-pill-primary">
-    {s.verification_status}
-  </span>
-</span>
+                        {/* SECTOR */}
+                        <span className="tp-muted text-center">{s.sector}</span>
 
-<span className="text-center">{s.product_count}</span>
+                        {/* RELIABILITY */}
+                        <span className="text-center">
+                          <span className="tp-pill tp-pill-success">
+                            {s.reliability_score}
+                          </span>
+                        </span>
+
+                        {/* STATUS */}
+                        <span className="text-center">
+                          <span className="tp-pill tp-pill-primary">
+                            {s.verification_status}
+                          </span>
+                        </span>
+
+                        {/* PRODUCTS */}
+                        {/* <span className="text-center">
+                          {s.products?.length ? s.products[0] : "-"}
+                        </span> */}
+                        <span className="text-center">
+                          {s.products?.length ? (
+                            <span title={s.products.join(", ")}>
+                              {s.products[0].slice(0, 30)}...
+                            </span>
+                          ) : (
+                            "-"
+                          )}
+                        </span>
+
+                        {/* COUNT */}
+                        <span className="text-center">{s.product_count}</span>
                       </div>
                     );
                   })}
@@ -249,7 +400,7 @@ const {
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
-      {tableFilterOpen && (
+      {/* {tableFilterOpen && (
         <UniversalFilter
           showCorridor
           showTimeRange
@@ -265,6 +416,12 @@ const {
 
             setTableFilterOpen(false);
           }}
+        />
+      )} */}
+      {isModalOpen && (
+        <SupplierModal
+          data={selectedSupplier}
+          onClose={() => setIsModalOpen(false)}
         />
       )}
     </section>

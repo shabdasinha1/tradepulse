@@ -9,6 +9,7 @@ import {
   GetDataSources,
 } from "../../services/DashboardService";
 import { FiX } from "react-icons/fi";
+import axios from "axios";
 
 const SuppliersManagement = () => {
   /* ===============================
@@ -176,7 +177,17 @@ const SuppliersManagement = () => {
       headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
     }
   };
-
+  useEffect(() => {
+    const fetchData = async() => {
+      try{
+        const res = await axios.get("https://kproxy.tradepulsehq.co.uk/supplier-dir-int/api/suppliers");
+        console.log("response",res.data);
+      }catch(e){
+        console.log("Eroor : ",e);
+      }
+    };
+    fetchData()
+  }, []);
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
