@@ -252,7 +252,6 @@ export const DashboardFeedback = async (params = {}) => {
   });
 };
 
-
 /* ===============================
    DASHBOARD REGIONS
 ================================ */
@@ -278,8 +277,6 @@ export const DashboardTradeNewsExternal = async ({
   });
 };
 
-
-
 /* ===============================
    SUPPLIER MANAGEMENT APIs
 ================================ */
@@ -300,15 +297,18 @@ export const GetSupplierById = async (id) => {
 export const CreateSupplier = async (data) => {
   return NewsApi.post("/supplier-dir-int/api/suppliers", data);
 };
-
+// Delete Suppliers
+export const DeleteSuppliers = async (id) => {
+  return NewsApi.delete(`/supplier-dir-int/api/suppliers/${id}`);
+};
 /* 📤 Bulk Upload Suppliers */
 export const BulkCreateSuppliers = async (data = []) => {
   return NewsApi.post("/supplier-dir-int/api/suppliers/bulk", data);
 };
 
 /* ✅ Verify Supplier */
-export const VerifySupplier = async (id) => {
-  return NewsApi.post(`/supplier-dir-int/api/suppliers/${id}/verify`);
+export const VerifySupplier = async (id, payload) => {
+  return NewsApi.post(`/supplier-dir-int/api/suppliers/${id}/verify`, payload);
 };
 
 /* 🧾 Get Data Source Metadata (Dropdown) */
@@ -318,7 +318,9 @@ export const GetSupplierDataSources = async () => {
 
 /* 🏷️ Get Verification Status Metadata (Dropdown) */
 export const GetSupplierVerificationStatuses = async () => {
-  return NewsApi.get("/supplier-dir-int/api/suppliers/meta/verification-status");
+  return NewsApi.get(
+    "/supplier-dir-int/api/suppliers/meta/verification-status",
+  );
 };
 
 /* 🔎 Supplier Name Suggestions (Autocomplete) */

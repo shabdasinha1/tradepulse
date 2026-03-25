@@ -7,6 +7,7 @@ import {
   VerifySupplier,
   GetSupplierVerificationStatuses,
   GetDataSources,
+  DeleteSuppliers,
 } from "../../services/DashboardService";
 import { FiX } from "react-icons/fi";
 import axios from "axios";
@@ -31,11 +32,14 @@ const SuppliersManagement = () => {
     dataSource: "",
   });
 
-  const [suppliers, setSuppliers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [verificationOptions, setVerificationOptions] = useState([]);
   const [search, setSearch] = useState("");
   const [dataSources, setDataSources] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef(null);
 
   const verificationSelectOptions = verificationOptions.map((status) => ({
     value: status,
@@ -47,14 +51,37 @@ const SuppliersManagement = () => {
     label: ds,
   }));
 
+  const fetchSuppliers = async (pageNumber = 0, isSearch = false) => {
+    try {
+      setLoading(true);
+
+      const res = await GetSuppliers({
+        page: pageNumber,
+        size: 10,
+        query: search || undefined,
+      });
+
+      const newData = res?.data?.content || res?.data || [];
+
+      setSuppliers((prev) => (isSearch ? newData : [...prev, ...newData]));
+
+      setHasMore(newData.length === 10); // if less → no more pages
+    } catch (error) {
+      console.error("Error fetching suppliers:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchSuppliers(0, true);
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        const [supplierRes, verificationRes, dataSourcesRes] =
+        const [ verificationRes, dataSourcesRes] =
           await Promise.all([
-            GetSuppliers({ page: 0, size: 10 }),
             GetSupplierVerificationStatuses(),
             GetDataSources(),
           ]);
@@ -66,7 +93,6 @@ const SuppliersManagement = () => {
             dataSource: dataSourcesRes.data[0], // ✅ default selected
           }));
         }
-        setSuppliers(supplierRes?.data?.content || supplierRes?.data || []);
         setVerificationOptions(verificationRes?.data || []);
       } catch (error) {
         console.error("Error fetching suppliers/meta:", error);
@@ -79,18 +105,9 @@ const SuppliersManagement = () => {
   }, []);
 
   useEffect(() => {
-    const delayDebounce = setTimeout(async () => {
-      try {
-        const res = await GetSuppliers({
-          page: 0,
-          size: 10,
-          query: search,
-        });
-
-        setSuppliers(res?.data?.content || res?.data || []);
-      } catch (error) {
-        console.error("Error searching suppliers:", error);
-      }
+    const delayDebounce = setTimeout(() => {
+      setPage(0);
+      fetchSuppliers(0, true);
     }, 500);
 
     return () => clearTimeout(delayDebounce);
@@ -147,14 +164,12 @@ const SuppliersManagement = () => {
 
   const handleVerify = async (id) => {
     try {
-      await VerifySupplier(id);
-
-      const res = await GetSuppliers({
-        page: 0,
-        size: 10,
+      await VerifySupplier(id, {
+        verificationStatus: "VERIFIED",
       });
 
-      setSuppliers(res?.data?.content || res?.data || []);
+      setPage(0);
+      fetchSuppliers(0, true);
     } catch (error) {
       console.error("Error verifying supplier:", error);
     }
@@ -177,17 +192,32 @@ const SuppliersManagement = () => {
       headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
     }
   };
-  useEffect(() => {
-    const fetchData = async() => {
-      try{
-        const res = await axios.get("https://kproxy.tradepulsehq.co.uk/supplier-dir-int/api/suppliers");
-        console.log("response",res.data);
-      }catch(e){
-        console.log("Eroor : ",e);
+  const lastRowRef = (node) => {
+    if (loading) return;
+
+    if (observer.current) observer.current.disconnect();
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) {
+        const nextPage = page + 1;
+        setPage(nextPage);
+        fetchSuppliers(nextPage);
       }
-    };
-    fetchData()
-  }, []);
+    });
+
+    if (node) observer.current.observe(node);
+  };
+  const handleDelete = async (id) => {
+    try {
+      await DeleteSuppliers(id);
+
+      // refresh list properly
+      setPage(0);
+      fetchSuppliers(0, true);
+    } catch (error) {
+      console.error("Error deleting supplier:", error);
+    }
+  };
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -235,12 +265,15 @@ const SuppliersManagement = () => {
                 ref={headerRef}
                 onScroll={handleHeaderScroll}
               >
-                <div className="tp-table-head tp-table-supplier">
+                <div className="tp-table-head tp-table-supplier-admin">
                   <span>Company</span>
                   <span className="text-center">Country</span>
                   <span className="text-center">Sector</span>
                   <span className="text-center">Verification</span>
-                  <span className="text-center">Score</span>
+                  <span className="text-center">Reliability Score</span>
+                  <span className="text-center">Sanctions Score</span>
+                  {/* <span className="text-center">LEI Code</span> */}
+                  <span className="text-center">Actions</span>
                 </div>
               </div>
 
@@ -250,50 +283,107 @@ const SuppliersManagement = () => {
                 onScroll={handleBodyScroll}
               >
                 <div className="tp-table">
-                  {suppliers.map((supplier) => (
-                    <div
-                      key={supplier.id}
-                      className="tp-table-row tp-table-supplier"
-                    >
-                      <div className="tp-text-strong">
-                        {supplier.companyName}
-                      </div>
+                  {suppliers.map((supplier, index) => {
+                    const isLast = suppliers.length === index + 1;
 
-                      <span className="text-center">
-                        {supplier.countryIso3}
-                      </span>
+                    return (
+                      <div
+                        key={supplier.id}
+                        ref={isLast ? lastRowRef : null}
+                        className="tp-table-row tp-table-supplier-admin"
+                      >
+                        {/* Company */}
+                        <div className="tp-text-strong">
+                          {supplier.companyName}
+                        </div>
 
-                      <span className="text-center">{supplier.sector}</span>
+                        {/* Country */}
+                        <span className="text-center">
+                          {supplier.countryIso3}
+                        </span>
 
-                      <span className="text-center">
-                        <div className="tp-flex tp-gap-sm tp-align-center tp-justify-center">
+                        {/* Sector */}
+                        <span className="text-center">{supplier.sector}</span>
+
+                        {/* Verification */}
+                        <span className="text-center">
                           <span
                             className={`tp-pill ${
                               supplier.verificationStatus === "VERIFIED"
                                 ? "tp-pill-success"
-                                : "tp-pill-warning"
+                                : supplier.verificationStatus === "PARTIAL"
+                                  ? "tp-pill-warning"
+                                  : "tp-pill-danger"
                             }`}
                           >
                             {supplier.verificationStatus}
                           </span>
+                        </span>
 
-                          {supplier.verificationStatus !== "VERIFIED" && (
+                        {/* Reliability Score */}
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${
+                              supplier.reliabilityScore < 0.3
+                                ? "tp-pill-danger"
+                                : supplier.reliabilityScore < 0.5
+                                  ? "tp-pill-warning"
+                                  : "tp-pill-success"
+                            }`}
+                          >
+                            {supplier.reliabilityScore}
+                          </span>
+                        </span>
+
+                        {/* Sanctions */}
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${
+                              supplier.sanctionsFlag
+                                ? "tp-pill-danger"
+                                : "tp-pill-success"
+                            }`}
+                          >
+                            {supplier.sanctionsFlag ? "Flagged" : "Clear"}
+                          </span>
+                        </span>
+
+                        {/* LEI */}
+                        {/* <span className="text-center">
+                        {supplier.leiCode || "-"}
+                      </span> */}
+
+                        {/* ACTIONS */}
+                        <span className="text-center">
+                          <div className="tp-admin-actions">
+                            {supplier.verificationStatus !== "VERIFIED" ? (
+                              <button
+                                className="tp-btn-primary tp-btn-sm"
+                                onClick={() => handleVerify(supplier.id)}
+                              >
+                                Verify
+                              </button>
+                            ) : (
+                              <span className="tp-text-success tp-btn-outline">
+                                Verified
+                              </span>
+                            )}
+
                             <button
-                              className="tp-btn-secondary tp-btn-sm"
-                              onClick={() => handleVerify(supplier.id)}
+                              className="tp-btn-danger tp-btn-sm"
+                              onClick={() => handleDelete(supplier.id)}
                             >
-                              Verify
+                              Delete
                             </button>
-                          )}
-                        </div>
-                      </span>
-
-                      <span className="text-center">
-                        {(supplier.reliabilityScore * 100).toFixed(0)}%
-                      </span>
-                    </div>
-                  ))}
+                          </div>
+                        </span>
+                      </div>
+                    );
+                  })}
                 </div>
+                {loading && (
+                  <div className="tp-loading-more">Loading more...</div>
+                )}
               </div>
             </div>
           </div>

@@ -46,6 +46,55 @@ select option {
 }
 
 /* ===============================
+   ADMIN TABLE
+================================ */
+
+.tp-table-supplier-admin {
+  display: grid;
+  grid-template-columns:
+    2fr /* Company */
+    1fr /* Country */
+    1.2fr /* Sector */
+    1.2fr /* Verification */
+    1fr /* Score */
+    1fr /* Sanctions */
+    /* 1.5fr LEI */
+    1.5fr /* Actions */;
+  gap: var(--space-md);
+  align-items: center;
+  min-width: 1100px;
+}
+
+/* Actions */
+.tp-admin-actions {
+  display: flex;
+  gap: 8px;
+  margin-right: 8px;
+  justify-content: center;
+}
+
+/* Danger button */
+.tp-btn-danger {
+  background: #ff4d4f;
+  color: var(--text-primary);
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius-control);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-label);
+}
+
+.tp-btn-danger:hover {
+  background: #d9363e;
+}
+.tp-text-success{
+  color: var(--clr-success);
+}
+.tp-text-success:hover{
+  color: var(--text-primary);
+}
+
+/* ===============================
    MODAL
 ================================ */
 
@@ -190,7 +239,7 @@ select option {
   .tp-form-grid .tp-checkbox-group {
     grid-column: span 1;
   }
-  .tp-supplier-header-btn{
+  .tp-supplier-header-btn {
     flex-direction: row;
     justify-content: flex-start;
   }
