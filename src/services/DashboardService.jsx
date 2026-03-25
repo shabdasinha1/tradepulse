@@ -267,3 +267,53 @@ export const DashboardTradeNewsExternal = async ({
     },
   });
 };
+
+
+
+/* ===============================
+   SUPPLIER MANAGEMENT APIs
+================================ */
+
+/* 📄 Get Suppliers (List + Filters + Pagination) */
+export const GetSuppliers = async (params = {}) => {
+  return NewsApi.get("/supplier-dir-int/api/suppliers", {
+    params: cleanParams(params),
+  });
+};
+
+/* 🔍 Get Supplier by ID */
+export const GetSupplierById = async (id) => {
+  return NewsApi.get(`/supplier-dir-int/api/suppliers/${id}`);
+};
+
+/* ➕ Create Single Supplier */
+export const CreateSupplier = async (data) => {
+  return NewsApi.post("/supplier-dir-int/api/suppliers", data);
+};
+
+/* 📤 Bulk Upload Suppliers */
+export const BulkCreateSuppliers = async (data = []) => {
+  return NewsApi.post("/supplier-dir-int/api/suppliers/bulk", data);
+};
+
+/* ✅ Verify Supplier */
+export const VerifySupplier = async (id) => {
+  return NewsApi.post(`/supplier-dir-int/api/suppliers/${id}/verify`);
+};
+
+/* 🧾 Get Data Source Metadata (Dropdown) */
+export const GetSupplierDataSources = async () => {
+  return NewsApi.get("/supplier-dir-int/api/suppliers/meta/data-source");
+};
+
+/* 🏷️ Get Verification Status Metadata (Dropdown) */
+export const GetSupplierVerificationStatuses = async () => {
+  return NewsApi.get("/supplier-dir-int/api/suppliers/meta/verification-status");
+};
+
+/* 🔎 Supplier Name Suggestions (Autocomplete) */
+export const SuggestSuppliers = async (name) => {
+  return NewsApi.get("/supplier-dir-int/api/suppliers/suggest", {
+    params: cleanParams({ name }),
+  });
+};

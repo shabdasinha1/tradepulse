@@ -1,29 +1,10 @@
-import { useRef, useState } from "react";
+import { useRef, useState,useEffect } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard";
+import { GetSuppliers,CreateSupplier,VerifySupplier,GetSupplierVerificationStatuses  } from "../../services/DashboardService";
 import { FiX } from "react-icons/fi";
 
 const SuppliersManagement = () => {
-  /* ===============================
-     STATIC DATA (TEMP)
-  ================================ */
-  const suppliers = [
-    {
-      id: "1",
-      companyName: "COCOA MARKETING COMPANY GHANA",
-      countryIso3: "GHA",
-      sector: "Agriculture",
-      verificationStatus: "VERIFIED",
-      reliabilityScore: 0.8,
-    },
-    {
-      id: "2",
-      companyName: "GLOBAL METALS LTD",
-      countryIso3: "USA",
-      sector: "Manufacturing",
-      verificationStatus: "PENDING",
-      reliabilityScore: 0.6,
-    },
-  ];
+
 
   /* ===============================
      MODAL STATE
@@ -46,7 +27,55 @@ const SuppliersManagement = () => {
     sanctionsSource: "NONE",
     leiCode: "",
   });
+const [suppliers, setSuppliers] = useState([]);
+const [loading, setLoading] = useState(false);
+const [verificationOptions, setVerificationOptions] = useState([]);
+const [search, setSearch] = useState("");
 
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const [supplierRes, verificationRes] = await Promise.all([
+        GetSuppliers({ page: 0, size: 10 }),
+        GetSupplierVerificationStatuses(),
+      ]);
+
+      setSuppliers(
+        supplierRes?.data?.content || supplierRes?.data || []
+      );
+
+      setVerificationOptions(
+        verificationRes?.data || []
+      );
+    } catch (error) {
+      console.error("Error fetching suppliers/meta:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
+useEffect(() => {
+  const delayDebounce = setTimeout(async () => {
+    try {
+      const res = await GetSuppliers({
+        page: 0,
+        size: 10,
+        query: search,
+      });
+
+      setSuppliers(res?.data?.content || res?.data || []);
+    } catch (error) {
+      console.error("Error searching suppliers:", error);
+    }
+  }, 500); // debounce 500ms
+
+  return () => clearTimeout(delayDebounce);
+}, [search]);
   /* ===============================
      HANDLE CHANGE
   ================================ */
@@ -62,20 +91,62 @@ const SuppliersManagement = () => {
   /* ===============================
      SUBMIT
   ================================ */
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  try {
     const payload = {
       ...formData,
       reliabilityScore: Number(formData.reliabilityScore),
       sanctionsScore: Number(formData.sanctionsScore),
     };
 
-    console.log("SUPPLIER PAYLOAD:", payload);
+    await CreateSupplier(payload);
+
+    // refresh list after adding
+    const res = await GetSuppliers({
+      page: 0,
+      size: 10,
+    });
+
+    setSuppliers(res?.data?.content || res?.data || []);
 
     setOpenModal(false);
-  };
 
+    // reset form (optional but good UX)
+    setFormData({
+      id: "",
+      companyName: "",
+      countryIso3: "",
+      sector: "",
+      verificationStatus: "PENDING",
+      reliabilityScore: "",
+      sanctionsFlag: false,
+      sanctionsMatchedName: "",
+      sanctionsScore: "",
+      sanctionsSource: "NONE",
+      leiCode: "",
+    });
+  } catch (error) {
+    console.error("Error creating supplier:", error);
+  }
+};
+
+const handleVerify = async (id) => {
+  try {
+    await VerifySupplier(id);
+
+    // refresh list
+    const res = await GetSuppliers({
+      page: 0,
+      size: 10,
+    });
+
+    setSuppliers(res?.data?.content || res?.data || []);
+  } catch (error) {
+    console.error("Error verifying supplier:", error);
+  }
+};
   /* ===============================
      SCROLL SYNC
   ================================ */
@@ -110,14 +181,21 @@ const SuppliersManagement = () => {
               </p>
             </div>
 
-            <div className="tp-filter-btn-wrapper">
-              <button
-                className="tp-btn-primary"
-                onClick={() => setOpenModal(true)}
-              >
-                Add Supplier
-              </button>
-            </div>
+            <div className="tp-filter-btn-wrapper tp-flex tp-gap-sm">
+  <input
+    className="tp-input"
+    placeholder="Search suppliers..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+  />
+
+  <button
+    className="tp-btn-primary"
+    onClick={() => setOpenModal(true)}
+  >
+    Add Supplier
+  </button>
+</div>
           </div>
         </header>
 
@@ -168,17 +246,28 @@ const SuppliersManagement = () => {
 
                       <span className="text-center">{supplier.sector}</span>
 
-                      <span className="text-center">
-                        <span
-                          className={`tp-pill ${
-                            supplier.verificationStatus === "VERIFIED"
-                              ? "tp-pill-success"
-                              : "tp-pill-warning"
-                          }`}
-                        >
-                          {supplier.verificationStatus}
-                        </span>
-                      </span>
+                    <span className="text-center">
+  <div className="tp-flex tp-gap-sm tp-align-center tp-justify-center">
+    <span
+      className={`tp-pill ${
+        supplier.verificationStatus === "VERIFIED"
+          ? "tp-pill-success"
+          : "tp-pill-warning"
+      }`}
+    >
+      {supplier.verificationStatus}
+    </span>
+
+    {supplier.verificationStatus !== "VERIFIED" && (
+      <button
+        className="tp-btn-secondary tp-btn-sm"
+        onClick={() => handleVerify(supplier.id)}
+      >
+        Verify
+      </button>
+    )}
+  </div>
+</span>
 
                       <span className="text-center">
                         {(supplier.reliabilityScore * 100).toFixed(0)}%
@@ -253,10 +342,12 @@ const SuppliersManagement = () => {
                     value={formData.verificationStatus}
                     onChange={handleChange}
                   >
-                    <option value="">Select status</option>
-                    <option value="VERIFIED">Verified</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="REJECTED">Rejected</option>
+                   <option value="">Select status</option>
+{verificationOptions.map((status) => (
+  <option key={status} value={status}>
+    {status}
+  </option>
+))}
                   </select>
                 </div>
 

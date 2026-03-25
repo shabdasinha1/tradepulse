@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const NEWS_BASE_URL = import.meta.env.VITE_NEWS_API_BASE_URL;
+const NEWS_BASE_URL = import.meta.env.VITE_PROXY_API_BASE_URL;
 
 const NewsApi = axios.create({
-  baseURL: NEWS_BASE_URL, // ✅ only domain
+  baseURL: NEWS_BASE_URL, 
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
