@@ -226,10 +226,43 @@ const { data: countriesData, isFetching } = useQuery({
   useEffect(() => {
     const corridors = corridorData?.data?.data || [];
 
-    const formatted = corridors.map((c) => ({
+   const priorityCountries = [
+  "Ghana",
+  "Nigeria",
+  "South Africa",
+  "Kenya",
+];
+
+const formatted = corridors
+  .map((c) => {
+    const [reporter, partner] = c.label.split("↔").map((s) => s.trim());
+
+    return {
       value: c.partnerCode,
-      label: c.label,
-    }));
+      label: `${reporter} - ${partner}`, // format change
+      partnerName: partner,
+      original: c,
+    };
+  })
+  .sort((a, b) => {
+    const aIndex = priorityCountries.indexOf(a.partnerName);
+    const bIndex = priorityCountries.indexOf(b.partnerName);
+
+    // ✅ both in priority → sort by defined order
+    if (aIndex !== -1 && bIndex !== -1) {
+      return aIndex - bIndex;
+    }
+
+    // ✅ only a is priority → a first
+    if (aIndex !== -1) return -1;
+
+    // ✅ only b is priority → b first
+    if (bIndex !== -1) return 1;
+
+    // ✅ neither → KEEP ORIGINAL ORDER
+    return 0;
+  })
+  .map(({ value, label }) => ({ value, label }));
 
     setCorridorOptions((prev) => {
       if (JSON.stringify(prev) === JSON.stringify(formatted)) return prev;
