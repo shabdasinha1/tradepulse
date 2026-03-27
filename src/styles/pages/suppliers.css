@@ -53,7 +53,7 @@
 ================================ */
 
 .tp-table-body-scroll {
-  max-height: 50vh;
+  max-height: 55vh;
   overflow-x: auto;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -79,17 +79,18 @@
 .tp-table-suppliers-dashboard {
   display: grid;
   grid-template-columns:
-    2fr /* name */
-    1fr /* country */
-    1fr /* region */
-    1fr /* sector */
-    1fr /* reliability */
-    1fr /* status */
-    2fr /* products */
-    1fr; /* count */
+     2fr  /* name */
+    1fr  /* iso */
+    1fr  /* region */
+    1fr  /* activity */
+    1fr  /* reliability */
+    1fr  /* tag */
+    2fr  /* product diversity */
+    1fr  /* shipments */
+    1fr; /* action */
   align-items: center;
   gap: var(--space-md);
-  min-width: 930px;
+  min-width: 1100px;
 }
 
 /* ===============================

@@ -3,9 +3,13 @@ export const queryKeys = {
 
   corridors: (reporterCode) => ["corridors", reporterCode],
 
- suppliers: ({ partnerRegion }) => [
+suppliers: ({ partnerRegion, tradeflow, reporterCode, partnerCode, isInitialLoad }) => [
   "suppliers",
   partnerRegion,
+  tradeflow,
+  reporterCode,
+  partnerCode,
+  isInitialLoad,
 ],
   
   feedback: (page, limit) => ["feedback", page, limit],

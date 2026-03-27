@@ -7,19 +7,6 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
-
-    proxy: {
-      "/supplier-dir-int": {
-        target: "https://kproxy.tradepulsehq.co.uk",
-        changeOrigin: true,
-        secure: false,
-      },
-      "/news-int": {
-        target: "https://kproxy.tradepulsehq.co.uk",
-        changeOrigin: true,
-        secure: false,
-      }
-    }
   },
 
   css: {

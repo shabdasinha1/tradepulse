@@ -364,9 +364,9 @@ const SuppliersManagement = () => {
                                 Verify
                               </button>
                             ) : (
-                              <span className="tp-text-success tp-btn-outline">
-                                Verified
-                              </span>
+                         <button className="tp-btn-outline" disabled>
+  Verified
+</button>
                             )}
 
                             <button

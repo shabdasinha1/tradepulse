@@ -244,3 +244,28 @@ select option {
     justify-content: flex-start;
   }
 }
+
+/* ===============================
+   ACTION BUTTON UNIFICATION (SCOPED)
+================================ */
+
+.tp-admin-actions button,
+.tp-admin-actions .tp-btn-outline {
+  min-width: 90px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: var(--fw-semibold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+}
+
+/* ONLY affect Verified inside supplier table */
+.tp-admin-actions .tp-btn-outline {
+  border: 1px solid var(--clr-success);
+  color: var(--clr-success);
+  background: transparent;
+  cursor: default;
+}

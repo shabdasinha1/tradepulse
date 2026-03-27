@@ -34,6 +34,7 @@ const ICON_MAP = {
   "/feedback-data": <FiMessageSquare />,
   "/scheduler": <FiCalendar />,
   "/settings": <FiSettings />,
+   "/suppliers-manage": <FaUsers />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";

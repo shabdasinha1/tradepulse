@@ -234,7 +234,7 @@ export const DashboardSuppliers = async (params = {}) => {
 };
 
 /* ===============================
-   COMPANY SUPPLIERS (FILTERED BY REGION)
+   COMPANY SUPPLIERS 
 ================================ */
 
 export const DashboardCompanySuppliers = async (params = {}) => {

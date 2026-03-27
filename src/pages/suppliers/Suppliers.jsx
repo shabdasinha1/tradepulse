@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
-import { DashboardCompanySuppliers } from "../../services/DashboardService.jsx";
+import { DashboardSuppliers,DashboardCompanySuppliers } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
@@ -12,6 +12,7 @@ import EmptyState from "../../components/common/EmptyState";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { CiFilter } from "react-icons/ci";
+import { useAppToast } from "../../components/common/toast/toast.js";
 
 const LIMIT = 20;
 /* ==========================================================
@@ -29,15 +30,15 @@ const SupplierModal = ({ data, onClose }) => {
         {/* ================= HEADER ================= */}
         <div className="tp-supplier-modal-header upgraded">
           <div>
-            <h2>{data.company_name}</h2>
+           <h2>{data.name}</h2>
             <p className="tp-modal-sub">
-              {data.country_iso3} • {data.region} • {data.sector}
+             {data.iso_3} • {data.region}
             </p>
           </div>
 
           <div className="tp-modal-header-right">
             <span className="tp-pill tp-pill-primary">
-              {data.verification_status}
+             {data.tag}
             </span>
 
             <button onClick={onClose} className="tp-filter-close">
@@ -52,31 +53,32 @@ const SupplierModal = ({ data, onClose }) => {
           <div className="tp-modal-metrics">
             <div className="tp-modal-metric">
               <span className="tp-modal-metric-value">
-                {data.reliability_score}
+                {data.reliabilityScore}
               </span>
               <span className="tp-modal-metric-label">Reliability</span>
             </div>
 
             <div className="tp-modal-metric">
               <span className="tp-modal-metric-value">
-                {data.product_count}
+               {data.shipments}
               </span>
               <span className="tp-modal-metric-label">Shipments</span>
             </div>
 
             <div className="tp-modal-metric">
               <span className="tp-modal-metric-value">
-                {data.products?.length || 0}
+          {data.productDiversity}
               </span>
               <span className="tp-modal-metric-label">Products</span>
-            </div>
+            </div>reparations
+
           </div>
 
           {/* ===== DETAILS GRID ===== */}
           <div className="tp-modal-grid">
             <div>
               <span className="tp-modal-label">Country</span>
-              <span>{data.country_iso3}</span>
+              <span>{data.iso_3}</span>
             </div>
 
             <div>
@@ -95,22 +97,7 @@ const SupplierModal = ({ data, onClose }) => {
             </div>
           </div>
 
-          {/* ===== PRODUCTS ===== */}
-          <div className="tp-modal-products">
-            <div className="tp-modal-section-title">Products</div>
-
-            <div className="tp-modal-product-list">
-              {data.products?.length ? (
-                data.products.map((p, i) => (
-                  <div key={i} className="tp-modal-product-item">
-                    {p}
-                  </div>
-                ))
-              ) : (
-                <div className="tp-empty-text">No products available</div>
-              )}
-            </div>
-          </div>
+        
         </div>
 
         {/* ================= FOOTER ================= */}
@@ -141,6 +128,9 @@ const SupplierRowSkeleton = React.memo(() => {
 });
 
 const Suppliers = () => {
+  const toast = useAppToast();
+  const [isCompanyView, setIsCompanyView] = useState(false);
+const [companySuppliers, setCompanySuppliers] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -190,33 +180,60 @@ const Suppliers = () => {
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
-  const {
-    data: supplierPages,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: queryKeys.suppliers({ partnerRegion }),
+const {
+  data: supplierPages,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+} = useInfiniteQuery({
+  queryKey: queryKeys.suppliers({
+    partnerRegion,
+    tradeflow,
+    partnerCode,
+    reporterCode,
+    isInitialLoad,
+  }),
+queryFn: async ({ pageParam = 1, queryKey }) => {
+  const [
+    _,
+    partnerRegion,
+    tradeflow,
+    reporterCode,
+    partnerCode,
+    isInitialLoad,
+  ] = queryKey;
 
-    queryFn: async ({ pageParam = 1 }) => {
-      const res = await DashboardCompanySuppliers({
-        page: pageParam,
-        limit: LIMIT,
-        region: partnerRegion, // ✅ ONLY THIS PARAM
-      });
+  let params = {
+    page: pageParam,
+    limit: LIMIT,
+    originRegion: partnerRegion,
+  };
 
-      return res?.data?.suppliers || [];
-    },
+  if (!isInitialLoad) {
+    params = {
+      ...params,
+      tradeflow,
+      partnerCode,
+      reporterCode,
+    };
+  }
 
-    getNextPageParam: (lastPage, pages) =>
-      lastPage.length === LIMIT ? pages.length + 1 : undefined,
+  console.log("FINAL API PARAMS:", params); // ✅ debug
 
-    enabled: !!partnerRegion,
+  const res = await DashboardSuppliers(params);
+  return res?.data?.suppliers || [];
+},
+  getNextPageParam: (lastPage, pages) =>
+    lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  enabled: !!partnerRegion && !!tradeflow,
+
+  refetchOnMount: false,
+  refetchOnWindowFocus: false,
+
+  keepPreviousData: false, // ✅ ADD THIS
+});
 
   const suppliers = useMemo(() => {
     return supplierPages?.pages?.flat() || [];
@@ -256,6 +273,28 @@ const Suppliers = () => {
         return "tp-pill-primary";
     }
   };
+const handleViewClick = async (iso3, countryName) => {
+  try {
+    const res = await DashboardCompanySuppliers({
+      page: 1,
+      limit: 20,
+      country: iso3,
+    });
+
+    const data = res?.data?.suppliers || [];
+
+    // ✅ CHECK EMPTY
+    if (!data.length) {
+     toast.warning(`No supplier company exist in ${countryName}`);
+      return;
+    }
+
+    setCompanySuppliers(data);
+    setIsCompanyView(true);
+  } catch (err) {
+    console.error("Error:", err);
+  }
+};
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -299,15 +338,27 @@ const Suppliers = () => {
         <TradePulseCard
           header={
             <div className="tp-card-header tp-supplier-header">
-              <h3 className="tp-card-title">Supplier Directory</h3>
+         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+  {isCompanyView && (
+    <button
+      className="tp-btn-outline tp-btn-sm"
+      onClick={() => setIsCompanyView(false)}
+    >
+      ← Back
+    </button>
+  )}
+  <h3 className="tp-card-title">Supplier Directory</h3>
+</div>
 
-              {/* <button
-                className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setTableFilterOpen(true)}
-              >
-                <CiFilter />
-                Filters
-              </button> */}
+           {!isCompanyView && (
+  <button
+    className="tp-btn-outline tp-overview-filter-btn"
+    onClick={() => setTableFilterOpen(true)}
+  >
+    <CiFilter />
+    Filters
+  </button>
+)}
             </div>
           }
         >
@@ -318,16 +369,32 @@ const Suppliers = () => {
               ref={headerRef}
               onScroll={handleHeaderScroll}
             >
-              <div className="tp-table-head tp-table-suppliers-dashboard">
-                <span>Company Name</span>
-                <span className="text-center">Country</span>
-                <span className="text-center">Region</span>
-                <span className="text-center">Sector</span>
-                <span className="text-center">Reliability</span>
-                <span className="text-center">Status</span>
-                <span className="text-center">Products</span>
-                <span className="text-center">Shipment Count</span>
-              </div>
+          <div className="tp-table-head tp-table-suppliers-dashboard">
+  {!isCompanyView ? (
+    <>
+      <span>Country Name</span>
+      <span className="text-center">ISO</span>
+      <span className="text-center">Region</span>
+      <span className="text-center">Activity</span>
+      <span className="text-center">Reliability</span>
+      <span className="text-center">Tag</span>
+      <span className="text-center">Product Diversity</span>
+      <span className="text-center">Shipments</span>
+      <span className="text-center">Action</span>
+    </>
+  ) : (
+    <>
+      <span>Company Name</span>
+      <span className="text-center">Country</span>
+      <span className="text-center">Region</span>
+      <span className="text-center">Sector</span>
+      <span className="text-center">Reliability</span>
+      <span className="text-center">Status</span>
+      <span className="text-center">Products</span>
+      <span className="text-center">Product Count</span>
+    </>
+  )}
+</div>
             </div>
 
             {/* BODY SCROLL */}
@@ -339,77 +406,106 @@ const Suppliers = () => {
               <div className="tp-table">
                 {isLoading && skeletonRows}
 
-                {!isLoading &&
-                  suppliers.map((s, i) => {
-                    const isLast = suppliers.length === i + 1;
-                    return (
-                      <div
-                        key={i}
-                        ref={isLast ? lastSupplierRef : null}
-                        className="tp-table-row tp-table-suppliers-dashboard"
-                        onClick={() => {
-                          setSelectedSupplier(s);
-                          setIsModalOpen(true);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {/* NAME */}
-                        <div className="supplier-name">{s.company_name}</div>
+                {!isCompanyView
+  ? suppliers.map((s, i) => {
+      const isLast = suppliers.length === i + 1;
+      return (
+        <div
+          key={i}
+          ref={isLast ? lastSupplierRef : null}
+          className="tp-table-row tp-table-suppliers-dashboard"
+          style={{ cursor: "default" }}
+        >
+          <div className="supplier-name">{s.name}</div>
+          <span className="tp-muted text-center">{s.iso_3}</span>
+          <span className="tp-muted text-center">{s.region}</span>
 
-                        {/* COUNTRY */}
-                        <span className="tp-muted text-center">
-                          {s.country_iso3}
-                        </span>
+          <span className="text-center">
+            <span
+              className={`tp-pill ${
+                s.activityLevel === "Very High"
+                  ? "tp-pill-success"
+                  : s.activityLevel === "High"
+                  ? "tp-pill-primary"
+                  : s.activityLevel === "Medium"
+                  ? "tp-pill-warning"
+                  : "tp-pill-danger"
+              }`}
+            >
+              {s.activityLevel}
+            </span>
+          </span>
 
-                        {/* REGION */}
-                        <span className="tp-muted text-center">{s.region}</span>
+          <span className="text-center">
+            <span
+              className={`tp-pill ${
+                s.reliabilityScore < 30
+                  ? "tp-pill-danger"
+                  : s.reliabilityScore < 50
+                  ? "tp-pill-warning"
+                  : "tp-pill-success"
+              }`}
+            >
+              {s.reliabilityScore}
+            </span>
+          </span>
 
-                        {/* SECTOR */}
-                        <span className="tp-muted text-center">{s.sector}</span>
+          <span className="text-center">
+            <span className="tp-pill tp-pill-primary">{s.tag}</span>
+          </span>
 
-                        {/* RELIABILITY */}
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${
-                              s.reliability_score < 0.3
-                                ? "tp-pill-danger"
-                                : s.reliability_score < 0.5
-                                  ? "tp-pill-warning"
-                                  : "tp-pill-success"
-                            }`}
-                          >
-                            {s.reliability_score}
-                          </span>
-                        </span>
+          <span className="text-center">{s.productDiversity}</span>
+          <span className="text-center">{s.shipments}</span>
 
-                        {/* STATUS */}
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${getStatusClass(s.verification_status)}`}
-                          >
-                            {s.verification_status}
-                          </span>
-                        </span>
+          <span className="text-center">
+            <button
+              className="tp-btn-outline tp-btn-sm"
+             onClick={() => handleViewClick(s.iso_3, s.name)}
+            >
+              View
+            </button>
+          </span>
+        </div>
+      );
+    })
+  : companySuppliers.map((c, i) => (
+      <div
+        key={i}
+        className="tp-table-row tp-table-suppliers-dashboard"
+      >
+        <div className="supplier-name">{c.company_name}</div>
+        <span className="text-center">{c.country_name}</span>
+        <span className="text-center">{c.region}</span>
+        <span className="text-center">{c.sector}</span>
 
-                        {/* PRODUCTS */}
-                        {/* <span className="text-center">
-                          {s.products?.length ? s.products[0] : "-"}
-                        </span> */}
-                        <span className="text-center">
-                          {s.products?.length ? (
-                            <span title={s.products.join(", ")}>
-                              {s.products[0].slice(0, 30)}...
-                            </span>
-                          ) : (
-                            "-"
-                          )}
-                        </span>
+        <span className="text-center">
+          <span
+            className={`tp-pill ${
+              c.reliability_score < 0.5
+                ? "tp-pill-danger"
+                : c.reliability_score < 0.8
+                ? "tp-pill-warning"
+                : "tp-pill-success"
+            }`}
+          >
+            {c.reliability_score}
+          </span>
+        </span>
 
-                        {/* COUNT */}
-                        <span className="text-center">{s.product_count}</span>
-                      </div>
-                    );
-                  })}
+        <span className="text-center">
+          <span className="tp-pill tp-pill-primary">
+            {c.verification_status}
+          </span>
+        </span>
+
+        <span className="text-center">
+          {c.products?.[0] || "-"}
+        </span>
+
+        <span className="text-center">{c.product_count}</span>
+      </div>
+    ))}
+                 
                 {isFetchingNextPage && skeletonRows}
               </div>
               {!isLoading && suppliers.length === 0 && (
@@ -421,30 +517,26 @@ const Suppliers = () => {
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
-      {/* {tableFilterOpen && (
-        <UniversalFilter
+  {!isCompanyView && tableFilterOpen && (
+  <UniversalFilter
           showCorridor
           showTimeRange
           showPartner
 
           onClose={() => setTableFilterOpen(false)}
           onChange={(filters) => {
-            if (!filters.partnerCode) {
-              setIsInitialLoad(true);   // ✅ RESET FLOW
-            } else {
-              setIsInitialLoad(false);
-            }
+            console.log("FILTERS:", filters);
+  if (!filters.partnerCode) {
+    setIsInitialLoad(true);   // ✅ RESET MODE
+  } else {
+    setIsInitialLoad(false);  // ✅ FILTER MODE
+  }
 
-            setTableFilterOpen(false);
-          }}
-        />
-      )} */}
-      {isModalOpen && (
-        <SupplierModal
-          data={selectedSupplier}
-          onClose={() => setIsModalOpen(false)}
+  setTableFilterOpen(false);
+}}
         />
       )}
+     
     </section>
   );
 };
