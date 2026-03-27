@@ -13,6 +13,11 @@ import { FiX } from "react-icons/fi";
 import axios from "axios";
 
 const SuppliersManagement = () => {
+  const [deleteModal, setDeleteModal] = useState({
+    open: false,
+    supplierId: null,
+    companyName: "",
+  });
   /* ===============================
      MODAL STATE
   ================================ */
@@ -80,7 +85,7 @@ const SuppliersManagement = () => {
       try {
         setLoading(true);
 
-        const [ verificationRes, dataSourcesRes] =
+        const [verificationRes, dataSourcesRes] =
           await Promise.all([
             GetSupplierVerificationStatuses(),
             GetDataSources(),
@@ -211,9 +216,10 @@ const SuppliersManagement = () => {
     try {
       await DeleteSuppliers(id);
 
-      // refresh list properly
       setPage(0);
       fetchSuppliers(0, true);
+
+      setDeleteModal({ open: false, supplierId: null, companyName: "" });
     } catch (error) {
       console.error("Error deleting supplier:", error);
     }
@@ -308,13 +314,12 @@ const SuppliersManagement = () => {
                         {/* Verification */}
                         <span className="text-center">
                           <span
-                            className={`tp-pill ${
-                              supplier.verificationStatus === "VERIFIED"
+                            className={`tp-pill ${supplier.verificationStatus === "VERIFIED"
                                 ? "tp-pill-success"
                                 : supplier.verificationStatus === "PARTIAL"
                                   ? "tp-pill-warning"
                                   : "tp-pill-danger"
-                            }`}
+                              }`}
                           >
                             {supplier.verificationStatus}
                           </span>
@@ -323,13 +328,12 @@ const SuppliersManagement = () => {
                         {/* Reliability Score */}
                         <span className="text-center">
                           <span
-                            className={`tp-pill ${
-                              supplier.reliabilityScore < 0.3
+                            className={`tp-pill ${supplier.reliabilityScore < 0.3
                                 ? "tp-pill-danger"
                                 : supplier.reliabilityScore < 0.5
                                   ? "tp-pill-warning"
                                   : "tp-pill-success"
-                            }`}
+                              }`}
                           >
                             {supplier.reliabilityScore}
                           </span>
@@ -338,11 +342,10 @@ const SuppliersManagement = () => {
                         {/* Sanctions */}
                         <span className="text-center">
                           <span
-                            className={`tp-pill ${
-                              supplier.sanctionsFlag
+                            className={`tp-pill ${supplier.sanctionsFlag
                                 ? "tp-pill-danger"
                                 : "tp-pill-success"
-                            }`}
+                              }`}
                           >
                             {supplier.sanctionsFlag ? "Flagged" : "Clear"}
                           </span>
@@ -364,14 +367,20 @@ const SuppliersManagement = () => {
                                 Verify
                               </button>
                             ) : (
-                         <button className="tp-btn-outline" disabled>
-  Verified
-</button>
+                              <button className="tp-btn-outline" disabled>
+                                Verified
+                              </button>
                             )}
 
                             <button
                               className="tp-btn-danger tp-btn-sm"
-                              onClick={() => handleDelete(supplier.id)}
+                              onClick={() =>
+                                setDeleteModal({
+                                  open: true,
+                                  supplierId: supplier.id,
+                                  companyName: supplier.companyName,
+                                })
+                              }
                             >
                               Delete
                             </button>
@@ -552,6 +561,40 @@ const SuppliersManagement = () => {
             </div>
           </div>
         )}
+        {deleteModal.open && (
+  <div className="tp-modal-overlay">
+    <div className="tp-modal tp-delete-modal">
+      <h3 className="tp-section-title">Confirm Delete</h3>
+
+      <p className="tp-delete-text">
+        Are you sure you want to delete{" "}
+        <strong>{deleteModal.companyName}</strong>?
+      </p>
+
+      <div className="tp-delete-actions">
+        <button
+          className="tp-btn-outline"
+          onClick={() =>
+            setDeleteModal({
+              open: false,
+              supplierId: null,
+              companyName: "",
+            })
+          }
+        >
+          No
+        </button>
+
+        <button
+          className="tp-btn-danger"
+          onClick={() => handleDelete(deleteModal.supplierId)}
+        >
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       </div>
     </section>
   );

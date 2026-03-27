@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
-import { DashboardSuppliers,DashboardCompanySuppliers } from "../../services/DashboardService.jsx";
+import { DashboardSuppliers, DashboardCompanySuppliers } from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
@@ -30,15 +30,15 @@ const SupplierModal = ({ data, onClose }) => {
         {/* ================= HEADER ================= */}
         <div className="tp-supplier-modal-header upgraded">
           <div>
-           <h2>{data.name}</h2>
+            <h2>{data.name}</h2>
             <p className="tp-modal-sub">
-             {data.iso_3} • {data.region}
+              {data.iso_3} • {data.region}
             </p>
           </div>
 
           <div className="tp-modal-header-right">
             <span className="tp-pill tp-pill-primary">
-             {data.tag}
+              {data.tag}
             </span>
 
             <button onClick={onClose} className="tp-filter-close">
@@ -60,14 +60,14 @@ const SupplierModal = ({ data, onClose }) => {
 
             <div className="tp-modal-metric">
               <span className="tp-modal-metric-value">
-               {data.shipments}
+                {data.shipments}
               </span>
               <span className="tp-modal-metric-label">Shipments</span>
             </div>
 
             <div className="tp-modal-metric">
               <span className="tp-modal-metric-value">
-          {data.productDiversity}
+                {data.productDiversity}
               </span>
               <span className="tp-modal-metric-label">Products</span>
             </div>reparations
@@ -97,7 +97,7 @@ const SupplierModal = ({ data, onClose }) => {
             </div>
           </div>
 
-        
+
         </div>
 
         {/* ================= FOOTER ================= */}
@@ -130,7 +130,7 @@ const SupplierRowSkeleton = React.memo(() => {
 const Suppliers = () => {
   const toast = useAppToast();
   const [isCompanyView, setIsCompanyView] = useState(false);
-const [companySuppliers, setCompanySuppliers] = useState([]);
+  const [companySuppliers, setCompanySuppliers] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -138,6 +138,8 @@ const [companySuppliers, setCompanySuppliers] = useState([]);
   const hasFetchedInitially = useRef(false);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   const {
     tradeflow,
@@ -180,60 +182,60 @@ const [companySuppliers, setCompanySuppliers] = useState([]);
      FETCH SUPPLIERS USING REACT QUERY
   =============================== */
 
-const {
-  data: supplierPages,
-  fetchNextPage,
-  hasNextPage,
-  isFetchingNextPage,
-  isLoading,
-} = useInfiniteQuery({
-  queryKey: queryKeys.suppliers({
-    partnerRegion,
-    tradeflow,
-    partnerCode,
-    reporterCode,
-    isInitialLoad,
-  }),
-queryFn: async ({ pageParam = 1, queryKey }) => {
-  const [
-    _,
-    partnerRegion,
-    tradeflow,
-    reporterCode,
-    partnerCode,
-    isInitialLoad,
-  ] = queryKey;
-
-  let params = {
-    page: pageParam,
-    limit: LIMIT,
-    originRegion: partnerRegion,
-  };
-
-  if (!isInitialLoad) {
-    params = {
-      ...params,
+  const {
+    data: supplierPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: queryKeys.suppliers({
+      partnerRegion,
       tradeflow,
       partnerCode,
       reporterCode,
-    };
-  }
+      isInitialLoad,
+    }),
+    queryFn: async ({ pageParam = 1, queryKey }) => {
+      const [
+        _,
+        partnerRegion,
+        tradeflow,
+        reporterCode,
+        partnerCode,
+        isInitialLoad,
+      ] = queryKey;
 
-  console.log("FINAL API PARAMS:", params); // ✅ debug
+      let params = {
+        page: pageParam,
+        limit: LIMIT,
+        originRegion: partnerRegion,
+      };
 
-  const res = await DashboardSuppliers(params);
-  return res?.data?.suppliers || [];
-},
-  getNextPageParam: (lastPage, pages) =>
-    lastPage.length === LIMIT ? pages.length + 1 : undefined,
+      if (!isInitialLoad) {
+        params = {
+          ...params,
+          tradeflow,
+          partnerCode,
+          reporterCode,
+        };
+      }
 
-  enabled: !!partnerRegion && !!tradeflow,
+      console.log("FINAL API PARAMS:", params); // ✅ debug
 
-  refetchOnMount: false,
-  refetchOnWindowFocus: false,
+      const res = await DashboardSuppliers(params);
+      return res?.data?.suppliers || [];
+    },
+    getNextPageParam: (lastPage, pages) =>
+      lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-  keepPreviousData: false, // ✅ ADD THIS
-});
+    enabled: !!partnerRegion && !!tradeflow,
+
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+
+    keepPreviousData: false, // ✅ ADD THIS
+  });
 
   const suppliers = useMemo(() => {
     return supplierPages?.pages?.flat() || [];
@@ -273,28 +275,28 @@ queryFn: async ({ pageParam = 1, queryKey }) => {
         return "tp-pill-primary";
     }
   };
-const handleViewClick = async (iso3, countryName) => {
-  try {
-    const res = await DashboardCompanySuppliers({
-      page: 1,
-      limit: 20,
-      country: iso3,
-    });
+  const handleViewClick = async (iso3, countryName, searchValue = "") => {
+    try {
+      const res = await DashboardCompanySuppliers({
+        page: 1,
+        limit: 20,
+        country: iso3,
+        search: searchValue,
+      });
 
-    const data = res?.data?.suppliers || [];
+      const data = res?.data?.suppliers || [];
 
-    // ✅ CHECK EMPTY
-    if (!data.length) {
-     toast.warning(`No supplier company exist in ${countryName}`);
-      return;
+      if (!data.length) {
+        toast.warning(`No supplier company exist in ${countryName}`);
+        return;
+      }
+
+      setCompanySuppliers(data);
+      setIsCompanyView(true);
+    } catch (err) {
+      console.error("Error:", err);
     }
-
-    setCompanySuppliers(data);
-    setIsCompanyView(true);
-  } catch (err) {
-    console.error("Error:", err);
-  }
-};
+  };
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -338,28 +340,62 @@ const handleViewClick = async (iso3, countryName) => {
         <TradePulseCard
           header={
             <div className="tp-card-header tp-supplier-header">
-         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-  {isCompanyView && (
+  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+    {isCompanyView && (
+      <button
+        className="tp-btn-outline tp-btn-sm"
+        onClick={() => setIsCompanyView(false)}
+      >
+        ← Back
+      </button>
+    )}
+    <h3 className="tp-card-title">Supplier Directory</h3>
+  </div>
+
+  {/* ✅ ADD THIS BLOCK */}
+{isCompanyView ? (
+  <div style={{ display: "flex", gap: "8px" }}>
+    <input
+      type="text"
+      placeholder="Search company..."
+      className="tp-input"
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+    />
+
     <button
       className="tp-btn-outline tp-btn-sm"
-      onClick={() => setIsCompanyView(false)}
+      onClick={() => {
+        if (selectedCountry) {
+          handleViewClick(
+            selectedCountry.iso3,
+            selectedCountry.name,
+            search
+          );
+        }
+      }}
     >
-      ← Back
+      Search
+    </button>
+
+    {/* ✅ ADD THIS FILTER BUTTON */}
+    <button
+      className="tp-btn-outline tp-btn-sm"
+      onClick={() => setTableFilterOpen(true)}
+    >
+      <CiFilter />
+    </button>
+  </div>
+) : (
+    <button
+      className="tp-btn-outline tp-overview-filter-btn"
+      onClick={() => setTableFilterOpen(true)}
+    >
+      <CiFilter />
+      Filters
     </button>
   )}
-  <h3 className="tp-card-title">Supplier Directory</h3>
 </div>
-
-           {!isCompanyView && (
-  <button
-    className="tp-btn-outline tp-overview-filter-btn"
-    onClick={() => setTableFilterOpen(true)}
-  >
-    <CiFilter />
-    Filters
-  </button>
-)}
-            </div>
           }
         >
           <div className="tp-table-wrapper-suppliers">
@@ -369,32 +405,32 @@ const handleViewClick = async (iso3, countryName) => {
               ref={headerRef}
               onScroll={handleHeaderScroll}
             >
-          <div className="tp-table-head tp-table-suppliers-dashboard">
-  {!isCompanyView ? (
-    <>
-      <span>Country Name</span>
-      <span className="text-center">ISO</span>
-      <span className="text-center">Region</span>
-      <span className="text-center">Activity</span>
-      <span className="text-center">Reliability</span>
-      <span className="text-center">Tag</span>
-      <span className="text-center">Product Diversity</span>
-      <span className="text-center">Shipments</span>
-      <span className="text-center">Action</span>
-    </>
-  ) : (
-    <>
-      <span>Company Name</span>
-      <span className="text-center">Country</span>
-      <span className="text-center">Region</span>
-      <span className="text-center">Sector</span>
-      <span className="text-center">Reliability</span>
-      <span className="text-center">Status</span>
-      <span className="text-center">Products</span>
-      <span className="text-center">Product Count</span>
-    </>
-  )}
-</div>
+              <div className="tp-table-head tp-table-suppliers-dashboard">
+                {!isCompanyView ? (
+                  <>
+                    <span>Country Name</span>
+                    <span className="text-center">ISO</span>
+                    <span className="text-center">Region</span>
+                    <span className="text-center">Activity</span>
+                    <span className="text-center">Reliability</span>
+                    <span className="text-center">Tag</span>
+                    <span className="text-center">Product Diversity</span>
+                    <span className="text-center">Shipments</span>
+                    <span className="text-center">Action</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Company Name</span>
+                    <span className="text-center">Country</span>
+                    <span className="text-center">Region</span>
+                    <span className="text-center">Sector</span>
+                    <span className="text-center">Reliability</span>
+                    <span className="text-center">Status</span>
+                    <span className="text-center">Products</span>
+                    <span className="text-center">Product Count</span>
+                  </>
+                )}
+              </div>
             </div>
 
             {/* BODY SCROLL */}
@@ -407,105 +443,105 @@ const handleViewClick = async (iso3, countryName) => {
                 {isLoading && skeletonRows}
 
                 {!isCompanyView
-  ? suppliers.map((s, i) => {
-      const isLast = suppliers.length === i + 1;
-      return (
-        <div
-          key={i}
-          ref={isLast ? lastSupplierRef : null}
-          className="tp-table-row tp-table-suppliers-dashboard"
-          style={{ cursor: "default" }}
-        >
-          <div className="supplier-name">{s.name}</div>
-          <span className="tp-muted text-center">{s.iso_3}</span>
-          <span className="tp-muted text-center">{s.region}</span>
+                  ? suppliers.map((s, i) => {
+                    const isLast = suppliers.length === i + 1;
+                    return (
+                      <div
+                        key={i}
+                        ref={isLast ? lastSupplierRef : null}
+                        className="tp-table-row tp-table-suppliers-dashboard"
+                        style={{ cursor: "default" }}
+                      >
+                        <div className="supplier-name">{s.name}</div>
+                        <span className="tp-muted text-center">{s.iso_3}</span>
+                        <span className="tp-muted text-center">{s.region}</span>
 
-          <span className="text-center">
-            <span
-              className={`tp-pill ${
-                s.activityLevel === "Very High"
-                  ? "tp-pill-success"
-                  : s.activityLevel === "High"
-                  ? "tp-pill-primary"
-                  : s.activityLevel === "Medium"
-                  ? "tp-pill-warning"
-                  : "tp-pill-danger"
-              }`}
-            >
-              {s.activityLevel}
-            </span>
-          </span>
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${s.activityLevel === "Very High"
+                                ? "tp-pill-success"
+                                : s.activityLevel === "High"
+                                  ? "tp-pill-primary"
+                                  : s.activityLevel === "Medium"
+                                    ? "tp-pill-warning"
+                                    : "tp-pill-danger"
+                              }`}
+                          >
+                            {s.activityLevel}
+                          </span>
+                        </span>
 
-          <span className="text-center">
-            <span
-              className={`tp-pill ${
-                s.reliabilityScore < 30
-                  ? "tp-pill-danger"
-                  : s.reliabilityScore < 50
-                  ? "tp-pill-warning"
-                  : "tp-pill-success"
-              }`}
-            >
-              {s.reliabilityScore}
-            </span>
-          </span>
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${s.reliabilityScore < 30
+                                ? "tp-pill-danger"
+                                : s.reliabilityScore < 50
+                                  ? "tp-pill-warning"
+                                  : "tp-pill-success"
+                              }`}
+                          >
+                            {s.reliabilityScore}
+                          </span>
+                        </span>
 
-          <span className="text-center">
-            <span className="tp-pill tp-pill-primary">{s.tag}</span>
-          </span>
+                        <span className="text-center">
+                          <span className="tp-pill tp-pill-primary">{s.tag}</span>
+                        </span>
 
-          <span className="text-center">{s.productDiversity}</span>
-          <span className="text-center">{s.shipments}</span>
+                        <span className="text-center">{s.productDiversity}</span>
+                        <span className="text-center">{s.shipments}</span>
 
-          <span className="text-center">
-            <button
-              className="tp-btn-outline tp-btn-sm"
-             onClick={() => handleViewClick(s.iso_3, s.name)}
-            >
-              View
-            </button>
-          </span>
-        </div>
-      );
-    })
-  : companySuppliers.map((c, i) => (
-      <div
-        key={i}
-        className="tp-table-row tp-table-suppliers-dashboard"
-      >
-        <div className="supplier-name">{c.company_name}</div>
-        <span className="text-center">{c.country_name}</span>
-        <span className="text-center">{c.region}</span>
-        <span className="text-center">{c.sector}</span>
+                        <span className="text-center">
+                          <button
+                            className="tp-btn-outline tp-btn-sm"
+                            onClick={() => {
+                              setSelectedCountry({ iso3: s.iso_3, name: s.name });
+                              handleViewClick(s.iso_3, s.name);
+                            }}
+                          >
+                            View
+                          </button>
+                        </span>
+                      </div>
+                    );
+                  })
+                  : companySuppliers.map((c, i) => (
+                    <div
+                      key={i}
+                      className="tp-table-row tp-table-suppliers-dashboard"
+                    >
+                      <div className="supplier-name">{c.company_name}</div>
+                      <span className="text-center">{c.country_name}</span>
+                      <span className="text-center">{c.region}</span>
+                      <span className="text-center">{c.sector}</span>
 
-        <span className="text-center">
-          <span
-            className={`tp-pill ${
-              c.reliability_score < 0.5
-                ? "tp-pill-danger"
-                : c.reliability_score < 0.8
-                ? "tp-pill-warning"
-                : "tp-pill-success"
-            }`}
-          >
-            {c.reliability_score}
-          </span>
-        </span>
+                      <span className="text-center">
+                        <span
+                          className={`tp-pill ${c.reliability_score < 0.5
+                              ? "tp-pill-danger"
+                              : c.reliability_score < 0.8
+                                ? "tp-pill-warning"
+                                : "tp-pill-success"
+                            }`}
+                        >
+                          {c.reliability_score}
+                        </span>
+                      </span>
 
-        <span className="text-center">
-          <span className="tp-pill tp-pill-primary">
-            {c.verification_status}
-          </span>
-        </span>
+                      <span className="text-center">
+                        <span className="tp-pill tp-pill-primary">
+                          {c.verification_status}
+                        </span>
+                      </span>
 
-        <span className="text-center">
-          {c.products?.[0] || "-"}
-        </span>
+                      <span className="text-center">
+                        {c.products?.[0] || "-"}
+                      </span>
 
-        <span className="text-center">{c.product_count}</span>
-      </div>
-    ))}
-                 
+                      <span className="text-center">{c.product_count}</span>
+                    </div>
+                  ))}
+
                 {isFetchingNextPage && skeletonRows}
               </div>
               {!isLoading && suppliers.length === 0 && (
@@ -517,26 +553,37 @@ const handleViewClick = async (iso3, countryName) => {
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
-  {!isCompanyView && tableFilterOpen && (
+   {tableFilterOpen && (
   <UniversalFilter
-          showCorridor
-          showTimeRange
-          showPartner
+    {...(!isCompanyView
+      ? {
+          showCorridor: true,
+          showTimeRange: true,
+          showPartner: true,
+          showProduct: true,
+        }
+      : {
+          showProduct: true, // ✅ ONLY THIS IN COMPANY VIEW
+        })}
+    onClose={() => setTableFilterOpen(false)}
+    onChange={(filters) => {
+      console.log("FILTERS:", filters);
 
-          onClose={() => setTableFilterOpen(false)}
-          onChange={(filters) => {
-            console.log("FILTERS:", filters);
-  if (!filters.partnerCode) {
-    setIsInitialLoad(true);   // ✅ RESET MODE
-  } else {
-    setIsInitialLoad(false);  // ✅ FILTER MODE
-  }
+      if (!isCompanyView) {
+        if (!filters.partnerCode) {
+          setIsInitialLoad(true);
+        } else {
+          setIsInitialLoad(false);
+        }
+      }
 
-  setTableFilterOpen(false);
-}}
-        />
-      )}
-     
+      // (optional: later you can pass product filter to API here)
+
+      setTableFilterOpen(false);
+    }}
+  />
+)}
+
     </section>
   );
 };

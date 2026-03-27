@@ -75,8 +75,8 @@ select option {
 
 /* Danger button */
 .tp-btn-danger {
-  background: #ff4d4f;
-  color: var(--text-primary);
+  background:#e54949;
+  color: #fff;
   border: none;
   padding: 12px;
   border-radius: var(--radius-control);
@@ -85,7 +85,7 @@ select option {
 }
 
 .tp-btn-danger:hover {
-  background: #d9363e;
+  background:#e04343;
 }
 .tp-text-success{
   color: var(--clr-success);
@@ -264,8 +264,27 @@ select option {
 
 /* ONLY affect Verified inside supplier table */
 .tp-admin-actions .tp-btn-outline {
-  border: 1px solid var(--clr-success);
-  color: var(--clr-success);
   background: transparent;
   cursor: default;
+}
+
+
+
+/* DELETE MODAL */
+.tp-delete-modal {
+  max-width: 400px;
+  text-align: center;
+}
+
+.tp-delete-text {
+  margin: var(--space-md) 0;
+  color: var(--text-secondary);
+  font-size: var(--fs-body);
+}
+
+.tp-delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
 }
