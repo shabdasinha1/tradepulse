@@ -146,16 +146,24 @@ const Footer = () => {
 
         {/* ================= BOTTOM ================= */}
         <div className="tp-footer-bottom">
-          <span className="tp-footer-copy">
-            © {new Date().getFullYear()} TradePulse. All rights reserved.
-          </span>
+  <span className="tp-footer-copy">
+    © {new Date().getFullYear()} TradePulse. All rights reserved.
+  </span>
 
-          <div className="tp-footer-socials">
-            <a href="#" aria-label="LinkedIn">LinkedIn</a>
-            <a href="#" aria-label="Twitter">Twitter</a>
-          </div>
-        </div>
+  <a
+  href="https://robotronix.co.in/"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="tp-footer-dev"
+>
+  Developed by Robotronix Engineering Tech Pvt. Ltd.
+</a>
 
+  <div className="tp-footer-socials">
+    <a href="#" aria-label="LinkedIn">LinkedIn</a>
+    <a href="#" aria-label="Twitter">Twitter</a>
+  </div>
+</div>
       </div>
     </footer>
   );
