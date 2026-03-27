@@ -297,6 +297,11 @@ export const GetSupplierById = async (id) => {
 export const CreateSupplier = async (data) => {
   return NewsApi.post("/supplier-dir-int/api/suppliers", data);
 };
+
+export const CreateSupplierBulk = async (data) => {
+  return NewsApi.post("/supplier-dir-int/api/suppliers/bulk", data);
+};
+
 // Delete Suppliers
 export const DeleteSuppliers = async (id) => {
   return NewsApi.delete(`/supplier-dir-int/api/suppliers/${id}`);

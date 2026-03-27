@@ -8,9 +8,11 @@ import {
   GetSupplierVerificationStatuses,
   GetDataSources,
   DeleteSuppliers,
+  CreateSupplierBulk
 } from "../../services/DashboardService";
 import { FiX } from "react-icons/fi";
-import axios from "axios";
+import { downloadSampleSuppliersCSV } from "../../utils/csvUtils";
+import Papa from "papaparse";
 
 const SuppliersManagement = () => {
   const [deleteModal, setDeleteModal] = useState({
@@ -45,6 +47,10 @@ const SuppliersManagement = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef(null);
+  const [supplierMode, setSupplierMode] = useState("single");
+  const [csvFile, setCsvFile] = useState(null);
+  const [parsedCsvData, setParsedCsvData] = useState([]);
+  const fileInputRef = useRef(null);
 
   const verificationSelectOptions = verificationOptions.map((status) => ({
     value: status,
@@ -224,6 +230,133 @@ const SuppliersManagement = () => {
       console.error("Error deleting supplier:", error);
     }
   };
+
+  const handleModeChange = (mode) => {
+    setSupplierMode(mode);
+
+    // reset form when switching to bulk
+    if (mode === "bulk") {
+      setFormData({
+        companyName: "",
+        countryIso3: "",
+        sector: "",
+        verificationStatus: "PENDING",
+        hsCodes: [],
+        registrationNumber: "",
+        dataSource: "",
+      });
+    }
+  };
+
+  const handleCsvUpload = (file) => {
+    if (!file) return;
+
+    setCsvFile(file);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        console.log("Parsed CSV:", results.data);
+
+        setParsedCsvData(results.data);
+      },
+      error: (err) => {
+        console.error("CSV Parse Error:", err);
+      },
+    });
+  };
+
+  const transformCsvData = (data) => {
+    return data.map((row) => ({
+      companyName: row.companyName?.trim(),
+      countryIso3: row.countryIso3?.trim(),
+      sector: row.sector?.trim(),
+      hsCodes: row.hsCodes
+        ? row.hsCodes.split(",").map((c) => c.trim())
+        : [],
+      dataSource: row.dataSource?.trim(),
+      verificationStatus: row.verificationStatus?.trim(),
+    }));
+  };
+
+  const validateCsvData = (data) => {
+    const errors = [];
+
+    data.forEach((row, index) => {
+      if (!row.companyName) {
+        errors.push(`Row ${index + 1}: Missing companyName`);
+      }
+
+      if (!row.countryIso3) {
+        errors.push(`Row ${index + 1}: Missing countryIso3`);
+      }
+
+      if (!row.hsCodes || row.hsCodes.length === 0) {
+        errors.push(`Row ${index + 1}: Missing hsCodes`);
+      }
+
+      if (!["IMPORT_YETI", "REGISTRY"].includes(row.dataSource)) {
+        errors.push(`Row ${index + 1}: Invalid dataSource`);
+      }
+
+      if (!["VERIFIED", "PARTIAL", "PENDING"].includes(row.verificationStatus)) {
+        errors.push(`Row ${index + 1}: Invalid verificationStatus`);
+      }
+    });
+
+    return errors;
+  };
+
+  const handleBulkUpload = async () => {
+    try {
+      if (!parsedCsvData.length) {
+        alert("Please upload a CSV file first");
+        return;
+      }
+
+      const transformed = transformCsvData(parsedCsvData);
+
+      const errors = validateCsvData(transformed);
+
+      if (errors.length > 0) {
+        console.error("Validation Errors:", errors);
+        alert(errors.slice(0, 5).join("\n")); // show first few
+        return;
+      }
+
+      setLoading(true);
+
+      await CreateSupplierBulk(transformed);
+
+      alert("Bulk suppliers uploaded successfully!");
+
+      // refresh list
+      setPage(0);
+      fetchSuppliers(0, true);
+
+      // reset state
+      setParsedCsvData([]);
+      setCsvFile(null);
+      setSupplierMode("single");
+      setOpenModal(false);
+    } catch (error) {
+      console.error("Bulk upload error:", error);
+      alert("Something went wrong while uploading CSV");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearCsv = () => {
+  setCsvFile(null);
+  setParsedCsvData([]);
+
+  // reset file input (IMPORTANT)
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+};
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -315,10 +448,10 @@ const SuppliersManagement = () => {
                         <span className="text-center">
                           <span
                             className={`tp-pill ${supplier.verificationStatus === "VERIFIED"
-                                ? "tp-pill-success"
-                                : supplier.verificationStatus === "PARTIAL"
-                                  ? "tp-pill-warning"
-                                  : "tp-pill-danger"
+                              ? "tp-pill-success"
+                              : supplier.verificationStatus === "PARTIAL"
+                                ? "tp-pill-warning"
+                                : "tp-pill-danger"
                               }`}
                           >
                             {supplier.verificationStatus}
@@ -329,10 +462,10 @@ const SuppliersManagement = () => {
                         <span className="text-center">
                           <span
                             className={`tp-pill ${supplier.reliabilityScore < 0.3
-                                ? "tp-pill-danger"
-                                : supplier.reliabilityScore < 0.5
-                                  ? "tp-pill-warning"
-                                  : "tp-pill-success"
+                              ? "tp-pill-danger"
+                              : supplier.reliabilityScore < 0.5
+                                ? "tp-pill-warning"
+                                : "tp-pill-success"
                               }`}
                           >
                             {supplier.reliabilityScore}
@@ -343,8 +476,8 @@ const SuppliersManagement = () => {
                         <span className="text-center">
                           <span
                             className={`tp-pill ${supplier.sanctionsFlag
-                                ? "tp-pill-danger"
-                                : "tp-pill-success"
+                              ? "tp-pill-danger"
+                              : "tp-pill-success"
                               }`}
                           >
                             {supplier.sanctionsFlag ? "Flagged" : "Clear"}
@@ -402,9 +535,28 @@ const SuppliersManagement = () => {
           <div className="tp-modal-overlay">
             <div className="tp-modal">
               <div className="tp-supplier-modal-header">
-                <h3 className="tp-section-title tp-margin-bottom">
-                  Add Supplier
-                </h3>
+                <div className="tp-modal-title-group">
+                  <h3 className="tp-section-title">Add Supplier</h3>
+
+                  <div className="tp-mode-toggle">
+                    <button
+                      type="button"
+                      className={`tp-mode-btn ${supplierMode === "single" ? "active" : ""}`}
+                      onClick={() => handleModeChange("single")}
+                    >
+                      Single
+                    </button>
+
+                    <button
+                      type="button"
+                      className={`tp-mode-btn ${supplierMode === "bulk" ? "active" : ""}`}
+                      onClick={() => handleModeChange("bulk")}
+                    >
+                      Bulk
+                    </button>
+                  </div>
+                </div>
+
                 <button
                   className="tp-filter-close"
                   onClick={() => setOpenModal(false)}
@@ -413,45 +565,47 @@ const SuppliersManagement = () => {
                 </button>
               </div>
 
-              <form className="tp-form-grid" onSubmit={handleSubmit}>
-                <div className="tp-form-group">
-                  <label>Company Name</label>
-                  <input
-                    name="companyName"
-                    className="tp-input"
-                    placeholder="Enter company name (e.g. ABC Cocoa Ltd)"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+              {supplierMode === "single" ? (
+                <form className="tp-form-grid" onSubmit={handleSubmit}>
+                  {/* EXISTING FORM — DO NOT CHANGE ANYTHING INSIDE */}
+                  <div className="tp-form-group">
+                    <label>Company Name</label>
+                    <input
+                      name="companyName"
+                      className="tp-input"
+                      placeholder="Enter company name (e.g. ABC Cocoa Ltd)"
+                      value={formData.companyName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
 
-                <div className="tp-form-group">
-                  <label>Country ISO3</label>
-                  <input
-                    name="countryIso3"
-                    className="tp-input"
-                    placeholder="Enter ISO3 code (e.g. GHA, IND, USA)"
-                    value={formData.countryIso3}
-                    onChange={handleChange}
-                  />
-                </div>
+                  <div className="tp-form-group">
+                    <label>Country ISO3</label>
+                    <input
+                      name="countryIso3"
+                      className="tp-input"
+                      placeholder="Enter ISO3 code (e.g. GHA, IND, USA)"
+                      value={formData.countryIso3}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                <div className="tp-form-group">
-                  <label>Sector</label>
-                  <input
-                    name="sector"
-                    className="tp-input"
-                    placeholder="Enter sector (e.g. Agriculture, Manufacturing)"
-                    value={formData.sector}
-                    onChange={handleChange}
-                  />
-                </div>
+                  <div className="tp-form-group">
+                    <label>Sector</label>
+                    <input
+                      name="sector"
+                      className="tp-input"
+                      placeholder="Enter sector (e.g. Agriculture, Manufacturing)"
+                      value={formData.sector}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                <div className="tp-form-group">
-                  <label>Verification Status</label>
-                  {/* Verification Status */}
-                  {/* <select
+                  <div className="tp-form-group">
+                    <label>Verification Status</label>
+                    {/* Verification Status */}
+                    {/* <select
                     name="verificationStatus"
                     className="tp-input tp-select"
                     value={formData.verificationStatus}
@@ -464,26 +618,26 @@ const SuppliersManagement = () => {
                       </option>
                     ))}
                   </select> */}
-                  <Select
-                    classNamePrefix="tp-select"
-                    placeholder="Select verification status"
-                    options={verificationSelectOptions}
-                    value={
-                      verificationSelectOptions.find(
-                        (opt) => opt.value === formData.verificationStatus,
-                      ) || null
-                    }
-                    onChange={(selectedOption) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        verificationStatus: selectedOption?.value || "",
-                      }))
-                    }
-                  />
-                </div>
-                <div className="tp-form-group">
-                  <label>Data Source</label>
-                  {/* <select
+                    <Select
+                      classNamePrefix="tp-select"
+                      placeholder="Select verification status"
+                      options={verificationSelectOptions}
+                      value={
+                        verificationSelectOptions.find(
+                          (opt) => opt.value === formData.verificationStatus,
+                        ) || null
+                      }
+                      onChange={(selectedOption) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          verificationStatus: selectedOption?.value || "",
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="tp-form-group">
+                    <label>Data Source</label>
+                    {/* <select
                     name="dataSource"
                     className="tp-input tp-select"
                     value={formData.dataSource}
@@ -496,52 +650,52 @@ const SuppliersManagement = () => {
                       </option>
                     ))}
                   </select> */}
-                  <Select
-                    classNamePrefix="tp-select"
-                    placeholder="Select data source"
-                    options={dataSourceOptions}
-                    value={
-                      dataSourceOptions.find(
-                        (opt) => opt.value === formData.dataSource,
-                      ) || null
-                    }
-                    onChange={(selectedOption) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        dataSource: selectedOption?.value || "",
-                      }))
-                    }
-                  />
-                </div>
-                <div className="tp-form-group">
-                  <label>Registration Number</label>
-                  <input
-                    name="registrationNumber"
-                    className="tp-input"
-                    placeholder="Enter registration number (e.g. GH12345)"
-                    value={formData.registrationNumber}
-                    onChange={handleChange}
-                  />
-                </div>
+                    <Select
+                      classNamePrefix="tp-select"
+                      placeholder="Select data source"
+                      options={dataSourceOptions}
+                      value={
+                        dataSourceOptions.find(
+                          (opt) => opt.value === formData.dataSource,
+                        ) || null
+                      }
+                      onChange={(selectedOption) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          dataSource: selectedOption?.value || "",
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="tp-form-group">
+                    <label>Registration Number</label>
+                    <input
+                      name="registrationNumber"
+                      className="tp-input"
+                      placeholder="Enter registration number (e.g. GH12345)"
+                      value={formData.registrationNumber}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                <div className="tp-form-group">
-                  <label>HS Code</label>
-                  <input
-                    type="text"
-                    name="hsCodes"
-                    className="tp-input"
-                    placeholder="Enter HS codes separated by commas (e.g. 1801, 0901)"
-                    value={formData.hsCodes.join(",")}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        hsCodes: e.target.value.split(","),
-                      }))
-                    }
-                  />
-                </div>
+                  <div className="tp-form-group">
+                    <label>HS Code</label>
+                    <input
+                      type="text"
+                      name="hsCodes"
+                      className="tp-input"
+                      placeholder="Enter HS codes separated by commas (e.g. 1801, 0901)"
+                      value={formData.hsCodes.join(",")}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          hsCodes: e.target.value.split(","),
+                        }))
+                      }
+                    />
+                  </div>
 
-                {/* <div className="tp-form-group">
+                  {/* <div className="tp-form-group">
                   <label>Sanctions Score</label>
                   <input
                     type="number"
@@ -552,49 +706,110 @@ const SuppliersManagement = () => {
                   />
                 </div> */}
 
-                <div className="tp-form-group tp-form-span-2 tp-actions">
-                  <button type="submit" className="tp-btn-primary">
-                    Save
-                  </button>
+                  <div className="tp-form-group tp-form-span-2 tp-actions">
+                    <button type="submit" className="tp-btn-primary">
+                      Save
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="tp-bulk-container">
+                  <p className="tp-bulk-text">
+                    Upload multiple suppliers using a CSV file.
+                  </p>
+
+                  <div className="tp-bulk-actions">
+                    <button
+                      type="button"
+                      className="tp-btn-outline"
+                      onClick={downloadSampleSuppliersCSV}
+                    >
+                      Download Sample CSV
+                    </button>
+
+                    <>
+                      <input
+                        type="file"
+                        accept=".csv"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={(e) => handleCsvUpload(e.target.files[0])}
+                      />
+
+                      <button
+                        type="button"
+                        className="tp-btn-primary"
+                        onClick={() => fileInputRef.current.click()}
+                      >
+                        Import CSV
+                      </button>
+                    </>
+
+                    {parsedCsvData.length > 0 && (
+                      <button
+                        type="button"
+                        className="tp-btn-success"
+                        onClick={handleBulkUpload}
+                        disabled={!parsedCsvData.length || loading}
+                      >
+                        {loading ? "Uploading..." : "Upload Data"}
+                      </button>
+                    )}
+                  </div>
+                    {csvFile && (
+  <div className="tp-file-row">
+    <div className="tp-file-name">
+      📄 {csvFile.name}
+    </div>
+
+    <button
+      type="button"
+      className="tp-btn-clear"
+      onClick={handleClearCsv}
+    >
+      Clear
+    </button>
+  </div>
+)}
                 </div>
-              </form>
+              )}
             </div>
           </div>
         )}
         {deleteModal.open && (
-  <div className="tp-modal-overlay">
-    <div className="tp-modal tp-delete-modal">
-      <h3 className="tp-section-title">Confirm Delete</h3>
+          <div className="tp-modal-overlay">
+            <div className="tp-modal tp-delete-modal">
+              <h3 className="tp-section-title">Confirm Delete</h3>
 
-      <p className="tp-delete-text">
-        Are you sure you want to delete{" "}
-        <strong>{deleteModal.companyName}</strong>?
-      </p>
+              <p className="tp-delete-text">
+                Are you sure you want to delete{" "}
+                <strong>{deleteModal.companyName}</strong>?
+              </p>
 
-      <div className="tp-delete-actions">
-        <button
-          className="tp-btn-outline"
-          onClick={() =>
-            setDeleteModal({
-              open: false,
-              supplierId: null,
-              companyName: "",
-            })
-          }
-        >
-          No
-        </button>
+              <div className="tp-delete-actions">
+                <button
+                  className="tp-btn-outline"
+                  onClick={() =>
+                    setDeleteModal({
+                      open: false,
+                      supplierId: null,
+                      companyName: "",
+                    })
+                  }
+                >
+                  No
+                </button>
 
-        <button
-          className="tp-btn-danger"
-          onClick={() => handleDelete(deleteModal.supplierId)}
-        >
-          Yes, Delete
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                <button
+                  className="tp-btn-danger"
+                  onClick={() => handleDelete(deleteModal.supplierId)}
+                >
+                  Yes, Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

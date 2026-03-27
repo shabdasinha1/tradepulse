@@ -288,3 +288,155 @@ select option {
   gap: var(--space-sm);
   margin-top: var(--space-md);
 }
+
+.tp-modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tp-supplier-mode-toggle {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: var(--fs-body);
+}
+
+.tp-supplier-mode-toggle label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.tp-bulk-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.tp-bulk-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.tp-mode-toggle {
+  display: inline-flex;
+  background: var(--bg-soft);
+  border-radius: var(--radius-control);
+  padding: 4px;
+  width: fit-content;
+}
+
+.tp-mode-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  font-size: var(--fs-label);
+  color: var(--text-secondary);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tp-mode-btn.active {
+  background: var(--clr-primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.tp-bulk-container {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.tp-bulk-text {
+  font-size: var(--fs-body);
+  color: var(--text-secondary);
+}
+
+.tp-bulk-actions {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.tp-bulk-actions button {
+  min-width: 140px;
+}
+.tp-file-name {
+  font-size: var(--fs-label);
+  color: var(--text-primary);
+  background: var(--bg-soft);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+/* ===============================
+   BULK UPLOAD CTA BUTTON
+================================ */
+
+.tp-btn-success {
+  background: var(--bg-soft);
+  color: var(--text-primary);
+  border: 1px solid var(--border-soft);
+  padding: 10px 16px;
+  border-radius: var(--radius-control);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-label);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tp-btn-success:hover {
+  background: var(--surface-hover);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+}
+
+.tp-btn-success:active {
+  transform: scale(0.98);
+}
+
+.tp-btn-success:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* File row (name + clear button) */
+.tp-file-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: space-between;
+}
+
+/* Clear button (small subtle action) */
+.tp-btn-clear {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  font-size: var(--fs-label);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tp-btn-clear:hover {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+}

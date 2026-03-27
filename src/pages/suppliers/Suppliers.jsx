@@ -310,26 +310,17 @@ const Suppliers = () => {
               Structured exporter activity insights within selected corridor.
             </p>
 
-            <div className="tp-filter-btn-wrapper">
-              {/* <div className="tp-corridor-pill">
-                <span className="tp-country">Active Corridor : </span>
-
-                <span
-                  className="tp-country tp-country-truncate"
-                  title={corridor || "Selected Corridor"}
-                >
-                  {shortCorridor}
-                </span>
-              </div> */}
-
-              <button
-                className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setFilterOpen(true)}
-              >
-                <FiSliders />
-                Global Filters
-              </button>
-            </div>
+    <div className="tp-filter-btn-wrapper">
+  {!isCompanyView && (
+    <button
+      className="tp-btn-outline tp-overview-filter-btn"
+      onClick={() => setFilterOpen(true)}
+    >
+      <FiSliders />
+      Global Filters
+    </button>
+  )}
+</div>
           </div>
         </header>
 
@@ -409,7 +400,7 @@ const Suppliers = () => {
                 {!isCompanyView ? (
                   <>
                     <span>Country Name</span>
-                    <span className="text-center">ISO</span>
+                   
                     <span className="text-center">Region</span>
                     <span className="text-center">Activity</span>
                     <span className="text-center">Reliability</span>
@@ -453,7 +444,7 @@ const Suppliers = () => {
                         style={{ cursor: "default" }}
                       >
                         <div className="supplier-name">{s.name}</div>
-                        <span className="tp-muted text-center">{s.iso_3}</span>
+                       
                         <span className="tp-muted text-center">{s.region}</span>
 
                         <span className="text-center">
