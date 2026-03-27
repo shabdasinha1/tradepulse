@@ -438,7 +438,7 @@ const SuppliersManagement = () => {
 
                         {/* Country */}
                         <span className="text-center">
-                          {supplier.countryIso3}
+                          {supplier.countryName}
                         </span>
 
                         {/* Sector */}
