@@ -339,3 +339,54 @@ export const GetDataSources = async (name) => {
     params: cleanParams({ name }),
   });
 };
+
+
+/* ===============================
+   SCHEDULER / ORCHESTRATOR APIs
+================================ */
+
+/* 📄 Get All Jobs */
+export const GetSchedulerJobs = async () => {
+  return NewsApi.get("/orchestrator/jobs");
+};
+
+/* 🔍 Get Job By ID */
+export const GetSchedulerJobById = async (id) => {
+  return NewsApi.get(`/orchestrator/jobs/${id}`);
+};
+
+/* ➕ Create Job */
+export const CreateSchedulerJob = async (data) => {
+  return NewsApi.post("/orchestrator/jobs", data);
+};
+
+/* ▶️ Trigger Job */
+export const TriggerSchedulerJob = async (id) => {
+  return NewsApi.post(`/orchestrator/jobs/${id}/trigger`);
+};
+
+/* ✏️ Update Job */
+export const UpdateSchedulerJob = async (id, data) => {
+  return NewsApi.put(`/orchestrator/jobs/${id}`, data);
+};
+
+/* ❌ Delete Job */
+export const DeleteSchedulerJob = async (id) => {
+  return NewsApi.delete(`/orchestrator/jobs/${id}`);
+};
+
+/* ===============================
+   USER APIs
+================================ */
+
+/* 🔍 Get User By Email */
+export const GetUserByEmail = async (email) => {
+  return Api.get("/users/get-user", {
+    params: cleanParams({ email }),
+  });
+};
+
+/* ✏️ Update User */
+export const UpdateUser = async (id, data) => {
+  return Api.put(`/users/update-user/${id}`, data);
+};

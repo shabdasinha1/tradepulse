@@ -51,28 +51,117 @@ select option {
 
 .tp-table-supplier-admin {
   display: grid;
-  grid-template-columns:
-    2fr /* Company */
-    1fr /* Country */
-    1.2fr /* Sector */
-    1.2fr /* Verification */
-    1fr /* Score */
-    1fr /* Sanctions */
-    /* 1.5fr LEI */
-    1.5fr /* Actions */;
+grid-template-columns:
+  2fr
+  2fr
+  1.2fr
+  1.2fr
+  1fr
+  1fr
+  1.6fr   /* ✅ increased Sanctions Score */
+  1fr
+  220px
+  2.2fr;
+  
   gap: var(--space-md);
   align-items: center;
-  min-width: 1100px;
+  min-width: 1600px;
 }
 
+/* ===============================
+   FIX TABLE ALIGNMENT
+================================ */
+
+/* Make ALL cells behave same */
+.tp-table-head.tp-table-supplier-admin > *,
+.tp-table-row.tp-table-supplier-admin > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;            /* ✅ IMPORTANT */
+  min-width: 0;           /* ✅ prevents overflow breaking grid */
+
+  height: 100%;
+  padding: 6px 8px;
+  box-sizing: border-box;
+}
+/* Force inner content to not shrink differently */
+.tp-table-row.tp-table-supplier-admin > * > * {
+  max-width: 100%;
+}
+
+/* Fix Actions column alignment */
+.tp-table-row.tp-table-supplier-admin > *:last-child,
+.tp-table-head.tp-table-supplier-admin > *:last-child {
+  width: 100%;
+}
+/* Center all except first column */
+.tp-table-head.tp-table-supplier-admin > *:not(:first-child),
+.tp-table-row.tp-table-supplier-admin > *:not(:first-child) {
+  justify-content: center;
+  text-align: center;
+}
+
+/* First column left aligned */
+.tp-table-head.tp-table-supplier-admin > *:first-child,
+.tp-table-row.tp-table-supplier-admin > *:first-child {
+  justify-content: flex-start;
+}
+
+/* Sanctions Score column fix */
+.tp-table-head.tp-table-supplier-admin > *:nth-child(7),
+.tp-table-row.tp-table-supplier-admin > *:nth-child(7) {
+  width: 100%;
+}
+/* ===============================
+   FIX LEI COLUMN WIDTH
+================================ */
+
+.tp-table-head.tp-table-supplier-admin > *:nth-child(10),
+.tp-table-row.tp-table-supplier-admin > *:nth-child(10) {
+  width: 220px;
+  min-width: 220px;
+  max-width: 220px;
+}
+
+.tp-table-row.tp-table-supplier-admin span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Prevent layout break */
+.tp-table-row.tp-table-supplier-admin > *:nth-child(10) {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tp-table-head.tp-table-supplier-admin {
+  min-height: 48px;
+  font-weight: var(--fw-semibold);
+}
+
+.tp-table-row.tp-table-supplier-admin {
+  min-height: 56px;
+}
+
+.tp-table-row .tp-text-strong {
+  white-space: normal;
+  line-height: 1.3;
+}
 /* Actions */
 .tp-admin-actions {
   display: flex;
   gap: 8px;
-  margin-right: 8px;
-  justify-content: center;
+  width: 100%;              /* ✅ important */
+  justify-content: center;  /* keep center aligned */
+  align-items: center;
 }
 
+.tp-admin-actions button {
+  flex-shrink: 0;
+}
 /* Danger button */
 .tp-btn-danger {
   background:#e54949;

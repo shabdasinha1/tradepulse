@@ -404,16 +404,20 @@ const SuppliersManagement = () => {
                 ref={headerRef}
                 onScroll={handleHeaderScroll}
               >
-                <div className="tp-table-head tp-table-supplier-admin">
-                  <span>Company</span>
-                  <span className="text-center">Country</span>
-                  <span className="text-center">Sector</span>
-                  <span className="text-center">Verification</span>
-                  <span className="text-center">Reliability Score</span>
-                  <span className="text-center">Sanctions Score</span>
-                  {/* <span className="text-center">LEI Code</span> */}
-                  <span className="text-center">Actions</span>
-                </div>
+             <div className="tp-table-head tp-table-supplier-admin">
+  <span>Company</span>
+  <span>Country</span>
+
+  <span>Sector</span>
+  <span>Verification</span>
+  <span>Reliability</span>
+  <span>Sanctions</span>
+
+  <span>Sanctions Score</span>
+  <span>Source</span>
+  <span>LEI Code</span>
+  <span>Actions</span>
+</div>
               </div>
 
               <div
@@ -426,100 +430,115 @@ const SuppliersManagement = () => {
                     const isLast = suppliers.length === index + 1;
 
                     return (
-                      <div
-                        key={supplier.id}
-                        ref={isLast ? lastRowRef : null}
-                        className="tp-table-row tp-table-supplier-admin"
-                      >
-                        {/* Company */}
-                        <div className="tp-text-strong">
-                          {supplier.companyName}
-                        </div>
+                    <div
+  key={supplier.id}
+  ref={isLast ? lastRowRef : null}
+  className="tp-table-row tp-table-supplier-admin"
+>
+  {/* Company */}
+  <div className="tp-text-strong">
+    {supplier.companyName}
+  </div>
 
-                        {/* Country */}
-                        <span className="text-center">
-                          {supplier.countryName}
-                        </span>
+  {/* Country */}
+  <span>
+    {supplier.countryName}
+  </span>
 
-                        {/* Sector */}
-                        <span className="text-center">{supplier.sector}</span>
 
-                        {/* Verification */}
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${supplier.verificationStatus === "VERIFIED"
-                              ? "tp-pill-success"
-                              : supplier.verificationStatus === "PARTIAL"
-                                ? "tp-pill-warning"
-                                : "tp-pill-danger"
-                              }`}
-                          >
-                            {supplier.verificationStatus}
-                          </span>
-                        </span>
 
-                        {/* Reliability Score */}
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${supplier.reliabilityScore < 0.3
-                              ? "tp-pill-danger"
-                              : supplier.reliabilityScore < 0.5
-                                ? "tp-pill-warning"
-                                : "tp-pill-success"
-                              }`}
-                          >
-                            {supplier.reliabilityScore}
-                          </span>
-                        </span>
+  {/* Sector */}
+  <span>{supplier.sector}</span>
 
-                        {/* Sanctions */}
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${supplier.sanctionsFlag
-                              ? "tp-pill-danger"
-                              : "tp-pill-success"
-                              }`}
-                          >
-                            {supplier.sanctionsFlag ? "Flagged" : "Clear"}
-                          </span>
-                        </span>
+  {/* Verification */}
+  <span>
+    <span
+      className={`tp-pill ${
+        supplier.verificationStatus === "VERIFIED"
+          ? "tp-pill-success"
+          : supplier.verificationStatus === "PARTIAL"
+          ? "tp-pill-warning"
+          : "tp-pill-danger"
+      }`}
+    >
+      {supplier.verificationStatus}
+    </span>
+  </span>
 
-                        {/* LEI */}
-                        {/* <span className="text-center">
-                        {supplier.leiCode || "-"}
-                      </span> */}
+  {/* Reliability */}
+  <span>
+    <span
+      className={`tp-pill ${
+        supplier.reliabilityScore < 0.3
+          ? "tp-pill-danger"
+          : supplier.reliabilityScore < 0.5
+          ? "tp-pill-warning"
+          : "tp-pill-success"
+      }`}
+    >
+      {supplier.reliabilityScore}
+    </span>
+  </span>
 
-                        {/* ACTIONS */}
-                        <span className="text-center">
-                          <div className="tp-admin-actions">
-                            {supplier.verificationStatus !== "VERIFIED" ? (
-                              <button
-                                className="tp-btn-primary tp-btn-sm"
-                                onClick={() => handleVerify(supplier.id)}
-                              >
-                                Verify
-                              </button>
-                            ) : (
-                              <button className="tp-btn-outline" disabled>
-                                Verified
-                              </button>
-                            )}
+  {/* Sanctions Flag */}
+  <span>
+    <span
+      className={`tp-pill ${
+        supplier.sanctionsFlag ? "tp-pill-danger" : "tp-pill-success"
+      }`}
+    >
+      {supplier.sanctionsFlag ? "Flagged" : "Clear"}
+    </span>
+  </span>
 
-                            <button
-                              className="tp-btn-danger tp-btn-sm"
-                              onClick={() =>
-                                setDeleteModal({
-                                  open: true,
-                                  supplierId: supplier.id,
-                                  companyName: supplier.companyName,
-                                })
-                              }
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </span>
-                      </div>
+
+
+  {/* Sanctions Score */}
+  <span>
+    {supplier.sanctionsScore ?? 0}
+  </span>
+
+  {/* Sanctions Source */}
+  <span>
+    {supplier.sanctionsSource}
+  </span>
+
+  {/* LEI */}
+  <span>
+    {supplier.leiCode || "-"}
+  </span>
+
+  {/* ACTIONS */}
+  <span>
+    <div className="tp-admin-actions">
+      {supplier.verificationStatus !== "VERIFIED" ? (
+        <button
+          className="tp-btn-primary tp-btn-sm"
+          onClick={() => handleVerify(supplier.id)}
+        >
+          Verify
+        </button>
+      ) : (
+        <button className="tp-btn-outline" disabled>
+          Verified
+        </button>
+      )}
+
+      <button
+        className="tp-btn-danger tp-btn-sm"
+        onClick={() =>
+          setDeleteModal({
+            open: true,
+            supplierId: supplier.id,
+            companyName: supplier.companyName,
+          })
+        }
+      >
+        Delete
+      </button>
+    </div>
+  </span>
+</div>
                     );
                   })}
                 </div>
