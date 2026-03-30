@@ -22,10 +22,11 @@
   }
 }
 
-
 /* Tighten form width for better balance */
 .settings-form {
-  max-width: 520px;
+  display: grid;
+  max-width: 100%;
+  grid-template-columns: 1fr 1fr;
 }
 
 /* Action alignment */
@@ -56,4 +57,10 @@
 /* Preference rows */
 .settings-pref {
   align-items: flex-start;
+}
+
+@media (max-width: 600px) {
+  .settings-form{
+    grid-template-columns: 1fr;
+  }
 }

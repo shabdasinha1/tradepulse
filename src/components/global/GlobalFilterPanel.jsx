@@ -427,7 +427,7 @@ function GlobalFilterPanel({ onClose }) {
 
     setLocalStartDate("");
     setLocalEndDate("");
-    setLocalRegion("Africa");
+    setLocalRegion("Europe");
     setLocalProduct(null);
   };
   useEffect(() => {

@@ -465,7 +465,7 @@ const Scheduler = () => {
                 <div className="tp-form-group full">
                   <label>Parameters (JSON)</label>
                   <textarea
-                    className="tp-input"
+                    className="tp-input tp-textarea"
                     name="parametersJson"
                     value={form.parametersJson}
                     onChange={handleChange}
