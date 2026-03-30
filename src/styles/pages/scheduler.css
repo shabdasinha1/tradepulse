@@ -75,6 +75,7 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* Mobile scroll */
@@ -146,11 +147,11 @@
    FORM
 ================================ */
 
-.tp-form-grid {
+/* .tp-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
-}
+} */
 
 .tp-form-group {
   display: flex;
@@ -158,11 +159,9 @@
   gap: 6px;
 }
 
-.tp-form-group.full {
-  grid-column: span 2;
-}
 
-.tp-form-group input,
+
+/* .tp-form-group input,
 .tp-form-group select,
 .tp-form-group textarea {
   padding: 10px;
@@ -175,7 +174,7 @@
 .tp-form-group label {
   font-size: 13px;
   color: var(--text-muted);
-}
+} */
 
 /* ===============================
    CRON UI
@@ -188,7 +187,7 @@
   flex-wrap: wrap;
 }
 
-.tp-cron-box select,
+/* .tp-cron-box select,
 .tp-cron-box input {
   padding: 8px;
   border-radius: var(--radius-sm);
@@ -196,4 +195,4 @@
   background: var(--bg-input);
   color: var(--text-primary);
   min-width: 120px;
-}
+} */

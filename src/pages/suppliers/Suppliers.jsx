@@ -3,7 +3,10 @@ import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
-import { DashboardSuppliers, DashboardCompanySuppliers } from "../../services/DashboardService.jsx";
+import {
+  DashboardSuppliers,
+  DashboardCompanySuppliers,
+} from "../../services/DashboardService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
@@ -37,9 +40,7 @@ const SupplierModal = ({ data, onClose }) => {
           </div>
 
           <div className="tp-modal-header-right">
-            <span className="tp-pill tp-pill-primary">
-              {data.tag}
-            </span>
+            <span className="tp-pill tp-pill-primary">{data.tag}</span>
 
             <button onClick={onClose} className="tp-filter-close">
               ✕
@@ -57,21 +58,17 @@ const SupplierModal = ({ data, onClose }) => {
               </span>
               <span className="tp-modal-metric-label">Reliability</span>
             </div>
-
             <div className="tp-modal-metric">
-              <span className="tp-modal-metric-value">
-                {data.shipments}
-              </span>
+              <span className="tp-modal-metric-value">{data.shipments}</span>
               <span className="tp-modal-metric-label">Shipments</span>
             </div>
-
             <div className="tp-modal-metric">
               <span className="tp-modal-metric-value">
                 {data.productDiversity}
               </span>
               <span className="tp-modal-metric-label">Products</span>
-            </div>reparations
-
+            </div>
+            reparations
           </div>
 
           {/* ===== DETAILS GRID ===== */}
@@ -96,8 +93,6 @@ const SupplierModal = ({ data, onClose }) => {
               <span>{data.verification_status}</span>
             </div>
           </div>
-
-
         </div>
 
         {/* ================= FOOTER ================= */}
@@ -310,17 +305,17 @@ const Suppliers = () => {
               Structured exporter activity insights within selected corridor.
             </p>
 
-    <div className="tp-filter-btn-wrapper">
-  {!isCompanyView && (
-    <button
-      className="tp-btn-outline tp-overview-filter-btn"
-      onClick={() => setFilterOpen(true)}
-    >
-      <FiSliders />
-      Global Filters
-    </button>
-  )}
-</div>
+            <div className="tp-filter-btn-wrapper">
+              {!isCompanyView && (
+                <button
+                  className="tp-btn-outline tp-overview-filter-btn"
+                  onClick={() => setFilterOpen(true)}
+                >
+                  <FiSliders />
+                  Global Filters
+                </button>
+              )}
+            </div>
           </div>
         </header>
 
@@ -331,62 +326,64 @@ const Suppliers = () => {
         <TradePulseCard
           header={
             <div className="tp-card-header tp-supplier-header">
-  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-    {isCompanyView && (
-      <button
-        className="tp-btn-outline tp-btn-sm"
-        onClick={() => setIsCompanyView(false)}
-      >
-        ← Back
-      </button>
-    )}
-    <h3 className="tp-card-title">Supplier Directory</h3>
-  </div>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
+              >
+                {isCompanyView && (
+                  <button
+                    className="tp-btn-outline tp-btn-sm"
+                    onClick={() => setIsCompanyView(false)}
+                  >
+                    ← Back
+                  </button>
+                )}
+                <h3 className="tp-card-title">Supplier Directory</h3>
+              </div>
 
-  {/* ✅ ADD THIS BLOCK */}
-{isCompanyView ? (
-  <div style={{ display: "flex", gap: "8px" }}>
-    <input
-      type="text"
-      placeholder="Search company..."
-      className="tp-input"
-      value={search}
-      onChange={(e) => setSearch(e.target.value)}
-    />
+              {/* ✅ ADD THIS BLOCK */}
+              {isCompanyView ? (
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="text"
+                    placeholder="Search company..."
+                    className="tp-input"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
 
-    <button
-      className="tp-btn-outline tp-btn-sm"
-      onClick={() => {
-        if (selectedCountry) {
-          handleViewClick(
-            selectedCountry.iso3,
-            selectedCountry.name,
-            search
-          );
-        }
-      }}
-    >
-      Search
-    </button>
+                  <button
+                    className="tp-btn-outline tp-btn-sm"
+                    onClick={() => {
+                      if (selectedCountry) {
+                        handleViewClick(
+                          selectedCountry.iso3,
+                          selectedCountry.name,
+                          search,
+                        );
+                      }
+                    }}
+                  >
+                    Search
+                  </button>
 
-    {/* ✅ ADD THIS FILTER BUTTON */}
-    <button
-      className="tp-btn-outline tp-btn-sm"
-      onClick={() => setTableFilterOpen(true)}
-    >
-      <CiFilter />
-    </button>
-  </div>
-) : (
-    <button
-      className="tp-btn-outline tp-overview-filter-btn"
-      onClick={() => setTableFilterOpen(true)}
-    >
-      <CiFilter />
-      Filters
-    </button>
-  )}
-</div>
+                  {/* ✅ ADD THIS FILTER BUTTON */}
+                  <button
+                    className="tp-btn-outline tp-btn-sm"
+                    onClick={() => setTableFilterOpen(true)}
+                  >
+                    <CiFilter />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="tp-btn-outline tp-overview-filter-btn"
+                  onClick={() => setTableFilterOpen(true)}
+                >
+                  <CiFilter />
+                  Filters
+                </button>
+              )}
+            </div>
           }
         >
           <div className="tp-table-wrapper-suppliers">
@@ -400,7 +397,7 @@ const Suppliers = () => {
                 {!isCompanyView ? (
                   <>
                     <span>Country Name</span>
-                   
+
                     <span className="text-center">Region</span>
                     <span className="text-center">Activity</span>
                     <span className="text-center">Reliability</span>
@@ -435,103 +432,115 @@ const Suppliers = () => {
 
                 {!isCompanyView
                   ? suppliers.map((s, i) => {
-                    const isLast = suppliers.length === i + 1;
-                    return (
+                      const isLast = suppliers.length === i + 1;
+                      return (
+                        <div
+                          key={i}
+                          ref={isLast ? lastSupplierRef : null}
+                          className="tp-table-row tp-table-suppliers-dashboard"
+                          style={{ cursor: "default" }}
+                        >
+                          <div className="supplier-name">{s.name}</div>
+
+                          <span className="tp-muted text-center">
+                            {s.region}
+                          </span>
+
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                s.activityLevel === "Very High"
+                                  ? "tp-pill-success"
+                                  : s.activityLevel === "High"
+                                    ? "tp-pill-primary"
+                                    : s.activityLevel === "Medium"
+                                      ? "tp-pill-warning"
+                                      : "tp-pill-danger"
+                              }`}
+                            >
+                              {s.activityLevel}
+                            </span>
+                          </span>
+
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                s.reliabilityScore < 30
+                                  ? "tp-pill-danger"
+                                  : s.reliabilityScore < 50
+                                    ? "tp-pill-warning"
+                                    : "tp-pill-success"
+                              }`}
+                            >
+                              {s.reliabilityScore}
+                            </span>
+                          </span>
+
+                          <span className="text-center">
+                            <span className="tp-pill tp-pill-primary">
+                              {s.tag}
+                            </span>
+                          </span>
+
+                          <span className="text-center">
+                            {s.productDiversity}
+                          </span>
+                          <span className="text-center">{s.shipments}</span>
+
+                          <span className="text-center">
+                            <button
+                              className="tp-btn-outline tp-btn-sm"
+                              onClick={() => {
+                                setSelectedCountry({
+                                  iso3: s.iso_3,
+                                  name: s.name,
+                                });
+                                handleViewClick(s.iso_3, s.name);
+                              }}
+                            >
+                              View
+                            </button>
+                          </span>
+                        </div>
+                      );
+                    })
+                  : companySuppliers.map((c, i) => (
                       <div
                         key={i}
-                        ref={isLast ? lastSupplierRef : null}
                         className="tp-table-row tp-table-suppliers-dashboard"
-                        style={{ cursor: "default" }}
                       >
-                        <div className="supplier-name">{s.name}</div>
-                       
-                        <span className="tp-muted text-center">{s.region}</span>
+                        <div className="supplier-name">{c.company_name}</div>
+                        <span className="text-center">{c.country_name}</span>
+                        <span className="text-center">{c.region}</span>
+                        <span className="text-center">{c.sector}</span>
 
                         <span className="text-center">
                           <span
-                            className={`tp-pill ${s.activityLevel === "Very High"
-                                ? "tp-pill-success"
-                                : s.activityLevel === "High"
-                                  ? "tp-pill-primary"
-                                  : s.activityLevel === "Medium"
-                                    ? "tp-pill-warning"
-                                    : "tp-pill-danger"
-                              }`}
-                          >
-                            {s.activityLevel}
-                          </span>
-                        </span>
-
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${s.reliabilityScore < 30
+                            className={`tp-pill ${
+                              c.reliability_score < 0.5
                                 ? "tp-pill-danger"
-                                : s.reliabilityScore < 50
+                                : c.reliability_score < 0.8
                                   ? "tp-pill-warning"
                                   : "tp-pill-success"
-                              }`}
+                            }`}
                           >
-                            {s.reliabilityScore}
+                            {c.reliability_score}
                           </span>
                         </span>
 
                         <span className="text-center">
-                          <span className="tp-pill tp-pill-primary">{s.tag}</span>
+                          <span className="tp-pill tp-pill-primary">
+                            {c.verification_status}
+                          </span>
                         </span>
-
-                        <span className="text-center">{s.productDiversity}</span>
-                        <span className="text-center">{s.shipments}</span>
 
                         <span className="text-center">
-                          <button
-                            className="tp-btn-outline tp-btn-sm"
-                            onClick={() => {
-                              setSelectedCountry({ iso3: s.iso_3, name: s.name });
-                              handleViewClick(s.iso_3, s.name);
-                            }}
-                          >
-                            View
-                          </button>
+                          {c.products?.[0] || "-"}
                         </span>
+
+                        <span className="text-center">{c.product_count}</span>
                       </div>
-                    );
-                  })
-                  : companySuppliers.map((c, i) => (
-                    <div
-                      key={i}
-                      className="tp-table-row tp-table-suppliers-dashboard"
-                    >
-                      <div className="supplier-name">{c.company_name}</div>
-                      <span className="text-center">{c.country_name}</span>
-                      <span className="text-center">{c.region}</span>
-                      <span className="text-center">{c.sector}</span>
-
-                      <span className="text-center">
-                        <span
-                          className={`tp-pill ${c.reliability_score < 0.5
-                              ? "tp-pill-danger"
-                              : c.reliability_score < 0.8
-                                ? "tp-pill-warning"
-                                : "tp-pill-success"
-                            }`}
-                        >
-                          {c.reliability_score}
-                        </span>
-                      </span>
-
-                      <span className="text-center">
-                        <span className="tp-pill tp-pill-primary">
-                          {c.verification_status}
-                        </span>
-                      </span>
-
-                      <span className="text-center">
-                        {c.products?.[0] || "-"}
-                      </span>
-
-                      <span className="text-center">{c.product_count}</span>
-                    </div>
-                  ))}
+                    ))}
 
                 {isFetchingNextPage && skeletonRows}
               </div>
@@ -544,37 +553,38 @@ const Suppliers = () => {
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
-   {tableFilterOpen && (
-  <UniversalFilter
-    {...(!isCompanyView
-      ? {
-          showCorridor: true,
-          showTimeRange: true,
-          showPartner: true,
-          showProduct: true,
-        }
-      : {
-          showProduct: true, // ✅ ONLY THIS IN COMPANY VIEW
-        })}
-    onClose={() => setTableFilterOpen(false)}
-    onChange={(filters) => {
-      console.log("FILTERS:", filters);
+      {tableFilterOpen && (
+        <span className="tp-supplier-universal-filter-wrapper">
+          <UniversalFilter
+            {...(!isCompanyView
+              ? {
+                  showCorridor: true,
+                  showTimeRange: true,
+                  showPartner: true,
+                  showProduct: true,
+                }
+              : {
+                  showProduct: true, // ✅ ONLY THIS IN COMPANY VIEW
+                })}
+            onClose={() => setTableFilterOpen(false)}
+            onChange={(filters) => {
+              console.log("FILTERS:", filters);
 
-      if (!isCompanyView) {
-        if (!filters.partnerCode) {
-          setIsInitialLoad(true);
-        } else {
-          setIsInitialLoad(false);
-        }
-      }
+              if (!isCompanyView) {
+                if (!filters.partnerCode) {
+                  setIsInitialLoad(true);
+                } else {
+                  setIsInitialLoad(false);
+                }
+              }
 
-      // (optional: later you can pass product filter to API here)
+              // (optional: later you can pass product filter to API here)
 
-      setTableFilterOpen(false);
-    }}
-  />
-)}
-
+              setTableFilterOpen(false);
+            }}
+          />
+        </span>
+      )}
     </section>
   );
 };

@@ -79,13 +79,13 @@
 .tp-table-suppliers-dashboard {
   display: grid;
   grid-template-columns:
-    2fr  /* name */
-    1fr  /* region */
-    1fr  /* activity */
-    1fr  /* reliability */
-    1fr  /* tag */
-    2fr  /* product diversity */
-    1fr  /* shipments */
+    2fr /* name */
+    1fr /* region */
+    1fr /* activity */
+    1fr /* reliability */
+    1fr /* tag */
+    2fr /* product diversity */
+    1fr /* shipments */
     1fr; /* action */
 
   align-items: center;
@@ -400,6 +400,12 @@
 .tp-modal-product-item:hover {
   background: var(--clr-primary-soft);
   color: var(--clr-primary);
+}
+/* .tp-supplier-universal-filter-wrapper .tp-filter-panel .tp-filter-body .tp-universal-filter .css-1nmdiq5-menu .css-qr46ko{ */
+.tp-supplier-universal-filter-wrapper .tp-select__menu {
+  position: relative !important;
+  top: auto !important;
+  transform: none !important;
 }
 
 /* ================= FOOTER ================= */

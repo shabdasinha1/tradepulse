@@ -551,8 +551,8 @@ const SuppliersManagement = () => {
         </TradePulseCard>
 
         {openModal && (
-          <div className="tp-modal-overlay">
-            <div className="tp-modal">
+          <div className="tp-modal-overlay" onClick={()=>setOpenModal(false)}>
+            <div className="tp-modal" onClick={(e) => e.stopPropagation()}>
               <div className="tp-supplier-modal-header">
                 <div className="tp-modal-title-group">
                   <h3 className="tp-section-title">Add Supplier</h3>
