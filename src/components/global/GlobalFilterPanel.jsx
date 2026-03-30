@@ -15,6 +15,7 @@ import {
   setDateRange,
   setQuoteCurrency,
   setRegion,
+  setPartnerRegion,
   resetFilters,
 } from "../../store/slices/corridorSlice";
 import Select from "react-select";
@@ -63,16 +64,16 @@ function GlobalFilterPanel({ onClose }) {
   } = useSelector((state) => state.corridor);
 
   const countries = useSelector((state) => state.country.countries);
- const countryOptions = useMemo(
-  () =>
-    countries.map((c) => ({
-      value: c.numeric,
-      label: c.name,
-      alpha3: c.alpha3, // ✅ ADD THIS
-      currency: c.currency, // (safe, already used later)
-    })),
-  [countries],
-);
+  const countryOptions = useMemo(
+    () =>
+      countries.map((c) => ({
+        value: c.numeric,
+        label: c.name,
+        alpha3: c.alpha3, // ✅ ADD THIS
+        currency: c.currency, // (safe, already used later)
+      })),
+    [countries],
+  );
 
   /* =========================
      LOCAL TEMP STATE
@@ -137,20 +138,20 @@ function GlobalFilterPanel({ onClose }) {
   ========================== */
 
 
-const { data: countriesData, isFetching } = useQuery({
-  queryKey: queryKeys.countries(countryPage, countrySearch, localRegion), // ✅ updated
-  queryFn: () =>
-    DashboardCountries({
-      page: countryPage,
-      limit: LIMIT,
-      search: countrySearch || "", // ✅ only search text
-      region: localRegion || "",   // ✅ region separate
-    }),
-  enabled: !!localRegion,
-  keepPreviousData: true,
-  staleTime: 1000 * 60 * 10,
-  cacheTime: 1000 * 60 * 30,
-});
+  const { data: countriesData, isFetching } = useQuery({
+    queryKey: queryKeys.countries(countryPage, countrySearch, localRegion), // ✅ updated
+    queryFn: () =>
+      DashboardCountries({
+        page: countryPage,
+        limit: LIMIT,
+        search: countrySearch || "", // ✅ only search text
+        region: localRegion || "",   // ✅ region separate
+      }),
+    enabled: !!localRegion,
+    keepPreviousData: true,
+    staleTime: 1000 * 60 * 10,
+    cacheTime: 1000 * 60 * 30,
+  });
 
   useEffect(() => {
     if (!countriesData?.data) return;
@@ -180,14 +181,14 @@ const { data: countriesData, isFetching } = useQuery({
       setLocalCountryName(first.name);
 
       dispatch(
-  setCountry({
-    name: first.name,
-    numeric: first.numeric,
-    currency: first.currency,
-    region: localRegion,
-    alpha3: first.alpha3, // ✅ ADD THIS
-  }),
-);
+        setCountry({
+          name: first.name,
+          numeric: first.numeric,
+          currency: first.currency,
+          region: localRegion,
+          alpha3: first.alpha3, // ✅ ADD THIS
+        }),
+      );
     }
   }, [countriesData, countryPage, dispatch]);
 
@@ -226,21 +227,22 @@ const { data: countriesData, isFetching } = useQuery({
   useEffect(() => {
     const corridors = corridorData?.data?.data || [];
 
-   const priorityCountries = [
-  "Ghana",
-  "Nigeria",
-  "South Africa",
-  "Kenya",
-];
+    const priorityCountries = [
+      "Ghana",
+      "Nigeria",
+      "South Africa",
+      "Kenya",
+    ];
 
-const formatted = corridors
+    const formatted = corridors
   .map((c) => {
     const [reporter, partner] = c.label.split("↔").map((s) => s.trim());
 
     return {
       value: c.partnerCode,
-      label: `${reporter} - ${partner}`, // format change
+      label: `${reporter} - ${partner}`,
       partnerName: partner,
+      partnerRegion: c.partnerRegion, // ✅ IMPORTANT
       original: c,
     };
   })
@@ -248,21 +250,13 @@ const formatted = corridors
     const aIndex = priorityCountries.indexOf(a.partnerName);
     const bIndex = priorityCountries.indexOf(b.partnerName);
 
-    // ✅ both in priority → sort by defined order
-    if (aIndex !== -1 && bIndex !== -1) {
-      return aIndex - bIndex;
-    }
-
-    // ✅ only a is priority → a first
+    if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
     if (aIndex !== -1) return -1;
-
-    // ✅ only b is priority → b first
     if (bIndex !== -1) return 1;
 
-    // ✅ neither → KEEP ORIGINAL ORDER
     return 0;
   })
-  .map(({ value, label }) => ({ value, label }));
+      .map((item) => item);
 
     setCorridorOptions((prev) => {
       if (JSON.stringify(prev) === JSON.stringify(formatted)) return prev;
@@ -297,7 +291,7 @@ const formatted = corridors
         if (!localRegion || !localCountry || !localCorridor) {
 
           // alert("Please complete required filters");
-          addToast("Please complete required filters","error");
+          addToast("Please complete required filters", "error");
           return;
         }
         handleClose();
@@ -312,7 +306,7 @@ const formatted = corridors
     // ✅ BLOCK CLOSE IF REQUIRED FIELDS NOT SELECTED
     if (!localRegion || !localCountry || !localCorridor) {
       // alert("Please select Region, Country and Corridor before closing");
-      addToast("Please select Region, Country and Corridor before closing","error");
+      addToast("Please select Region, Country and Corridor before closing", "error");
       return;
     }
 
@@ -324,7 +318,7 @@ const formatted = corridors
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       if (!localRegion || !localCountry || !localCorridor) {
         // alert("Please complete required filters");
-        addToast("Please complete required filters","error");
+        addToast("Please complete required filters", "error");
         return;
       }
       handleClose();
@@ -339,17 +333,17 @@ const formatted = corridors
     // ✅ REQUIRED VALIDATION
     if (!localRegion || !localCountry || !localCorridor) {
       // alert("Region, Country and Corridor are required");
-      addToast("Region, Country and Corridor are required","error");
+      addToast("Region, Country and Corridor are required", "error");
       return;
     }
 
     if (localStartDate && !localEndDate) {
-      addToast("Please select End Date","error");
+      addToast("Please select End Date", "error");
       return;
     }
 
     if (localStartDate && localEndDate && localStartDate > localEndDate) {
-      addToast("Start date cannot be after End date","error");
+      addToast("Start date cannot be after End date", "error");
       return;
     }
 
@@ -358,24 +352,24 @@ const formatted = corridors
     const selectedCountry = countries.find((c) => c.numeric === localCountry);
 
     if (selectedCountry) {
-  dispatch(
-    setCountry({
-      name: selectedCountry.name,
-      numeric: selectedCountry.numeric,
-      currency: selectedCountry.currency,
-      alpha3: selectedCountry.alpha3, // ✅ ADD THIS
-    }),
-  );
-}
+      dispatch(
+        setCountry({
+          name: selectedCountry.name,
+          numeric: selectedCountry.numeric,
+          currency: selectedCountry.currency,
+          alpha3: selectedCountry.alpha3, // ✅ ADD THIS
+        }),
+      );
+    }
 
     dispatch(setPartnerCode(localCorridor));
     dispatch(setCorridor(localCorridorLabel));
-   dispatch(
-  setPartnerCountry({
-    name: localPartnerCountry,
-    alpha3: "", // will update after API
-  }),
-);
+    dispatch(
+      setPartnerCountry({
+        name: localPartnerCountry,
+        alpha3: "", // will update after API
+      }),
+    );
     dispatch(setRegion(localRegion));
 
     const partnerCountryName = localCorridorLabel.split("↔")[1]?.trim();
@@ -391,15 +385,15 @@ const formatted = corridors
           if (countryData?.currency) {
             dispatch(setQuoteCurrency(countryData.currency));
           }
-         
-if (countryData?.alpha3) {
-  dispatch(
-    setPartnerCountry({
-      name: countryData.name,
-      alpha3: countryData.alpha3,
-    }),
-  );
-}
+
+          if (countryData?.alpha3) {
+            dispatch(
+              setPartnerCountry({
+                name: countryData.name,
+                alpha3: countryData.alpha3,
+              }),
+            );
+          }
         })
         .catch((err) => {
           console.error("Quote currency fetch failed:", err);
@@ -526,7 +520,7 @@ if (countryData?.alpha3) {
                     numeric: "",
                     currency: "",
                     region: regionVal,
-                     alpha3: "",
+                    alpha3: "",
                   }),
                 );
                 dispatch(setPartnerCode(null));
@@ -574,15 +568,15 @@ if (countryData?.alpha3) {
 
                 const selected = countries.find((c) => c.numeric === code);
 
-dispatch(
-  setCountry({
-    name,
-    numeric: code,
-    currency: selected?.currency || "",
-    region: localRegion,
-    alpha3: selected?.alpha3, // ✅ ADD THIS
-  }),
-);
+                dispatch(
+                  setCountry({
+                    name,
+                    numeric: code,
+                    currency: selected?.currency || "",
+                    region: localRegion,
+                    alpha3: selected?.alpha3, // ✅ ADD THIS
+                  }),
+                );
 
                 // reset dependent fields
                 setLocalCorridor("");
@@ -633,6 +627,11 @@ dispatch(
 
                 const partnerCountry = corridorLabel.split("↔")[1]?.trim();
                 setLocalPartnerCountry(partnerCountry);
+
+                // ✅ NEW: set partner region in redux
+                if (opt?.partnerRegion) {
+                  dispatch(setPartnerRegion(opt.partnerRegion));
+                }
               }}
               placeholder="Select Corridor"
               isSearchable
