@@ -1,53 +1,36 @@
 /* ===============================
-   SETTINGS
+   SETTINGS - GENERAL
 ================================ */
 
-.tp-data-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.tp-pref-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--space-md);
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .tp-form {
-    max-width: 100%;
-  }
-}
-
-/* Tighten form width for better balance */
+/* Form layout */
 .settings-form {
   display: grid;
   max-width: 100%;
   grid-template-columns: 1fr 1fr;
 }
 
-/* Action alignment */
+/* Save button spacing */
 .settings-actions {
   margin-top: var(--space-md);
 }
+
+/* Disable button state */
 .tp-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
-/* Shared list styling */
+
+/* Container for lists (profile / data sources / prefs) */
 .settings-list {
   display: flex;
   flex-direction: column;
 }
 
-/* Row layout */
+/* Preference rows (Email alerts, etc.) */
 .settings-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   padding: var(--space-md) 0;
   border-bottom: 1px solid var(--border-soft);
   gap: var(--space-md);
@@ -57,22 +40,134 @@
   border-bottom: none;
 }
 
-/* Preference rows */
+/* Preference alignment tweak */
 .settings-pref {
   align-items: flex-start;
 }
+
+/* ===============================
+   DATA SOURCES CARD FIX
+================================ */
+
+/* Card container */
 .tp-data-sources-card {
   max-height: 400px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
+
+/* IMPORTANT: prevent clipping issues */
 .tp-data-sources-card .settings-list {
-  flex: 1; 
-  overflow-y: auto;
+  flex: 1;
+  overflow: visible;
 }
-@media (max-width: 600px) {
+
+/* ===============================
+   TABLE WRAPPER (CRITICAL)
+================================ */
+
+/* Main wrapper (enables horizontal scroll like supplier table) */
+.tp-data-table-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: auto; /* ✅ critical */
+}
+
+/* ===============================
+   TABLE GRID (STRUCTURE)
+================================ */
+
+/* Grid layout for header + rows */
+.tp-data-table-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  gap: var(--space-md);
+  min-width: 600px; /* ✅ ensures horizontal scroll */
+  align-items: center;
+}
+
+/* Header row */
+.tp-table-head.tp-data-table-grid {
+  font-weight: var(--fw-semibold);
+  min-height: 48px;
+}
+
+/* Data rows */
+.tp-table-row.tp-data-table-grid {
+  min-height: 52px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* ===============================
+   CELL ALIGNMENT
+================================ */
+
+/* Make all cells consistent */
+.tp-table-head.tp-data-table-grid > *,
+.tp-table-row.tp-data-table-grid > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  /* width: 100%; */
+  box-sizing: border-box;
+}
+
+/* First column LEFT aligned */
+.tp-table-head.tp-data-table-grid > *:first-child,
+.tp-table-row.tp-data-table-grid > *:first-child {
+  justify-content: flex-start;
+}
+
+/* ===============================
+   SCROLL SYNC (HEADER + BODY)
+================================ */
+
+/* Header scroll (horizontal only) */
+.tp-table-head-scroll {
+  overflow-x: auto;
+}
+
+/* Body scroll (both directions) */
+.tp-table-body-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 300px; /* vertical scroll */
+}
+
+/* Hide header scrollbar (visual polish) */
+.tp-table-head-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===============================
+   WIDTH SYNC FIX (VERY IMPORTANT)
+================================ */
+
+/* Ensures header & body align perfectly */
+.tp-table-head,
+.tp-table {
+  width: max-content; /* match content width */
+  min-width: 100%; /* don't shrink */
+}
+
+.tp-data-source-pill {
+  width: max-content;
+  margin: 0 auto;
+}
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
   .settings-form {
     grid-template-columns: 1fr;
+  }
+
+  .tp-data-table-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    font-size: 12px;
   }
 }

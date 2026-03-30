@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   GetUserByEmail,
   UpdateUser,
@@ -30,6 +30,23 @@ const Settings = () => {
   });
   const [loading, setLoading] = useState(false);
   const { addToast } = useToast();
+  const headerRef = useRef(null);
+  const bodyRef = useRef(null);
+
+
+
+  const isSyncingRef = useRef(false);
+
+  const handleBodyScroll = () => {
+    if (!headerRef.current || isSyncingRef.current) return;
+
+    isSyncingRef.current = true;
+    headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
+
+    requestAnimationFrame(() => {
+      isSyncingRef.current = false;
+    });
+  };
 
   const fetchDataSource = async () => {
     setLoading(true);
@@ -104,6 +121,15 @@ const Settings = () => {
       addToast("Update failed", "error");
     }
   };
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+
+    return new Date(dateString).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
   return (
     <section className="">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -174,15 +200,19 @@ const Settings = () => {
             </div>
           </div>
           <div className="settings-actions">
-            <button className="tp-btn tp-btn-primary" onClick={handleSave} disabled={!isChanged}>
+            <button
+              className="tp-btn tp-btn-primary"
+              onClick={handleSave}
+              disabled={!isChanged}
+            >
               Save Changes
             </button>
           </div>
         </TradePulseCard>
 
         {/* ===============================
-              DATA SOURCES
-          =============================== */}
+      DATA SOURCES
+================================ */}
         <TradePulseCard
           header={
             <div className="tp-card-header">
@@ -195,21 +225,45 @@ const Settings = () => {
             {loading ? (
               <EmptyState message="No Source Data found" />
             ) : (
-              dataSources?.map((item, i) => (
-                <div key={i} className="settings-row">
-                  <span>{item.name}</span>
-
-                  <span
-                    className={`tp-pill ${
-                      item.status === "active"
-                        ? "tp-pill-success"
-                        : "tp-pill-warning"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
+              <div className="tp-table-wrapper tp-data-table-wrapper">
+                {/* HEADER */}
+                <div
+                  className="tp-table-head-scroll"
+                  ref={headerRef}
+                  
+                >
+                  <div className="tp-table-head tp-data-table-grid">
+                    <span>Source</span>
+                    <span>Last Updated</span>
+                    <span>Status</span>
+                  </div>
                 </div>
-              ))
+
+                {/* BODY */}
+                <div
+                  className="tp-table-body-scroll"
+                  ref={bodyRef}
+                  
+                >
+                  <div className="tp-table">
+                    {dataSources?.map((item, i) => (
+                      <div key={i} className="tp-table-row tp-data-table-grid">
+                        <span>{item.name}</span>
+                        <span>{formatDate(item.last_updated)}</span>
+                        <span
+                          className={`tp-data-source-pill tp-pill ${
+                            item.status === "active"
+                              ? "tp-pill-success"
+                              : "tp-pill-warning"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </TradePulseCard>
