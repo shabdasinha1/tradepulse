@@ -433,7 +433,7 @@ if (countryData?.alpha3) {
 
     setLocalStartDate("");
     setLocalEndDate("");
-    setLocalRegion("Africa");
+    setLocalRegion("Europe");
     setLocalProduct(null);
   };
   useEffect(() => {
