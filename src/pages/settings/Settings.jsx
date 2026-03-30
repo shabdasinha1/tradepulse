@@ -1,17 +1,24 @@
 import { useEffect, useState } from "react";
-import { GetUserByEmail, UpdateUser } from "../../services/DashboardService";
+import {
+  GetUserByEmail,
+  UpdateUser,
+  UserDataSources,
+} from "../../services/DashboardService";
 import { GetCookie } from "../../utils/CookieManager.jsx";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
+import EmptyState from "../../components/common/EmptyState.jsx";
+import { useToast } from "../../components/common/toast/ToastProvider.jsx";
 
-const dataSources = [
-  { name: "UK Trade Statistics", status: "active" },
-  { name: "Nigeria Customs Service", status: "active" },
-  { name: "Bloomberg Market Data", status: "active" },
-  { name: "African Trade Database", status: "active" },
-  { name: "Port Authority APIs", status: "pending" },
-];
+// const dataSources = [
+//   { name: "UK Trade Statistics", status: "active" },
+//   { name: "Nigeria Customs Service", status: "active" },
+//   { name: "Bloomberg Market Data", status: "active" },
+//   { name: "African Trade Database", status: "active" },
+//   { name: "Port Authority APIs", status: "pending" },
+// ];
 
 const Settings = () => {
+  const [dataSources, setDataSources] = useState();
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({
     first_name: "",
@@ -21,38 +28,60 @@ const Settings = () => {
     company_name: "",
     email: "",
   });
+  const [loading, setLoading] = useState(false);
+  const { addToast } = useToast();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const email = GetCookie("tp_user_email");
-
-        if (!email) return;
-
-        const res = await GetUserByEmail(email);
-
-        if (res?.success) {
-          const data = res.data;
-
-          setUser(data);
-
-          setForm({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            mobile: data.mobile || "",
-            country: data.country || "",
-            company_name: data.company_name || "",
-            email: data.email || "",
-          });
-        }
-      } catch (err) {
-        console.error("User fetch error", err);
+  const fetchDataSource = async () => {
+    setLoading(true);
+    try {
+      const res = await UserDataSources();
+      if (res.success === true) {
+        setDataSources(res.data);
       }
-    };
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const fetchUser = async () => {
+    try {
+      const email = GetCookie("tp_user_email");
+
+      if (!email) return;
+
+      const res = await GetUserByEmail(email);
+
+      if (res?.success) {
+        const data = res.data;
+
+        setUser(data);
+
+        setForm({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          mobile: data.mobile || "",
+          country: data.country || "",
+          company_name: data.company_name || "",
+          email: data.email || "",
+        });
+      }
+    } catch (err) {
+      console.error("User fetch error", err);
+    }
+  };
+  useEffect(() => {
     fetchUser();
+    fetchDataSource();
   }, []);
-
+  const isChanged =
+    user &&
+    (form.first_name !== (user.first_name || "") ||
+      form.last_name !== (user.last_name || "") ||
+      form.mobile !== (user.mobile || "") ||
+      form.country !== (user.country || "") ||
+      form.company_name !== (user.company_name || ""));
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -70,9 +99,9 @@ const Settings = () => {
         company_name: form.company_name,
       });
 
-      alert("Profile updated successfully");
+      addToast("Profile updated successfully", "success");
     } catch (err) {
-      console.error("Update failed", err);
+      addToast("Update failed", "error");
     }
   };
   return (
@@ -145,7 +174,7 @@ const Settings = () => {
             </div>
           </div>
           <div className="settings-actions">
-            <button className="tp-btn-primary" onClick={handleSave}>
+            <button className="tp-btn tp-btn-primary" onClick={handleSave} disabled={!isChanged}>
               Save Changes
             </button>
           </div>
@@ -160,23 +189,28 @@ const Settings = () => {
               <h3 className="tp-card-title">Data Sources</h3>
             </div>
           }
+          className="tp-data-sources-card"
         >
           <div className="settings-list">
-            {dataSources.map((item, i) => (
-              <div key={i} className="settings-row">
-                <span>{item.name}</span>
+            {loading ? (
+              <EmptyState message="No Source Data found" />
+            ) : (
+              dataSources?.map((item, i) => (
+                <div key={i} className="settings-row">
+                  <span>{item.name}</span>
 
-                <span
-                  className={`tp-pill ${
-                    item.status === "active"
-                      ? "tp-pill-success"
-                      : "tp-pill-warning"
-                  }`}
-                >
-                  {item.status}
-                </span>
-              </div>
-            ))}
+                  <span
+                    className={`tp-pill ${
+                      item.status === "active"
+                        ? "tp-pill-success"
+                        : "tp-pill-warning"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </TradePulseCard>
 

@@ -33,7 +33,10 @@
 .settings-actions {
   margin-top: var(--space-md);
 }
-
+.tp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /* Shared list styling */
 .settings-list {
   display: flex;
@@ -58,9 +61,18 @@
 .settings-pref {
   align-items: flex-start;
 }
-
+.tp-data-sources-card {
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.tp-data-sources-card .settings-list {
+  flex: 1; 
+  overflow-y: auto;
+}
 @media (max-width: 600px) {
-  .settings-form{
+  .settings-form {
     grid-template-columns: 1fr;
   }
 }

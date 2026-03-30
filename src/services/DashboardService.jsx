@@ -390,3 +390,8 @@ export const GetUserByEmail = async (email) => {
 export const UpdateUser = async (id, data) => {
   return Api.put(`/users/update-user/${id}`, data);
 };
+
+/* GET DATA SOURCES OF USER */
+export const UserDataSources = async ()=>{
+  return Api.get("/users/sources");
+}
