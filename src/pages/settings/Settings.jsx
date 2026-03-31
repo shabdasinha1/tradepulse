@@ -249,7 +249,7 @@ const Settings = () => {
                           key={i}
                           className="tp-table-row tp-data-source-table-grid"
                         >
-                          <span>{item.name}</span>
+                          <span>{item.name.toUpperCase()}</span>
 
                           <span className="text-center">
                             {formatDate(item.last_updated)}
@@ -257,7 +257,7 @@ const Settings = () => {
 
                           <span
                             className={`tp-data-source-pill tp-pill ${
-                              item.status === "active"
+                              item.status === "Live"
                                 ? "tp-pill-success"
                                 : "tp-pill-warning"
                             }`}

@@ -8,36 +8,42 @@ import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../common/EmptyState.jsx";
 
 const LatestTradeNews = React.memo(() => {
-  const { reporterCode, partnerCode, startDate, endDate, countryCode ,partnerCountryCode} =
-    useSelector((state) => state.corridor);
+  const {
+    reporterCode,
+    partnerCode,
+    startDate,
+    endDate,
+    countryCode,
+    partnerCountryCode,
+  } = useSelector((state) => state.corridor);
   const scrollRef = useRef(null);
 
   /* ===============================
      FETCH DATA (React Query)
   ============================== */
-const { data, isLoading, error } = useQuery({
-  queryKey: queryKeys.corridorNews(countryCode, partnerCountryCode),
-  queryFn: async () => {
-    const [countryRes, partnerRes] = await Promise.all([
-      DashboardTradeNewsExternal({
-        countryCode,
-      }),
-      DashboardTradeNewsExternal({
-        countryCode: partnerCountryCode,
-      }),
-    ]);
+  const { data, isLoading, error } = useQuery({
+    queryKey: queryKeys.corridorNews(countryCode, partnerCountryCode),
+    queryFn: async () => {
+      const [countryRes, partnerRes] = await Promise.all([
+        DashboardTradeNewsExternal({
+          countryCode,
+        }),
+        DashboardTradeNewsExternal({
+          countryCode: partnerCountryCode,
+        }),
+      ]);
 
-    return {
-      data: {
-        content: [
-          ...(countryRes?.data?.content || []),
-          ...(partnerRes?.data?.content || []),
-        ],
-      },
-    };
-  },
-  enabled: !!countryCode || !!partnerCountryCode,
-});
+      return {
+        data: {
+          content: [
+            ...(countryRes?.content || []),
+            ...(partnerRes?.content || []),
+          ],
+        },
+      };
+    },
+    enabled: !!countryCode || !!partnerCountryCode,
+  });
   /* ===============================
      FORMAT DATA
   ============================== */
@@ -95,6 +101,7 @@ const { data, isLoading, error } = useQuery({
     };
   }, [news]);
 
+  // console.log(news)
   /* ===============================
      RENDER
   ============================== */
@@ -121,7 +128,8 @@ const { data, isLoading, error } = useQuery({
           {/* ❌ Error */}
           {error && (
             <div className="tp-news-item">
-              <p className="tp-news-title">Failed to load updates</p>
+              {/* <p className="tp-news-title">Failed to load updates</p> */}
+              <EmptyState message="Failed to load updates" />
             </div>
           )}
 

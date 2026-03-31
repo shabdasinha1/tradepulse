@@ -5,7 +5,7 @@ import { GetToken } from "../utils/AuthHelper";
    ENV CONFIG
 ================================ */
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 10000;
+const TIMEOUT = Number(import.meta.env.VITE_API_TIMEOUT) || 20000;
 const ENABLE_MOCK = import.meta.env.VITE_ENABLE_MOCK_DATA === "true";
 // const token = GetToken()
 

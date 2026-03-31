@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard";
 import Select from "react-select";
 import {
@@ -13,7 +13,57 @@ import {
 import { FiX } from "react-icons/fi";
 import { downloadSampleSuppliersCSV } from "../../utils/csvUtils";
 import Papa from "papaparse";
+import EmptyState from "../../components/common/EmptyState";
 
+/* ===============================
+   SKELETON ROW
+================================ */
+const SupplierRowSkeleton = React.memo(() => {
+  return (
+    <div className="tp-table-row tp-table-supplier-admin">
+      {/* Company */}
+      <div className="skeleton skeleton-text" />
+
+      {/* Country */}
+      <span className="skeleton skeleton-text" />
+
+      {/* Sector */}
+      <span className="skeleton skeleton-text" />
+
+      {/* Verification */}
+      <span>
+        <div className="skeleton skeleton-pill" />
+      </span>
+
+      {/* Reliability */}
+      <span>
+        <div className="skeleton skeleton-pill" />
+      </span>
+
+      {/* Sanctions */}
+      <span>
+        <div className="skeleton skeleton-pill" />
+      </span>
+
+      {/* Score */}
+      <span className="skeleton skeleton-text" />
+
+      {/* Source */}
+      <span className="skeleton skeleton-text" />
+
+      {/* LEI */}
+      <span className="skeleton skeleton-text" />
+
+      {/* Actions */}
+      <span>
+        <div className="tp-admin-actions">
+          <div className="skeleton skeleton-pill" style={{ width: 70 }} />
+          <div className="skeleton skeleton-pill" style={{ width: 70 }} />
+        </div>
+      </span>
+    </div>
+  );
+});
 const SuppliersManagement = () => {
   const [deleteModal, setDeleteModal] = useState({
     open: false,
@@ -38,8 +88,9 @@ const SuppliersManagement = () => {
     registrationNumber: "",
     dataSource: "",
   });
-
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]= useState(false);
+  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
+  const [loadingMeta, setLoadingMeta] = useState(true);
   const [verificationOptions, setVerificationOptions] = useState([]);
   const [search, setSearch] = useState("");
   const [dataSources, setDataSources] = useState([]);
@@ -64,7 +115,7 @@ const SuppliersManagement = () => {
 
   const fetchSuppliers = async (pageNumber = 0, isSearch = false) => {
     try {
-      setLoading(true);
+      setLoadingSuppliers(true);
 
       const res = await GetSuppliers({
         page: pageNumber,
@@ -72,7 +123,7 @@ const SuppliersManagement = () => {
         query: search || undefined,
       });
 
-      const newData = res?.data?.content || res?.data || [];
+      const newData = res?.data?.content || res?.data || res?.content || [];
 
       setSuppliers((prev) => (isSearch ? newData : [...prev, ...newData]));
 
@@ -80,7 +131,7 @@ const SuppliersManagement = () => {
     } catch (error) {
       console.error("Error fetching suppliers:", error);
     } finally {
-      setLoading(false);
+      setLoadingSuppliers(false);
     }
   };
   useEffect(() => {
@@ -89,7 +140,7 @@ const SuppliersManagement = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
+        setLoadingMeta(true);
 
         const [verificationRes, dataSourcesRes] = await Promise.all([
           GetSupplierVerificationStatuses(),
@@ -103,11 +154,11 @@ const SuppliersManagement = () => {
             dataSource: dataSourcesRes.data[0], // ✅ default selected
           }));
         }
-        setVerificationOptions(verificationRes?.data || []);
+        setVerificationOptions(verificationRes?.data || verificationRes || []);
       } catch (error) {
         console.error("Error fetching suppliers/meta:", error);
       } finally {
-        setLoading(false);
+        setLoadingMeta(false);
       }
     };
 
@@ -145,7 +196,7 @@ const SuppliersManagement = () => {
       const payload = {
         ...formData,
       };
-      console.log(payload);
+      // console.log(payload);
 
       await CreateSupplier(payload);
 
@@ -154,7 +205,7 @@ const SuppliersManagement = () => {
         size: 10,
       });
 
-      setSuppliers(res?.data?.content || res?.data || []);
+      setSuppliers(res?.data?.content || res?.data || res?.content || []);
       setOpenModal(false);
 
       /* RESET UPDATED */
@@ -203,7 +254,7 @@ const SuppliersManagement = () => {
     }
   };
   const lastRowRef = (node) => {
-    if (loading) return;
+    if (loadingSuppliers) return;
 
     if (observer.current) observer.current.disconnect();
 
@@ -356,6 +407,11 @@ const SuppliersManagement = () => {
       fileInputRef.current.value = "";
     }
   };
+
+  const skeletonRows = useMemo(
+    () => [...Array(5)].map((_, i) => <SupplierRowSkeleton key={`sk-${i}`} />),
+    [],
+  );
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -425,115 +481,121 @@ const SuppliersManagement = () => {
                 onScroll={handleBodyScroll}
               >
                 <div className="tp-table">
-                  {suppliers.map((supplier, index) => {
-                    const isLast = suppliers.length === index + 1;
+                  {loadingSuppliers ? (
+                    skeletonRows
+                  ) : suppliers.length > 0 ? (
+                    suppliers?.map((supplier, index) => {
+                      const isLast = suppliers.length === index + 1;
 
-                    return (
-                      <div
-                        key={supplier.id}
-                        ref={isLast ? lastRowRef : null}
-                        className="tp-table-row tp-table-supplier-admin"
-                      >
-                        {/* Company */}
-                        <div className="tp-text-strong">
-                          {supplier.companyName}
-                        </div>
-
-                        {/* Country */}
-                        <span>{supplier.countryName}</span>
-
-                        {/* Sector */}
-                        <span>{supplier.sector}</span>
-
-                        {/* Verification */}
-                        <span>
-                          <span
-                            className={`tp-pill ${
-                              supplier.verificationStatus === "VERIFIED"
-                                ? "tp-pill-success"
-                                : supplier.verificationStatus === "PARTIAL"
-                                  ? "tp-pill-warning"
-                                  : "tp-pill-danger"
-                            }`}
-                          >
-                            {supplier.verificationStatus}
-                          </span>
-                        </span>
-
-                        {/* Reliability */}
-                        <span>
-                          <span
-                            className={`tp-pill ${
-                              supplier.reliabilityScore < 0.3
-                                ? "tp-pill-danger"
-                                : supplier.reliabilityScore < 0.5
-                                  ? "tp-pill-warning"
-                                  : "tp-pill-success"
-                            }`}
-                          >
-                            {supplier.reliabilityScore}
-                          </span>
-                        </span>
-
-                        {/* Sanctions Flag */}
-                        <span>
-                          <span
-                            className={`tp-pill ${
-                              supplier.sanctionsFlag
-                                ? "tp-pill-danger"
-                                : "tp-pill-success"
-                            }`}
-                          >
-                            {supplier.sanctionsFlag ? "Flagged" : "Clear"}
-                          </span>
-                        </span>
-
-                        {/* Sanctions Score */}
-                        <span>{supplier.sanctionsScore ?? 0}</span>
-
-                        {/* Sanctions Source */}
-                        <span>{supplier.sanctionsSource}</span>
-
-                        {/* LEI */}
-                        <span>{supplier.leiCode || "-"}</span>
-
-                        {/* ACTIONS */}
-                        <span>
-                          <div className="tp-admin-actions">
-                            {supplier.verificationStatus !== "VERIFIED" ? (
-                              <button
-                                className="tp-btn-primary tp-btn-sm"
-                                onClick={() => handleVerify(supplier.id)}
-                              >
-                                Verify
-                              </button>
-                            ) : (
-                              <button className="tp-btn-outline" disabled>
-                                Verified
-                              </button>
-                            )}
-
-                            <button
-                              className="tp-btn-danger tp-btn-sm"
-                              onClick={() =>
-                                setDeleteModal({
-                                  open: true,
-                                  supplierId: supplier.id,
-                                  companyName: supplier.companyName,
-                                })
-                              }
-                            >
-                              Delete
-                            </button>
+                      return (
+                        <div
+                          key={supplier.id}
+                          ref={isLast ? lastRowRef : null}
+                          className="tp-table-row tp-table-supplier-admin"
+                        >
+                          {/* Company */}
+                          <div className="tp-text-strong">
+                            {supplier.companyName}
                           </div>
-                        </span>
-                      </div>
-                    );
-                  })}
+
+                          {/* Country */}
+                          <span>{supplier.countryName}</span>
+
+                          {/* Sector */}
+                          <span>{supplier.sector}</span>
+
+                          {/* Verification */}
+                          <span>
+                            <span
+                              className={`tp-pill ${
+                                supplier.verificationStatus === "VERIFIED"
+                                  ? "tp-pill-success"
+                                  : supplier.verificationStatus === "PARTIAL"
+                                    ? "tp-pill-warning"
+                                    : "tp-pill-danger"
+                              }`}
+                            >
+                              {supplier.verificationStatus}
+                            </span>
+                          </span>
+
+                          {/* Reliability */}
+                          <span>
+                            <span
+                              className={`tp-pill ${
+                                supplier.reliabilityScore < 0.3
+                                  ? "tp-pill-danger"
+                                  : supplier.reliabilityScore < 0.5
+                                    ? "tp-pill-warning"
+                                    : "tp-pill-success"
+                              }`}
+                            >
+                              {supplier.reliabilityScore}
+                            </span>
+                          </span>
+
+                          {/* Sanctions Flag */}
+                          <span>
+                            <span
+                              className={`tp-pill ${
+                                supplier.sanctionsFlag
+                                  ? "tp-pill-danger"
+                                  : "tp-pill-success"
+                              }`}
+                            >
+                              {supplier.sanctionsFlag ? "Flagged" : "Clear"}
+                            </span>
+                          </span>
+
+                          {/* Sanctions Score */}
+                          <span>{supplier.sanctionsScore ?? 0}</span>
+
+                          {/* Sanctions Source */}
+                          <span>{supplier.sanctionsSource}</span>
+
+                          {/* LEI */}
+                          <span>{supplier.leiCode || "-"}</span>
+
+                          {/* ACTIONS */}
+                          <span>
+                            <div className="tp-admin-actions">
+                              {supplier.verificationStatus !== "VERIFIED" ? (
+                                <button
+                                  className="tp-btn-primary tp-btn-sm"
+                                  onClick={() => handleVerify(supplier.id)}
+                                >
+                                  Verify
+                                </button>
+                              ) : (
+                                <button className="tp-btn-outline" disabled>
+                                  Verified
+                                </button>
+                              )}
+
+                              <button
+                                className="tp-btn-danger tp-btn-sm"
+                                onClick={() =>
+                                  setDeleteModal({
+                                    open: true,
+                                    supplierId: supplier.id,
+                                    companyName: supplier.companyName,
+                                  })
+                                }
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <EmptyState message="No suppliers found" />
+                  )}
+                  
                 </div>
-                {loading && (
-                  <div className="tp-loading-more">Loading more...</div>
-                )}
+
+                
               </div>
             </div>
           </div>

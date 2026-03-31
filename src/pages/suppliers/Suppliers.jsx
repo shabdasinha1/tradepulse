@@ -135,6 +135,8 @@ const Suppliers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [activeProduct, setActiveProduct] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState("top");
 
   const {
     tradeflow,
@@ -533,11 +535,42 @@ const Suppliers = () => {
                             {c.verification_status}
                           </span>
                         </span>
+                        <div
+                          className="tp-product-cell-wrapper"
+                          onClick={(e) => {
+                            if (window.innerWidth > 768) return;
+                            e.stopPropagation();
 
-                        <span className="text-center">
-                          {c.products?.[0] || "-"}
-                        </span>
+                            const rect =
+                              e.currentTarget.getBoundingClientRect();
+                            const spaceBelow = window.innerHeight - rect.bottom;
 
+                            if (spaceBelow < 120) {
+                              setTooltipPos("top");
+                            } else {
+                              setTooltipPos("bottom");
+                            }
+
+                            setActiveProduct(activeProduct === i ? null : i);
+                          }}
+                        >
+                          <span
+                            className="text-center tp-product-cell"
+                            title={c.products?.[0] || "-"} // desktop hover
+                          >
+                            {c.products?.[0]
+                              ? c.products[0].length > 50
+                                ? `${c.products[0].slice(0, 50)}...`
+                                : c.products[0]
+                              : "-"}
+                          </span>
+
+                          {activeProduct === i && window.innerWidth <= 768 && (
+                            <div className={`tp-product-tooltip ${tooltipPos}`}>
+                              {c.products?.[0] || "-"}
+                            </div>
+                          )}
+                        </div>
                         <span className="text-center">{c.product_count}</span>
                       </div>
                     ))}

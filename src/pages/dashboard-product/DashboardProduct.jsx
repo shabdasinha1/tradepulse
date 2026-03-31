@@ -244,13 +244,12 @@ const DashboardProduct = () => {
   );
 
   const products = useMemo(() => {
-  const rawProducts = productPages?.pages?.flat() || [];
+    const rawProducts = productPages?.pages?.flat() || [];
 
-  return rawProducts.filter(
-    (item) =>
-      item?.categoryHs2 && item?.productCategory // both must exist
-  );
-}, [productPages]);
+    return rawProducts.filter(
+      (item) => item?.categoryHs2 && item?.productCategory, // both must exist
+    );
+  }, [productPages]);
 
   /* ===============================
      PRODUCT ROWS
@@ -355,7 +354,7 @@ const DashboardProduct = () => {
                 onClick={() => setFilterOpen(true)}
               >
                 <FiSliders />
-               Global Filters
+                Global Filters
               </button>
             </div>
           </div>
@@ -398,13 +397,13 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">Fastest Growing Demand ({corridor})</p>
-                <h3 className="tp-overview-text">
-                  {productData?.productOverview?.fastestGrowingProduct ? (
-                    productData?.productOverview?.fastestGrowingProduct
-                  ) : (
-                    <EmptyState message="No demand data found" />
-                  )}
-                </h3>
+                {productData?.productOverview?.fastestGrowingProduct ? (
+                  <h3 className="tp-overview-text">
+                    {productData?.productOverview?.fastestGrowingProduct}
+                  </h3>
+                ) : (
+                  <EmptyState message="No demand data found" />
+                )}
               </div>
 
               <div className="tp-card">
@@ -501,26 +500,25 @@ const DashboardProduct = () => {
         <div className="tp-grid tp-insight-grid">
           <div className="tp-card">
             <p className="tp-muted">Most Imported Product ({corridor})</p>
-            <h3 className="tp-overview-text">
-              {productData?.productHighlights?.mostTradedProduct ? (
-                <h3 className="tp-overview-text">
-                  {productData.productHighlights.mostTradedProduct}
-                </h3>
-              ) : (
-                <EmptyState message="No Insights Found" />
-              )}
-            </h3>
+
+            {productData?.productHighlights?.mostTradedProduct ? (
+              <h3 className="tp-overview-text">
+                {productData.productHighlights.mostTradedProduct}
+              </h3>
+            ) : (
+              <EmptyState message="No Insights Found" />
+            )}
           </div>
 
           <div className="tp-card">
             <p className="tp-muted">Highest Price Volatility ({corridor})</p>
-            <h3 className="tp-overview-text">
-              {productData?.productHighlights?.highestVolatilityProduct ? (
-                productData?.productHighlights?.highestVolatilityProduct
-              ) : (
-                <EmptyState message="No volatility data found" />
-              )}
-            </h3>
+            {productData?.productHighlights?.highestVolatilityProduct ? (
+              <h3 className="tp-overview-text">
+                {productData?.productHighlights?.highestVolatilityProduct}
+              </h3>
+            ) : (
+              <EmptyState message="No volatility data found" />
+            )}
           </div>
         </div>
       </div>
