@@ -8,7 +8,7 @@ import {
   GetSupplierVerificationStatuses,
   GetDataSources,
   DeleteSuppliers,
-  CreateSupplierBulk
+  CreateSupplierBulk,
 } from "../../services/DashboardService";
 import { FiX } from "react-icons/fi";
 import { downloadSampleSuppliersCSV } from "../../utils/csvUtils";
@@ -91,11 +91,10 @@ const SuppliersManagement = () => {
       try {
         setLoading(true);
 
-        const [verificationRes, dataSourcesRes] =
-          await Promise.all([
-            GetSupplierVerificationStatuses(),
-            GetDataSources(),
-          ]);
+        const [verificationRes, dataSourcesRes] = await Promise.all([
+          GetSupplierVerificationStatuses(),
+          GetDataSources(),
+        ]);
 
         setDataSources(dataSourcesRes?.data || dataSourcesRes || []);
         if (dataSourcesRes?.data?.length) {
@@ -272,9 +271,7 @@ const SuppliersManagement = () => {
       companyName: row.companyName?.trim(),
       countryIso3: row.countryIso3?.trim(),
       sector: row.sector?.trim(),
-      hsCodes: row.hsCodes
-        ? row.hsCodes.split(",").map((c) => c.trim())
-        : [],
+      hsCodes: row.hsCodes ? row.hsCodes.split(",").map((c) => c.trim()) : [],
       dataSource: row.dataSource?.trim(),
       verificationStatus: row.verificationStatus?.trim(),
     }));
@@ -300,7 +297,9 @@ const SuppliersManagement = () => {
         errors.push(`Row ${index + 1}: Invalid dataSource`);
       }
 
-      if (!["VERIFIED", "PARTIAL", "PENDING"].includes(row.verificationStatus)) {
+      if (
+        !["VERIFIED", "PARTIAL", "PENDING"].includes(row.verificationStatus)
+      ) {
         errors.push(`Row ${index + 1}: Invalid verificationStatus`);
       }
     });
@@ -349,14 +348,14 @@ const SuppliersManagement = () => {
   };
 
   const handleClearCsv = () => {
-  setCsvFile(null);
-  setParsedCsvData([]);
+    setCsvFile(null);
+    setParsedCsvData([]);
 
-  // reset file input (IMPORTANT)
-  if (fileInputRef.current) {
-    fileInputRef.current.value = "";
-  }
-};
+    // reset file input (IMPORTANT)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -404,20 +403,20 @@ const SuppliersManagement = () => {
                 ref={headerRef}
                 onScroll={handleHeaderScroll}
               >
-             <div className="tp-table-head tp-table-supplier-admin">
-  <span>Company</span>
-  <span>Country</span>
+                <div className="tp-table-head tp-table-supplier-admin">
+                  <span>Company</span>
+                  <span>Country</span>
 
-  <span>Sector</span>
-  <span>Verification</span>
-  <span>Reliability</span>
-  <span>Sanctions</span>
+                  <span>Sector</span>
+                  <span>Verification</span>
+                  <span>Reliability</span>
+                  <span>Sanctions</span>
 
-  <span>Sanctions Score</span>
-  <span>Source</span>
-  <span>LEI Code</span>
-  <span>Actions</span>
-</div>
+                  <span>Sanctions Score</span>
+                  <span>Source</span>
+                  <span>LEI Code</span>
+                  <span>Actions</span>
+                </div>
               </div>
 
               <div
@@ -430,115 +429,105 @@ const SuppliersManagement = () => {
                     const isLast = suppliers.length === index + 1;
 
                     return (
-                    <div
-  key={supplier.id}
-  ref={isLast ? lastRowRef : null}
-  className="tp-table-row tp-table-supplier-admin"
->
-  {/* Company */}
-  <div className="tp-text-strong">
-    {supplier.companyName}
-  </div>
+                      <div
+                        key={supplier.id}
+                        ref={isLast ? lastRowRef : null}
+                        className="tp-table-row tp-table-supplier-admin"
+                      >
+                        {/* Company */}
+                        <div className="tp-text-strong">
+                          {supplier.companyName}
+                        </div>
 
-  {/* Country */}
-  <span>
-    {supplier.countryName}
-  </span>
+                        {/* Country */}
+                        <span>{supplier.countryName}</span>
 
+                        {/* Sector */}
+                        <span>{supplier.sector}</span>
 
+                        {/* Verification */}
+                        <span>
+                          <span
+                            className={`tp-pill ${
+                              supplier.verificationStatus === "VERIFIED"
+                                ? "tp-pill-success"
+                                : supplier.verificationStatus === "PARTIAL"
+                                  ? "tp-pill-warning"
+                                  : "tp-pill-danger"
+                            }`}
+                          >
+                            {supplier.verificationStatus}
+                          </span>
+                        </span>
 
-  {/* Sector */}
-  <span>{supplier.sector}</span>
+                        {/* Reliability */}
+                        <span>
+                          <span
+                            className={`tp-pill ${
+                              supplier.reliabilityScore < 0.3
+                                ? "tp-pill-danger"
+                                : supplier.reliabilityScore < 0.5
+                                  ? "tp-pill-warning"
+                                  : "tp-pill-success"
+                            }`}
+                          >
+                            {supplier.reliabilityScore}
+                          </span>
+                        </span>
 
-  {/* Verification */}
-  <span>
-    <span
-      className={`tp-pill ${
-        supplier.verificationStatus === "VERIFIED"
-          ? "tp-pill-success"
-          : supplier.verificationStatus === "PARTIAL"
-          ? "tp-pill-warning"
-          : "tp-pill-danger"
-      }`}
-    >
-      {supplier.verificationStatus}
-    </span>
-  </span>
+                        {/* Sanctions Flag */}
+                        <span>
+                          <span
+                            className={`tp-pill ${
+                              supplier.sanctionsFlag
+                                ? "tp-pill-danger"
+                                : "tp-pill-success"
+                            }`}
+                          >
+                            {supplier.sanctionsFlag ? "Flagged" : "Clear"}
+                          </span>
+                        </span>
 
-  {/* Reliability */}
-  <span>
-    <span
-      className={`tp-pill ${
-        supplier.reliabilityScore < 0.3
-          ? "tp-pill-danger"
-          : supplier.reliabilityScore < 0.5
-          ? "tp-pill-warning"
-          : "tp-pill-success"
-      }`}
-    >
-      {supplier.reliabilityScore}
-    </span>
-  </span>
+                        {/* Sanctions Score */}
+                        <span>{supplier.sanctionsScore ?? 0}</span>
 
-  {/* Sanctions Flag */}
-  <span>
-    <span
-      className={`tp-pill ${
-        supplier.sanctionsFlag ? "tp-pill-danger" : "tp-pill-success"
-      }`}
-    >
-      {supplier.sanctionsFlag ? "Flagged" : "Clear"}
-    </span>
-  </span>
+                        {/* Sanctions Source */}
+                        <span>{supplier.sanctionsSource}</span>
 
+                        {/* LEI */}
+                        <span>{supplier.leiCode || "-"}</span>
 
+                        {/* ACTIONS */}
+                        <span>
+                          <div className="tp-admin-actions">
+                            {supplier.verificationStatus !== "VERIFIED" ? (
+                              <button
+                                className="tp-btn-primary tp-btn-sm"
+                                onClick={() => handleVerify(supplier.id)}
+                              >
+                                Verify
+                              </button>
+                            ) : (
+                              <button className="tp-btn-outline" disabled>
+                                Verified
+                              </button>
+                            )}
 
-  {/* Sanctions Score */}
-  <span>
-    {supplier.sanctionsScore ?? 0}
-  </span>
-
-  {/* Sanctions Source */}
-  <span>
-    {supplier.sanctionsSource}
-  </span>
-
-  {/* LEI */}
-  <span>
-    {supplier.leiCode || "-"}
-  </span>
-
-  {/* ACTIONS */}
-  <span>
-    <div className="tp-admin-actions">
-      {supplier.verificationStatus !== "VERIFIED" ? (
-        <button
-          className="tp-btn-primary tp-btn-sm"
-          onClick={() => handleVerify(supplier.id)}
-        >
-          Verify
-        </button>
-      ) : (
-        <button className="tp-btn-outline" disabled>
-          Verified
-        </button>
-      )}
-
-      <button
-        className="tp-btn-danger tp-btn-sm"
-        onClick={() =>
-          setDeleteModal({
-            open: true,
-            supplierId: supplier.id,
-            companyName: supplier.companyName,
-          })
-        }
-      >
-        Delete
-      </button>
-    </div>
-  </span>
-</div>
+                            <button
+                              className="tp-btn-danger tp-btn-sm"
+                              onClick={() =>
+                                setDeleteModal({
+                                  open: true,
+                                  supplierId: supplier.id,
+                                  companyName: supplier.companyName,
+                                })
+                              }
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </span>
+                      </div>
                     );
                   })}
                 </div>
@@ -551,7 +540,7 @@ const SuppliersManagement = () => {
         </TradePulseCard>
 
         {openModal && (
-          <div className="tp-modal-overlay" onClick={()=>setOpenModal(false)}>
+          <div className="tp-modal-overlay" onClick={() => setOpenModal(false)}>
             <div className="tp-modal" onClick={(e) => e.stopPropagation()}>
               <div className="tp-supplier-modal-header">
                 <div className="tp-modal-title-group">
@@ -775,21 +764,19 @@ const SuppliersManagement = () => {
                       </button>
                     )}
                   </div>
-                    {csvFile && (
-  <div className="tp-file-row">
-    <div className="tp-file-name">
-      📄 {csvFile.name}
-    </div>
+                  {csvFile && (
+                    <div className="tp-file-row">
+                      <div className="tp-file-name">📄 {csvFile.name}</div>
 
-    <button
-      type="button"
-      className="tp-btn-clear"
-      onClick={handleClearCsv}
-    >
-      Clear
-    </button>
-  </div>
-)}
+                      <button
+                        type="button"
+                        className="tp-btn-clear"
+                        onClick={handleClearCsv}
+                      >
+                        Clear
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

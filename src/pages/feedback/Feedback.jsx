@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import EmptyState from "../../components/common/EmptyState.jsx";
@@ -28,7 +28,8 @@ const Feedback = () => {
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
   const observer = useRef(null);
-
+  const [activeEmail, setActiveEmail] = useState(null);
+  const [tooltipPos, setTooltipPos] = useState("top");
   /* ===============================
      SCROLL SYNC
   =============================== */
@@ -178,12 +179,42 @@ const Feedback = () => {
                             {f.this_platform}
                           </span>
                         </span>
-                        <span
-                          className="text-center tp-email-cell"
-                          title={f.email} // 👈 shows full email on hover
+                        <div
+                          className="tp-email-cell-wrapper"
+                          onClick={(e) => {
+                            if (window.innerWidth > 768) return;
+                            e.stopPropagation();
+
+                            const rect =
+                              e.currentTarget.getBoundingClientRect();
+                            const spaceAbove = rect.top;
+                            const spaceBelow = window.innerHeight - rect.bottom;
+
+                            // decide position
+                            if (spaceBelow < 100) {
+                              setTooltipPos("top"); // not enough space below → show above
+                            } else {
+                              setTooltipPos("bottom"); // otherwise show below
+                            }
+
+                            setActiveEmail(activeEmail === f.id ? null : f.id);
+                          }}
                         >
-                          {f.email?.slice(0, 14)}...
-                        </span>
+                          <span
+                            className="text-center tp-email-cell"
+                            title={f.email} // desktop hover
+                          >
+                            {f.email?.length > 14
+                              ? `${f.email.slice(0, 14)}...`
+                              : f.email}
+                          </span>
+
+                          {activeEmail === f.id && window.innerWidth <= 768 && (
+                            <div className={`tp-email-tooltip ${tooltipPos}`}>
+                              {f.email}
+                            </div>
+                          )}
+                        </div>
                         <span className="text-center tp-muted">
                           {new Date(f.created_dt).toLocaleDateString()}
                         </span>

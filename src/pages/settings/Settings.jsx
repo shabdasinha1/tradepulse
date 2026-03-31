@@ -33,19 +33,16 @@ const Settings = () => {
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
 
-
-
-  const isSyncingRef = useRef(false);
+  const handleHeaderScroll = () => {
+    if (bodyRef.current) {
+      bodyRef.current.scrollLeft = headerRef.current.scrollLeft;
+    }
+  };
 
   const handleBodyScroll = () => {
-    if (!headerRef.current || isSyncingRef.current) return;
-
-    isSyncingRef.current = true;
-    headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
-
-    requestAnimationFrame(() => {
-      isSyncingRef.current = false;
-    });
+    if (headerRef.current) {
+      headerRef.current.scrollLeft = bodyRef.current.scrollLeft;
+    }
   };
 
   const fetchDataSource = async () => {
@@ -222,49 +219,62 @@ const Settings = () => {
           className="tp-data-sources-card"
         >
           <div className="settings-list">
-            {loading ? (
-              <EmptyState message="No Source Data found" />
-            ) : (
-              <div className="tp-table-wrapper tp-data-table-wrapper">
-                {/* HEADER */}
+            <div className="tp-table-wrapper tp-supplier-table">
+              <div className="tp-table-wrapper-feedback">
                 <div
                   className="tp-table-head-scroll"
                   ref={headerRef}
-                  
+                  onScroll={handleHeaderScroll}
                 >
-                  <div className="tp-table-head tp-data-table-grid">
+                  <div className="tp-table-head tp-table-data-source-admin">
                     <span>Source</span>
-                    <span>Last Updated</span>
-                    <span>Status</span>
+                    <span className="text-center">Last Updated</span>
+                    <span className="text-center">Status</span>
                   </div>
                 </div>
 
-                {/* BODY */}
                 <div
-                  className="tp-table-body-scroll"
+                  className="tp-table-body-scroll tp-data-source-table-body"
                   ref={bodyRef}
-                  
+                  onScroll={handleBodyScroll}
                 >
                   <div className="tp-table">
-                    {dataSources?.map((item, i) => (
-                      <div key={i} className="tp-table-row tp-data-table-grid">
-                        <span>{item.name}</span>
-                        <span>{formatDate(item.last_updated)}</span>
-                        <span
-                          className={`tp-data-source-pill tp-pill ${
-                            item.status === "active"
-                              ? "tp-pill-success"
-                              : "tp-pill-warning"
-                          }`}
+                    {loading && <EmptyState message="Loading Data Source" />}
+                    {!dataSources && !loading && (
+                      <EmptyState message="No Data Source Found" />
+                    )}
+                    {dataSources?.map((item, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="tp-table-row tp-data-source-table-grid"
                         >
-                          {item.status}
-                        </span>
-                      </div>
-                    ))}
+                          <span>{item.name}</span>
+
+                          <span className="text-center">
+                            {formatDate(item.last_updated)}
+                          </span>
+
+                          <span
+                            className={`tp-data-source-pill tp-pill ${
+                              item.status === "active"
+                                ? "tp-pill-success"
+                                : "tp-pill-warning"
+                            }`}
+                          >
+                            {item.status?.charAt(0).toUpperCase() +
+                              item.status.slice(1)}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
+                  {loading && (
+                    <div className="tp-loading-more">Loading more...</div>
+                  )}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </TradePulseCard>
 

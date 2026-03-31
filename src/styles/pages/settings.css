@@ -49,9 +49,12 @@
    DATA SOURCES CARD FIX
 ================================ */
 
+.tp-data-source-table-body{
+  max-height: 300px;
+}
 /* Card container */
 .tp-data-sources-card {
-  max-height: 400px;
+  /* max-height: 400px; */
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -64,99 +67,75 @@
 }
 
 /* ===============================
-   TABLE WRAPPER (CRITICAL)
+   DATA SOURCE TABLE (SCOPED)
 ================================ */
-
-/* Main wrapper (enables horizontal scroll like supplier table) */
-.tp-data-table-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow-x: auto; /* ✅ critical */
-}
-
-/* ===============================
-   TABLE GRID (STRUCTURE)
-================================ */
-
-/* Grid layout for header + rows */
-.tp-data-table-grid {
+.tp-table-data-source-admin {
   display: grid;
   grid-template-columns: 2fr 1.5fr 1fr;
-  gap: var(--space-md);
-  min-width: 600px; /* ✅ ensures horizontal scroll */
-  align-items: center;
+  min-width: 400px;
+}
+.tp-data-source-table-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  min-width: 400px;
 }
 
-/* Header row */
-.tp-table-head.tp-data-table-grid {
-  font-weight: var(--fw-semibold);
-  min-height: 48px;
+.tp-data-source-table-wrapper {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
-/* Data rows */
-.tp-table-row.tp-data-table-grid {
-  min-height: 52px;
+/* HEADER CONTAINER */
+.tp-data-source-table-wrapper .tp-table-head-scroll {
+  border-bottom: 1px solid var(--border-soft);
+  z-index: 2;
+}
+
+/* BODY SCROLL (FIXED HEIGHT) */
+.tp-data-source-table-wrapper .tp-table-body-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+
+
+/* HEADER STYLE */
+.tp-data-source-table-wrapper .tp-table-head {
+  padding: 12px 16px;
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  font-weight: var(--fw-medium);
+}
+
+/* ROW STYLE */
+.tp-data-source-table-wrapper .tp-table-row {
+  padding: 12px 16px;
+  font-size: var(--fs-body);
   border-bottom: 1px solid var(--border-soft);
 }
 
-/* ===============================
-   CELL ALIGNMENT
-================================ */
-
-/* Make all cells consistent */
-.tp-table-head.tp-data-table-grid > *,
-.tp-table-row.tp-data-table-grid > * {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 8px;
-  /* width: 100%; */
-  box-sizing: border-box;
+.tp-data-source-table-wrapper .tp-table-row:last-child {
+  border-bottom: none;
 }
 
-/* First column LEFT aligned */
-.tp-table-head.tp-data-table-grid > *:first-child,
-.tp-table-row.tp-data-table-grid > *:first-child {
-  justify-content: flex-start;
+/* HOVER */
+.tp-data-source-table-wrapper .tp-table-row:hover {
+  background: var(--bg-card-hover);
 }
 
 /* ===============================
-   SCROLL SYNC (HEADER + BODY)
+   HORIZONTAL SCROLL (DATA SOURCE)
 ================================ */
 
-/* Header scroll (horizontal only) */
-.tp-table-head-scroll {
-  overflow-x: auto;
-}
 
-/* Body scroll (both directions) */
-.tp-table-body-scroll {
-  overflow-x: auto;
-  overflow-y: auto;
-  max-height: 300px; /* vertical scroll */
-}
 
-/* Hide header scrollbar (visual polish) */
-.tp-table-head-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* ===============================
-   WIDTH SYNC FIX (VERY IMPORTANT)
-================================ */
-
-/* Ensures header & body align perfectly */
-.tp-table-head,
-.tp-table {
-  width: max-content; /* match content width */
-  min-width: 100%; /* don't shrink */
-}
-
+/* Status pill center fix */
 .tp-data-source-pill {
-  width: max-content;
+  width: max-content !important;
   margin: 0 auto;
 }
+
 /* ===============================
    RESPONSIVE
 ================================ */
@@ -166,8 +145,9 @@
     grid-template-columns: 1fr;
   }
 
-  .tp-data-table-grid {
+  .tp-table-data-source-admin,
+  .tp-data-source-table-grid {
     grid-template-columns: 1fr 1fr 1fr;
-    font-size: 12px;
+    
   }
 }
