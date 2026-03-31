@@ -1,5 +1,5 @@
 import Api from "../api/Api";
-import NewsApi from "../api/NewsApi";
+
 
 /* ===============================
    PARAM CLEANER
@@ -16,12 +16,12 @@ const cleanParams = (params = {}) =>
 
 /*    SHIPPING API        */
 export const DashboardOverviewShipping = async () => {
-  return Api.get("/shipping/latest");
+  return Api.get("/app/api/shipping/latest");
 };
 
 /*  Exchange Rates vs NGN   */
 export const DashboardOverviewExchange = async (base) => {
-  return Api.get("/exchange/exchange", {
+  return Api.get("/app/api/exchange/exchange", {
     params: cleanParams({ base }),
   });
 };
@@ -31,7 +31,7 @@ export const DashboardOverviewExchange = async (base) => {
 ================================ */
 
 export const DashboardExportPriceTrend = async (params = {}) => {
-  return Api.get("/dashboard/export-price-trend", {
+  return Api.get("/app/api/dashboard/export-price-trend", {
     params: cleanParams(params),
   });
 };
@@ -41,7 +41,7 @@ export const DashboardExportPriceTrend = async (params = {}) => {
 ================================ */
 
 export const DashboardImportDemandTrend = async (params = {}) => {
-  return Api.get("/dashboard/import-demand-trend", {
+  return Api.get("/app/api/dashboard/import-demand-trend", {
     params: cleanParams(params),
   });
 };
@@ -55,7 +55,7 @@ export const DashboardMarginImpact = async ({
   baseCurrency,
   quoteCurrency,
 }) => {
-  return Api.get("/dashboard/margin-impact", {
+  return Api.get("/app/api/dashboard/margin-impact", {
     params: cleanParams({
       budget,
       baseCurrency,
@@ -69,7 +69,7 @@ export const DashboardMarginImpact = async ({
 ================================ */
 
 export const DashboardExchangeRate = async (params = {}) => {
-  return Api.get("/dashboard/exchange-rate", {
+  return Api.get("/app/api/dashboard/exchange-rate", {
     params: cleanParams(params),
   });
 };
@@ -79,7 +79,7 @@ export const DashboardExchangeRate = async (params = {}) => {
 ================================ */
 
 export const DashboardShippingCosts = async (params = {}) => {
-  return Api.get("/dashboard/shipping-costs", {
+  return Api.get("/app/api/dashboard/shipping-costs", {
     params: cleanParams(params),
   });
 };
@@ -89,7 +89,7 @@ export const DashboardShippingCosts = async (params = {}) => {
 ================================ */
 
 export const DashboardDutySnapshot = async (params = {}) => {
-  return Api.get("/dashboard/duty-snapshot", {
+  return Api.get("/app/api/dashboard/duty-snapshot", {
     params: cleanParams(params),
   });
 };
@@ -99,13 +99,13 @@ export const DashboardDutySnapshot = async (params = {}) => {
 ================================ */
 
 export const DashboardAllProductList = async (params = {}) => {
-  return Api.get("/products/list", {
+  return Api.get("/app/api/products/list", {
     params: cleanParams(params),
   });
 };
 
 export const DashboardProductList = async (params = {}) => {
-  return Api.get("/products/search", {
+  return Api.get("/app/api/products/search", {
     params: cleanParams(params),
   });
 };
@@ -115,7 +115,7 @@ export const DashboardProductList = async (params = {}) => {
 ================================ */
 
 export const DashboardProductOverview = async (params = {}) => {
-  return Api.get("/products/overview", {
+  return Api.get("/app/api/products/overview", {
     params: cleanParams(params),
   });
 };
@@ -125,7 +125,7 @@ export const DashboardProductOverview = async (params = {}) => {
 ================================ */
 
 export const DashboardProductInsights = async () => {
-  return Api.get("/products/insights");
+  return Api.get("/app/api/products/insights");
 };
 
 /* ===============================
@@ -133,7 +133,7 @@ export const DashboardProductInsights = async () => {
 ================================ */
 
 export const DashboardProductHighlights = async (params = {}) => {
-  return Api.get("/products/highlights", {
+  return Api.get("/app/api/products/highlights", {
     params: cleanParams(params),
   });
 };
@@ -143,7 +143,7 @@ export const DashboardProductHighlights = async (params = {}) => {
 ================================ */
 
 export const DashboardKPIs = async (params = {}) => {
-  return Api.get("/dashboard/kpis", {
+  return Api.get("/app/api/dashboard/kpis", {
     params: cleanParams(params),
   });
 };
@@ -153,21 +153,21 @@ export const DashboardKPIs = async (params = {}) => {
 ================================ */
 
 export const DashboardForcast = async (hasCode) => {
-  return Api.get(`/forecast/dashboard/${hasCode}`);
+  return Api.get(`/app/api/forecast/dashboard/${hasCode}`);
 };
 
 export const ForcastAssets = async ({ limit, page }) => {
-  return Api.get("/forecast/assets", {
+  return Api.get("/app/api/forecast/assets", {
     params: cleanParams({ limit, page }),
   });
 };
 
 export const ForcastPriceChart = async (hsCode) => {
-  return Api.get(`/forecast/price-chart/${hsCode}`);
+  return Api.get(`/app/api/forecast/price-chart/${hsCode}`);
 };
 
 export const ForcastConfidenceChart = async (hsCode) => {
-  return Api.get(`/forecast/confidence-chart/${hsCode}`);
+  return Api.get(`/app/api/forecast/confidence-chart/${hsCode}`);
 };
 
 /* ===============================
@@ -175,7 +175,7 @@ export const ForcastConfidenceChart = async (hsCode) => {
 ================================ */
 
 export const ProductDropdownSearch = async (query) => {
-  return Api.get("/products/products", {
+  return Api.get("/app/api/products/products", {
     params: cleanParams({ q: query }),
   });
 };
@@ -185,7 +185,7 @@ export const ProductDropdownSearch = async (query) => {
 ================================ */
 
 export const ForecastOverview = async () => {
-  return Api.get("/forecast/overview");
+  return Api.get("/app/api/forecast/overview");
 };
 
 /* ===============================
@@ -198,7 +198,7 @@ export const ForecastOverview = async () => {
 //   });
 // };
 export const DashboardTradeNews = async (params = {}) => {
-  return Api.get("/dashboard/corridor-news", {
+  return Api.get("/app/api/dashboard/corridor-news", {
     params: cleanParams(params),
   });
 };
@@ -208,7 +208,7 @@ export const DashboardTradeNews = async (params = {}) => {
 ================================ */
 
 export const DashboardCorridors = async (reporterCode) => {
-  return Api.get("/products/corridors", {
+  return Api.get("/app/api/products/corridors", {
     params: cleanParams({ reporter: reporterCode }),
   });
 };
@@ -218,7 +218,7 @@ export const DashboardCorridors = async (reporterCode) => {
 ================================ */
 
 export const DashboardCountries = async (params = {}) => {
-  return Api.get("/dashboard/countries", {
+  return Api.get("/app/api/dashboard/countries", {
     params: cleanParams(params),
   });
 };
@@ -228,7 +228,7 @@ export const DashboardCountries = async (params = {}) => {
 ================================ */
 
 export const DashboardSuppliers = async (params = {}) => {
-  return Api.get("/company/suppliers", {
+  return Api.get("/app/api/company/suppliers", {
     params: cleanParams(params),
   });
 };
@@ -238,7 +238,7 @@ export const DashboardSuppliers = async (params = {}) => {
 ================================ */
 
 export const DashboardCompanySuppliers = async (params = {}) => {
-  return Api.get("/company/company-suppliers", {
+  return Api.get("/app/api/company/company-suppliers", {
     params: cleanParams(params),
   });
 };
@@ -247,7 +247,7 @@ export const DashboardCompanySuppliers = async (params = {}) => {
    DASHBOARD FEEDBACK
 ================================ */
 export const DashboardFeedback = async (params = {}) => {
-  return Api.get("/feedback/get", {
+  return Api.get("/app/api/feedback/get", {
     params: cleanParams(params),
   });
 };
@@ -257,7 +257,7 @@ export const DashboardFeedback = async (params = {}) => {
 ================================ */
 
 export const DashboardRegions = async () => {
-  return Api.get("/company/regions");
+  return Api.get("/app/api/company/regions");
 };
 
 /* ===============================
@@ -268,9 +268,9 @@ export const DashboardTradeNewsExternal = async ({
   page = 0,
   size = 10,
 }) => {
-  return NewsApi.get(`/news-int/api/news`, {
+  return Api.get(`/news-int/api/news`, {
     params: {
-      country: countryCode, // ✅ alpha3 भेज रहे हैं
+      country: countryCode, 
       page,
       size,
     },
@@ -283,59 +283,59 @@ export const DashboardTradeNewsExternal = async ({
 
 /* 📄 Get Suppliers (List + Filters + Pagination) */
 export const GetSuppliers = async (params = {}) => {
-  return NewsApi.get("/supplier-dir-int/api/suppliers", {
+  return Api.get("/supplier-dir-int/api/suppliers", {
     params: cleanParams(params),
   });
 };
 
 /* 🔍 Get Supplier by ID */
 export const GetSupplierById = async (id) => {
-  return NewsApi.get(`/supplier-dir-int/api/suppliers/${id}`);
+  return Api.get(`/supplier-dir-int/api/suppliers/${id}`);
 };
 
 /* ➕ Create Single Supplier */
 export const CreateSupplier = async (data) => {
-  return NewsApi.post("/supplier-dir-int/api/suppliers", data);
+  return Api.post("/supplier-dir-int/api/suppliers", data);
 };
 
 export const CreateSupplierBulk = async (data) => {
-  return NewsApi.post("/supplier-dir-int/api/suppliers/bulk", data);
+  return Api.post("/supplier-dir-int/api/suppliers/bulk", data);
 };
 
 // Delete Suppliers
 export const DeleteSuppliers = async (id) => {
-  return NewsApi.delete(`/supplier-dir-int/api/suppliers/${id}`);
+  return Api.delete(`/supplier-dir-int/api/suppliers/${id}`);
 };
 /* 📤 Bulk Upload Suppliers */
 export const BulkCreateSuppliers = async (data = []) => {
-  return NewsApi.post("/supplier-dir-int/api/suppliers/bulk", data);
+  return Api.post("/supplier-dir-int/api/suppliers/bulk", data);
 };
 
 /* ✅ Verify Supplier */
 export const VerifySupplier = async (id, payload) => {
-  return NewsApi.post(`/supplier-dir-int/api/suppliers/${id}/verify`, payload);
+  return Api.post(`/supplier-dir-int/api/suppliers/${id}/verify`, payload);
 };
 
 /* 🧾 Get Data Source Metadata (Dropdown) */
 export const GetSupplierDataSources = async () => {
-  return NewsApi.get("/supplier-dir-int/api/suppliers/meta/data-source");
+  return Api.get("/supplier-dir-int/api/suppliers/meta/data-source");
 };
 
 /* 🏷️ Get Verification Status Metadata (Dropdown) */
 export const GetSupplierVerificationStatuses = async () => {
-  return NewsApi.get(
+  return Api.get(
     "/supplier-dir-int/api/suppliers/meta/verification-status",
   );
 };
 
 /* 🔎 Supplier Name Suggestions (Autocomplete) */
 export const SuggestSuppliers = async (name) => {
-  return NewsApi.get("/supplier-dir-int/api/suppliers/suggest", {
+  return Api.get("/supplier-dir-int/api/suppliers/suggest", {
     params: cleanParams({ name }),
   });
 };
 export const GetDataSources = async (name) => {
-  return NewsApi.get("/supplier-dir-int/api/suppliers/meta/data-source", {
+  return Api.get("/supplier-dir-int/api/suppliers/meta/data-source", {
     params: cleanParams({ name }),
   });
 };
@@ -347,32 +347,32 @@ export const GetDataSources = async (name) => {
 
 /* 📄 Get All Jobs */
 export const GetSchedulerJobs = async () => {
-  return NewsApi.get("/orchestrator/jobs");
+  return Api.get("/orchestrator/jobs");
 };
 
 /* 🔍 Get Job By ID */
 export const GetSchedulerJobById = async (id) => {
-  return NewsApi.get(`/orchestrator/jobs/${id}`);
+  return Api.get(`/orchestrator/jobs/${id}`);
 };
 
 /* ➕ Create Job */
 export const CreateSchedulerJob = async (data) => {
-  return NewsApi.post("/orchestrator/jobs", data);
+  return Api.post("/orchestrator/jobs", data);
 };
 
 /* ▶️ Trigger Job */
 export const TriggerSchedulerJob = async (id) => {
-  return NewsApi.post(`/orchestrator/jobs/${id}/trigger`);
+  return Api.post(`/orchestrator/jobs/${id}/trigger`);
 };
 
 /* ✏️ Update Job */
 export const UpdateSchedulerJob = async (id, data) => {
-  return NewsApi.put(`/orchestrator/jobs/${id}`, data);
+  return Api.put(`/orchestrator/jobs/${id}`, data);
 };
 
 /* ❌ Delete Job */
 export const DeleteSchedulerJob = async (id) => {
-  return NewsApi.delete(`/orchestrator/jobs/${id}`);
+  return Api.delete(`/orchestrator/jobs/${id}`);
 };
 
 /* ===============================
@@ -381,17 +381,17 @@ export const DeleteSchedulerJob = async (id) => {
 
 /* 🔍 Get User By Email */
 export const GetUserByEmail = async (email) => {
-  return Api.get("/users/get-user", {
+  return Api.get("/app/api/users/get-user", {
     params: cleanParams({ email }),
   });
 };
 
 /* ✏️ Update User */
 export const UpdateUser = async (id, data) => {
-  return Api.put(`/users/update-user/${id}`, data);
+  return Api.put(`/app/api/users/update-user/${id}`, data);
 };
 
 /* GET DATA SOURCES OF USER */
 export const UserDataSources = async ()=>{
-  return Api.get("/users/sources");
+  return Api.get("/app/api/users/sources");
 }
