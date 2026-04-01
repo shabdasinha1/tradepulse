@@ -88,8 +88,9 @@ const SuppliersManagement = () => {
     registrationNumber: "",
     dataSource: "",
   });
-  const [loading, setLoading]= useState(false);
-  const [loadingSuppliers, setLoadingSuppliers] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [paginationLoading, setPaginationLoading] = useState(false);
   const [loadingMeta, setLoadingMeta] = useState(true);
   const [verificationOptions, setVerificationOptions] = useState([]);
   const [search, setSearch] = useState("");
@@ -102,6 +103,7 @@ const SuppliersManagement = () => {
   const [csvFile, setCsvFile] = useState(null);
   const [parsedCsvData, setParsedCsvData] = useState([]);
   const fileInputRef = useRef(null);
+  const isFetchingRef = useRef(false);
 
   const verificationSelectOptions = verificationOptions.map((status) => ({
     value: status,
@@ -114,8 +116,17 @@ const SuppliersManagement = () => {
   }));
 
   const fetchSuppliers = async (pageNumber = 0, isSearch = false) => {
+    // 🚫 BLOCK if already fetching
+    if (isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
+
     try {
-      setLoadingSuppliers(true);
+      if (pageNumber === 0) {
+        setInitialLoading(true); // first load OR search
+      } else {
+        setPaginationLoading(true); // infinite scroll
+      }
 
       const res = await GetSuppliers({
         page: pageNumber,
@@ -127,11 +138,13 @@ const SuppliersManagement = () => {
 
       setSuppliers((prev) => (isSearch ? newData : [...prev, ...newData]));
 
-      setHasMore(newData.length === 10); // if less → no more pages
+      setHasMore(newData.length === 10);
     } catch (error) {
       console.error("Error fetching suppliers:", error);
     } finally {
-      setLoadingSuppliers(false);
+      setInitialLoading(false);
+      setPaginationLoading(false);
+      isFetchingRef.current = false;
     }
   };
   useEffect(() => {
@@ -254,12 +267,12 @@ const SuppliersManagement = () => {
     }
   };
   const lastRowRef = (node) => {
-    if (loadingSuppliers) return;
+    if (initialLoading || paginationLoading || isFetchingRef.current) return;
 
     if (observer.current) observer.current.disconnect();
 
     observer.current = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) {
+      if (entries[0].isIntersecting && hasMore && !isFetchingRef.current) {
         const nextPage = page + 1;
         setPage(nextPage);
         fetchSuppliers(nextPage);
@@ -481,121 +494,125 @@ const SuppliersManagement = () => {
                 onScroll={handleBodyScroll}
               >
                 <div className="tp-table">
-                  {loadingSuppliers ? (
+                  {initialLoading ? (
                     skeletonRows
                   ) : suppliers.length > 0 ? (
-                    suppliers?.map((supplier, index) => {
-                      const isLast = suppliers.length === index + 1;
+                    <>
+                      {suppliers?.map((supplier, index) => {
+                        const isLast = suppliers.length === index + 1;
 
-                      return (
-                        <div
-                          key={supplier.id}
-                          ref={isLast ? lastRowRef : null}
-                          className="tp-table-row tp-table-supplier-admin"
-                        >
-                          {/* Company */}
-                          <div className="tp-text-strong">
-                            {supplier.companyName}
-                          </div>
-
-                          {/* Country */}
-                          <span>{supplier.countryName}</span>
-
-                          {/* Sector */}
-                          <span>{supplier.sector}</span>
-
-                          {/* Verification */}
-                          <span>
-                            <span
-                              className={`tp-pill ${
-                                supplier.verificationStatus === "VERIFIED"
-                                  ? "tp-pill-success"
-                                  : supplier.verificationStatus === "PARTIAL"
-                                    ? "tp-pill-warning"
-                                    : "tp-pill-danger"
-                              }`}
-                            >
-                              {supplier.verificationStatus}
-                            </span>
-                          </span>
-
-                          {/* Reliability */}
-                          <span>
-                            <span
-                              className={`tp-pill ${
-                                supplier.reliabilityScore < 0.3
-                                  ? "tp-pill-danger"
-                                  : supplier.reliabilityScore < 0.5
-                                    ? "tp-pill-warning"
-                                    : "tp-pill-success"
-                              }`}
-                            >
-                              {supplier.reliabilityScore}
-                            </span>
-                          </span>
-
-                          {/* Sanctions Flag */}
-                          <span>
-                            <span
-                              className={`tp-pill ${
-                                supplier.sanctionsFlag
-                                  ? "tp-pill-danger"
-                                  : "tp-pill-success"
-                              }`}
-                            >
-                              {supplier.sanctionsFlag ? "Flagged" : "Clear"}
-                            </span>
-                          </span>
-
-                          {/* Sanctions Score */}
-                          <span>{supplier.sanctionsScore ?? 0}</span>
-
-                          {/* Sanctions Source */}
-                          <span>{supplier.sanctionsSource}</span>
-
-                          {/* LEI */}
-                          <span>{supplier.leiCode || "-"}</span>
-
-                          {/* ACTIONS */}
-                          <span>
-                            <div className="tp-admin-actions">
-                              {supplier.verificationStatus !== "VERIFIED" ? (
-                                <button
-                                  className="tp-btn-primary tp-btn-sm"
-                                  onClick={() => handleVerify(supplier.id)}
-                                >
-                                  Verify
-                                </button>
-                              ) : (
-                                <button className="tp-btn-outline" disabled>
-                                  Verified
-                                </button>
-                              )}
-
-                              <button
-                                className="tp-btn-danger tp-btn-sm"
-                                onClick={() =>
-                                  setDeleteModal({
-                                    open: true,
-                                    supplierId: supplier.id,
-                                    companyName: supplier.companyName,
-                                  })
-                                }
-                              >
-                                Delete
-                              </button>
+                        return (
+                          <div
+                            key={supplier.id}
+                            ref={isLast ? lastRowRef : null}
+                            className="tp-table-row tp-table-supplier-admin"
+                          >
+                            {/* Company */}
+                            <div className="tp-text-strong">
+                              {supplier.companyName}
                             </div>
-                          </span>
-                        </div>
-                      );
-                    })
+
+                            {/* Country */}
+                            <span>{supplier.countryName}</span>
+
+                            {/* Sector */}
+                            <span>{supplier.sector}</span>
+
+                            {/* Verification */}
+                            <span>
+                              <span
+                                className={`tp-pill ${
+                                  supplier.verificationStatus === "VERIFIED"
+                                    ? "tp-pill-success"
+                                    : supplier.verificationStatus === "PARTIAL"
+                                      ? "tp-pill-warning"
+                                      : "tp-pill-danger"
+                                }`}
+                              >
+                                {supplier.verificationStatus}
+                              </span>
+                            </span>
+
+                            {/* Reliability */}
+                            <span>
+                              <span
+                                className={`tp-pill ${
+                                  supplier.reliabilityScore < 0.3
+                                    ? "tp-pill-danger"
+                                    : supplier.reliabilityScore < 0.5
+                                      ? "tp-pill-warning"
+                                      : "tp-pill-success"
+                                }`}
+                              >
+                                {supplier.reliabilityScore}
+                              </span>
+                            </span>
+
+                            {/* Sanctions Flag */}
+                            <span>
+                              <span
+                                className={`tp-pill ${
+                                  supplier.sanctionsFlag
+                                    ? "tp-pill-danger"
+                                    : "tp-pill-success"
+                                }`}
+                              >
+                                {supplier.sanctionsFlag ? "Flagged" : "Clear"}
+                              </span>
+                            </span>
+
+                            {/* Sanctions Score */}
+                            <span>{supplier.sanctionsScore ?? 0}</span>
+
+                            {/* Sanctions Source */}
+                            <span>{supplier.sanctionsSource}</span>
+
+                            {/* LEI */}
+                            <span>{supplier.leiCode || "-"}</span>
+
+                            {/* ACTIONS */}
+                            <span>
+                              <div className="tp-admin-actions">
+                                {supplier.verificationStatus !== "VERIFIED" ? (
+                                  <button
+                                    className="tp-btn-primary tp-btn-sm"
+                                    onClick={() => handleVerify(supplier.id)}
+                                  >
+                                    Verify
+                                  </button>
+                                ) : (
+                                  <button className="tp-btn-outline" disabled>
+                                    Verified
+                                  </button>
+                                )}
+
+                                <button
+                                  className="tp-btn-danger tp-btn-sm"
+                                  onClick={() =>
+                                    setDeleteModal({
+                                      open: true,
+                                      supplierId: supplier.id,
+                                      companyName: supplier.companyName,
+                                    })
+                                  }
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </span>
+                          </div>
+                        );
+                      })}
+                      {/* ✅ Pagination Skeleton (BOTTOM ONLY) */}
+                      {paginationLoading &&
+                        [...Array(3)].map((_, i) => (
+                          <SupplierRowSkeleton key={`pg-sk-${i}`} />
+                        ))}
+                    </>
                   ) : (
                     <EmptyState message="No suppliers found" />
                   )}
-                  
                 </div>
-
-                
               </div>
             </div>
           </div>
