@@ -1,6 +1,5 @@
 import Api from "../api/Api";
 
-
 /* ===============================
    PARAM CLEANER
 ================================ */
@@ -270,7 +269,7 @@ export const DashboardTradeNewsExternal = async ({
 }) => {
   return Api.get(`/news-int/api/news`, {
     params: {
-      country: countryCode, 
+      country: countryCode,
       page,
       size,
     },
@@ -323,9 +322,7 @@ export const GetSupplierDataSources = async () => {
 
 /* 🏷️ Get Verification Status Metadata (Dropdown) */
 export const GetSupplierVerificationStatuses = async () => {
-  return Api.get(
-    "/supplier-dir-int/api/suppliers/meta/verification-status",
-  );
+  return Api.get("/supplier-dir-int/api/suppliers/meta/verification-status");
 };
 
 /* 🔎 Supplier Name Suggestions (Autocomplete) */
@@ -339,7 +336,6 @@ export const GetDataSources = async (name) => {
     params: cleanParams({ name }),
   });
 };
-
 
 /* ===============================
    SCHEDULER / ORCHESTRATOR APIs
@@ -392,6 +388,14 @@ export const UpdateUser = async (id, data) => {
 };
 
 /* GET DATA SOURCES OF USER */
-export const UserDataSources = async ()=>{
+export const UserDataSources = async () => {
   return Api.get("/app/api/users/sources");
-}
+};
+/* ===============================
+   FX RATES
+================================ */
+export const FXRatesData = async (params = {}) => {
+  return Api.get("/app/api/exchange/exchange-rate", {
+    params: cleanParams(params),
+  });
+};

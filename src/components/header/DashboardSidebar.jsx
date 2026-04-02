@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink, useNavigate,useLocation } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   FiBell,
   FiSettings,
@@ -11,7 +11,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
   FiMessageSquare,
-  FiCalendar 
+  FiCalendar,
 } from "react-icons/fi";
 
 import { HiOutlineViewGrid } from "react-icons/hi";
@@ -34,14 +34,14 @@ const ICON_MAP = {
   "/feedback-data": <FiMessageSquare />,
   "/scheduler": <FiCalendar />,
   "/settings": <FiSettings />,
-   "/suppliers-manage": <FaUsers />,
+  "/suppliers-manage": <FaUsers />,
+  "/fx-rates": <FaUsers />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";
 import { RemoveToken } from "../../utils/AuthHelper.jsx";
 import { useTheme } from "../../hooks/useTheme.jsx";
 import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
-
 
 const DashboardSidebar = ({ open, setOpen }) => {
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
   /* =========================
      STATES
   ========================== */
-const location = useLocation();
+  const location = useLocation();
   const [profileOpen, setProfileOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -100,10 +100,8 @@ const location = useLocation();
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
 
   /* =========================
      USER INITIALS
@@ -118,7 +116,6 @@ const location = useLocation();
     setInitials(`${f}${l}`);
   }, []);
 
-
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -127,7 +124,6 @@ const location = useLocation();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   /* =========================
      LOGOUT
@@ -143,10 +139,7 @@ const location = useLocation();
     <>
       {/* MOBILE OVERLAY */}
       {open && (
-        <div
-          className="tp-sidebar-overlay"
-          onClick={() => setOpen(false)}
-        />
+        <div className="tp-sidebar-overlay" onClick={() => setOpen(false)} />
       )}
 
       <aside
@@ -156,10 +149,8 @@ const location = useLocation();
           ${collapsed ? "collapsed" : ""}`}
       >
         <div className="tp-sidebar-inner">
-
           {/* ================= TOP ================= */}
           <div className="tp-sidebar-top">
-
             <div
               className="tp-logo"
               onClick={() => {
@@ -167,16 +158,8 @@ const location = useLocation();
                 setOpen(false);
               }}
             >
-              <img
-                src="/logo.svg"
-                alt="TradePulse"
-                className="tp-logo-img"
-              />
-              {!collapsed && (
-                <span className="tp-logo-text">
-                  TradePulse
-                </span>
-              )}
+              <img src="/logo.svg" alt="TradePulse" className="tp-logo-img" />
+              {!collapsed && <span className="tp-logo-text">TradePulse</span>}
             </div>
 
             {/* Collapse Button (Desktop Only) */}
@@ -195,62 +178,49 @@ const location = useLocation();
                 {collapsed ? <FiChevronRight /> : <FiChevronLeft />}
               </button>
             )}
-
-
           </div>
 
           {/* ================= NAV ================= */}
           <nav className="tp-sidebar-nav">
+            {DASHBOARD_ROUTES.filter((r) => {
+              if (r.hidden) return false;
 
-{DASHBOARD_ROUTES
-  .filter((r) => {
-    if (r.hidden) return false;
+              // 🔥 Generic admin check
+              if (r.adminOnly && !isAdminUser()) {
+                return false;
+              }
 
-    // 🔥 Generic admin check
-    if (r.adminOnly && !isAdminUser()) {
-      return false;
-    }
-
-    return true;
-  })
-  .map((r) => (
+              return true;
+            }).map((r) => (
               <NavLink
-  key={r.path}
-  to={r.path}
-  className={({ isActive }) =>
-    `tp-sidebar-link ${isActive ? "active" : ""}`
-  }
-  onClick={() => {
-    if (isMobile) {
-      setTimeout(() => {
-        setOpen(false);
-      }, 0);
-    }
-  }}
->
+                key={r.path}
+                to={r.path}
+                className={({ isActive }) =>
+                  `tp-sidebar-link ${isActive ? "active" : ""}`
+                }
+                onClick={() => {
+                  if (isMobile) {
+                    setTimeout(() => {
+                      setOpen(false);
+                    }, 0);
+                  }
+                }}
+              >
                 {/* ICON */}
-                <span className="tp-sidebar-icon">
-                  {ICON_MAP[r.path]}
-                </span>
+                <span className="tp-sidebar-icon">{ICON_MAP[r.path]}</span>
 
                 {/* LABEL */}
                 {!collapsed && (
-                  <span className="tp-sidebar-label">
-                    {r.label}
-                  </span>
+                  <span className="tp-sidebar-label">{r.label}</span>
                 )}
 
                 {/* TOOLTIP */}
                 {collapsed && (
-                  <span className="tp-sidebar-tooltip">
-                    {r.label}
-                  </span>
+                  <span className="tp-sidebar-tooltip">{r.label}</span>
                 )}
               </NavLink>
             ))}
           </nav>
-
-
         </div>
       </aside>
     </>

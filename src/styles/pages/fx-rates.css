@@ -1,0 +1,70 @@
+/* ===============================
+   FX HEADER
+================================ */
+.tp-fx-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* ===============================
+   TABLE WRAPPER
+================================ */
+.tp-table-wrapper-fx {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ===============================
+   FX TABLE GRID
+================================ */
+.tp-table-fx-dashboard {
+  display: grid;
+  grid-template-columns:
+    1.5fr
+    1fr
+    1fr
+    1.5fr
+    1fr
+    1fr;
+
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 900px;
+}
+
+/* ===============================
+   FILTER WRAPPER (FIX BLOCK ISSUE)
+================================ */
+.tp-fx-universal-filter-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+/* Fix react-select inside modal */
+.tp-fx-universal-filter-wrapper .tp-select__menu {
+  position: relative !important;
+  top: auto !important;
+  transform: none !important;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+  .tp-table-fx-dashboard {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tp-table-fx-dashboard {
+    min-width: 700px;
+  }
+}
+
+

@@ -16,6 +16,7 @@ const TradeAssistant = lazy(()=> import("../pages/assistant/TradeAssistant.jsx")
 const Settings = lazy(() => import("../pages/settings/Settings.jsx"));
 const Feedback = lazy(() => import("../pages/feedback/Feedback.jsx"));
 const Scheduler = lazy(() => import("../pages/scheduler/Scheduler.jsx"));
+const FXRates = lazy(()=>import("../pages/fx-rate/FxRate.jsx"))
 
 export const DASHBOARD_ROUTES = [
   {
@@ -32,6 +33,11 @@ export const DASHBOARD_ROUTES = [
     label: "Exporter Reliability Intelligence",
     path: "/suppliers",
     component: Suppliers,
+  },
+  {
+    label: "Corridor FX-Rates",
+    path: "/fx-rates",
+    component: FXRates,
   },
   // {
   //   label: "Corridor FX & Cost Impact Monitort",
