@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import TradePulseCard from "../common/TradePulseCard";
 import { FiInfo } from "react-icons/fi";
+import Tooltip from "./Tooltip";
 
 const capitalize = (value) => {
   if (!value || typeof value !== "string") return "";
@@ -73,11 +74,12 @@ const TPMetricCard = ({
               <span className="tp-title-with-icon">
                 {title}
 
-                {/* {tooltip && (
-                  <span className="tp-info-icon">
-                    <FiInfo size={14} />
-                  </span>
-                )} */}
+                {tooltip && (
+                  // <span className="tp-info-icon">
+                  //   <FiInfo size={14} />
+                  // </span>
+                  <Tooltip tooltipClass="tp-overview-kpi-tooltip" content={tooltip}/>
+                )}
               </span>
             </div>
 
@@ -203,7 +205,7 @@ const TPMetricCard = ({
       </div>
 
       {/* ✅ FIXED TOOLTIP */}
-      {showTooltip && tooltip && (
+      {/* {showTooltip && tooltip && (
         <div
           className="tp-tooltip-floating"
           style={{
@@ -215,7 +217,7 @@ const TPMetricCard = ({
         >
           {tooltip}
         </div>
-      )}
+      )} */}
     </>
   );
 };

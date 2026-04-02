@@ -1,0 +1,106 @@
+/* Wrapper */
+.tp-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Icon */
+.tp-tooltip-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Tooltip Base */
+.tp-tooltip-box {
+  position: absolute;
+  min-width: 160px;
+  max-width: 250px;
+  padding: 8px 10px;
+  background: var(--bg-card-hover);
+  color: var(--text-secondary);
+  font-size: 12px;
+  border-radius: 6px;
+  z-index: 999;
+  line-height: 1.4;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  /* animation control */
+  --translateX: -50%;
+  --translateY: 5px;
+
+  transform: translate(var(--translateX), var(--translateY));
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+/* Visible State */
+.tp-tooltip-box.show {
+  opacity: 1;
+  visibility: visible;
+  --translateY: 0px;
+}
+
+/* ================= POSITIONING ================= */
+
+/* Top */
+.tp-tooltip-top {
+  bottom: 125%;
+  left: 50%;
+  --translateX: -50%;
+}
+
+/* Bottom */
+.tp-tooltip-bottom {
+  top: 125%;
+  left: 50%;
+  --translateX: -50%;
+}
+
+/* Left */
+.tp-tooltip-left {
+  right: 125%;
+  top: 50%;
+  --translateX: 0;
+  --translateY: -50%;
+}
+
+/* Right */
+.tp-tooltip-right {
+  left: 125%;
+  top: 50%;
+  --translateX: 0;
+  --translateY: -50%;
+}
+
+/* ================= OPTIONAL IMPROVEMENTS ================= */
+
+/* Better readability for long text */
+.tp-tooltip-box {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+/* Smooth fade (optional) */
+@keyframes tp-fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(var(--translateX), calc(var(--translateY) + 4px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--translateX), var(--translateY));
+  }
+}

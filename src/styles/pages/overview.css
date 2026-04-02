@@ -682,8 +682,8 @@
   align-items: flex-end;
 }
 
-.tp-tooltip-text {
-  /* visibility: hidden; */
+/* .tp-tooltip-text {
+  
   width: 300px;
   background-color: var(--bg-card-hover);
   color: var(--text-secondary);
@@ -705,7 +705,7 @@
     width: 250px;
     left: -170%;
   }
-}
+} */
 
 .tp-fx-pairs {
   display: flex;
@@ -769,10 +769,15 @@
 
 .tp-title-with-icon {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  /* align-items: center; */
+  gap: 3px;
 }
-
+.tp-overview-kpi-tooltip {
+  
+  max-width: 250px;
+  width: max-content;
+  
+}
 .tp-info-icon {
   cursor: pointer;
   display: flex;
