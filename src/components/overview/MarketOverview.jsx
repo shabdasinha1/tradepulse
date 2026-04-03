@@ -4,6 +4,9 @@ import { FiTruck } from "react-icons/fi";
 import { MdOutlineCurrencyPound } from "react-icons/md";
 import { CiFilter, CiLight } from "react-icons/ci";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setExchangeRates } from "../..//store/slices/fxSlice.jsx";
+import { normalizeFxRates } from "../../utils/fxNormalizer.jsx";
 
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
@@ -15,9 +18,11 @@ import {
   DashboardShippingCosts,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
-import useCurrencyConverter from "../../hooks/useCurrencyConverter";
+import useCurrency from "../../hooks/useCurrency.jsx";
 
 const MarketOverview = () => {
+  const dispatch = useDispatch();
+
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
   const [shipFilterOpen, setShipFilterOpen] = useState(false);
 
@@ -70,6 +75,16 @@ const MarketOverview = () => {
         startDate: activeStart,
         endDate: activeEnd,
       }),
+       onSuccess: (res) => {
+    const normalized = normalizeFxRates(res?.data || []);
+
+    dispatch(
+      setExchangeRates({
+        rates: normalized,
+        lastUpdated: new Date().toISOString(),
+      })
+    );
+  },
     enabled: !!activePartner,
     select: (res) =>
       (res?.data || []).map((item) => {
@@ -125,7 +140,7 @@ const MarketOverview = () => {
     enabled: !!reporterCode && !!partnerCode,
     staleTime: 1000 * 60 * 5,
   });
-  const { convert } = useCurrencyConverter(exchangeRates);
+  const { convert } = useCurrency();
   const formatDate = (dateString) => {
     if (!dateString) return "-";
 
