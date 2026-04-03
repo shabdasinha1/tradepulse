@@ -2,14 +2,14 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useSelector, shallowEqual } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FiSliders } from "react-icons/fi";
+import { CiFilter } from "react-icons/ci";
 
-import { ShippingHistoryData } from "../../services/DashboardService";
+import { DutySnapshotData } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
 import PageDisclaimer from "../../components/common/PageDisclaimer";
 import EmptyState from "../../components/common/EmptyState";
-import { CiFilter } from "react-icons/ci";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 
@@ -23,9 +23,12 @@ const Skeleton = React.memo(({ className = "" }) => (
 /* ===============================
    MAIN COMPONENT
 ================================ */
-const ShippingHistory = () => {
+const DutySnapshot = () => {
+  const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
-  const { reporterCode, corridor, currencySymbol } = useSelector(
+  const [error, setError] = useState(null);
+
+  const { reporterCode, corridor } = useSelector(
     (state) => state.corridor,
     shallowEqual,
   );
@@ -40,13 +43,13 @@ const ShippingHistory = () => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
   }, [corridor]);
 
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [error, setError] = useState(null);
-
   const observer = useRef(null);
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
 
+  /* ===============================
+     SCROLL SYNC
+  =============================== */
   const handleHeaderScroll = () => {
     if (bodyRef.current) {
       bodyRef.current.scrollLeft = headerRef.current.scrollLeft;
@@ -59,12 +62,16 @@ const ShippingHistory = () => {
     }
   };
 
+  /* ===============================
+     DATE FORMAT
+  =============================== */
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
+
   /* ===============================
      QUERY
   =============================== */
@@ -76,7 +83,7 @@ const ShippingHistory = () => {
     isLoading,
   } = useInfiniteQuery({
     queryKey: [
-      "shippingHistory",
+      "dutySnapshot",
       reporterCode,
       filters.partnerCode,
       filters.startDate,
@@ -84,14 +91,15 @@ const ShippingHistory = () => {
     ],
     queryFn: async ({ pageParam = 1 }) => {
       try {
-        const res = await ShippingHistoryData({
+        const res = await DutySnapshotData({
           reporterCode,
           partnerCode: filters.partnerCode,
           startDate: filters.startDate,
           endDate: filters.endDate,
           page: pageParam,
-          limit: 10,
+          limit: 20,
         });
+
         return res?.data || [];
       } catch (err) {
         setError(GetApiErrorMessage(err));
@@ -99,7 +107,7 @@ const ShippingHistory = () => {
       }
     },
     getNextPageParam: (lastPage, pages) => {
-      return lastPage.length < 10 ? undefined : pages.length + 1;
+      return lastPage.length < 20 ? undefined : pages.length + 1;
     },
     enabled: !!reporterCode && !!filters.partnerCode,
   });
@@ -141,46 +149,36 @@ const ShippingHistory = () => {
     return rows.map((item, index) => {
       const isLast = rows.length === index + 1;
 
-      const trendClass =
-        item.trend === "up"
-          ? "tp-pill-success"
-          : item.trend === "down"
-            ? "tp-pill-danger"
-            : "tp-pill-warning";
-
       return (
         <div
-          key={index}
+          key={item.hsCode + index}
           ref={isLast ? lastRowRef : null}
-          className="tp-table-row tp-table-suppliers"
+          className="tp-table-row tp-duty-row"
         >
-          <span>{item.route}</span>
-
-          <span className="text-center">{formatDate(item.date)}</span>
+          <span>
+            {item.hsCode} - {item.category}
+          </span>
 
           <span className="text-center">
-            {currencySymbol || ""}
-            {Number(item.value).toFixed(2)}
+            {item.date ? formatDate(item.date) : "-"}
           </span>
 
-          <span
-            className={`text-center ${
-              item.changePercent > 0
-                ? "tp-text-up"
-                : item.changePercent < 0
-                  ? "tp-text-down"
-                  : "tp-text-neutral"
-            }`}
-          >
-            {item.changePercent !== null ? `${item.changePercent}%` : "-"}
-          </span>
           <span className="text-center">
-            <span className={`tp-pill ${trendClass}`}>{item.trend}</span>
+            {item.minTariff !== null ? `${item.minTariff}%` : "-"}
           </span>
+
+          <span className="text-center">
+            {item.maxTariff !== null ? `${item.maxTariff}%` : "-"}
+          </span>
+
+          <span className="text-center">
+            {item.avgTariff !== null ? `${item.avgTariff}%` : "-"}
+          </span>
+          <span className="text-center">{item.range || "-"}</span>
         </div>
       );
     });
-  }, [rows, lastRowRef, currencySymbol]);
+  }, [rows, lastRowRef]);
 
   /* ===============================
      UI
@@ -191,13 +189,12 @@ const ShippingHistory = () => {
         {/* HEADER */}
         <header>
           <h1 className="tp-section-title">
-            Corridor <span>Shipping Cost </span>
+            Duty <span>Snapshot</span>
           </h1>
 
           <div className="tp-overview-sub-row">
             <p className="tp-section-sub">
-              Track historical freight rate movements across selected trade
-              corridor.
+              Analyze tariff structure across selected trade corridor.
             </p>
 
             <div className="tp-filter-btn-wrapper">
@@ -222,10 +219,18 @@ const ShippingHistory = () => {
         {/* DISCLAIMER */}
         <PageDisclaimer />
 
+        {/* ERROR */}
+        {error && (
+          <div className="tp-error-box">
+            <p>{error}</p>
+          </div>
+        )}
+
         {/* TABLE */}
         <div className="tp-card">
           <div className="tp-table-header">
-            <h3 className="tp-table-title">Shipping History</h3>
+            <h3 className="tp-table-title">Duty Breakdown</h3>
+
             <button
               className="tp-btn-outline tp-overview-filter-btn"
               onClick={() => setTableFilterOpen(true)}
@@ -235,19 +240,20 @@ const ShippingHistory = () => {
             </button>
           </div>
 
-          <div className="tp-table-wrapper-suppliers">
+          <div className="tp-table-wrapper-duty">
             {/* HEADER */}
             <div
               className="tp-table-head-scroll"
               ref={headerRef}
               onScroll={handleHeaderScroll}
             >
-              <div className="tp-table-head tp-table-suppliers">
-                <span>Route</span>
+              <div className="tp-table-head tp-duty-row">
+                <span>Product</span>
                 <span className="text-center">Date</span>
-                <span className="text-center">Price</span>
-                <span className="text-center">Change %</span>
-                <span className="text-center">Trend</span>
+                <span className="text-center">Min Tariff</span>
+                <span className="text-center">Max Tariff</span>
+                <span className="text-center">Avg Tariff</span>
+                <span className="text-center">Range</span>
               </div>
             </div>
 
@@ -257,17 +263,17 @@ const ShippingHistory = () => {
               ref={bodyRef}
               onScroll={handleBodyScroll}
             >
-              <div className="tp-table tp-table-shipping-history">
+              <div className="tp-table">
                 {rows.length === 0 && !isLoading ? (
-                  <EmptyState message="No Shipping History Found" />
+                  <EmptyState message="No Duty Data Found" />
                 ) : (
                   tableRows
                 )}
 
                 {(isLoading || isFetchingNextPage) &&
                   [...Array(5)].map((_, i) => (
-                    <div className="tp-table-row tp-table-suppliers" key={i}>
-                      {[...Array(5)].map((_, j) => (
+                    <div className="tp-table-row tp-duty-row" key={i}>
+                      {[...Array(6)].map((_, j) => (
                         <Skeleton key={j} className="sk-table-cell" />
                       ))}
                     </div>
@@ -281,12 +287,12 @@ const ShippingHistory = () => {
       {/* GLOBAL FILTER */}
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
 
+      {/* TABLE FILTER */}
       {tableFilterOpen && (
         <UniversalFilter
           showCorridor
-          showProduct
           showTimeRange
-          showRiskLevel
+          defaultValues={filters}
           onChange={(values) => {
             setFilters((prev) => ({ ...prev, ...values }));
             setTableFilterOpen(false);
@@ -297,4 +303,4 @@ const ShippingHistory = () => {
   );
 };
 
-export default ShippingHistory;
+export default DutySnapshot;

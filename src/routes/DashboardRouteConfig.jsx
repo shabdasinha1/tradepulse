@@ -26,7 +26,9 @@ const FXRates = lazy(() => import("../pages/fx-rate/FxRate.jsx"));
 const ShippingHistory = lazy(
   () => import("../pages/shipping history/ShippingHistory.jsx"),
 );
-
+const DutySnapshot = lazy(
+  () => import("../pages/duty snapshot/DutySnapshot.jsx"),
+);
 export const DASHBOARD_ROUTES = [
   {
     label: " Corridor Intelligence Dashboard",
@@ -49,9 +51,14 @@ export const DASHBOARD_ROUTES = [
     component: FXRates,
   },
   {
-    label: "Corridor Shipping History",
+    label: "Corridor Shipping Cost",
     path: "/shipping-history",
     component: ShippingHistory,
+  },
+  {
+    label: "Corridor Duty Snapshot",
+    path: "/duty-snapshot",
+    component: DutySnapshot,
   },
   // {
   //   label: "Corridor FX & Cost Impact Monitort",

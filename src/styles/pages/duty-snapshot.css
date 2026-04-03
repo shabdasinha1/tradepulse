@@ -1,0 +1,35 @@
+/* DUTY TABLE ROW */
+.tp-duty-row {
+  display: grid;
+  grid-template-columns:
+    2fr
+    120px
+    120px
+    120px
+    120px
+    120px;
+
+  gap: var(--space-md);
+  align-items: center;
+
+  min-width: 800px; /* balanced for responsiveness */
+}
+
+/* WRAPPER FIX (prevents outer scroll bug) */
+.tp-table-wrapper-duty {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .tp-duty-row {
+    min-width: 700px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tp-duty-row {
+    min-width: 620px;
+  }
+}

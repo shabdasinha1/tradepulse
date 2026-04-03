@@ -150,7 +150,7 @@ const FXRates = () => {
         {/* HEADER */}
         <header>
           <h1 className="tp-section-title">
-            Exchange Rate <span>Intelligence</span>
+            Corridor <span>FX-Rates</span>
           </h1>
 
           <div className="tp-overview-sub-row">

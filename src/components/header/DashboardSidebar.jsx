@@ -37,6 +37,7 @@ const ICON_MAP = {
   "/suppliers-manage": <FaUsers />,
   "/fx-rates": <FaUsers />,
   "/shipping-history": <FaUsers />,
+  "/duty-snapshot": <FaUsers />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";

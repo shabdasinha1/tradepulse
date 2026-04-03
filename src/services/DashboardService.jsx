@@ -407,3 +407,11 @@ export const ShippingHistoryData = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+/* ===============================
+   SHIPPING HISTORY
+================================ */
+export const DutySnapshotData = async (params = {}) => {
+  return Api.get("/app/api/duty/history", {
+    params: cleanParams(params),
+  });
+};
