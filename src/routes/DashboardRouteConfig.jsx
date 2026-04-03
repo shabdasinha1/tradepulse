@@ -29,6 +29,9 @@ const ShippingHistory = lazy(
 const DutySnapshot = lazy(
   () => import("../pages/duty snapshot/DutySnapshot.jsx"),
 );
+const TradeHistory = lazy(
+  () => import("../pages/trade history/TradeHistory.jsx"),
+);
 export const DASHBOARD_ROUTES = [
   {
     label: " Corridor Intelligence Dashboard",
@@ -59,6 +62,11 @@ export const DASHBOARD_ROUTES = [
     label: "Corridor Duty Snapshot",
     path: "/duty-snapshot",
     component: DutySnapshot,
+  },
+  {
+    label: "Corridor Trade History",
+    path: "/trade-history",
+    component: TradeHistory,
   },
   // {
   //   label: "Corridor FX & Cost Impact Monitort",

@@ -38,9 +38,10 @@ const ICON_MAP = {
   "/scheduler": <FiCalendar />,
   "/settings": <FiSettings />,
   "/suppliers-manage": <FaUsers />,
-"/fx-rates": <MdCurrencyExchange />,     
-"/shipping-history": <GiCargoShip />,    
-"/duty-snapshot": <FaFileInvoiceDollar />, 
+  "/fx-rates": <MdCurrencyExchange />,
+  "/shipping-history": <GiCargoShip />,
+  "/duty-snapshot": <FaFileInvoiceDollar />,
+  "/trade-history": <FaFileInvoiceDollar />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";

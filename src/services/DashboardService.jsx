@@ -408,10 +408,18 @@ export const ShippingHistoryData = async (params = {}) => {
   });
 };
 /* ===============================
-   SHIPPING HISTORY
+   DUTY SNAPSHOT
 ================================ */
 export const DutySnapshotData = async (params = {}) => {
   return Api.get("/app/api/duty/history", {
+    params: cleanParams(params),
+  });
+};
+/* ===============================
+   TRADE HISTORY
+================================ */
+export const TradeHistory = async (params = {}) => {
+  return Api.get("/app/api/trade/history", {
     params: cleanParams(params),
   });
 };
