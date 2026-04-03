@@ -29,12 +29,12 @@ const FXRowSkeleton = () => (
 );
 
 const FXRates = () => {
+  const reporterCode = useSelector((state) => state.corridor.reporterCode);
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
   const { filters, setFilters, updateFilter, resetFilters } =
     useUniversalFilters({
-      reporterCode: "", 
       partnerCode: "",
       product: "",
       startDate: "",
@@ -50,7 +50,7 @@ const FXRates = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
       queryKey: queryKeys.exchangeRates(
-        filters.reporterCode,
+        reporterCode,
         filters.partnerCode,
         filters.startDate,
         filters.endDate,
@@ -59,14 +59,14 @@ const FXRates = () => {
         const res = await FXRatesData({
           page: pageParam,
           limit: LIMIT,
-          reporterCode: filters.reporterCode,
+          reporterCode: reporterCode, 
           partnerCode: filters.partnerCode,
           startDate: filters.startDate,
           endDate: filters.endDate,
         });
         return res;
       },
-      enabled: !!filters.reporterCode && !!filters.partnerCode,
+      enabled: !!reporterCode && !!filters.partnerCode,
 
       getNextPageParam: (lastPage) => {
         if (!lastPage) return undefined;

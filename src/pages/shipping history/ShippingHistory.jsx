@@ -11,6 +11,7 @@ import PageDisclaimer from "../../components/common/PageDisclaimer";
 import EmptyState from "../../components/common/EmptyState";
 import { CiFilter } from "react-icons/ci";
 import UniversalFilter from "../../components/common/UniversalFilter";
+import useUniversalFilters from "../../hooks/useUniversalFilters";
 
 /* ===============================
    SKELETON
@@ -26,12 +27,15 @@ const ShippingHistory = () => {
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
   const {
     reporterCode,
-    partnerCode,
     corridor,
-    startDate,
-    endDate,
     currencySymbol,
   } = useSelector((state) => state.corridor, shallowEqual);
+
+ const { filters, setFilters } = useUniversalFilters({
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
 
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
@@ -75,17 +79,17 @@ const ShippingHistory = () => {
     queryKey: [
       "shippingHistory",
       reporterCode,
-      partnerCode,
-      startDate,
-      endDate,
+      filters.partnerCode,
+      filters.startDate,
+      filters.endDate,
     ],
     queryFn: async ({ pageParam = 1 }) => {
       try {
         const res = await ShippingHistoryData({
           reporterCode,
-          partnerCode,
-          startDate,
-          endDate,
+          partnerCode: filters.partnerCode,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
           page: pageParam,
           limit: 10,
         });
@@ -98,7 +102,7 @@ const ShippingHistory = () => {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length < 10 ? undefined : pages.length + 1;
     },
-    enabled: !!reporterCode && !!partnerCode,
+    enabled: !!reporterCode && !!filters.partnerCode,
   });
 
   /* ===============================
@@ -161,13 +165,12 @@ const ShippingHistory = () => {
           </span>
 
           <span
-            className={`text-center ${
-              item.changePercent > 0
+            className={`text-center ${item.changePercent > 0
                 ? "tp-text-up"
                 : item.changePercent < 0
                   ? "tp-text-down"
                   : "tp-text-neutral"
-            }`}
+              }`}
           >
             {item.changePercent !== null ? `${item.changePercent}%` : "-"}
           </span>
@@ -284,10 +287,10 @@ const ShippingHistory = () => {
           showProduct
           showTimeRange
           showRiskLevel
-          onChange={(values) => {
-            // handleFilterChange(values);
-            setTableFilterOpen(false);
-          }}
+         onChange={(values) => {
+  setFilters((prev) => ({ ...prev, ...values }));
+  setTableFilterOpen(false);
+}}
         />
       )}
     </section>
