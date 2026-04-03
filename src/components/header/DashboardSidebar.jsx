@@ -13,6 +13,9 @@ import {
   FiMessageSquare,
   FiCalendar,
 } from "react-icons/fi";
+import { MdCurrencyExchange } from "react-icons/md";
+import { GiCargoShip } from "react-icons/gi";
+import { FaFileInvoiceDollar } from "react-icons/fa";
 
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { MdOutlineInventory2 } from "react-icons/md";
@@ -35,9 +38,9 @@ const ICON_MAP = {
   "/scheduler": <FiCalendar />,
   "/settings": <FiSettings />,
   "/suppliers-manage": <FaUsers />,
-  "/fx-rates": <FaUsers />,
-  "/shipping-history": <FaUsers />,
-  "/duty-snapshot": <FaUsers />,
+"/fx-rates": <MdCurrencyExchange />,     
+"/shipping-history": <GiCargoShip />,    
+"/duty-snapshot": <FaFileInvoiceDollar />, 
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";
