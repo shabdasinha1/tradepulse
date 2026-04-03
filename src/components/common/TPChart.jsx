@@ -16,6 +16,7 @@ import {
 import TradePulseCard from "../common/TradePulseCard";
 import UniversalFilter from "../common/UniversalFilter";
 import { CiFilter } from "react-icons/ci";
+import { useSelector } from "react-redux";
 
 const TPChart = ({
   title,
@@ -26,6 +27,7 @@ const TPChart = ({
   onFilterChange,
   activeFilters
 }) => {
+  const { currencySymbol } = useSelector((state) => state.corridor);
   const [filterOpen, setFilterOpen] = useState(false);
   /* ===============================
      Y AXIS FORMATTER
@@ -39,11 +41,20 @@ const TPChart = ({
   };
 
   const yAxisFormatter = (value) => {
-    if (value >= 1_000_000_000) return formatNumber(value, 1_000_000_000, "B");
-    if (value >= 1_000_000) return formatNumber(value, 1_000_000, "M");
-    if (value >= 100_000) return formatNumber(value, 1_000, "K");
-    return value;
-  };
+  let formatted;
+
+  if (value >= 1_000_000_000) {
+    formatted = formatNumber(value, 1_000_000_000, "B");
+  } else if (value >= 1_000_000) {
+    formatted = formatNumber(value, 1_000_000, "M");
+  } else if (value >= 100_000) {
+    formatted = formatNumber(value, 1_000, "K");
+  } else {
+    formatted = value;
+  }
+
+  return `${currencySymbol || ""}${formatted}`;
+};
 
   /* ===============================
      RESPONSIVE

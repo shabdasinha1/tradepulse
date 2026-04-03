@@ -12,6 +12,7 @@ import EmptyState from "../../components/common/EmptyState";
 import { CiFilter } from "react-icons/ci";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
+import useCurrency from "../../hooks/useCurrency";
 
 /* ===============================
    SKELETON
@@ -30,6 +31,7 @@ const ShippingHistory = () => {
     shallowEqual,
   );
 
+  const { convert,isFxReady } = useCurrency();
   const { filters, setFilters } = useUniversalFilters({
     partnerCode: "",
     startDate: "",
@@ -158,11 +160,10 @@ const ShippingHistory = () => {
 
           <span className="text-center">{formatDate(item.date)}</span>
 
-          <span className="text-center">
-            {currencySymbol || ""}
-            {Number(item.value).toFixed(2)}
-          </span>
-
+       <span className="text-center">
+  {currencySymbol || ""}
+  {convert(item.value, item.unit || "USD").toFixed(2)}
+</span>
           <span
             className={`text-center ${
               item.changePercent > 0
@@ -180,7 +181,7 @@ const ShippingHistory = () => {
         </div>
       );
     });
-  }, [rows, lastRowRef, currencySymbol]);
+  }, [rows, lastRowRef, currencySymbol, convert,isFxReady]);
 
   /* ===============================
      UI
@@ -258,12 +259,13 @@ const ShippingHistory = () => {
               onScroll={handleBodyScroll}
             >
               <div className="tp-table tp-table-shipping-history">
-                {rows.length === 0 && !isLoading ? (
-                  <EmptyState message="No Shipping History Found" />
-                ) : (
-                  tableRows
-                )}
-
+               {!isFxReady ? (
+  <EmptyState message="Loading currency data..." />
+) : rows.length === 0 && !isLoading ? (
+  <EmptyState message="No Shipping History Found" />
+) : (
+  tableRows
+)}
                 {(isLoading || isFetchingNextPage) &&
                   [...Array(5)].map((_, i) => (
                     <div className="tp-table-row tp-table-suppliers" key={i}>

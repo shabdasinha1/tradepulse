@@ -12,6 +12,7 @@ import {
   FiChevronRight,
   FiMessageSquare,
   FiCalendar,
+  FiClock 
 } from "react-icons/fi";
 import { MdCurrencyExchange } from "react-icons/md";
 import { GiCargoShip } from "react-icons/gi";
@@ -41,7 +42,7 @@ const ICON_MAP = {
   "/fx-rates": <MdCurrencyExchange />,
   "/shipping-history": <GiCargoShip />,
   "/duty-snapshot": <FaFileInvoiceDollar />,
-  "/trade-history": <FaFileInvoiceDollar />,
+  "/trade-history": <FiClock/>,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";

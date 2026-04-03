@@ -30,30 +30,7 @@ function Overview() {
   const [filterOpen, setFilterOpen] = useState(false);
 const dispatch = useDispatch();
 
-const { data: fxData } = useQuery({
-  queryKey: ["fx-global", baseCurrency, quoteCurrency],
-  queryFn: () =>
-    DashboardExchangeRate({
-      reporterCode: reporterCode,
-      partnerCode: partnerCode,
-    }),
-  staleTime: 1000 * 60 * 10,
-});
 
-useEffect(() => {
-  if (!fxData?.data) return;
-
-  const normalized = normalizeFxRates(fxData.data);
-
-  if (Object.keys(normalized).length <= 1) return;
-
-  dispatch(
-    setExchangeRates({
-      rates: normalized,
-      lastUpdated: new Date().toISOString(),
-    })
-  );
-}, [fxData]);
   /* ===============================
      MARGIN STATE + CALCULATION
   ============================== */

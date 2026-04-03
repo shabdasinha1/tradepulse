@@ -152,9 +152,9 @@ const TradeHistory = () => {
           ref={isLast ? lastRowRef : null}
           className="tp-table-row tp-trade-row"
         >
-          <span>{item.hsCode}</span>
-          <span className="text-center">{item.reporterCode}</span>
-          <span className="text-center">{item.partnerCode}</span>
+          <span>{item.hsCode} - {item.product}</span>
+          <span className="text-center">{item.reporterName}</span>
+          <span className="text-center">{item.partnerName}</span>
 
           <span className="text-center">
             <span
