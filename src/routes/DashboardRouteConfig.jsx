@@ -7,16 +7,25 @@ import { lazy } from "react";
 const Overview = lazy(() => import("../pages/overview/Overview.jsx"));
 const Commodities = lazy(() => import("../pages/commodities/Commodities.jsx"));
 const Watchlist = lazy(() => import("../pages/watchlist/Watchlist.jsx"));
-const DashboardProduct = lazy(() => import("../pages/dashboard-product/DashboardProduct.jsx"));
+const DashboardProduct = lazy(
+  () => import("../pages/dashboard-product/DashboardProduct.jsx"),
+);
 const Forecast = lazy(() => import("../pages/forecast/Forecast.jsx"));
 const Report = lazy(() => import("../pages/report/Report.jsx"));
 const Suppliers = lazy(() => import("../pages/suppliers/Suppliers.jsx"));
-const SuppliersManage = lazy(() => import("../pages/suppliers/SuppliersManagement.jsx"));
-const TradeAssistant = lazy(()=> import("../pages/assistant/TradeAssistant.jsx"));
+const SuppliersManage = lazy(
+  () => import("../pages/suppliers/SuppliersManagement.jsx"),
+);
+const TradeAssistant = lazy(
+  () => import("../pages/assistant/TradeAssistant.jsx"),
+);
 const Settings = lazy(() => import("../pages/settings/Settings.jsx"));
 const Feedback = lazy(() => import("../pages/feedback/Feedback.jsx"));
 const Scheduler = lazy(() => import("../pages/scheduler/Scheduler.jsx"));
-const FXRates = lazy(()=>import("../pages/fx-rate/FxRate.jsx"))
+const FXRates = lazy(() => import("../pages/fx-rate/FxRate.jsx"));
+const ShippingHistory = lazy(
+  () => import("../pages/shipping history/ShippingHistory.jsx"),
+);
 
 export const DASHBOARD_ROUTES = [
   {
@@ -38,6 +47,11 @@ export const DASHBOARD_ROUTES = [
     label: "Corridor FX-Rates",
     path: "/fx-rates",
     component: FXRates,
+  },
+  {
+    label: "Corridor Shipping History",
+    path: "/shipping-history",
+    component: ShippingHistory,
   },
   // {
   //   label: "Corridor FX & Cost Impact Monitort",
@@ -61,7 +75,7 @@ export const DASHBOARD_ROUTES = [
   // },
   {
     label: "Feedback",
-    path: "/feedback-data", 
+    path: "/feedback-data",
     component: Feedback,
     adminOnly: true,
   },
@@ -75,7 +89,7 @@ export const DASHBOARD_ROUTES = [
     label: "Suppliers Management",
     path: "/suppliers-manage",
     component: SuppliersManage,
-     adminOnly: true,
+    adminOnly: true,
   },
   {
     label: "Settings",
@@ -83,5 +97,4 @@ export const DASHBOARD_ROUTES = [
     component: Settings,
     hidden: true,
   },
-  
 ];

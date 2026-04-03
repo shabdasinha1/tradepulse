@@ -36,6 +36,7 @@ const ICON_MAP = {
   "/settings": <FiSettings />,
   "/suppliers-manage": <FaUsers />,
   "/fx-rates": <FaUsers />,
+  "/shipping-history": <FaUsers />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";

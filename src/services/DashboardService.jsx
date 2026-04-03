@@ -399,3 +399,11 @@ export const FXRatesData = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+/* ===============================
+   SHIPPING HISTORY
+================================ */
+export const ShippingHistoryData = async (params = {}) => {
+  return Api.get("/app/api/shipping/history", {
+    params: cleanParams(params),
+  });
+};

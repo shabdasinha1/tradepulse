@@ -182,7 +182,7 @@ const FXRates = () => {
               <h3 className="tp-card-title">Exchange Rates</h3>
 
               <button
-                className="tp-btn-outline tp-filter-btn"
+                className="tp-btn-outline tp-filter-btn tp-overview-filter-btn"
                 onClick={() => setTableFilterOpen(true)}
               >
                 <CiFilter />
