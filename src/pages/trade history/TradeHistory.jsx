@@ -178,7 +178,7 @@ const TradeHistory = () => {
           </span>
 
           <span className="text-center">
-            {item.netWeight !== null ? item.netWeight : "-"}
+            {item.netWeight !== null ? item.netWeight : "-"} {item.unit}
           </span>
 
           <span className="text-center">
@@ -257,9 +257,9 @@ const TradeHistory = () => {
               onScroll={handleHeaderScroll}
             >
               <div className="tp-table-head tp-trade-row">
-                <span>HS Code</span>
-                <span className="text-center">Reporter</span>
-                <span className="text-center">Partner</span>
+                <span>Product</span>
+                <span className="text-center">Reporter Country</span>
+                <span className="text-center">Partner Country</span>
                 <span className="text-center">Flow</span>
                 <span className="text-center">Trade Value</span>
                 <span className="text-center">Quantity</span>
