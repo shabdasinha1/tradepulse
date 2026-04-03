@@ -9,8 +9,9 @@ import {
   DashboardKPIs,
 } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
-import useCurrencyConverter from "../../hooks/useCurrencyConverter";
+
 import { CiLight } from "react-icons/ci";
+import useCurrency from "../../hooks/useCurrency.jsx";
 const fillMissingYears = (data, valueKey = "value") => {
   if (!data?.length) return [];
 
@@ -51,8 +52,8 @@ const OverviewCharts = () => {
     baseCurrency,
     currencySymbol,
   } = useSelector((state) => state.corridor);
-  const exchangeRates = useMemo(() => [], []);
-  const { convert } = useCurrencyConverter(exchangeRates);
+
+  const { convert } = useCurrency();
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
 
@@ -201,10 +202,10 @@ const OverviewCharts = () => {
 
     if (!data) return;
 
-    const rawShipping = data.avgShippingCost?.value ?? 0;
-    const shippingCurrency = data.avgShippingCost?.unit || "USD";
+   const rawShipping = data.avgShippingCost?.value ?? 0;
+const shippingCurrency = data.avgShippingCost?.unit || "USD";
 
-    const convertedShipping = convert(rawShipping, shippingCurrency);
+const convertedShipping = convert(rawShipping, shippingCurrency) || 0;
 
     setMetrics({
       currency: {
@@ -246,7 +247,7 @@ const OverviewCharts = () => {
         description: data.exporterReliabilityScore?.description ?? "",
       },
     });
-  }, [kpiData, baseCurrency]);
+  }, [kpiData, baseCurrency,convert]);
   /* ===============================
    MARGIN IMPACT CALCULATION
 ================================= */

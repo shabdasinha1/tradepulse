@@ -4,9 +4,7 @@ import { FiTruck } from "react-icons/fi";
 import { MdOutlineCurrencyPound } from "react-icons/md";
 import { CiFilter, CiLight } from "react-icons/ci";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setExchangeRates } from "../..//store/slices/fxSlice.jsx";
-import { normalizeFxRates } from "../../utils/fxNormalizer.jsx";
+
 
 import TradePulseCard from "../common/TradePulseCard.jsx";
 import VerticalScroll from "../common/VerticalScroll.jsx";
@@ -21,7 +19,7 @@ import { queryKeys } from "../../utils/queryKeys";
 import useCurrency from "../../hooks/useCurrency.jsx";
 
 const MarketOverview = () => {
-  const dispatch = useDispatch();
+
 
   const [fxFilterOpen, setFxFilterOpen] = useState(false);
   const [shipFilterOpen, setShipFilterOpen] = useState(false);
@@ -75,16 +73,7 @@ const MarketOverview = () => {
         startDate: activeStart,
         endDate: activeEnd,
       }),
-       onSuccess: (res) => {
-    const normalized = normalizeFxRates(res?.data || []);
-
-    dispatch(
-      setExchangeRates({
-        rates: normalized,
-        lastUpdated: new Date().toISOString(),
-      })
-    );
-  },
+     
     enabled: !!activePartner,
     select: (res) =>
       (res?.data || []).map((item) => {
@@ -140,7 +129,7 @@ const MarketOverview = () => {
     enabled: !!reporterCode && !!partnerCode,
     staleTime: 1000 * 60 * 5,
   });
-  const { convert } = useCurrency();
+const { convert, isFxReady } = useCurrency();
   const formatDate = (dateString) => {
     if (!dateString) return "-";
 
@@ -150,6 +139,8 @@ const MarketOverview = () => {
       year: "numeric",
     });
   };
+
+
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -248,7 +239,9 @@ const MarketOverview = () => {
             <EmptyState message="No shipping data available" />
           ) : (
             <div className="tp-grid tp-ship-grid">
-              {shippingData.map((s, i) => (
+              {shippingData.map((s, i) =>{
+                const value = convert(s.cost, s.currency);
+                return (
                 <div key={i} className="tp-ship-card">
                   <div className="tp-ship-header">
                     <div>
@@ -263,10 +256,12 @@ const MarketOverview = () => {
                   </div>
 
                   <div className="tp-ship-footer">
-                    <strong className="tp-kpi-card-highliter">
-                      {/* <span className="tp-ship-port ">{s.currency}</span> {s.cost} */}
-                      {currencySymbol} {convert(s.cost, s.currency).toFixed(0)}
-                    </strong>
+              
+
+<strong className="tp-kpi-card-highliter">
+  {currencySymbol} {convert(s.cost, s.currency).toFixed(0)}
+</strong>
+          
 
                     <span
                       className={`tp-ship-change ${s.changePercent !== 0
@@ -280,7 +275,7 @@ const MarketOverview = () => {
                     </span>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </TradePulseCard>

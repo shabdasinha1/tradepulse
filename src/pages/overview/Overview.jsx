@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useMemo, useDeferredValue } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { GetCookie } from "../../utils/CookieManager.jsx";
 import { FiSliders } from "react-icons/fi";
 import { DashboardMarginImpact } from "../../services/DashboardService.jsx";
@@ -15,8 +15,12 @@ import { IoCalculatorOutline } from "react-icons/io5";
 import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
 
+import { setExchangeRates } from "../../store/slices/fxSlice";
+import { normalizeFxRates } from "../../utils/fxNormalizer";
+import { DashboardExchangeRate } from "../../services/DashboardService";
+
 function Overview() {
-  const { corridor, baseCurrency, quoteCurrency,currencySymbol } = useSelector(
+  const { reporterCode,partnerCode,corridor, baseCurrency, quoteCurrency,currencySymbol } = useSelector(
     (state) => state.corridor,
   );
   const shortCorridor = useMemo(() => {
@@ -24,7 +28,32 @@ function Overview() {
   }, [corridor]);
   const [displayName, setDisplayName] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
+const dispatch = useDispatch();
 
+const { data: fxData } = useQuery({
+  queryKey: ["fx-global", baseCurrency, quoteCurrency],
+  queryFn: () =>
+    DashboardExchangeRate({
+      reporterCode: reporterCode,
+      partnerCode: partnerCode,
+    }),
+  staleTime: 1000 * 60 * 10,
+});
+
+useEffect(() => {
+  if (!fxData?.data) return;
+
+  const normalized = normalizeFxRates(fxData.data);
+
+  if (Object.keys(normalized).length <= 1) return;
+
+  dispatch(
+    setExchangeRates({
+      rates: normalized,
+      lastUpdated: new Date().toISOString(),
+    })
+  );
+}, [fxData]);
   /* ===============================
      MARGIN STATE + CALCULATION
   ============================== */

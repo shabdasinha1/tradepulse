@@ -5,31 +5,30 @@ const useCurrency = () => {
   const { rates } = useSelector((state) => state.fx);
   const { baseCurrency } = useSelector((state) => state.corridor);
 
-  const convert = useMemo(() => {
-    return (amount, currency) => {
-      if (amount === null || amount === undefined) return 0;
+  const isFxReady = Object.keys(rates).length > 1; // ✅ NGN + at least 1 more
 
-      // ✅ same currency
-      if (currency === baseCurrency) return amount;
+const convert = useMemo(() => {
+  return (amount, currency) => {
+    if (amount === null || amount === undefined) return 0;
 
-      const sourceRate = rates[currency];
-      const targetRate = rates[baseCurrency];
+    if (!isFxReady) return amount;
 
-      // ❗ handle missing rates
-      if (!sourceRate || !targetRate) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("FX missing:", currency, baseCurrency);
-        }
-        return amount;
-      }
+    if (currency === baseCurrency) return amount;
 
-      const converted = amount * (sourceRate / targetRate);
+    const sourceRate = rates[currency];
+    const targetRate = rates[baseCurrency];
 
-      return isFinite(converted) ? converted : amount;
-    };
-  }, [rates, baseCurrency]);
+    if (!sourceRate || !targetRate) {
+      console.warn("FX missing:", currency, baseCurrency);
+      return amount;
+    }
 
-  return { convert };
+    const converted = amount * (sourceRate / targetRate);
+
+    return isFinite(converted) ? converted : amount;
+  };
+}, [rates, baseCurrency, isFxReady]);
+  return { convert, isFxReady };
 };
 
 export default useCurrency;
