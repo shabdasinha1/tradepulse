@@ -10,6 +10,7 @@ import EmptyState from "../../components/common/EmptyState";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import { FXRatesData } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
+import useUniversalFilters from "../../hooks/useUniversalFilters";
 
 const LIMIT = 20;
 
@@ -31,61 +32,41 @@ const FXRates = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
-  const { reporterCode, partnerCode, startDate, endDate } = useSelector(
-    (state) => state.corridor,
-  );
-
+  const { filters, setFilters, updateFilter, resetFilters } =
+    useUniversalFilters({
+      reporterCode: "", 
+      partnerCode: "",
+      product: "",
+      startDate: "",
+      endDate: "",
+    });
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
   const observer = useRef(null);
-  const filterRef = useRef(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // ignore if clicking inside filter
-      if (filterRef.current?.contains(event.target)) return;
-
-      // ignore react-select dropdowns
-      if (event.target.closest(".tp-select__menu")) return;
-
-      // ignore filter button click
-      if (event.target.closest(".tp-filter-btn")) return;
-
-      setTableFilterOpen(false);
-    };
-
-    if (tableFilterOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [tableFilterOpen]);
   /* ===============================
      FETCH DATA
   =============================== */
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
       queryKey: queryKeys.exchangeRates(
-        reporterCode,
-        partnerCode,
-        startDate,
-        endDate,
+        filters.reporterCode,
+        filters.partnerCode,
+        filters.startDate,
+        filters.endDate,
       ),
-
       queryFn: async ({ pageParam = 1 }) => {
         const res = await FXRatesData({
           page: pageParam,
           limit: LIMIT,
-          reporterCode,
-          partnerCode,
-          startDate,
-          endDate,
+          reporterCode: filters.reporterCode,
+          partnerCode: filters.partnerCode,
+          startDate: filters.startDate,
+          endDate: filters.endDate,
         });
-
-        return res; // full object
+        return res;
       },
+      enabled: !!filters.reporterCode && !!filters.partnerCode,
 
       getNextPageParam: (lastPage) => {
         if (!lastPage) return undefined;
@@ -93,9 +74,6 @@ const FXRates = () => {
           ? lastPage.page + 1
           : undefined;
       },
-
-      enabled: !!reporterCode && !!partnerCode,
-      refetchOnWindowFocus: false,
     });
 
   /* ===============================
@@ -164,6 +142,7 @@ const FXRates = () => {
     () => [...Array(5)].map((_, i) => <FXRowSkeleton key={i} />),
     [],
   );
+  console.log(tableFilterOpen);
 
   return (
     <section className="tp-section tp-section--dashboard">
@@ -289,18 +268,16 @@ const FXRates = () => {
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
 
       {tableFilterOpen && (
-        <div
-          className="tp-fx-universal-filter-wrapper"
-          ref={filterRef}
-          onClick={(e) => e.stopPropagation()} // ✅ IMPORTANT
-        >
-          <UniversalFilter
-            showCorridor
-            showTimeRange
-            showPartner
-            onClose={() => setTableFilterOpen(false)}
-          />
-        </div>
+        <UniversalFilter
+          showCorridor
+          showProduct
+          showTimeRange
+          defaultValues={filters}
+          onChange={(values) => {
+            setFilters((prev) => ({ ...prev, ...values }));
+            setTableFilterOpen(false);
+          }}
+        />
       )}
     </section>
   );
