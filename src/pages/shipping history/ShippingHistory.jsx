@@ -103,7 +103,7 @@ const ShippingHistory = () => {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length < 10 ? undefined : pages.length + 1;
     },
-    enabled: !!reporterCode && !!filters.partnerCode,
+    enabled: isFxReady && !!reporterCode && !!filters.partnerCode,
   });
 
   /* ===============================

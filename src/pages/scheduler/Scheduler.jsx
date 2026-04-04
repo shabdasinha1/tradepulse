@@ -41,7 +41,7 @@ const Scheduler = () => {
 
       const res = await GetSchedulerJobs();
 
-      setJobs(res.data || []);
+      setJobs(res || []);
     } catch (err) {
       console.error("Error fetching jobs", err);
     } finally {

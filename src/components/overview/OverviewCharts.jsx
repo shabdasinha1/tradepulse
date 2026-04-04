@@ -53,7 +53,7 @@ const OverviewCharts = () => {
     currencySymbol,
   } = useSelector((state) => state.corridor);
 
-  const { convert } = useCurrency();
+  const { convert , isFxReady} = useCurrency();
   const [priceHsCode, setPriceHsCode] = useState("27");
   const [demandHsCode, setDemandHsCode] = useState("27");
 
@@ -107,7 +107,7 @@ const OverviewCharts = () => {
         startDate: priceStartDate || undefined,
         endDate: priceEndDate || undefined,
       }),
-    enabled: !!reporterCode && !!pricePartner,
+    enabled: isFxReady && !!reporterCode && !!pricePartner,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -150,7 +150,7 @@ const OverviewCharts = () => {
         startDate: demandStartDate || undefined,
         endDate: demandEndDate || undefined,
       }),
-    enabled: !!reporterCode && !!demandPartner,
+    enabled: isFxReady && !!reporterCode && !!demandPartner,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -193,7 +193,7 @@ const OverviewCharts = () => {
         startDate: startDate || undefined,
         endDate: endDate || undefined,
       }),
-    enabled: !!reporterCode && !!partnerCode,
+    enabled: isFxReady && !!reporterCode && !!partnerCode,
     staleTime: 1000 * 60 * 5,
   });
 

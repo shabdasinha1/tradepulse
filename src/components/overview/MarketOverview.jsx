@@ -26,7 +26,7 @@ const MarketOverview = () => {
 
   const { currencySymbol, baseCurrency, reporterCode, partnerCode, startDate, endDate } =
     useSelector((state) => state.corridor);
-
+const { convert, isFxReady } = useCurrency();
   /* ===============================
      FX FILTER STATE
   =============================== */
@@ -74,7 +74,7 @@ const MarketOverview = () => {
         endDate: activeEnd,
       }),
      
-    enabled: !!activePartner,
+    enabled: isFxReady && !!activePartner,
     select: (res) =>
       (res?.data || []).map((item) => {
         const [base, quote] = item.pair.split("/");
@@ -126,10 +126,10 @@ const MarketOverview = () => {
         trend: item.trend?.toUpperCase(),
         lastUpdated: item.lastUpdated,
       })),
-    enabled: !!reporterCode && !!partnerCode,
+    enabled: isFxReady && !!reporterCode && !!partnerCode,
     staleTime: 1000 * 60 * 5,
   });
-const { convert, isFxReady } = useCurrency();
+
   const formatDate = (dateString) => {
     if (!dateString) return "-";
 

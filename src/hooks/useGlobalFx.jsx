@@ -4,10 +4,12 @@ import { useEffect } from "react";
 import { DashboardExchangeRate } from "../services/DashboardService";
 import { normalizeFxRates } from "../utils/fxNormalizer";
 import { setExchangeRates } from "../store/slices/fxSlice";
+import { IsAuthenticated } from "../utils/AuthHelper";
 
 const useGlobalFx = () => {
   const dispatch = useDispatch();
-
+const isAuthenticated = IsAuthenticated();
+const isDashboardPage = window.location.pathname.startsWith("/overview");
   const { reporterCode, partnerCode } = useSelector(
     (state) => state.corridor
   );
@@ -23,7 +25,7 @@ const useGlobalFx = () => {
         reporterCode,
         partnerCode,
       }),
-    enabled: !!reporterCode && !!partnerCode && !isFxAlreadyLoaded,
+    enabled: isAuthenticated && isDashboardPage && !!reporterCode && !!partnerCode && !isFxAlreadyLoaded,
     staleTime: 1000 * 60 * 10,
   });
 

@@ -4,14 +4,18 @@ import { IsAuthenticated, SetToken } from "../../utils/AuthHelper.jsx";
 import { LoginUser } from "../../services/AuthenticationService.jsx";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import { SetCookie } from "../../utils/CookieManager.jsx";
+import { useQueryClient } from "@tanstack/react-query";
+import { DashboardExchangeRate } from "../../services/DashboardService";
+import { store } from "../../store"; 
 
 const USER_FIRST_NAME_KEY = "tp_user_first_name";
 const USER_LAST_NAME_KEY = "tp_user_last_name";
 const USER_EMAIL_KEY = "tp_user_email";
 
 const Login = () => {
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -68,7 +72,23 @@ const Login = () => {
           SetCookie(USER_LAST_NAME_KEY, lastName);
         }
         if (email) {
-  SetCookie(USER_EMAIL_KEY, email);
+          SetCookie(USER_EMAIL_KEY, email);
+        }
+       
+const state = store.getState();
+const reporterCode = state.corridor.reporterCode;
+const partnerCode = state.corridor.partnerCode;
+
+// ✅ PREFETCH FX
+if (reporterCode && partnerCode) {
+  await queryClient.prefetchQuery({
+    queryKey: ["fx-global", reporterCode, partnerCode],
+    queryFn: () =>
+      DashboardExchangeRate({
+        reporterCode,
+        partnerCode,
+      }),
+  });
 }
 
         navigate("/overview", { replace: true });
@@ -82,7 +102,7 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
+
   return (
     <section className="tp-section tp-section--auth tp-auth">
       <div className="tp-container">
