@@ -46,6 +46,20 @@ const ICON_MAP = {
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";
+// ✅ GROUPING LOGIC
+const overviewRoutes = DASHBOARD_ROUTES.filter(
+  (r) => r.path === "/overview"
+);
+
+const tradeRoutes = DASHBOARD_ROUTES.filter((r) =>
+  ["/product", "/suppliers", "/trade-history"].includes(r.path)
+);
+
+const costRoutes = DASHBOARD_ROUTES.filter((r) =>
+  ["/fx-rates", "/shipping-history", "/duty-snapshot"].includes(r.path)
+);
+
+const adminRoutes = DASHBOARD_ROUTES.filter((r) => r.adminOnly);
 import { RemoveToken } from "../../utils/AuthHelper.jsx";
 import { useTheme } from "../../hooks/useTheme.jsx";
 import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
@@ -142,6 +156,32 @@ const DashboardSidebar = ({ open, setOpen }) => {
     navigate("/", { replace: true });
   };
 
+  const NavItem = ({ r }) => {
+  if (r.hidden) return null;
+
+  if (r.adminOnly && !isAdminUser()) return null;
+
+  return (
+    <NavLink
+      key={r.path}
+      to={r.path}
+      className={({ isActive }) =>
+        `tp-sidebar-link ${isActive ? "active" : ""}`
+      }
+    >
+      <span className="tp-sidebar-icon">{ICON_MAP[r.path]}</span>
+
+      {!collapsed && (
+        <span className="tp-sidebar-label">{r.label}</span>
+      )}
+
+      {collapsed && (
+        <span className="tp-sidebar-tooltip">{r.label}</span>
+      )}
+    </NavLink>
+  );
+};
+
   return (
     <>
       {/* MOBILE OVERLAY */}
@@ -189,44 +229,34 @@ const DashboardSidebar = ({ open, setOpen }) => {
 
           {/* ================= NAV ================= */}
           <nav className="tp-sidebar-nav">
-            {DASHBOARD_ROUTES.filter((r) => {
-              if (r.hidden) return false;
+          {/* ================= OVERVIEW ================= */}
+{!collapsed && <div className="tp-sidebar-group">Overview</div>}
+{overviewRoutes.map((r) => (
+  <NavItem r={r} />
+))}
 
-              // 🔥 Generic admin check
-              if (r.adminOnly && !isAdminUser()) {
-                return false;
-              }
+{/* ================= TRADE ================= */}
+{!collapsed && <div className="tp-sidebar-group">Trade Intelligence</div>}
+{tradeRoutes.map((r) => (
+  <NavItem r={r} />
+))}
 
-              return true;
-            }).map((r) => (
-              <NavLink
-                key={r.path}
-                to={r.path}
-                className={({ isActive }) =>
-                  `tp-sidebar-link ${isActive ? "active" : ""}`
-                }
-                onClick={() => {
-                  if (isMobile) {
-                    setTimeout(() => {
-                      setOpen(false);
-                    }, 0);
-                  }
-                }}
-              >
-                {/* ICON */}
-                <span className="tp-sidebar-icon">{ICON_MAP[r.path]}</span>
+{/* ================= COST ================= */}
+{!collapsed && <div className="tp-sidebar-group">Cost Intelligence</div>}
+{costRoutes.map((r) => (
+  <NavItem r={r} />
+))}
 
-                {/* LABEL */}
-                {!collapsed && (
-                  <span className="tp-sidebar-label">{r.label}</span>
-                )}
-
-                {/* TOOLTIP */}
-                {collapsed && (
-                  <span className="tp-sidebar-tooltip">{r.label}</span>
-                )}
-              </NavLink>
-            ))}
+{/* ================= ADMIN ================= */}
+{isAdminUser() && (
+  <>
+    {!collapsed && <div className="tp-sidebar-group admin">Admin Controls</div>}
+    {adminRoutes.map((r) => (
+      <NavItem r={r} />
+    ))}
+  </>
+)}
+           
           </nav>
         </div>
       </aside>
