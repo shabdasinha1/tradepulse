@@ -75,21 +75,23 @@ const TradeNews = () => {
 
       const res = await DashboardCorridorNews(params);
 
-      return res?.countryNews;
+      return {
+        country: res?.countryNews,
+        corridor: res?.corridorNews,
+      };
     },
-    onSuccess: (data) => {
-      console.log("PAGES:", data.pages);
-    },
-    getNextPageParam: (lastPage, pages) => {
-      console.log("LAST PAGE:", lastPage);
+    getNextPageParam: (lastPage) => {
+      const countryLast = lastPage?.country?.last;
+      const corridorLast = lastPage?.corridor?.last;
 
-      if (!lastPage?.content?.length) return undefined;
+      console.log("countryLast:", countryLast);
+      console.log("corridorLast:", corridorLast);
 
-      // stop when less than page size
-      if (lastPage.content.length < PAGE_SIZE) return undefined;
+      // ✅ stop only when BOTH finished
+      if (countryLast && corridorLast) return undefined;
 
-      // next page index (0 → 1 → 2 ...)
-      return pages.length;
+      // ✅ next page
+      return (lastPage?.country?.number ?? 0) + 1;
     },
     enabled: !!countryCode && !!partnerCountryCode,
   });
@@ -99,7 +101,26 @@ const TradeNews = () => {
      FLATTEN DATA
   ============================== */
   const news = useMemo(() => {
-    return data?.pages?.flatMap((p) => p?.content || []) || [];
+    if (!data?.pages) return [];
+
+    const merged = [];
+
+    data.pages.forEach((page) => {
+      const countryList = page?.country?.content || [];
+      const corridorList = page?.corridor?.content || [];
+
+      const maxLength = Math.max(countryList.length, corridorList.length);
+
+      for (let i = 0; i < maxLength; i++) {
+        // ✅ push country if exists
+        if (countryList[i]) merged.push(countryList[i]);
+
+        // ✅ push corridor if exists
+        if (corridorList[i]) merged.push(corridorList[i]);
+      }
+    });
+
+    return merged;
   }, [data]);
 
   /* ===============================
@@ -165,13 +186,13 @@ const TradeNews = () => {
                 </span>
               </div>
 
-              <button
+              {/* <button
                 className="tp-btn-outline tp-overview-filter-btn"
                 onClick={() => setFilterOpen(true)}
               >
                 <FiSliders />
                 Global Filters
-              </button>
+              </button> */}
             </div>
           </div>
         </header>
@@ -185,13 +206,13 @@ const TradeNews = () => {
             <div className="tp-card-header tp-trade-news-table-header">
               <h3 className="tp-card-title">Latest Trade News</h3>
 
-              <button
+              {/* <button
                 className="tp-btn-outline tp-overview-filter-btn"
                 onClick={() => setTableFilterOpen(true)}
               >
                 <CiFilter />
                 Filters
-              </button>
+              </button> */}
             </div>
           }
         >
@@ -232,6 +253,15 @@ const TradeNews = () => {
                         <div className="tp-news-row-meta">
                           <span>{item.source}</span>
                           <span>{formatDate(item.publishedAt)}</span>
+                          <span className="tp-trade-news-countries">
+                            {item?.countries.map((name) => {
+                              return (
+                                <span className="tp-pill tp-pill-primary">
+                                  {name}
+                                </span>
+                              );
+                            })}
+                          </span>
                         </div>
                       </div>
 
@@ -257,9 +287,9 @@ const TradeNews = () => {
           </div>
         </TradePulseCard>
       </div>
-      {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
+      {/* {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />} */}
 
-      {tableFilterOpen && (
+      {/* {tableFilterOpen && (
         <UniversalFilter
           showCorridor
           showAlertType
@@ -278,7 +308,7 @@ const TradeNews = () => {
             setTableFilterOpen(false);
           }}
         />
-      )}
+      )} */}
     </section>
   );
 };
