@@ -32,6 +32,10 @@ export default function useUniversalFilters(defaultValues = {}) {
     quoteCurrency: defaultValues.quoteCurrency || "",
     origin: defaultValues.origin || "",
     destination: defaultValues.destination || "",
+
+  
+  sector: defaultValues.sector || "",
+  alertType: defaultValues.alertType || "",
   });
 
   /* ===============================
@@ -106,6 +110,8 @@ export default function useUniversalFilters(defaultValues = {}) {
     quoteCurrency: "",
     origin: "",
     destination: "",
+     sector: "",
+    alertType: "",
   });
 };
 

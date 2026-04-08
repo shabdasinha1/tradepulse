@@ -25,6 +25,9 @@ const UniversalFilter = ({
   showOrigin = false,
   showDestination = false,
   showRegion = false,
+    showSector = false,
+  showAlertType = false,
+
   defaultValues = {},
   onChange,
   className = "",
@@ -68,6 +71,21 @@ const UniversalFilter = ({
     { value: "ACTIVE", label: "Active" },
     { value: "DORMANT", label: "Dormant" },
   ];
+
+  const sectorOptions = [
+  { value: "", label: "All" },
+  { value: "AGRICULTURE", label: "Agriculture" },
+  { value: "ENERGY", label: "Energy" },
+  { value: "LOGISTICS", label: "Logistics" },
+  { value: "MANUFACTURING", label: "Manufacturing" },
+];
+
+const alertTypeOptions = [
+  { value: "", label: "All" },
+  { value: "DISRUPTION", label: "Disruption" },
+  { value: "POLICY", label: "Policy" },
+  { value: "OPPORTUNITY", label: "Opportunity" },
+];
 
   /* ===============================
      COUNTRIES QUERY
@@ -581,6 +599,48 @@ const UniversalFilter = ({
                 />
               </div>
             )}
+
+            {showSector && (
+  <div className="tp-form-group">
+    <label>Sector</label>
+
+    <Select
+      className="tp-select tp-filter-control"
+      classNamePrefix="tp-select"
+      components={{
+        DropdownIndicator: () => null,
+        IndicatorSeparator: () => null,
+      }}
+      options={sectorOptions}
+      value={sectorOptions.find((o) => o.value === filters.sector)}
+      onChange={(opt) =>
+        updateFilter("sector", opt?.value || "")
+      }
+      placeholder="Select Sector"
+    />
+  </div>
+)}
+
+{showAlertType && (
+  <div className="tp-form-group">
+    <label>Alert Type</label>
+
+    <Select
+      className="tp-select tp-filter-control"
+      classNamePrefix="tp-select"
+      components={{
+        DropdownIndicator: () => null,
+        IndicatorSeparator: () => null,
+      }}
+      options={alertTypeOptions}
+      value={alertTypeOptions.find((o) => o.value === filters.alertType)}
+      onChange={(opt) =>
+        updateFilter("alertType", opt?.value || "")
+      }
+      placeholder="Select Alert Type"
+    />
+  </div>
+)}
           </div>
         </div>
 
