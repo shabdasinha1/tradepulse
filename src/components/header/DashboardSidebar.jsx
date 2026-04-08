@@ -12,7 +12,8 @@ import {
   FiChevronRight,
   FiMessageSquare,
   FiCalendar,
-  FiClock 
+  FiClock,
+  FiGlobe,
 } from "react-icons/fi";
 import { MdCurrencyExchange } from "react-icons/md";
 import { GiCargoShip } from "react-icons/gi";
@@ -42,21 +43,20 @@ const ICON_MAP = {
   "/fx-rates": <MdCurrencyExchange />,
   "/shipping-history": <GiCargoShip />,
   "/duty-snapshot": <FaFileInvoiceDollar />,
-  "/trade-history": <FiClock/>,
+  "/trade-history": <FiClock />,
+  "/trade-news": <FiGlobe />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";
 // ✅ GROUPING LOGIC
-const overviewRoutes = DASHBOARD_ROUTES.filter(
-  (r) => r.path === "/overview"
-);
+const overviewRoutes = DASHBOARD_ROUTES.filter((r) => r.path === "/overview");
 
 const tradeRoutes = DASHBOARD_ROUTES.filter((r) =>
-  ["/product", "/suppliers", "/trade-history"].includes(r.path)
+  ["/product", "/suppliers", "/trade-history", "/trade-news"].includes(r.path),
 );
 
 const costRoutes = DASHBOARD_ROUTES.filter((r) =>
-  ["/fx-rates", "/shipping-history", "/duty-snapshot"].includes(r.path)
+  ["/fx-rates", "/shipping-history", "/duty-snapshot"].includes(r.path),
 );
 
 const adminRoutes = DASHBOARD_ROUTES.filter((r) => r.adminOnly);
@@ -157,30 +157,26 @@ const DashboardSidebar = ({ open, setOpen }) => {
   };
 
   const NavItem = ({ r }) => {
-  if (r.hidden) return null;
+    if (r.hidden) return null;
 
-  if (r.adminOnly && !isAdminUser()) return null;
+    if (r.adminOnly && !isAdminUser()) return null;
 
-  return (
-    <NavLink
-      key={r.path}
-      to={r.path}
-      className={({ isActive }) =>
-        `tp-sidebar-link ${isActive ? "active" : ""}`
-      }
-    >
-      <span className="tp-sidebar-icon">{ICON_MAP[r.path]}</span>
+    return (
+      <NavLink
+        key={r.path}
+        to={r.path}
+        className={({ isActive }) =>
+          `tp-sidebar-link ${isActive ? "active" : ""}`
+        }
+      >
+        <span className="tp-sidebar-icon">{ICON_MAP[r.path]}</span>
 
-      {!collapsed && (
-        <span className="tp-sidebar-label">{r.label}</span>
-      )}
+        {!collapsed && <span className="tp-sidebar-label">{r.label}</span>}
 
-      {collapsed && (
-        <span className="tp-sidebar-tooltip">{r.label}</span>
-      )}
-    </NavLink>
-  );
-};
+        {collapsed && <span className="tp-sidebar-tooltip">{r.label}</span>}
+      </NavLink>
+    );
+  };
 
   return (
     <>
@@ -229,34 +225,39 @@ const DashboardSidebar = ({ open, setOpen }) => {
 
           {/* ================= NAV ================= */}
           <nav className="tp-sidebar-nav">
-          {/* ================= OVERVIEW ================= */}
-{!collapsed && <div className="tp-sidebar-group">Overview</div>}
-{overviewRoutes.map((r) => (
-  <NavItem r={r} />
-))}
+            {/* ================= OVERVIEW ================= */}
+            {!collapsed && <div className="tp-sidebar-group">Overview</div>}
+            {overviewRoutes.map((r) => (
+              <NavItem r={r} />
+            ))}
 
-{/* ================= TRADE ================= */}
-{!collapsed && <div className="tp-sidebar-group">Trade Intelligence</div>}
-{tradeRoutes.map((r) => (
-  <NavItem r={r} />
-))}
+            {/* ================= TRADE ================= */}
+            {!collapsed && (
+              <div className="tp-sidebar-group">Trade Intelligence</div>
+            )}
+            {tradeRoutes.map((r) => (
+              <NavItem r={r} />
+            ))}
 
-{/* ================= COST ================= */}
-{!collapsed && <div className="tp-sidebar-group">Cost Intelligence</div>}
-{costRoutes.map((r) => (
-  <NavItem r={r} />
-))}
+            {/* ================= COST ================= */}
+            {!collapsed && (
+              <div className="tp-sidebar-group">Cost Intelligence</div>
+            )}
+            {costRoutes.map((r) => (
+              <NavItem r={r} />
+            ))}
 
-{/* ================= ADMIN ================= */}
-{isAdminUser() && (
-  <>
-    {!collapsed && <div className="tp-sidebar-group admin">Admin Controls</div>}
-    {adminRoutes.map((r) => (
-      <NavItem r={r} />
-    ))}
-  </>
-)}
-           
+            {/* ================= ADMIN ================= */}
+            {isAdminUser() && (
+              <>
+                {!collapsed && (
+                  <div className="tp-sidebar-group admin">Admin Controls</div>
+                )}
+                {adminRoutes.map((r) => (
+                  <NavItem r={r} />
+                ))}
+              </>
+            )}
           </nav>
         </div>
       </aside>

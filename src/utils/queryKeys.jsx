@@ -3,15 +3,21 @@ export const queryKeys = {
 
   corridors: (reporterCode) => ["corridors", reporterCode],
 
-suppliers: ({ partnerRegion, tradeflow, reporterCode, partnerCode, isInitialLoad }) => [
-  "suppliers",
-  partnerRegion,
-  tradeflow,
-  reporterCode,
-  partnerCode,
-  isInitialLoad,
-],
-  
+  suppliers: ({
+    partnerRegion,
+    tradeflow,
+    reporterCode,
+    partnerCode,
+    isInitialLoad,
+  }) => [
+    "suppliers",
+    partnerRegion,
+    tradeflow,
+    reporterCode,
+    partnerCode,
+    isInitialLoad,
+  ],
+
   feedback: (page, limit) => ["feedback", page, limit],
 
   marginImpact: (budget, baseCurrency, quoteCurrency) => [
@@ -73,17 +79,18 @@ suppliers: ({ partnerRegion, tradeflow, reporterCode, partnerCode, isInitialLoad
     endDate,
   ],
 
-shippingCosts: (reporterCode, partnerCode, startDate, endDate) => [
-  "shippingCosts",
-  reporterCode,
-  partnerCode,
-  startDate,
-  endDate,
-],
- corridorNews: (countryCode, page = 0, size = 10) => [
-  "corridorNews",
-  countryCode,
-  page,
-  size,
-],
+  shippingCosts: (reporterCode, partnerCode, startDate, endDate) => [
+    "shippingCosts",
+    reporterCode,
+    partnerCode,
+    startDate,
+    endDate,
+  ],
+  corridorNews: (countryCode, page = 0, size = 10) => [
+    "corridorNews",
+    countryCode,
+    page,
+    size,
+  ],
+  corridorNewsFull: (filters) => ["corridor-news-full", filters],
 };

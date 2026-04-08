@@ -423,3 +423,12 @@ export const TradeHistory = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+
+/* ===============================
+   CORRIDOR TRADE NEWS (NEW)
+================================ */
+export const DashboardCorridorNews = async (params = {}) => {
+  return Api.get("/news-int/api/news/corridor", {
+    params: cleanParams(params),
+  });
+};

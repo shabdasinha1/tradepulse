@@ -1,0 +1,118 @@
+.tp-trade-news-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+/* ===============================
+   NEWS LIST
+================================ */
+.tp-news-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* ===============================
+   CARD ROW (MAIN UI)
+================================ */
+.tp-news-row-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+
+  transition: all 0.2s ease;
+}
+
+.tp-news-row-card:hover {
+  background: var(--bg-card-hover);
+}
+
+/* ===============================
+   LEFT SIDE
+================================ */
+.tp-news-row-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 75%;
+}
+
+
+/* META */
+.tp-news-row-meta {
+  display: flex;
+  gap: var(--space-lg);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+/* ===============================
+   RIGHT SIDE (BADGES)
+================================ */
+.tp-news-row-right {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+  min-width: 120px;
+}
+
+.tp-news-row-right .tp-badge {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ===============================
+   BADGE COLORS (OPTIONAL)
+================================ */
+.tp-badge-market {
+  background: rgba(0, 123, 255, 0.1);
+  color: #007bff;
+}
+
+.tp-badge-policy {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+/* FIXED HEIGHT CONTAINER */
+.tp-news-table-container {
+  height: 55vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  display: flex;
+  flex-direction: column;
+
+  scroll-behavior: smooth;
+}
+
+/* optional scrollbar styling */
+.tp-news-table-container::-webkit-scrollbar {
+  width: 6px;
+}
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .tp-news-row-left {
+    max-width: 100%;
+  }
+
+  .tp-news-row-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .tp-news-row-right {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+  }
+}
