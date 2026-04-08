@@ -6,11 +6,10 @@ import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import EmptyState from "../../components/common/EmptyState.jsx";
 
 import { DashboardCorridorNews } from "../../services/DashboardService.jsx";
-import { FiSliders } from "react-icons/fi";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 import { CiFilter } from "react-icons/ci";
 import UniversalFilter from "../../components/common/UniversalFilter.jsx";
-import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
+import useUniversalFilters from "../../hooks/useUniversalFilters";
 
 /* ===============================
    MAIN COMPONENT
@@ -20,124 +19,97 @@ const TradeNews = () => {
     (state) => state.corridor,
   );
 
-  const observer = useRef();
   const corridorLabel = `${countryCode || ""} → ${partnerCountryCode || ""}`;
+  const containerRef = useRef(null);
+  const observer = useRef();
 
-  const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
-  const [appliedFilters, setAppliedFilters] = useState({
-    partnerCode: "",
+  // ===============================
+  // USE UNIVERSAL FILTERS HOOK
+  // ===============================
+  const { filters, setFilters } = useUniversalFilters({
+    corridorFrom: countryCode,
+    corridorTo: partnerCountryCode,
     sector: "",
     alertType: "",
-    startDate: "",
-    endDate: "",
   });
 
-  const PAGE_SIZE = 5;
-
-  const containerRef = useRef(null);
-  const queryClient = useQueryClient();
   const buildParams = (pageParam = 0, filters) => ({
-    importer: countryCode,
-    exporter: partnerCountryCode,
+    importer: filters.corridorFrom,
+    exporter: filters.corridorTo,
     page: pageParam,
     size: 5,
-
     sector: filters.sector || undefined,
     alertType: filters.alertType || undefined,
   });
-  /* ===============================
-     FETCH (INFINITE QUERY)
-  ============================== */
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: [
-      "tradeNews",
-      {
+
+  // ===============================
+  // QUERY
+  // ===============================
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: [
+        "tradeNews",
         countryCode,
         partnerCountryCode,
-        ...appliedFilters,
+        filters.sector,
+        filters.alertType,
+        filters.startDate,
+        filters.endDate,
+      ],
+      queryFn: async ({ pageParam = 0 }) => {
+        const params = buildParams(pageParam, filters);
+        const res = await DashboardCorridorNews(params);
+
+        return {
+          country: res?.countryNews,
+          corridor: res?.corridorNews,
+        };
       },
-    ],
-    queryFn: async ({ pageParam = 0, queryKey }) => {
-      const [, filters] = queryKey;
+      getNextPageParam: (lastPage) => {
+        const countryLast = lastPage?.country?.last;
+        const corridorLast = lastPage?.corridor?.last;
+        if (countryLast && corridorLast) return undefined;
+        return (lastPage?.country?.number ?? 0) + 1;
+      },
+      enabled: !!countryCode && !!partnerCountryCode,
+    });
 
-      const params = buildParams(pageParam, filters);
-
-      console.log("NEWS API PARAMS:", params);
-
-      const res = await DashboardCorridorNews(params);
-
-      return {
-        country: res?.countryNews,
-        corridor: res?.corridorNews,
-      };
-    },
-    getNextPageParam: (lastPage) => {
-      const countryLast = lastPage?.country?.last;
-      const corridorLast = lastPage?.corridor?.last;
-
-      console.log("countryLast:", countryLast);
-      console.log("corridorLast:", corridorLast);
-
-      // ✅ stop only when BOTH finished
-      if (countryLast && corridorLast) return undefined;
-
-      // ✅ next page
-      return (lastPage?.country?.number ?? 0) + 1;
-    },
-    enabled: !!countryCode && !!partnerCountryCode,
-  });
-  //   console.log(data);
-
-  /* ===============================
-     FLATTEN DATA
-  ============================== */
+  // ===============================
+  // FLATTEN DATA
+  // ===============================
   const news = useMemo(() => {
     if (!data?.pages) return [];
-
     const merged = [];
-
     data.pages.forEach((page) => {
       const countryList = page?.country?.content || [];
       const corridorList = page?.corridor?.content || [];
-
       const maxLength = Math.max(countryList.length, corridorList.length);
-
       for (let i = 0; i < maxLength; i++) {
-        // ✅ push country if exists
         if (countryList[i]) merged.push(countryList[i]);
-
-        // ✅ push corridor if exists
         if (corridorList[i]) merged.push(corridorList[i]);
       }
     });
-
     return merged;
   }, [data]);
 
-  /* ===============================
-     DATE FORMAT
-  ============================== */
+  // ===============================
+  // DATE FORMAT
+  // ===============================
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-GB", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
-  /* ===============================
-     INFINITE SCROLL
-  ============================== */
+
+  // ===============================
+  // INFINITE SCROLL
+  // ===============================
   const lastItemRef = useCallback(
     (node) => {
-      if (isLoading || isFetchingNextPage) return; // ✅ ADD isLoading
+      if (isLoading || isFetchingNextPage) return;
       if (!containerRef.current) return;
 
       if (observer.current) observer.current.disconnect();
@@ -148,11 +120,7 @@ const TradeNews = () => {
             fetchNextPage();
           }
         },
-        {
-          root: containerRef.current,
-          rootMargin: "200px",
-          threshold: 0.1,
-        },
+        { root: containerRef.current, rootMargin: "200px", threshold: 0.1 },
       );
 
       if (node) observer.current.observe(node);
@@ -160,9 +128,19 @@ const TradeNews = () => {
     [isLoading, isFetchingNextPage, hasNextPage, fetchNextPage],
   );
 
-  /* ===============================
-     RENDER
-  ============================== */
+  // ===============================
+  // NORMALIZE FILTERS
+  // ===============================
+  const normalizeFilters = (f) => ({
+    sector: f.sector || "",
+    alertType: f.alertType || "",
+    startDate: f.startDate || "",
+    endDate: f.endDate || "",
+  });
+
+  // ===============================
+  // RENDER
+  // ===============================
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -171,7 +149,6 @@ const TradeNews = () => {
           <h1 className="tp-section-title">
             Corridor <span>Trade News</span>
           </h1>
-
           <div className="tp-overview-sub-row">
             <p className="tp-section-sub">
               Stay updated with real-time trade intelligence, policy shifts, and
@@ -186,18 +163,17 @@ const TradeNews = () => {
                 </span>
               </div>
 
-              {/* <button
+              <button
                 className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setFilterOpen(true)}
+                onClick={() => setTableFilterOpen(true)}
               >
-                <FiSliders />
-                Global Filters
-              </button> */}
+                <CiFilter />
+                Filters
+              </button>
             </div>
           </div>
         </header>
 
-        {/* DISCLAIMER */}
         <PageDisclaimer />
 
         {/* NEWS LIST */}
@@ -205,14 +181,13 @@ const TradeNews = () => {
           header={
             <div className="tp-card-header tp-trade-news-table-header">
               <h3 className="tp-card-title">Latest Trade News</h3>
-
-              {/* <button
+              <button
                 className="tp-btn-outline tp-overview-filter-btn"
                 onClick={() => setTableFilterOpen(true)}
               >
                 <CiFilter />
                 Filters
-              </button> */}
+              </button>
             </div>
           }
         >
@@ -228,7 +203,6 @@ const TradeNews = () => {
               <div className="tp-news-list">
                 {news.map((item, index) => {
                   const isLast = news.length === index + 1;
-
                   return (
                     <div
                       key={index}
@@ -245,39 +219,36 @@ const TradeNews = () => {
                         >
                           {item.title}
                         </a>
-
                         {item.summary && (
                           <p className="tp-news-summary">{item.summary}</p>
                         )}
-
                         <div className="tp-news-row-meta">
                           <span>{item.source}</span>
-                          <span>{formatDate(item.publishedAt)}</span>
+                          <span className="tp-trade-news-date">
+                            {formatDate(item.publishedAt)}
+                          </span>
                           <span className="tp-trade-news-countries">
-                            {item?.countries.map((name) => {
-                              return (
-                                <span className="tp-pill tp-pill-primary">
-                                  {name}
-                                </span>
-                              );
-                            })}
+                            {item?.countries.map((name) => (
+                              <span className="tp-pill tp-pill-primary">
+                                {name}
+                              </span>
+                            ))}
                           </span>
                         </div>
                       </div>
 
                       {/* RIGHT */}
                       <div className="tp-news-row-right">
-                        <span className="tp-badge">{item.sector}</span>
-                        <span
-                          className={`tp-badge tp-badge-${item.alertType?.toLowerCase() || "primary"}`}
-                        >
+                        <span className="tp-badge tp-badge-warning">
+                          {item.sector}
+                        </span>
+                        <span className="tp-badge tp-badge-primary">
                           {item.alertType}
                         </span>
                       </div>
                     </div>
                   );
                 })}
-                {/* LOADING MORE */}
                 {isFetchingNextPage &&
                   [...Array(3)].map((_, i) => (
                     <div className="tp-news-row-card skeleton" key={i} />
@@ -287,28 +258,32 @@ const TradeNews = () => {
           </div>
         </TradePulseCard>
       </div>
-      {/* {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />} */}
 
-      {/* {tableFilterOpen && (
+      {/* TABLE FILTER */}
+      {tableFilterOpen && (
         <UniversalFilter
           showCorridor
           showAlertType
           showSector
+          defaultValues={filters}
           onClose={() => setTableFilterOpen(false)}
-          onChange={(filters) => {
-            console.log("APPLIED FILTERS:", filters);
+          onChange={(values) => {
+            const normalizedNew = normalizeFilters(values);
+            const normalizedOld = normalizeFilters(filters);
 
-            // ✅ clear old pages (important)
-            queryClient.removeQueries({
-              queryKey: ["tradeNews"],
-              exact: false,
-            });
+            // ✅ Avoid API call if nothing changed
+            const isSame =
+              JSON.stringify(normalizedNew) === JSON.stringify(normalizedOld);
+            if (isSame) {
+              setTableFilterOpen(false);
+              return;
+            }
 
-            setAppliedFilters(filters);
+            setFilters(normalizedNew);
             setTableFilterOpen(false);
           }}
         />
-      )} */}
+      )}
     </section>
   );
 };
