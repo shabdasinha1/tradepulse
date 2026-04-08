@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useCallback, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
@@ -26,7 +26,27 @@ const TradeNews = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    partnerCode: "",
+    sector: "",
+    alertType: "",
+    startDate: "",
+    endDate: "",
+  });
+
+  const PAGE_SIZE = 5;
+
   const containerRef = useRef(null);
+  const queryClient = useQueryClient();
+  const buildParams = (pageParam = 0, filters) => ({
+    importer: countryCode,
+    exporter: partnerCountryCode,
+    page: pageParam,
+    size: 5,
+
+    sector: filters.sector || undefined,
+    alertType: filters.alertType || undefined,
+  });
   /* ===============================
      FETCH (INFINITE QUERY)
   ============================== */
@@ -38,24 +58,38 @@ const TradeNews = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["tradeNews", countryCode, partnerCountryCode],
-    queryFn: async ({ pageParam = 0 }) => {
-      const res = await DashboardCorridorNews({
-        importer: countryCode,
-        exporter: partnerCountryCode,
-        page: pageParam,
-        size: 5,
-      });
+    queryKey: [
+      "tradeNews",
+      {
+        countryCode,
+        partnerCountryCode,
+        ...appliedFilters,
+      },
+    ],
+    queryFn: async ({ pageParam = 0, queryKey }) => {
+      const [, filters] = queryKey;
+
+      const params = buildParams(pageParam, filters);
+
+      console.log("NEWS API PARAMS:", params);
+
+      const res = await DashboardCorridorNews(params);
 
       return res?.countryNews;
     },
     onSuccess: (data) => {
       console.log("PAGES:", data.pages);
     },
-    getNextPageParam: (lastPage) => {
-      if (!lastPage || lastPage.last) return undefined;
+    getNextPageParam: (lastPage, pages) => {
+      console.log("LAST PAGE:", lastPage);
 
-      return (lastPage.number ?? 0) + 1;
+      if (!lastPage?.content?.length) return undefined;
+
+      // stop when less than page size
+      if (lastPage.content.length < PAGE_SIZE) return undefined;
+
+      // next page index (0 → 1 → 2 ...)
+      return pages.length;
     },
     enabled: !!countryCode && !!partnerCountryCode,
   });
@@ -82,14 +116,14 @@ const TradeNews = () => {
   ============================== */
   const lastItemRef = useCallback(
     (node) => {
-      if (isFetchingNextPage) return;
-      if (!containerRef.current) return; // ✅ ADD THIS
+      if (isLoading || isFetchingNextPage) return; // ✅ ADD isLoading
+      if (!containerRef.current) return;
 
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver(
         (entries) => {
-          if (entries[0].isIntersecting && hasNextPage) {
+          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
             fetchNextPage();
           }
         },
@@ -102,7 +136,7 @@ const TradeNews = () => {
 
       if (node) observer.current.observe(node);
     },
-    [isFetchingNextPage, hasNextPage, fetchNextPage],
+    [isLoading, isFetchingNextPage, hasNextPage, fetchNextPage],
   );
 
   /* ===============================
@@ -228,9 +262,21 @@ const TradeNews = () => {
       {tableFilterOpen && (
         <UniversalFilter
           showCorridor
-          showTimeRange
+          showAlertType
+          showSector
           onClose={() => setTableFilterOpen(false)}
-          onChange={() => setTableFilterOpen(false)}
+          onChange={(filters) => {
+            console.log("APPLIED FILTERS:", filters);
+
+            // ✅ clear old pages (important)
+            queryClient.removeQueries({
+              queryKey: ["tradeNews"],
+              exact: false,
+            });
+
+            setAppliedFilters(filters);
+            setTableFilterOpen(false);
+          }}
         />
       )}
     </section>
