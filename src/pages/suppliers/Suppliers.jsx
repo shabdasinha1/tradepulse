@@ -284,7 +284,7 @@ const Suppliers = () => {
       const data = res?.data?.suppliers || [];
 
       if (!data.length) {
-        toast.warning(`No supplier company exist in ${countryName}`);
+        toast.warning(`No supplier data available for ${countryName}`);
         return;
       }
 
