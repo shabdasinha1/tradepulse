@@ -24,7 +24,7 @@ const DashboardHeader = ({ onMenuClick }) => {
 
   const [profileOpen, setProfileOpen] = useState(false);
   const [initials, setInitials] = useState("");
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 428);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
 
   const profileRef = useRef(null);
 
@@ -61,7 +61,7 @@ const DashboardHeader = ({ onMenuClick }) => {
   ========================== */
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 428);
+      setIsMobile(window.innerWidth <= 900);
     };
 
     window.addEventListener("resize", handleResize);
