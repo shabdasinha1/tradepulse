@@ -16,7 +16,7 @@ import ScrollToTop from "../components/common/ScrollToTop.jsx";
 import PublicOnlyRoute from "./PublicOnlyRoute.jsx";
 import { ToastContainer } from "react-toastify";
 import { ToastProvider } from "../components/common/toast/ToastProvider.jsx";
-import { isAdminUser } from "../utils/AdminHelper.jsx";
+
 import AdminRoute from "./AdminRoute.jsx";
 
 /* Simple loader */

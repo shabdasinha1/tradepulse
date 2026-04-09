@@ -26,7 +26,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { RiLineChartLine } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { BsBookmark } from "react-icons/bs";
-import { isAdminUser } from "../../utils/AdminHelper.jsx";
+import { isAdmin } from "../../utils/RoleHelper.jsx";
 
 const ICON_MAP = {
   "/overview": <HiOutlineViewGrid />,
@@ -159,7 +159,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
   const NavItem = ({ r }) => {
     if (r.hidden) return null;
 
-    if (r.adminOnly && !isAdminUser()) return null;
+    if (r.adminOnly && !isAdmin()) return null;
 
     return (
       <NavLink
@@ -251,7 +251,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
             ))}
 
             {/* ================= ADMIN ================= */}
-            {isAdminUser() && (
+            { isAdmin() && (
               <>
                 {!collapsed && (
                   <div className="tp-sidebar-group admin">Admin Controls</div>
