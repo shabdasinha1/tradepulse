@@ -10,6 +10,7 @@ import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 import { CiFilter } from "react-icons/ci";
 import UniversalFilter from "../../components/common/UniversalFilter.jsx";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
+import useDebounce from "../../hooks/useDebounce.jsx";
 
 /* ===============================
    MAIN COMPONENT
@@ -24,6 +25,8 @@ const TradeNews = () => {
   const observer = useRef();
 
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 1000);
 
   // ===============================
   // USE UNIVERSAL FILTERS HOOK
@@ -40,6 +43,7 @@ const TradeNews = () => {
     size: 5,
     sector: filters.sector || undefined,
     alertType: filters.alertType || undefined,
+    query: debouncedSearch || undefined,
   });
 
   // ===============================
@@ -53,8 +57,9 @@ const TradeNews = () => {
         partnerCountryCode,
         filters.sector,
         filters.alertType,
-        filters.startDate,
-        filters.endDate,
+        // filters.startDate,
+        // filters.endDate,
+        debouncedSearch,
       ],
       queryFn: async ({ pageParam = 0 }) => {
         const params = buildParams(pageParam, filters);
@@ -160,8 +165,6 @@ const TradeNews = () => {
                   {corridorLabel}
                 </span>
               </div>
-
-   
             </div>
           </div>
         </header>
@@ -173,13 +176,33 @@ const TradeNews = () => {
           header={
             <div className="tp-card-header tp-trade-news-table-header">
               <h3 className="tp-card-title">Latest Trade News</h3>
-              <button
-                className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setTableFilterOpen(true)}
-              >
-                <CiFilter />
-                Filters
-              </button>
+              <div className="tp-filter-btn-wrapper tp-flex tp-gap-sm tp-supplier-header-btn">
+                <input
+                  className="tp-input tp-supplier-header-input"
+                  placeholder="Search news..."
+                  value={search}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearch(value);
+
+                    // ✅ reset filters when user searches
+                    // setFilters({
+                    //   sector: "",
+                    //   alertType: "",
+                    //   startDate: "",
+                    //   endDate: "",
+                    // });
+                  }}
+                />
+
+                <button
+                  className="tp-btn-outline tp-overview-filter-btn"
+                  onClick={() => setTableFilterOpen(true)}
+                >
+                  <CiFilter />
+                  Filters
+                </button>
+              </div>
             </div>
           }
         >
