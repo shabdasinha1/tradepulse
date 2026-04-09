@@ -70,6 +70,7 @@ const DashboardHeader = ({ onMenuClick }) => {
     RemoveToken();
     RemoveCookie("tp_user_first_name");
     RemoveCookie("tp_user_last_name");
+    RemoveCookie("tp_user_role");
     navigate("/", { replace: true });
   };
 

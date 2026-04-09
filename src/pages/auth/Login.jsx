@@ -62,7 +62,7 @@ const Login = () => {
         const firstName = res.data?.user?.first_name;
         const lastName = res.data?.user?.last_name;
         const email = res.data?.user?.email;
-
+        const role = res.data?.user?.role;
 
         if (firstName) {
           SetCookie(USER_FIRST_NAME_KEY, firstName);
@@ -73,6 +73,9 @@ const Login = () => {
         }
         if (email) {
           SetCookie(USER_EMAIL_KEY, email);
+        }
+        if (role) {
+          SetCookie("tp_user_role", role);
         }
        
 const state = store.getState();

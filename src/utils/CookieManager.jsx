@@ -5,7 +5,7 @@ export const SetCookie = (key, value, options = {}) => {
   Cookies.set(key, value, {
     expires: 1,        // 1 day default
     sameSite: "strict",
-    secure: true,
+    secure: window.location.protocol === "https:",
     ...options,
   });
 };
