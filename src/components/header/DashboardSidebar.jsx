@@ -26,7 +26,7 @@ import { TbReportAnalytics } from "react-icons/tb";
 import { RiLineChartLine } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { BsBookmark } from "react-icons/bs";
-import { isAdmin } from "../../utils/RoleHelper.jsx";
+import { useSelector } from "react-redux";
 
 const ICON_MAP = {
   "/overview": <HiOutlineViewGrid />,
@@ -65,6 +65,7 @@ import { useTheme } from "../../hooks/useTheme.jsx";
 import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
 
 const DashboardSidebar = ({ open, setOpen }) => {
+  const role = useSelector((state) => state.auth.role);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
@@ -159,7 +160,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
   const NavItem = ({ r }) => {
     if (r.hidden) return null;
 
-    if (r.adminOnly && !isAdmin()) return null;
+    if (r.adminOnly && role !== "ADMIN") return null;
 
     return (
       <NavLink
@@ -251,7 +252,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
             ))}
 
             {/* ================= ADMIN ================= */}
-            { isAdmin() && (
+            { role === "ADMIN" && (
               <>
                 {!collapsed && (
                   <div className="tp-sidebar-group admin">Admin Controls</div>

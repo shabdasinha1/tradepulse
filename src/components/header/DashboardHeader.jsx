@@ -12,8 +12,11 @@ import {
 import { useTheme } from "../../hooks/useTheme.jsx";
 import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
 import { RemoveToken } from "../../utils/AuthHelper.jsx";
+import { useDispatch } from "react-redux";
+import { clearAuthData } from "../../store/slices/authSlice";
 
 const DashboardHeader = ({ onMenuClick }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
@@ -70,7 +73,7 @@ const DashboardHeader = ({ onMenuClick }) => {
     RemoveToken();
     RemoveCookie("tp_user_first_name");
     RemoveCookie("tp_user_last_name");
-    RemoveCookie("tp_user_role");
+    dispatch(clearAuthData());
     navigate("/", { replace: true });
   };
 
