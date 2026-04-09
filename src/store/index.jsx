@@ -5,7 +5,7 @@ import storage from "redux-persist/lib/storage";
 import corridorReducer from "./slices/corridorSlice";
 import countryReducer from "./slices/countrySlice";
 import fxReducer from "./slices/fxSlice";
-
+import authReducer from "./slices/authSlice";
 /* ===============================
    ROOT REDUCER
 ================================ */
@@ -13,6 +13,7 @@ const rootReducer = combineReducers({
   corridor: corridorReducer,
   country: countryReducer,
   fx: fxReducer,
+  auth: authReducer,
 });
 
 /* ===============================
@@ -21,7 +22,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["corridor", "fx"], // ✅ persist only these
+  whitelist: ["corridor", "fx", "auth"],// ✅ persist only these
 };
 
 /* ===============================

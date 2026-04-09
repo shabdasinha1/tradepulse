@@ -1,8 +1,10 @@
 import { Navigate } from "react-router-dom";
-import { isAdmin } from "../utils/RoleHelper.jsx";
+import { useSelector } from "react-redux";
 
 const AdminRoute = ({ children }) => {
-  if (!isAdmin()) {
+  const role = useSelector((state) => state.auth.role);
+
+  if (role !== "ADMIN") {
     return <Navigate to="/overview" replace />;
   }
 

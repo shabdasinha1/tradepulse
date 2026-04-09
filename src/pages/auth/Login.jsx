@@ -7,13 +7,16 @@ import { SetCookie } from "../../utils/CookieManager.jsx";
 import { useQueryClient } from "@tanstack/react-query";
 import { DashboardExchangeRate } from "../../services/DashboardService";
 import { store } from "../../store"; 
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { setAuthData } from "../../store/slices/authSlice";
 
 const USER_FIRST_NAME_KEY = "tp_user_first_name";
 const USER_LAST_NAME_KEY = "tp_user_last_name";
 const USER_EMAIL_KEY = "tp_user_email";
 
 const Login = () => {
-
+const dispatch = useDispatch();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [errorMsg, setErrorMsg] = useState("");
@@ -53,16 +56,26 @@ const Login = () => {
 
       if (res?.status === 200 || res?.success === true) {
         const token = res.access_token || res.data?.access_token;
+       const user = res.data?.user;
 
         if (!token) {
           throw new Error("Token missing in response");
         }
 
         SetToken(token);
+        const decoded = jwtDecode(token);
+        // Save in Redux
+dispatch(
+  setAuthData({
+    token: token,
+    role: decoded.role,
+    user: user,
+  })
+);
         const firstName = res.data?.user?.first_name;
         const lastName = res.data?.user?.last_name;
         const email = res.data?.user?.email;
-        const role = res.data?.user?.role;
+     
 
         if (firstName) {
           SetCookie(USER_FIRST_NAME_KEY, firstName);
@@ -74,9 +87,7 @@ const Login = () => {
         if (email) {
           SetCookie(USER_EMAIL_KEY, email);
         }
-        if (role) {
-          SetCookie("tp_user_role", role);
-        }
+        
        
 const state = store.getState();
 const reporterCode = state.corridor.reporterCode;
