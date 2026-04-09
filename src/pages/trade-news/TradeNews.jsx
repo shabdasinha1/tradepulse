@@ -29,15 +29,13 @@ const TradeNews = () => {
   // USE UNIVERSAL FILTERS HOOK
   // ===============================
   const { filters, setFilters } = useUniversalFilters({
-    corridorFrom: countryCode,
-    corridorTo: partnerCountryCode,
     sector: "",
     alertType: "",
   });
 
   const buildParams = (pageParam = 0, filters) => ({
-    importer: filters.corridorFrom,
-    exporter: filters.corridorTo,
+    importer: countryCode,
+    exporter: partnerCountryCode,
     page: pageParam,
     size: 5,
     sector: filters.sector || undefined,
@@ -163,13 +161,7 @@ const TradeNews = () => {
                 </span>
               </div>
 
-              <button
-                className="tp-btn-outline tp-overview-filter-btn"
-                onClick={() => setTableFilterOpen(true)}
-              >
-                <CiFilter />
-                Filters
-              </button>
+   
             </div>
           </div>
         </header>
@@ -262,7 +254,6 @@ const TradeNews = () => {
       {/* TABLE FILTER */}
       {tableFilterOpen && (
         <UniversalFilter
-          showCorridor
           showAlertType
           showSector
           defaultValues={filters}

@@ -165,6 +165,9 @@ const DashboardSidebar = ({ open, setOpen }) => {
       <NavLink
         key={r.path}
         to={r.path}
+         onClick={() => {
+    if (isMobile) setOpen(false);
+  }}
         className={({ isActive }) =>
           `tp-sidebar-link ${isActive ? "active" : ""}`
         }
