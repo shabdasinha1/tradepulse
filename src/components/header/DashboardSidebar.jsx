@@ -208,6 +208,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
               <img src="/logo.svg" alt="TradePulse" className="tp-logo-img" />
               {!collapsed && <span className="tp-logo-text">TradePulse</span>}
             </div>
+            
 
             {/* Collapse Button (Desktop Only) */}
             {isMobile ? (
@@ -226,6 +227,12 @@ const DashboardSidebar = ({ open, setOpen }) => {
               </button>
             )}
           </div>
+          {/* ✅ ADMIN BADGE (MOBILE/TABLET) */}
+{role === "ADMIN" && (
+  <div className="tp-admin-badge-sidebar">
+    Admin Panel
+  </div>
+)}
 
           {/* ================= NAV ================= */}
           <nav className="tp-sidebar-nav">

@@ -943,3 +943,59 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 16px;
 }
+
+.tp-admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+
+  color: var(--clr-primary);
+  background: var(--clr-primary-soft);
+  border: 1px solid rgba(91, 130, 255, 0.25);
+
+  text-transform: uppercase;
+}
+
+/* Hide Admin badge below 900px */
+@media (max-width: 900px) {
+  .tp-admin-badge {
+    display: none;
+  }
+}
+
+/* Sidebar admin badge */
+.tp-admin-badge-sidebar {
+  margin-top: 6px;
+  margin-left: 4px;
+
+  display: none; /* hidden by default */
+
+  padding: 4px 10px;
+  border-radius: 999px;
+
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.04em;
+
+  color: var(--clr-primary);
+  background: var(--clr-primary-soft);
+  border: 1px solid rgba(91, 130, 255, 0.25);
+
+  text-transform: uppercase;
+  
+}
+
+/* Show ONLY on <=768px */
+@media (max-width: 900px) {
+  .tp-admin-badge-sidebar {
+    display: inline-flex;
+    justify-content: center;
+  }
+}
