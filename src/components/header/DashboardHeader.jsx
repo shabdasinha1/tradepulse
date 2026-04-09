@@ -14,9 +14,11 @@ import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
 import { RemoveToken } from "../../utils/AuthHelper.jsx";
 import { useDispatch } from "react-redux";
 import { clearAuthData } from "../../store/slices/authSlice";
+import { useSelector } from "react-redux";
 
 const DashboardHeader = ({ onMenuClick }) => {
   const dispatch = useDispatch();
+  const role = useSelector((state) => state.auth.role);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
@@ -88,6 +90,12 @@ const DashboardHeader = ({ onMenuClick }) => {
         >
           ☰
         </button>
+         {/* ✅ ADMIN BADGE */}
+  {role === "ADMIN" && !isMobile && (
+    <span className="tp-admin-badge">
+      Admin Panel
+    </span>
+  )}
       </div>
 
       {/* CENTER TITLE */}
