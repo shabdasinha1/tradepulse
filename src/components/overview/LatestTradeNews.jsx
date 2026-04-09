@@ -117,8 +117,8 @@ const LatestTradeNews = React.memo(() => {
       }
     >
       <div className="tp-news-viewport">
-        {/* <div ref={scrollRef} className="tp-news-scroll"> */}
-        <div className="tp-news-scroll">
+        <div ref={scrollRef} className="tp-news-scroll">
+        {/* <div className="tp-news-scroll"> */}
           {/* 🔄 Loading */}
           {isLoading && (
             <div className="tp-news-item">

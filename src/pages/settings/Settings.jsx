@@ -128,7 +128,7 @@ const Settings = () => {
     });
   };
   return (
-    <section className="">
+    <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
         {/* ===============================
               PAGE HEADER

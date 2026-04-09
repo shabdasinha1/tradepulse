@@ -296,13 +296,10 @@
    DASHBOARD HEADER
 ================================ */
 
-
-
 .tp-dashboard-link.active {
   background: color-mix(in srgb, var(--border-medium) 70%, transparent);
   color: var(--text-primary);
 }
-
 
 /* Avatar */
 .tp-avatar {
@@ -320,7 +317,6 @@
   align-items: center;
   justify-content: center;
 }
-
 
 /* ===============================
    FIX PROFILE DROPDOWN VISIBILITY
@@ -461,7 +457,6 @@
   }
 }
 
-
 /* ======================================
    DASHBOARD SIDEBAR
 ====================================== */
@@ -501,6 +496,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  overflow-y: auto;
 }
 
 .tp-sidebar-link {
@@ -535,7 +531,7 @@
   margin-left: 240px;
   min-height: 100vh;
   /* padding: var(--space-lg); */
-    scrollbar-width: thin;
+  scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
@@ -548,19 +544,14 @@
 ====================================== */
 
 @media (max-width: 1024px) {
-
-  
- 
   .tp-sidebar.open .tp-logo-text,
   .tp-sidebar.open .tp-sidebar-label {
     display: inline;
   }
 
-  
   .tp-sidebar.open ~ .tp-dashboard-main {
     margin-left: 240px;
   }
-
 }
 
 /* ======================================
@@ -568,15 +559,14 @@
 ====================================== */
 
 /* @media (max-width: 428px) { */
-@media (max-width: 768px){
-
+@media (max-width: 768px) {
   .tp-sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     z-index: 300;
-    width: 240px !important;  
+    width: 240px !important;
   }
-   .tp-sidebar.collapsed {
+  .tp-sidebar.collapsed {
     width: 240px !important;
   }
 
@@ -593,7 +583,6 @@
   .tp-collapse-btn {
     display: none;
   }
-
 }
 
 /* ======================================
@@ -602,8 +591,9 @@
 
 .tp-sidebar {
   width: 240px;
-  transition: width var(--transition-base),
-              transform var(--transition-base);
+  transition:
+    width var(--transition-base),
+    transform var(--transition-base);
 }
 
 .tp-sidebar.collapsed {
@@ -649,22 +639,19 @@
   margin-left: 80px;
 }
 
-
 .tp-sidebar-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(2px);
   z-index: 250; /* BELOW sidebar */
 }
 /* @media (max-width: 428px) { */
 @media (max-width: 768px) {
-
   .tp-dashboard-main {
     position: relative;
     z-index: 1;
   }
-
 }
 
 /* ======================================
@@ -684,7 +671,6 @@
   align-items: center;
   justify-content: center;
   font-size: var(--fs-lg);
-  
 }
 
 /* Collapsed behavior */
@@ -772,7 +758,6 @@
 }
 
 @media (max-width: 1024px) {
-
   .tp-mobile-header {
     display: flex;
     align-items: center;
@@ -793,7 +778,6 @@
     color: var(--text-primary);
     font-size: 20px;
   }
-
 }
 
 /* ======================================
@@ -803,7 +787,7 @@
 .tp-dashboard-header {
   height: 64px;
   flex-shrink: 0;
- position: relative;
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -817,7 +801,6 @@
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
 }
-
 
 /* True center positioning */
 .tp-dashboard-header-center {
@@ -843,7 +826,7 @@
 }
 /* Hide on small screens */
 @media (max-width: 768px) {
- .tp-dashboard-platform-title {
+  .tp-dashboard-platform-title {
     font-size: var(--fs-md);
   }
 }
@@ -947,8 +930,6 @@
   }
 }
 
-
-
 .tp-sidebar-group {
   font-size: 11px;
   text-transform: uppercase;
@@ -959,6 +940,6 @@
 
 .tp-sidebar-group.admin {
   margin-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 16px;
 }
