@@ -201,6 +201,7 @@
   background: color-mix(in srgb, var(--bg-panel) 92%, var(--bg-card));
   flex-direction: column;
   gap: 5px;
+  z-index: 9999;
 }
 
 /* ===============================
