@@ -497,6 +497,7 @@
   flex-direction: column;
   gap: var(--space-xs);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .tp-sidebar-link {
@@ -989,7 +990,6 @@
   border: 1px solid rgba(91, 130, 255, 0.25);
 
   text-transform: uppercase;
-  
 }
 
 /* Show ONLY on <=768px */
