@@ -426,11 +426,11 @@
 /* TEXT */
 .tp-product-cell {
   cursor: pointer;
-  display: inline-block;
-  max-width: 140px; /* 🔥 prevent stretching */
+  /* display: inline-block;
+  max-width: 140px; 
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: nowrap; */
 }
 
 /* TOOLTIP */

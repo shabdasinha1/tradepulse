@@ -3,7 +3,7 @@ import { useSelector, shallowEqual } from "react-redux";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { FiSliders } from "react-icons/fi";
 import { CiFilter } from "react-icons/ci";
-
+import { Tooltip } from "react-tooltip";
 import { TradeHistory as TradeHistoryAPI } from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 
@@ -145,6 +145,7 @@ const TradeHistory = () => {
   const tableRows = useMemo(() => {
     return rows.map((item, index) => {
       const isLast = rows.length === index + 1;
+      const isLong = item.product.length > 50;
 
       return (
         <div
@@ -152,7 +153,17 @@ const TradeHistory = () => {
           ref={isLast ? lastRowRef : null}
           className="tp-table-row tp-trade-row"
         >
-          <span>{item.hsCode} - {item.product}</span>
+          {/* <span title={item.product}>
+            {item.hsCode} - {item.product.slice(0, 100) + "..."}
+          </span> */}
+          <span
+            data-tooltip-id="my-tooltip"
+            data-tooltip-content={item.product}
+          >
+            {item.hsCode} -{" "}
+            {isLong ? item.product.slice(0, 50) + "..." : item.product}
+          </span>
+
           <span className="text-center">{item.reporterName}</span>
           <span className="text-center">{item.partnerName}</span>
 
@@ -292,6 +303,15 @@ const TradeHistory = () => {
               </div>
             </div>
           </div>
+          <Tooltip
+            id="my-tooltip"
+            className="tp-custom-tooltip"
+            place="top"
+            // positionStrategy="fixed"
+            globalCloseEvents={{
+              scroll: true,
+            }}
+          />
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import EmptyState from "../../components/common/EmptyState.jsx";
 import { DashboardFeedback } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys.jsx";
+import { Tooltip } from "react-tooltip";
 
 const LIMIT = 10;
 
@@ -149,7 +150,7 @@ const Feedback = () => {
                 {!isLoading &&
                   feedbacks.map((f, i) => {
                     const isLast = feedbacks.length === i + 1;
-
+                    const isLong = f.email?.length > 14;
                     return (
                       <div
                         key={f.id}
@@ -179,7 +180,7 @@ const Feedback = () => {
                             {f.this_platform}
                           </span>
                         </span>
-                        <div
+                        {/* <div
                           className="tp-email-cell-wrapper"
                           onClick={(e) => {
                             if (window.innerWidth > 768) return;
@@ -214,7 +215,21 @@ const Feedback = () => {
                               {f.email}
                             </div>
                           )}
-                        </div>
+                        </div> */}
+                        <span
+                          className="text-center tp-email-cell"
+                          data-tooltip-id={isLong ? "my-tooltip" : undefined}
+                          data-tooltip-content={isLong ? f.email : undefined}
+                        >
+                          {isLong ? f.email.slice(0, 14) + "..." : f.email}
+                        </span>
+                        <Tooltip
+                          id="my-tooltip"
+                          className="tp-custom-tooltip"
+                          place="top"
+                          positionStrategy="fixed"
+                          globalCloseEvents={{ scroll: true }}
+                        />
                         <span className="text-center tp-muted">
                           {new Date(f.created_dt).toLocaleDateString()}
                         </span>

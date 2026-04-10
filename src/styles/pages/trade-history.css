@@ -1,20 +1,21 @@
 /* TRADE TABLE ROW */
 .tp-trade-row {
   display: grid;
-  grid-template-columns:
-    1.5fr /* HS Code */
-    1fr /* Flow */
-    1fr /* Flow */
-    1fr /* Flow */
-    1.5fr /* Value */
-    1fr /* Qty */
-    1fr /* Weight */
-    1.2fr; /* Date */
+  /* grid-template-columns:
+    1.5fr 
+    1fr 
+    1fr 
+    1fr 
+    1.5fr 
+    1fr 
+    1fr 
+    1.2fr; */
+  grid-template-columns: 2.5fr /* HS Code */ 1.5fr /* Flow */ 1.5fr /* Flow */ 1fr /* Flow */ 1.5fr /* Value */ 1fr /* Qty */ 1fr /* Weight */ 1.2fr;
 
   gap: var(--space-md);
   align-items: center;
 
-  min-width: 900px;
+  min-width: 1200px;
 }
 
 /* WRAPPER */
@@ -22,16 +23,32 @@
   width: 100%;
   overflow: hidden;
 }
+#my-tooltip {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  z-index: 5;
+  left: 20px;
+  border-radius: 15px;
+}
+.tp-custom-tooltip {
+  max-width: min(500px, 90vw);
+  margin-left: 15px;
+  white-space: normal; /* allow wrapping */
+  word-break: break-word; /* break long words */
+  overflow-wrap: anywhere; /* extra safety */
 
+  padding: 8px 10px;
+  font-size: 12px;
+}
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .tp-trade-row {
-    min-width: 800px;
+    /* min-width: 800px; */
   }
 }
 
 @media (max-width: 480px) {
   .tp-trade-row {
-    min-width: 700px;
+    /* min-width: 700px; */
   }
 }

@@ -203,86 +203,105 @@ const Scheduler = () => {
           }
         >
           <div className="tp-table-wrapper tp-scheduler-table">
-            {loading ? (
-              <p className="tp-loading-text">Loading jobs...</p>
-            ) : (
-              <div className="tp-table-wrapper-feedback">
-                {/* HEADER */}
-                <div
-                  className="tp-table-head-scroll"
-                  ref={headerRef}
-                  onScroll={handleHeaderScroll}
-                >
-                  <div className="tp-table-head tp-table-scheduler">
-                    <span>Job Name</span>
-                    <span className="text-center">Cron</span>
-                    <span className="text-center">Status</span>
-                    <span className="text-center">Timezone</span>
-                    <span className="text-center">Actions</span>
-                  </div>
-                </div>
-
-                {/* BODY */}
-                <div
-                  className="tp-table-body-scroll"
-                  ref={bodyRef}
-                  onScroll={handleBodyScroll}
-                >
-                  <div className="tp-table">
-                    {loading ? (
-                      <p className="tp-loading-text">Loading jobs...</p>
-                    ) : jobs.length === 0 ? (
-                      <div className="tp-empty">No jobs found</div>
-                    ) : (
-                      jobs.map((job) => (
-                        <div
-                          key={job.id}
-                          className="tp-table-row tp-table-scheduler"
-                        >
-                          <div className="tp-text-strong">{job.jobName}</div>
-
-                          <span className="text-center tp-mono">
-                            {job.cronExpression}
-                          </span>
-
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill ${
-                                job.status === "ACTIVE"
-                                  ? "tp-pill-success"
-                                  : "tp-pill-danger"
-                              }`}
-                            >
-                              {job.status}
-                            </span>
-                          </span>
-
-                          <span className="text-center">{job.timezone}</span>
-
-                          <span className="text-center">
-                            <div className="tp-flex tp-actions">
-                              <button
-                                className="tp-btn-primary"
-                                // onClick={() => handleTrigger(job.id)}
-                              >
-                                Manual Trigger
-                              </button>
-
-                              <button
-                                className="tp-btn-outline"
-                                //  onClick={() => handleManualSchedule(job)}
-                              >
-                                Reschedule
-                              </button>
-                            </div>
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
+            <div className="tp-table-wrapper-feedback">
+              {/* HEADER */}
+              <div
+                className="tp-table-head-scroll"
+                ref={headerRef}
+                onScroll={handleHeaderScroll}
+              >
+                <div className="tp-table-head tp-table-scheduler">
+                  <span>Job Name</span>
+                  <span className="text-center">Cron</span>
+                  <span className="text-center">Status</span>
+                  <span className="text-center">Timezone</span>
+                  <span className="text-center">Actions</span>
                 </div>
               </div>
-            )}
+
+              {/* BODY */}
+              <div
+                className="tp-table-body-scroll"
+                ref={bodyRef}
+                onScroll={handleBodyScroll}
+              >
+                <div className="tp-table">
+                  {loading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <div key={i} className="tp-table-row tp-table-scheduler">
+                        {/* Job Name */}
+                        <div className="skeleton skeleton-text"></div>
+
+                        {/* Cron */}
+                        <span className="text-center">
+                          <div className="skeleton skeleton-text mono"></div>
+                        </span>
+
+                        {/* Status */}
+                        <span className="text-center">
+                          <div className="skeleton skeleton-pill"></div>
+                        </span>
+
+                        {/* Timezone */}
+                        <span className="text-center">
+                          <div className="skeleton skeleton-text small"></div>
+                        </span>
+
+                        {/* Actions (EMPTY as per requirement) */}
+                        <span></span>
+                      </div>
+                    ))
+                  ) : jobs.length === 0 ? (
+                    <div className="tp-empty">No jobs found</div>
+                  ) : (
+                    jobs.map((job) => (
+                      <div
+                        key={job.id}
+                        className="tp-table-row tp-table-scheduler"
+                      >
+                        <div className="tp-text-strong">{job.jobName}</div>
+
+                        <span className="text-center tp-mono">
+                          {job.cronExpression}
+                        </span>
+
+                        <span className="text-center">
+                          <span
+                            className={`tp-pill ${
+                              job.status === "ACTIVE"
+                                ? "tp-pill-success"
+                                : "tp-pill-danger"
+                            }`}
+                          >
+                            {job.status}
+                          </span>
+                        </span>
+
+                        <span className="text-center">{job.timezone}</span>
+
+                        <span className="text-center">
+                          <div className="tp-flex tp-actions">
+                            <button
+                              className="tp-btn-primary"
+                              // onClick={() => handleTrigger(job.id)}
+                            >
+                              Manual Trigger
+                            </button>
+
+                            <button
+                              className="tp-btn-outline"
+                              //  onClick={() => handleManualSchedule(job)}
+                            >
+                              Reschedule
+                            </button>
+                          </div>
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </TradePulseCard>
       </div>

@@ -16,6 +16,7 @@ import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { CiFilter } from "react-icons/ci";
 import { useAppToast } from "../../components/common/toast/toast.js";
+import { Tooltip } from "react-tooltip";
 
 const LIMIT = 20;
 /* ==========================================================
@@ -435,6 +436,7 @@ const Suppliers = () => {
                 {!isCompanyView
                   ? suppliers.map((s, i) => {
                       const isLast = suppliers.length === i + 1;
+
                       return (
                         <div
                           key={i}
@@ -506,36 +508,39 @@ const Suppliers = () => {
                         </div>
                       );
                     })
-                  : companySuppliers.map((c, i) => (
-                      <div
-                        key={i}
-                        className="tp-table-row tp-table-suppliers-dashboard"
-                      >
-                        <div className="supplier-name">{c.company_name}</div>
-                        <span className="text-center">{c.country_name}</span>
-                        <span className="text-center">{c.region}</span>
-                        <span className="text-center">{c.sector}</span>
-
-                        <span className="text-center">
-                          <span
-                            className={`tp-pill ${
-                              c.reliability_score < 0.5
-                                ? "tp-pill-danger"
-                                : c.reliability_score < 0.8
-                                  ? "tp-pill-warning"
-                                  : "tp-pill-success"
-                            }`}
-                          >
-                            {c.reliability_score}
-                          </span>
-                        </span>
-
-                        <span className="text-center">
-                          <span className="tp-pill tp-pill-primary">
-                            {c.verification_status}
-                          </span>
-                        </span>
+                  : companySuppliers.map((c, i) => {
+                      const product = c.products?.[0] || "-";
+                      const isLong = product.length > 50;
+                      return (
                         <div
+                          key={i}
+                          className="tp-table-row tp-table-suppliers-dashboard"
+                        >
+                          <div className="supplier-name">{c.company_name}</div>
+                          <span className="text-center">{c.country_name}</span>
+                          <span className="text-center">{c.region}</span>
+                          <span className="text-center">{c.sector}</span>
+
+                          <span className="text-center">
+                            <span
+                              className={`tp-pill ${
+                                c.reliability_score < 0.5
+                                  ? "tp-pill-danger"
+                                  : c.reliability_score < 0.8
+                                    ? "tp-pill-warning"
+                                    : "tp-pill-success"
+                              }`}
+                            >
+                              {c.reliability_score}
+                            </span>
+                          </span>
+
+                          <span className="text-center">
+                            <span className="tp-pill tp-pill-primary">
+                              {c.verification_status}
+                            </span>
+                          </span>
+                          {/* <div
                           className="tp-product-cell-wrapper"
                           onClick={(e) => {
                             if (window.innerWidth > 768) return;
@@ -570,10 +575,25 @@ const Suppliers = () => {
                               {c.products?.[0] || "-"}
                             </div>
                           )}
+                        </div> */}
+                          <span
+                            className="text-center tp-product-cell"
+                            data-tooltip-id={isLong ? "my-tooltip" : undefined}
+                            data-tooltip-content={isLong ? product : undefined}
+                          >
+                            {isLong ? product.slice(0, 50) + "..." : product}
+                          </span>
+                          <Tooltip
+                            id="my-tooltip"
+                            className="tp-custom-tooltip"
+                            place="top"
+                            positionStrategy="fixed"
+                            globalCloseEvents={{ scroll: true }}
+                          />
+                          <span className="text-center">{c.product_count}</span>
                         </div>
-                        <span className="text-center">{c.product_count}</span>
-                      </div>
-                    ))}
+                      );
+                    })}
 
                 {isFetchingNextPage && skeletonRows}
               </div>
