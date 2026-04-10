@@ -142,7 +142,6 @@ const FXRates = () => {
     () => [...Array(5)].map((_, i) => <FXRowSkeleton key={i} />),
     [],
   );
-  console.log(tableFilterOpen);
 
   return (
     <section className="tp-section tp-section--dashboard">
