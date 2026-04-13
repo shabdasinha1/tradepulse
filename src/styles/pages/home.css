@@ -89,6 +89,11 @@
   font-size: var(--fs-caption);
   color: var(--text-muted);
   margin-bottom: var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
 }
 
 /* ===============================
@@ -926,11 +931,11 @@
   flex-wrap: wrap;
   margin-top: var(--space-xs);
 }
-.tp-active-corridor-pill{
+.tp-active-corridor-pill {
   display: flex;
   gap: var(--space-sm);
 }
-.tp-active-corridor-flag{
+.tp-active-corridor-flag {
   width: var(--space-md);
 }
 /* ===============================

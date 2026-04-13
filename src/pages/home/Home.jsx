@@ -151,9 +151,14 @@ const Home = () => {
               <p className="tp-hero-ai-support">
                 {/* Understand pricing trends, supplier reliability, and trade risks
                 before committing capital or entering new markets. */}
-                {
+                <span>10yr Price history depth</span>{" "}
+                <span className="tp-seperator">|</span>
+                <span>less than 15min Time to sourcing thesis</span>{" "}
+                <span className="tp-seperator">|</span>
+                <span>6+ Active corridors</span>
+                {/* {
                   "10yr Price history depth | <15min Time to sourcing thesis | 6+ Active corridors"
-                }
+                } */}
               </p>
 
               <div className="tp-hero-ai-actions">
@@ -630,13 +635,21 @@ const Home = () => {
                       className="tp-pill tp-pill-primary tp-active-corridor-pill"
                     >
                       {/* <span className="tp-flag">{item.from.flag_emoji}</span> */}
-                      <img className="tp-active-corridor-flag" src={item.from.flag_url} alt={item.from.flag_emoji} />
+                      <img
+                        className="tp-active-corridor-flag"
+                        src={item.from.flag_url}
+                        alt={item.from.flag_emoji}
+                      />
 
                       <span className="tp-text">
                         {item.from.code} ↔ {item.to.country}
                       </span>
 
-                      <img className="tp-active-corridor-flag" src={item.to.flag_url} alt={item.to.flag_emoji} />
+                      <img
+                        className="tp-active-corridor-flag"
+                        src={item.to.flag_url}
+                        alt={item.to.flag_emoji}
+                      />
                     </div>
                   ))}
                 </div>
