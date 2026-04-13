@@ -5,29 +5,35 @@ import { GetApiErrorMessage } from "../../utils/ErrorHandler.jsx";
 import { SetCookie } from "../../utils/CookieManager.jsx";
 import { getCountries, getCountryCallingCode } from "libphonenumber-js";
 import Select from "react-select";
-import { useAppToast } from "../../components/common/toast/toast.js";
 import { useToast } from "../../components/common/toast/ToastProvider.jsx";
 
 const REGISTER_EMAIL_KEY = "tp_register_email";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [countryCodes, setCountryCodes] = useState([]);
+
+  /* ===============================
+     🔹 SINGLE SOURCE OF TRUTH (COUNTRIES LIST)
+  ================================ */
+  const [countriesList, setCountriesList] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  /* ===============================
+     🔹 FORM STATE (ISO USED FOR COUNTRY)
+  ================================ */
   const [form, setForm] = useState({
     first_name: "",
     last_name: "",
     email: "",
     mobile: "",
     password: "",
-    country: "india",
+    country: "India", // ✅ ISO code (important)
     business_type: "TRADER",
     company_name: "",
     privacy_accepted: false,
-    country_code: "",
+    country_code: "+91",
   });
 
   const businessTypeOptions = [
@@ -35,17 +41,30 @@ const Register = () => {
     { value: "MANUFACTURER", label: "Manufacturer" },
     { value: "EXPORTER", label: "Exporter" },
   ];
-  const countryOptions = [
-    { value: "india", label: "India" },
-    { value: "uk", label: "United Kingdom" },
-    { value: "uae", label: "UAE" },
-    { value: "usa", label: "United States" },
-  ];
+
   const { addToast } = useToast();
+
   /* ===============================
-     HANDLE CHANGE (INPUT + CHECKBOX)
+     🔹 GENERATE FULL COUNTRY LIST
+     (ISO + Name + Dial Code)
   ================================ */
-  let selectedCountryCode = "";
+  useEffect(() => {
+    const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+
+    const list = getCountries()
+      .map((iso) => ({
+        label: regionNames.of(iso), // India
+        value: iso, // IN
+        dialCode: `+${getCountryCallingCode(iso)}`, // +91
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    setCountriesList(list);
+  }, []);
+
+  /* ===============================
+     🔹 HANDLE INPUT CHANGE
+  ================================ */
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
@@ -54,29 +73,15 @@ const Register = () => {
       [name]: type === "checkbox" ? checked : value,
     });
   };
-  /* ===============================
-     HANDLE SELECT ITEMS (COUNTRY CODE DROPDOWN)
-  ================================ */
-  const handleSelectChange = (selectedOption) => {
-    // Simulate e.target
-    const simulatedEvent = {
-      target: {
-        name: "country_code", // must match your state key
-        value: selectedOption ? selectedOption.value : "", // only store value
-      },
-    };
-    handleChange(simulatedEvent);
-  };
 
   /* ===============================
-     REGISTER SUBMIT
+     🔹 REGISTER SUBMIT (UNCHANGED)
   ================================ */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
     setLoading(true);
 
-    // ✅ Check if any required field is empty
     const isFormInvalid =
       !form.first_name.trim() ||
       !form.last_name.trim() ||
@@ -88,60 +93,40 @@ const Register = () => {
       !form.business_type ||
       !form.country_code ||
       !form.privacy_accepted;
-
     if (isFormInvalid) {
-      addToast("All fields are required","error");
+      addToast("All fields are required", "error");
       setLoading(false);
       return;
     }
 
     try {
       if (!form.country || !form.business_type || !form.country_code) {
-        addToast("Please fill all required fields","error");
+        addToast("Please fill all required fields", "error");
         setLoading(false);
         return;
       }
+
       const res = await RegisterUser(form);
 
-      // ✅ CORRECT SUCCESS CHECK
       if (res.data?.status === 200 && res?.success === true) {
-        // ✅ SAVE EMAIL FOR OTP PAGE
         SetCookie(REGISTER_EMAIL_KEY, form.email);
-
-        // ✅ GO TO OTP PAGE
         navigate("/verify-email");
         return;
       }
 
-      // ❌ fallback error from backend
       setErrorMsg(res?.message || "Registration failed");
     } catch (error) {
       setErrorMsg(GetApiErrorMessage(error));
-      // console.log("error msg2 : ", errorMsg, error.response.data.details.password)
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const countries = getCountries();
-
-    const list = countries
-      .map((iso) => ({
-        label: `${iso} +${getCountryCallingCode(iso)}`,
-        // dialCode: `+${getCountryCallingCode(iso)}`,
-        value: `+${getCountryCallingCode(iso)}`,
-      }))
-      .sort((a, b) => a.label.localeCompare(b.iso2));
-
-    setCountryCodes(list);
-  }, []);
-
   return (
     <section className="tp-section tp-section--auth tp-auth">
       <div className="tp-container">
         <div className="tp-grid tp-grid-2 tp-auth-grid">
-          {/* ================= LEFT INFO ================= */}
+          {/* LEFT INFO */}
           <div className="tp-auth-info">
             <h1 className="tp-auth-title">
               Create your <span>TradePulse</span> account
@@ -152,7 +137,7 @@ const Register = () => {
             </p>
           </div>
 
-          {/* ================= REGISTER CARD ================= */}
+          {/* REGISTER CARD */}
           <div className="tp-card tp-auth-card">
             <div className="tp-card-header">
               <h3 className="tp-card-title">Create Account</h3>
@@ -160,7 +145,7 @@ const Register = () => {
 
             <form onSubmit={handleSubmit} className="tp-form tp-auth-form ">
               <span className="tp-form-grid">
-                {/* ROW 1 */}
+                {/* FIRST NAME */}
                 <div className="tp-form-group">
                   <label>First Name</label>
                   <input
@@ -173,6 +158,7 @@ const Register = () => {
                   />
                 </div>
 
+                {/* LAST NAME */}
                 <div className="tp-form-group">
                   <label>Last Name</label>
                   <input
@@ -185,6 +171,7 @@ const Register = () => {
                   />
                 </div>
 
+                {/* EMAIL */}
                 <div className="tp-form-group">
                   <label>Email Address</label>
                   <input
@@ -197,62 +184,48 @@ const Register = () => {
                   />
                 </div>
 
-                {/* COUNTRY CODE DROPDOWN */}
+                {/* ===============================
+                   🔥 COUNTRY CODE DROPDOWN
+                   Selecting this updates BOTH fields
+                ================================ */}
                 <div className="tp-form-group">
                   <label>Country Code</label>
                   <Select
                     classNamePrefix="tp-input"
                     placeholder="Select country code"
-                    options={countryCodes}
+                    options={countriesList.map((c) => ({
+                      label: `${c.value} ${c.dialCode}`, // 🔥 ISO + Dial Code
+                      value: c.value,
+                    }))}
                     value={
-                      countryCodes.find(
-                        (opt) => opt.value === form.country_code,
-                      ) || null
+                      countriesList
+                        .map((c) => ({
+                          label: `${c.value} ${c.dialCode}`,
+                          value: c.value,
+                        }))
+                        .find((opt) => {
+                          const country = countriesList.find(
+                            (c) => c.label === form.country,
+                          );
+                          return country?.value === opt.value;
+                        }) || null
                     }
                     isSearchable
-                    // menuIsOpen
-                    name="country_code"
-                    onChange={handleSelectChange}
+                    onChange={(selectedOption) => {
+                      const selected = countriesList.find(
+                        (c) => c.value === selectedOption?.value,
+                      );
+
+                      setForm({
+                        ...form,
+                        country: selected?.label || "",
+                        country_code: selected?.dialCode || "",
+                      });
+                    }}
                   />
-                  {/* <input
-                  list="countries"
-                  placeholder="Select country code"
-                  className="tp-input"
-                  value={form.country_code}
-                  onChange={handleChange}
-                  required
-                  name="country_code"
-                />
-                <datalist id="countries">
-                  {countryCodes.map((item) => (
-                    <option key={item.iso2} value={item.value} className="option_demo">
-                
-                    </option>
-                  ))}
-                </datalist> */}
-
-                  {/* <select
-                  name="country_code"
-                  className="tp-input tp-select tp-country-code-select"
-                  value={form.country_code}
-                  onChange={handleChange}
-                  required
-                >
-
-                  <option value="">Select country code</option>
-
-                  {countryCodes.map((item) => (
-                    <option
-                      key={item.iso2}
-                      value={item.dialCode}
-                    >
-                      {item.dialCode} {item.iso2}
-                    </option>
-                  ))}
-                </select> */}
                 </div>
 
-                {/* ROW 2 */}
+                {/* MOBILE */}
                 <div className="tp-form-group">
                   <label>Mobile Number</label>
                   <input
@@ -265,6 +238,7 @@ const Register = () => {
                   />
                 </div>
 
+                {/* COMPANY */}
                 <div className="tp-form-group">
                   <label>Company Name</label>
                   <input
@@ -277,20 +251,9 @@ const Register = () => {
                   />
                 </div>
 
-                {/* ROW 3 */}
+                {/* BUSINESS TYPE */}
                 <div className="tp-form-group">
                   <label>Business Type</label>
-                  {/* <select
-                    name="business_type"
-                    value={form.business_type}
-                    onChange={handleChange}
-                    className="tp-input tp-select"
-                    required
-                  >
-                    <option value="TRADER">Trader</option>
-                    <option value="MANUFACTURER">Manufacturer</option>
-                    <option value="EXPORTER">Exporter</option>
-                  </select> */}
                   <Select
                     classNamePrefix="tp-input"
                     name="business_type"
@@ -310,35 +273,32 @@ const Register = () => {
                   />
                 </div>
 
+                {/* ===============================
+                   🔥 COUNTRY DROPDOWN
+                   Selecting this also updates BOTH fields
+                ================================ */}
                 <div className="tp-form-group">
                   <label>Country</label>
-                  {/* <select
-                    name="country"
-                    value={form.country}
-                    onChange={handleChange}
-                    className="tp-input tp-select"
-                    required
-                  >
-                    <option value="india">India</option>
-                    <option value="uk">United Kingdom</option>
-                    <option value="uae">UAE</option>
-                    <option value="usa">United States</option>
-                  </select> */}
                   <Select
                     classNamePrefix="tp-input"
-                    name="country"
-                    options={countryOptions}
+                    options={countriesList}
+                    getOptionLabel={(option) => option.label} // 🔥 full country name
+                    getOptionValue={(option) => option.value} // ISO
                     value={
-                      countryOptions.find(
-                        (opt) => opt.value === form.country,
-                      ) || null
+                      countriesList.find((opt) => opt.label === form.country) ||
+                      null
                     }
-                    onChange={(selectedOption) =>
+                    onChange={(selectedOption) => {
+                      const selected = countriesList.find(
+                        (c) => c.value === selectedOption?.value,
+                      );
+
                       setForm({
                         ...form,
-                        country: selectedOption?.value || "",
-                      })
-                    }
+                        country: selected?.label || "",
+                        country_code: selected?.dialCode || "",
+                      });
+                    }}
                     placeholder="Select Country"
                   />
                 </div>
@@ -356,6 +316,7 @@ const Register = () => {
                   />
                 </div>
               </span>
+
               {/* PRIVACY */}
               <div className="tp-form-group tp-form-span-2 tp-privacy">
                 <label className="tp-privacy-label">
@@ -378,9 +339,11 @@ const Register = () => {
                   </span>
                 </label>
               </div>
+
               {errorMsg && (
                 <div className="tp-auth-error tp-text-down">{errorMsg}</div>
               )}
+
               {/* SUBMIT */}
               <button
                 type="submit"
