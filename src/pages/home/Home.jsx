@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 const Home = () => {
   const navigate = useNavigate();
   const [activeCoreIndex, setActiveCoreIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
+
   const heroRef = useRef(null);
   const problemRef = useRef(null);
   const solutionRef = useRef(null);
@@ -12,8 +14,40 @@ const Home = () => {
   const audienceRef = useRef(null);
   const diffRef = useRef(null);
   const visionRef = useRef(null);
+  const productRef = useRef(null);
+  const supplierRef = useRef(null);
+  const aiRef = useRef(null);
+  const priceRef = useRef(null);
+  const faqRef = useRef(null);
   const aboutRef = useRef(null);
   const ctaRef = useRef(null);
+
+  const toggleItem = (index) => {
+    setActiveIndex((prev) => (prev === index ? null : index));
+  };
+
+  const faqs = [
+    {
+      q: "What corridors does Tradepulse currently cover?",
+      a: `Our Phase 1 focus is UK-Africa trade corridors, with active data across UK↔Nigeria, UK↔Ghana, UK↔Kenya, UK↔South Africa, UK↔Ethiopia, and UK↔Ivory Coast. Enterprise customers can request custom corridors. Intra-Africa and EU-Africa corridors are on the roadmap for Phase 2.`,
+    },
+    {
+      q: "Where does the price and trade data come from?",
+      a: `Our data pipeline aggregates from UN Comtrade (trade flows, going back to 2000), UK Trade Info (HMRC), WTO Tariff API (duty rates), World Bank Indicators (macro data), Freightos Index (shipping rates), and Central Bank FX feeds. All sources are attributed on every data point displayed.`,
+    },
+    {
+      q: "Does TradePulse facilitate transactions or connect me to suppliers directly?",
+      a: `No. TradePulse is an intelligence platform, not a marketplace. We provide structured reliability signals and verification data to support your sourcing decisions, but we do not process transactions, introductions, or negotiations. This is a deliberate design decision to keep our intelligence objective and unbiased.`,
+    },
+    {
+      q: "How current is the data at TradePulse?",
+      a: `Price and trade flow data refreshes on a scheduled basis (typically weekly for commodity prices, monthly for full Comtrade sync). FX rates are near-real-time from Central Bank feeds. News synthesis runs continuously. The platform clearly labels the last-updated timestamp on every data module so you always know how fresh the data is.`,
+    },
+    {
+      q: "Can I export my reports from TradePulse?",
+      a: `Yes. All plans include PDF report generation. Pro and Enterprise plans get unlimited reports, and Enterprise customers can white-label reports with their company branding. Reports include all charts, AI insights, supplier data, and source attribution — ready for board or CFO presentation without reformatting.`,
+    },
+  ];
 
   const toggleCoreItem = (index) => {
     setActiveCoreIndex((prev) => (prev === index ? null : index));
@@ -26,8 +60,14 @@ const Home = () => {
   useReveal(audienceRef, "tp-audience--visible");
   useReveal(diffRef, "tp-diff--visible");
   useReveal(visionRef, "tp-vision--visible");
+  useReveal(productRef, "tp-product--visible");
+  useReveal(supplierRef, "tp-supplier--visible");
+  useReveal(aiRef, "tp-ai--visible");
+  useReveal(priceRef, "tp-price--visible");
+  useReveal(faqRef, "tp-faq--visible");
   useReveal(aboutRef, "tp-about--visible");
   useReveal(ctaRef, "tp-final-cta--visible");
+
 
   const corridors = [
     {
@@ -560,7 +600,281 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {/* ================= PRODUCT INTELLIGENCE ================= */}
 
+      <section ref={productRef} className="tp-section tp-section--spacious tp-product-intelligence">
+        <div className="tp-container">
+
+          {/* Header */}
+          <div className="tp-product-intelligence-header">
+            <h2 className="tp-product-intelligence-title">
+              Product <span>Intelligence</span>
+            </h2>
+
+            <p className="tp-product-intelligence-sub">
+              10 years of price context. Not just today's number.
+            </p>
+
+            <p className="tp-product-intelligence-desc">
+              Every commodity you track comes with full historical range context,
+              AI trend interpretation, and a forward-looking forecast so you always
+              know whether today's price is a deal or a trap.
+            </p>
+          </div>
+
+          {/* Cards */}
+          <div className="tp-product-intelligence-grid">
+
+            <div className="tp-card tp-pi-card">
+              <h4>10-year price trend charts</h4>
+              <p>
+                Compare current price against its full historical range. See the
+                percentile position at a glance.
+              </p>
+            </div>
+
+            <div className="tp-card tp-pi-card">
+              <h4>Volatility risk scoring</h4>
+              <p>
+                Know which products are stable vs. volatile before you commit to
+                purchase volumes.
+              </p>
+            </div>
+
+            <div className="tp-card tp-pi-card">
+              <h4>AI forecast extension</h4>
+              <p>
+                12-month forward price projection with confidence band, updated as
+                new trade data flows in.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+      {/* ================= SUPPLIER INTELLIGENCE ================= */}
+      <section ref={supplierRef} className="tp-section tp-section--spacious tp-supplier-intelligence">
+        <div className="tp-container">
+
+          {/* Header */}
+          <div className="tp-supplier-intelligence-header">
+            <h2 className="tp-supplier-intelligence-title">
+              Supplier <span>Intelligence</span>
+            </h2>
+
+            <p className="tp-supplier-intelligence-sub">
+              Stop trusting gut feelings. Verify first.
+            </p>
+
+            <p className="tp-supplier-intelligence-desc">
+              Every supplier in TradePulse carries a structured reliability score,
+              sanctions screening status, and document verification history so you
+              know exactly who you're dealing with before any capital moves.
+            </p>
+          </div>
+
+          {/* Cards */}
+          <div className="tp-supplier-intelligence-grid">
+
+            <div className="tp-card tp-si-card">
+              <h4>Verification status & document tracking</h4>
+              <p>
+                See which certifications are current, expired, or under review for
+                every supplier.
+              </p>
+            </div>
+
+            <div className="tp-card tp-si-card">
+              <h4>Sanctions & compliance screening</h4>
+              <p>
+                Automated sanctions list cross-referencing. Know your supplier's
+                compliance status instantly.
+              </p>
+            </div>
+
+            <div className="tp-card tp-si-card">
+              <h4>Reliability scoring (0–100)</h4>
+              <p>
+                Composite score built from shipment history, document completeness,
+                and response rate.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= AIAssistant ================= */}
+      <section ref={aiRef} className="tp-section tp-section--spacious tp-ai-assistant">
+        <div className="tp-container">
+
+          {/* Header */}
+          <div className="tp-ai-assistant-header">
+            <h2 className="tp-ai-assistant-title">
+              AI <span>Assistant</span>
+            </h2>
+
+            <p className="tp-ai-assistant-sub">
+              Ask your data anything. Get a decision prompt back.
+            </p>
+
+            <p className="tp-ai-assistant-desc">
+              The TradePulse AI Assistant doesn't just answer questions, it
+              interprets your platform data in real time and translates it into
+              actionable sourcing decisions. Every answer is source-attributed.
+            </p>
+          </div>
+
+          {/* Cards */}
+          <div className="tp-ai-assistant-grid">
+
+            <div className="tp-card tp-ai-card">
+              <h4>Contextual answers grounded in your data</h4>
+              <p>
+                Ask about price trends, supplier comparisons, FX timing, or
+                corridor risk, all answered against live platform data.
+              </p>
+            </div>
+
+            <div className="tp-card tp-ai-card">
+              <h4>One-click export to report</h4>
+              <p>
+                Any AI insight can be saved to your sourcing report with source
+                attribution intact.
+              </p>
+            </div>
+
+            <div className="tp-card tp-ai-card">
+              <h4>News with decision implications</h4>
+              <p>
+                Every trade news item is processed into a categorised decision
+                prompt: Risk Alert, Opportunity Signal, or Price Impact.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+
+      {/* ================= PRICING PLAN ================= */}
+      <section ref={priceRef} className="tp-section tp-section--spacious tp-pricing">
+        <div className="tp-container">
+
+          {/* Header */}
+          <div className="tp-pricing-header">
+            <h2 className="tp-pricing-title">
+              Simple <span>Pricing</span>
+            </h2>
+            <p className="tp-pricing-sub">
+              Start free. Upgrade when you're ready to act on real intelligence.
+            </p>
+          </div>
+
+          {/* Plans */}
+          <div className="tp-pricing-grid">
+
+            {/* FREE PLAN */}
+            <div className="tp-card tp-pricing-card">
+              <h3 className="tp-pricing-plan">Free</h3>
+
+              <div className="tp-pricing-price">
+                $0 <span>/forever</span>
+              </div>
+
+              <p className="tp-pricing-desc">
+                Explore the platform. See what the intelligence looks like before
+                you commit.
+              </p>
+
+              <ul className="tp-pricing-features">
+                <li>1 trade corridor (read-only)</li>
+                <li>Product summary view — no trend charts</li>
+                <li>Current prices only — no history</li>
+                <li>3 supplier entries per corridor</li>
+                <li>Today's FX rate only</li>
+              </ul>
+
+              <button className="tp-btn-outline">Get Started</button>
+            </div>
+
+            {/* PRO PLAN */}
+            <div className="tp-card tp-pricing-card tp-pricing-card--pro">
+              <div className="tp-pricing-badge">Most Popular</div>
+
+              <h3 className="tp-pricing-plan">Pro</h3>
+
+              <div className="tp-pricing-price">
+                $149 <span>/mo</span>
+              </div>
+
+              <p className="tp-pricing-desc">
+                Full intelligence for analysts and procurement teams ready to act
+                on data.
+              </p>
+
+              <ul className="tp-pricing-features">
+                <li>All trade corridors</li>
+                <li>Full product intelligence + trend charts</li>
+                <li>10-year historical price data</li>
+                <li>Full supplier detail + AI reliability scoring</li>
+                <li>FX rate history + forward projections</li>
+                <li>Unlimited AI Assistant queries</li>
+                <li>Unlimited PDF reports</li>
+                <li>Unlimited watchlist & alerts</li>
+                <li>Full news synthesis feed</li>
+                <li>AI forecast extension (12 months)</li>
+              </ul>
+
+              <button className="tp-btn-primary">Upgrade to Pro</button>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ================= FAQ SECTION ================= */}
+      <section ref={faqRef} className="tp-section tp-section--spacious tp-faq">
+        <div className="tp-container">
+
+          {/* Header */}
+          <div className="tp-faq-header">
+            <h2 className="tp-faq-title">
+              Frequently Asked <span>Questions</span>
+            </h2>
+            <p className="tp-faq-sub">
+              Everything you need to know before getting started.
+            </p>
+          </div>
+
+          {/* Accordion */}
+          <div className="tp-faq-accordion">
+            {faqs.map((item, index) => (
+              <div
+                key={index}
+                className={`tp-faq-item ${activeIndex === index ? "active" : ""}`}
+              >
+                <button
+                  className="tp-faq-trigger"
+                  onClick={() => toggleItem(index)}
+                >
+                  <span className="tp-faq-question">{item.q}</span>
+                  <span className="tp-faq-icon">+</span>
+                </button>
+
+                <div className="tp-faq-panel">
+                  <p className="tp-faq-answer">{item.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
       {/* ================= FINAL CTA ================= */}
       <section
         id="contact"
