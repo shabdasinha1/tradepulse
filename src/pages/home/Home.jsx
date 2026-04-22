@@ -469,13 +469,13 @@ const Home = () => {
       </section>
 
       {/* ================= CORE FEATURES ================= */}
-      <section
+      {/* <section
         id="features"
         ref={featuresRef}
         className="tp-section tp-section--spacious tp-core"
       >
         <div className="tp-container">
-          {/* Header */}
+         
           <div className="tp-core-header">
             <h2 className="tp-core-title">
               Intelligence <span>Capabilities</span>
@@ -487,9 +487,9 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Accordion */}
+
           <div className="tp-core-accordion">
-            {/* Item 1 */}
+         
             <div
               className={`tp-core-item ${activeCoreIndex === 0 ? "active" : ""}`}
             >
@@ -516,7 +516,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Item 2 */}
+         
             <div
               className={`tp-core-item ${activeCoreIndex === 1 ? "active" : ""}`}
             >
@@ -544,7 +544,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Item 3 */}
+        
             <div
               className={`tp-core-item ${activeCoreIndex === 2 ? "active" : ""}`}
             >
@@ -570,7 +570,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Item 4 */}
+
             <div
               className={`tp-core-item ${activeCoreIndex === 3 ? "active" : ""}`}
             >
@@ -599,7 +599,7 @@ const Home = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       {/* ================= PRODUCT INTELLIGENCE ================= */}
 
       <section ref={productRef} className="tp-section tp-section--spacious tp-product-intelligence">
