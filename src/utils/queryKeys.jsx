@@ -78,6 +78,14 @@ export const queryKeys = {
     startDate,
     endDate,
   ],
+  fxRates: (reporterCode, partnerCode, startDate, endDate) => [
+    "fxRates",
+    reporterCode,
+    partnerCode,
+    startDate,
+    endDate,
+  ],
+
 
   shippingCosts: (reporterCode, partnerCode, startDate, endDate) => [
     "shippingCosts",

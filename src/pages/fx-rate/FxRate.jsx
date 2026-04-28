@@ -49,7 +49,7 @@ const FXRates = () => {
   =============================== */
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: queryKeys.exchangeRates(
+      queryKey: queryKeys.fxRates(
         reporterCode,
         filters.partnerCode,
         filters.startDate,
