@@ -50,6 +50,9 @@
   top: auto !important;
   transform: none !important;
 }
+.tp-table-body-scroll {
+  min-height: 300px;
+}
 
 /* ===============================
    RESPONSIVE

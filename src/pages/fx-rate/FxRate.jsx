@@ -66,7 +66,7 @@ const FXRates = () => {
         });
         return res;
       },
-      enabled: !!reporterCode && !!filters.partnerCode,
+      enabled: !!reporterCode,
 
       getNextPageParam: (lastPage) => {
         if (!lastPage) return undefined;
@@ -80,9 +80,12 @@ const FXRates = () => {
      FLATTEN DATA (FIXED)
   =============================== */
   const fxRates = useMemo(() => {
-    return data?.pages?.flatMap((p) => p?.data || []) || [];
-  }, [data]);
+  if (!data?.pages) return [];
 
+  return data.pages.flatMap((p) =>
+    Array.isArray(p?.data) ? p.data : []
+  );
+}, [data]);
   /* ===============================
      INFINITE SCROLL
   =============================== */
@@ -119,11 +122,13 @@ const FXRates = () => {
      HELPERS
   =============================== */
   const formatDate = (date) =>
-    new Date(date).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  date
+    ? new Date(date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "-";
 
   const getRiskClass = (risk) => {
     switch (risk) {
@@ -142,6 +147,10 @@ const FXRates = () => {
     () => [...Array(5)].map((_, i) => <FXRowSkeleton key={i} />),
     [],
   );
+
+  if (!reporterCode) {
+  return <div>Loading...</div>;
+}
 
   return (
     <section className="tp-section tp-section--dashboard">
@@ -214,14 +223,14 @@ const FXRates = () => {
               onScroll={handleBodyScroll}
             >
               <div className="tp-table">
-                {isLoading && skeletonRows}
+                {isLoading || !data ? skeletonRows : null}
 
                 {fxRates.map((row, i) => {
                   const isLast = fxRates.length === i + 1;
 
                   return (
                     <div
-                      key={i}
+                      key={row.id || `${row.pair}-${i}`}
                       ref={isLast ? lastRowRef : null}
                       className="tp-table-row tp-table-fx-dashboard"
                     >
@@ -230,7 +239,7 @@ const FXRates = () => {
                       <span className="text-center">{row.type}</span>
 
                       <span className="text-center">
-                        {row.rate?.toFixed(4)}
+                        {typeof row.rate === "number" ? row.rate.toFixed(4) : "-"}
                       </span>
 
                       <span className="text-center">
