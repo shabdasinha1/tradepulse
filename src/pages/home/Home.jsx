@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useReveal } from "../../hooks/useReveal.jsx";
 import { useNavigate } from "react-router-dom";
 
+
+
 const Home = () => {
   const navigate = useNavigate();
   const [activeCoreIndex, setActiveCoreIndex] = useState(0);
@@ -161,6 +163,23 @@ const Home = () => {
       },
     },
   ];
+
+  const ImageSection = ({ darkSrc, lightSrc, alt }) => (
+  <section className="tp-section tp-section--tight tp-reports-visual">
+    <div className="tp-container tp-reports-visual-inner">
+      <img
+        src={darkSrc}
+        alt={alt}
+        className="tp-reports-image tp-reports-image--dark"
+      />
+      <img
+        src={lightSrc}
+        alt={alt}
+        className="tp-reports-image tp-reports-image--light"
+      />
+    </div>
+  </section>
+);
   return (
     <>
       {/* ================= HERO ================= */}
@@ -221,24 +240,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ================= PRODUCT VISUAL image ================= */}
-      <section className="tp-section tp-section--tight tp-product-visual">
-        <div className="tp-container tp-product-visual-inner">
-          {/* Dark theme image */}
-          <img
-            src="/images/products-dark.webp"
-            alt="TradePulse AI Dashboard"
-            className="tp-product-image tp-product-image--dark"
-          />
-
-          {/* Light theme image */}
-          <img
-            src="/images/products-light.webp"
-            alt="TradePulse AI Dashboard"
-            className="tp-product-image tp-product-image--light"
-          />
-        </div>
-      </section>
+      {/* ================= HERO VISUAL image ================= */}
+     <ImageSection
+  darkSrc="/images/hero-dark.webp"
+  lightSrc="/images/hero-light.webp"
+  alt="Hero"
+/>
 
       {/* ================= PROBLEM SECTION ================= */}
       <section
@@ -332,24 +339,12 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* ================= REPORTS VISUAL ================= */}
-      <section className="tp-section tp-section--tight tp-reports-visual">
-        <div className="tp-container tp-reports-visual-inner">
-          {/* Dark theme image */}
-          <img
-            src="/images/reports-dark.webp"
-            alt="TradePulse AI Reports & Analytics"
-            className="tp-reports-image tp-reports-image--dark"
-          />
-
-          {/* Light theme image */}
-          <img
-            src="/images/reports-light.webp"
-            alt="TradePulse AI Reports & Analytics"
-            className="tp-reports-image tp-reports-image--light"
-          />
-        </div>
-      </section>
+      {/* ================= HISTORY VISUAL ================= */}
+     <ImageSection
+  darkSrc="/images/history-dark.webp"
+  lightSrc="/images/history-light.webp"
+  alt="History"
+/>
 
       {/* ================= SOLUTION SECTION ================= */}
       <section
@@ -449,24 +444,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ================= FORECAST VISUAL ================= */}
-      <section className="tp-section tp-section--tight tp-forecast-visual">
-        <div className="tp-container tp-forecast-visual-inner">
-          {/* Dark theme image */}
-          <img
-            src="/images/forecast-dark.webp"
-            alt="TradePulse AI Forecast & Predictive Analytics"
-            className="tp-forecast-image tp-forecast-image--dark"
-          />
-
-          {/* Light theme image */}
-          <img
-            src="/images/forecast-light.webp"
-            alt="TradePulse AI Forecast & Predictive Analytics"
-            className="tp-forecast-image tp-forecast-image--light"
-          />
-        </div>
-      </section>
+      {/* ================= NEWS VISUAL ================= */}
+     <ImageSection
+  darkSrc="/images/news-dark.webp"
+  lightSrc="/images/news-light.webp"
+  alt="News"
+/>
 
       {/* ================= CORE FEATURES ================= */}
       {/* <section
@@ -653,6 +636,14 @@ const Home = () => {
 
         </div>
       </section>
+
+       {/* ================= PRODUCT VISUAL ================= */}
+     <ImageSection
+  darkSrc="/images/product-dark.webp"
+  lightSrc="/images/product-light.webp"
+  alt="Product"
+/>
+
       {/* ================= SUPPLIER INTELLIGENCE ================= */}
       <section ref={supplierRef} className="tp-section tp-section--spacious tp-supplier-intelligence">
         <div className="tp-container">
@@ -705,6 +696,14 @@ const Home = () => {
 
         </div>
       </section>
+
+        {/* ================= SUPPLIER VISUAL ================= */}
+     <ImageSection
+  darkSrc="/images/reliability-dark.webp"
+  lightSrc="/images/reliability-light.webp"
+  alt="Reliability"
+/>
+
 
       {/* ================= AIAssistant ================= */}
       <section ref={aiRef} className="tp-section tp-section--spacious tp-ai-assistant">
