@@ -45,6 +45,7 @@ const ICON_MAP = {
   "/duty-snapshot": <FaFileInvoiceDollar />,
   "/trade-history": <FiClock />,
   "/trade-news": <FiGlobe />,
+  "/local-trade-management": <FaFileInvoiceDollar />,
 };
 
 import { DASHBOARD_ROUTES } from "../../routes/DashboardRouteConfig.jsx";

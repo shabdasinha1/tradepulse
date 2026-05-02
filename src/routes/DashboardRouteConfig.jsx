@@ -33,6 +33,9 @@ const TradeHistory = lazy(
   () => import("../pages/trade history/TradeHistory.jsx"),
 );
 const TradeNews = lazy(() => import("../pages/trade-news/TradeNews.jsx"));
+const localTradeManagement = lazy(
+  () => import("../pages/local-trade-management/localTradeManagement.jsx"),
+);
 export const DASHBOARD_ROUTES = [
   {
     label: " Corridor Intelligence Dashboard",
@@ -110,6 +113,12 @@ export const DASHBOARD_ROUTES = [
     label: "Suppliers Management",
     path: "/suppliers-manage",
     component: SuppliersManage,
+    adminOnly: true,
+  },
+   {
+    label: "Local Trade Management",
+    path: "/local-trade-management",
+    component: localTradeManagement,
     adminOnly: true,
   },
   {

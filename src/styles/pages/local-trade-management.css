@@ -1,0 +1,134 @@
+/* ===============================
+   MODAL SYSTEM
+================================ */
+
+.tp-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  /* 🔥 add blur */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  background: rgba(0, 0, 0, 0.55);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999; /* ✅ ABOVE EVERYTHING */
+}
+/* MAIN MODAL */
+.tp-modal {
+  width: min(720px, 100%);
+  height: min(90vh, 800px);
+
+  display: flex;
+  flex-direction: column;
+
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-card);
+
+  overflow: hidden;
+  position: relative;
+  z-index:100000;
+  animation: tpModalFade 0.2s ease;
+}
+@keyframes tpModalFade {
+  from {
+    transform: translateY(10px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+/* Header */
+.tp-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+/* Body */
+.tp-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* Footer */
+.tp-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+/* Textarea */
+.tp-textarea {
+  min-height: 100px;
+  resize: none;
+}
+
+/* FORM GRID (same as supplier) */
+.tp-form-grid {
+  flex: 1;
+  overflow-y: auto;
+
+  padding-top: var(--space-md);
+  padding-right: 4px; /* scrollbar spacing */
+}
+.tp-form-span-2 {
+  grid-column: span 2;
+}
+
+/* Modal header reuse */
+.tp-supplier-modal-header {
+  flex-shrink: 0;
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.tp-modal-title-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Close button */
+.tp-filter-close {
+  font-size: var(--fs-lg);
+  color: var(--text-secondary);
+}
+
+.tp-filter-close:hover {
+  color: var(--text-primary);
+}
+
+/* Actions */
+.tp-actions {
+  position: sticky;
+  bottom: 0;
+
+  background: var(--bg-card);
+  padding-top: var(--space-md);
+  margin-top: var(--space-md);
+
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tp-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tp-form-span-2 {
+    grid-column: span 1;
+  }
+}
