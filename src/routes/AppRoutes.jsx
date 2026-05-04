@@ -18,6 +18,7 @@ import { ToastContainer } from "react-toastify";
 import { ToastProvider } from "../components/common/toast/ToastProvider.jsx";
 
 import AdminRoute from "./AdminRoute.jsx";
+import Login from "../pages/auth/Login.jsx";
 
 /* Simple loader */
 const PageLoader = () => (
@@ -39,7 +40,7 @@ const AppRoutes = () => {
             element={
               <PublicOnlyRoute>
                 <PublicLayout>
-                  <Home />
+                  <Login />
                 </PublicLayout>
               </PublicOnlyRoute>
             }

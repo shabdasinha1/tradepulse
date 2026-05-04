@@ -90,7 +90,7 @@ const Footer = () => {
           <div className="tp-footer-links">
 
             {/* PRODUCTS */}
-            <div className="tp-footer-col">
+            {/* <div className="tp-footer-col">
               <span className="tp-footer-title">Products</span>
 
               {productLinks.map((item) => (
@@ -105,10 +105,10 @@ const Footer = () => {
                   )}
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {/* EXPLORE */}
-            <div className="tp-footer-col">
+            {/* <div className="tp-footer-col">
               <span className="tp-footer-title">Explore</span>
 
               <button onClick={() => scrollToSection("features")}>
@@ -123,7 +123,7 @@ const Footer = () => {
                   {route.label}
                 </button>
               ))}
-            </div>
+            </div> */}
 
             {/* ACCOUNT */}
             <div className="tp-footer-col">
@@ -158,11 +158,11 @@ const Footer = () => {
 >
   Developed by Robotronix Engineering Tech Pvt. Ltd.
 </a>
-
+{/* 
   <div className="tp-footer-socials">
     <a href="#" aria-label="LinkedIn">LinkedIn</a>
     <a href="#" aria-label="Twitter">Twitter</a>
-  </div>
+  </div> */}
 </div>
       </div>
     </footer>

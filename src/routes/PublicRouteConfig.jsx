@@ -43,13 +43,13 @@ export const PUBLIC_ROUTES = [
     label: "About",
     path: "/about",
     component: About,
-    showInHeader: true,
+    showInHeader: false,
   },
   {
     label: "Contact",
     path: "/contact",
     component: Contact,
-    showInHeader: true,
+    showInHeader: false,
   },
   {
     label: "Feedback",

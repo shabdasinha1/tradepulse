@@ -146,8 +146,8 @@ const Header = () => {
 
         {/* NAV */}
         <nav className={`tp-header-nav ${open ? "open" : ""}`}>
-          {/* PRODUCTS DROPDOWN */}
-          <div
+         
+          {/* <div
             className={`tp-nav-dropdown ${productsOpen ? "open" : ""}`}
             onMouseEnter={() => setProductsOpen(true)}
             onMouseLeave={() => setProductsOpen(false)}
@@ -178,15 +178,15 @@ const Header = () => {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           {/* MAIN LINKS */}
-          <button
+          {/* <button
             className={`tp-nav-link ${activeSection === "features" ? "active" : ""}`}
             onClick={() => scrollToSection("features")}
           >
             Features
-          </button>
+          </button> */}
           {headerLinks.map((route) => (
             <button
               key={route.path}
