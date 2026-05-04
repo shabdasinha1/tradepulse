@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+
+
+
+import React, { useState, useEffect } from "react";
 import TradePulseCard from "../../components/common/TradePulseCard";
 import { FiX } from "react-icons/fi";
-import { CreateTradeObservation } from "../../services/DashboardService";
+import {
+  CreateTradeObservation,
+  GetTradeObservations,
+} from "../../services/DashboardService";
 
 const LocalTradeManagement = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [observations, setObservations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     product_name: "",
@@ -23,13 +31,68 @@ const LocalTradeManagement = () => {
     reason: "",
   });
 
+  /* ===============================
+     FETCH DATA
+  ================================ */
+ const fetchObservations = async () => {
+  try {
+    setLoading(true);
+    const res = await GetTradeObservations();
+
+    const apiData = res?.data|| [];
+    
+
+    const mapDemand = (val) => {
+      if (val >= 0.7) return "High";
+      if (val >= 0.4) return "Medium";
+      return "Low";
+    };
+
+    const mapSupply = (val) => {
+      if (val < 0.4) return "Scarce";
+      if (val < 0.7) return "Balanced";
+      return "Surplus";
+    };
+
+    const mapSentiment = (val) => {
+      if (val >= 0.7) return "Strong";
+      if (val >= 0.4) return "Neutral";
+      return "Weak";
+    };
+
+    const transformed = apiData.map((item) => {
+      const [origin, destination] = item.corridor?.split("-") || ["", ""];
+
+      return {
+        product_name: item.product,
+        hs_code: item.hsCode,
+        origin_country_iso3: origin,
+        destination_country_iso3: destination,
+        price_quoted: item.price,
+        demand_level: mapDemand(item.demand),
+        supply_condition: mapSupply(item.supply),
+        market_sentiment: mapSentiment(item.sentiment),
+        confidence_score: item.observations,
+      };
+    });
+
+    setObservations(transformed);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+  useEffect(() => {
+    fetchObservations();
+  }, []);
+
+  /* ===============================
+     FORM
+  ================================ */
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -44,9 +107,25 @@ const LocalTradeManagement = () => {
       });
 
       setOpenModal(false);
+      fetchObservations(); // 🔥 refresh table
     } catch (err) {
       console.error(err);
     }
+  };
+
+  /* ===============================
+     HELPERS
+  ================================ */
+  const getDemandClass = (val) => {
+    if (val === "High") return "tp-pill-success";
+    if (val === "Medium") return "tp-pill-warning";
+    return "tp-pill-danger";
+  };
+
+  const getSupplyClass = (val) => {
+    if (val === "Scarce") return "tp-pill-danger";
+    if (val === "Balanced") return "tp-pill-warning";
+    return "tp-pill-success";
   };
 
   return (
@@ -65,18 +144,18 @@ const LocalTradeManagement = () => {
               </p>
             </div>
 
-            <div className="tp-filter-btn-wrapper">
-              <button
-                className="tp-btn-primary"
-                onClick={() => setOpenModal(true)}
-              >
-                Add Local Trade Data
-              </button>
-            </div>
+            <button
+              className="tp-btn-primary"
+              onClick={() => setOpenModal(true)}
+            >
+              Add Local Trade Data
+            </button>
           </div>
         </header>
 
-        {/* TABLE */}
+        {/* ===============================
+            TABLE
+        ================================ */}
         <TradePulseCard
           header={
             <div className="tp-card-header">
@@ -84,22 +163,85 @@ const LocalTradeManagement = () => {
             </div>
           }
         >
-          <div className="tp-empty-state">
-            <p className="tp-empty-text">No trade observations found</p>
+          <div className="tp-table-wrapper">
+            <div className="tp-table">
+              <div className="tp-table-head tp-table-trade">
+                <span>Product</span>
+                <span>HS Code</span>
+                <span>Route</span>
+                <span>Price</span>
+                <span>Demand</span>
+                <span>Supply</span>
+                <span>Sentiment</span>
+                <span>Confidence</span>
+              </div>
+
+              {loading ? (
+                <div className="tp-empty-state">
+                  <p className="tp-empty-text">Loading...</p>
+                </div>
+              ) : observations.length === 0 ? (
+                <div className="tp-empty-state">
+                  <p className="tp-empty-text">No trade observations found</p>
+                </div>
+              ) : (
+                observations.map((item, i) => (
+                  <div key={i} className="tp-table-row tp-table-trade">
+                    <span className="tp-text-strong">
+                      {item.product_name}
+                    </span>
+
+                    <span>{item.hs_code}</span>
+
+                    <span>
+                      {item.origin_country_iso3} →{" "}
+                      {item.destination_country_iso3}
+                    </span>
+
+                    <span>{item.price_quoted}</span>
+
+                    <span>
+                      <span
+                        className={`tp-pill ${getDemandClass(
+                          item.demand_level,
+                        )}`}
+                      >
+                        {item.demand_level}
+                      </span>
+                    </span>
+
+                    <span>
+                      <span
+                        className={`tp-pill ${getSupplyClass(
+                          item.supply_condition,
+                        )}`}
+                      >
+                        {item.supply_condition}
+                      </span>
+                    </span>
+
+                    <span>
+                      <span className="tp-pill tp-pill-primary">
+                        {item.market_sentiment}
+                      </span>
+                    </span>
+
+                    <span>{item.confidence_score}</span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </TradePulseCard>
 
-        {/* MODAL */}
+        {/* ===============================
+            MODAL (unchanged)
+        ================================ */}
         {openModal && (
           <div className="tp-modal-overlay" onClick={() => setOpenModal(false)}>
             <div className="tp-modal" onClick={(e) => e.stopPropagation()}>
-              {/* HEADER */}
               <div className="tp-supplier-modal-header">
-                <div className="tp-modal-title-group">
-                  <h3 className="tp-section-title">
-                    Add Trade Observation
-                  </h3>
-                </div>
+                <h3 className="tp-section-title">Add Trade Observation</h3>
 
                 <button
                   className="tp-filter-close"
@@ -109,7 +251,7 @@ const LocalTradeManagement = () => {
                 </button>
               </div>
 
-              {/* FORM */}
+                 {/* FORM */}
              <form className="tp-form-grid" onSubmit={handleSubmit}>
   {/* Product Name */}
   <div className="tp-form-group">

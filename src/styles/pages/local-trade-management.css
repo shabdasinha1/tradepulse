@@ -132,3 +132,30 @@
     grid-column: span 1;
   }
 }
+
+/* ===============================
+   TRADE TABLE
+================================ */
+
+.tp-table-trade {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr 1.2fr 0.8fr 1fr 1fr 1fr 0.8fr;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.tp-table-head {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.tp-table-row {
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.tp-table-row:hover {
+  background: var(--bg-card-hover);
+}
