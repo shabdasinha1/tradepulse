@@ -81,12 +81,25 @@ const SuppliersManagement = () => {
   const [formData, setFormData] = useState({
     companyName: "",
     countryIso3: "",
-    sector: "",
+  
     verificationStatus: "PENDING",
 
     hsCodes: [],
     registrationNumber: "",
     dataSource: "",
+    yearEstablished: "",
+    primaryCommodities: "",
+    certificationType: "",
+    certificationExpiry: "",
+    exportPricePerTonne: "",
+    pricingBasis: "",
+    annualExportVolume: "",
+    supplyConsistency: "",
+    avgLeadTime: "",
+    primaryPort: "",
+    preferredShippingTerms: "",
+    exportLicenseStatus: "",
+    exportMarkets: "",
   });
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -208,6 +221,20 @@ const SuppliersManagement = () => {
     try {
       const payload = {
         ...formData,
+        primaryCommodities: formData.primaryCommodities
+          ?.split(",")
+          .map((c) => c.trim()),
+
+        exportMarkets: formData.exportMarkets
+          ?.split(",")
+          .map((m) => m.trim()),
+
+        hsCodes: formData.hsCodes.map((c) => c.trim()),
+
+        certification: {
+          type: formData.certificationType,
+          expiry: formData.certificationExpiry,
+        },
       };
       // console.log(payload);
 
@@ -225,11 +252,25 @@ const SuppliersManagement = () => {
       setFormData({
         companyName: "",
         countryIso3: "",
-        sector: "",
+        
         verificationStatus: "PENDING",
+
         hsCodes: [],
         registrationNumber: "",
         dataSource: "",
+        yearEstablished: "",
+        primaryCommodities: "",
+        certificationType: "",
+        certificationExpiry: "",
+        exportPricePerTonne: "",
+        pricingBasis: "",
+        annualExportVolume: "",
+        supplyConsistency: "",
+        avgLeadTime: "",
+        primaryPort: "",
+        preferredShippingTerms: "",
+        exportLicenseStatus: "",
+        exportMarkets: "",
       });
     } catch (error) {
       console.error("Error creating supplier:", error);
@@ -334,10 +375,37 @@ const SuppliersManagement = () => {
     return data.map((row) => ({
       companyName: row.companyName?.trim(),
       countryIso3: row.countryIso3?.trim(),
-      sector: row.sector?.trim(),
-      hsCodes: row.hsCodes ? row.hsCodes.split(",").map((c) => c.trim()) : [],
-      dataSource: row.dataSource?.trim(),
       verificationStatus: row.verificationStatus?.trim(),
+      dataSource: row.dataSource?.trim(),
+      registrationNumber: row.registrationNumber?.trim(),
+
+      hsCodes: row.hsCodes
+        ? row.hsCodes.split(",").map((c) => c.trim())
+        : [],
+
+      yearEstablished: row.yearEstablished?.trim(),
+
+      primaryCommodities: row.primaryCommodities
+        ? row.primaryCommodities.split(",").map((c) => c.trim())
+        : [],
+
+      exportMarkets: row.exportMarkets
+        ? row.exportMarkets.split(",").map((m) => m.trim())
+        : [],
+
+      certification: {
+        type: row.certificationType?.trim(),
+        expiry: row.certificationExpiry?.trim(),
+      },
+
+      exportPricePerTonne: row.exportPricePerTonne,
+      pricingBasis: row.pricingBasis,
+      annualExportVolume: row.annualExportVolume,
+      supplyConsistency: row.supplyConsistency,
+      avgLeadTime: row.avgLeadTime,
+      primaryPort: row.primaryPort,
+      preferredShippingTerms: row.preferredShippingTerms,
+      exportLicenseStatus: row.exportLicenseStatus,
     }));
   };
 
@@ -365,6 +433,22 @@ const SuppliersManagement = () => {
         !["VERIFIED", "PARTIAL", "PENDING"].includes(row.verificationStatus)
       ) {
         errors.push(`Row ${index + 1}: Invalid verificationStatus`);
+      }
+
+      if (!row.primaryCommodities || row.primaryCommodities.length === 0) {
+        errors.push(`Row ${index + 1}: Missing primaryCommodities`);
+      }
+
+      if (!row.exportPricePerTonne) {
+        errors.push(`Row ${index + 1}: Missing exportPricePerTonne`);
+      }
+
+      if (!row.pricingBasis) {
+        errors.push(`Row ${index + 1}: Missing pricingBasis`);
+      }
+
+      if (!row.annualExportVolume) {
+        errors.push(`Row ${index + 1}: Missing annualExportVolume`);
       }
     });
 
@@ -521,13 +605,12 @@ const SuppliersManagement = () => {
                             {/* Verification */}
                             <span>
                               <span
-                                className={`tp-pill ${
-                                  supplier.verificationStatus === "VERIFIED"
+                                className={`tp-pill ${supplier.verificationStatus === "VERIFIED"
                                     ? "tp-pill-success"
                                     : supplier.verificationStatus === "PARTIAL"
                                       ? "tp-pill-warning"
                                       : "tp-pill-danger"
-                                }`}
+                                  }`}
                               >
                                 {supplier.verificationStatus}
                               </span>
@@ -536,13 +619,12 @@ const SuppliersManagement = () => {
                             {/* Reliability */}
                             <span>
                               <span
-                                className={`tp-pill ${
-                                  supplier.reliabilityScore < 0.3
+                                className={`tp-pill ${supplier.reliabilityScore < 0.3
                                     ? "tp-pill-danger"
                                     : supplier.reliabilityScore < 0.5
                                       ? "tp-pill-warning"
                                       : "tp-pill-success"
-                                }`}
+                                  }`}
                               >
                                 {supplier.reliabilityScore}
                               </span>
@@ -551,11 +633,10 @@ const SuppliersManagement = () => {
                             {/* Sanctions Flag */}
                             <span>
                               <span
-                                className={`tp-pill ${
-                                  supplier.sanctionsFlag
+                                className={`tp-pill ${supplier.sanctionsFlag
                                     ? "tp-pill-danger"
                                     : "tp-pill-success"
-                                }`}
+                                  }`}
                               >
                                 {supplier.sanctionsFlag ? "Flagged" : "Clear"}
                               </span>
@@ -780,6 +861,159 @@ const SuppliersManagement = () => {
                         }))
                       }
                     />
+                  </div>
+                  <div className="tp-form-group">
+                    <label>Year Established</label>
+                    <input
+                      type="number"
+                      name="yearEstablished"
+                      className="tp-input"
+                      placeholder="e.g. 2005"
+                      value={formData.yearEstablished}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Primary Commodities</label>
+                    <input
+                      name="primaryCommodities"
+                      className="tp-input"
+                      placeholder="e.g. Cocoa, Coffee"
+                      value={formData.primaryCommodities}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="tp-form-group">
+                    <label>Certification Type</label>
+                    <input
+                      name="certificationType"
+                      className="tp-input"
+                      placeholder="NAFDAC / SON"
+                      value={formData.certificationType}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Certification Expiry</label>
+                    <input
+                      type="date"
+                      name="certificationExpiry"
+                      className="tp-input"
+                      value={formData.certificationExpiry}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Export Price per Tonne</label>
+                    <input
+                      type="number"
+                      name="exportPricePerTonne"
+                      className="tp-input"
+                      value={formData.exportPricePerTonne}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Pricing Basis</label>
+                    <select
+                      name="pricingBasis"
+                      className="tp-input tp-select"
+                      value={formData.pricingBasis}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select</option>
+                      <option value="FOB">FOB</option>
+                      <option value="CIF">CIF</option>
+                      <option value="EXW">EXW</option>
+                      <option value="CFR">CFR</option>
+                    </select>
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Annual Export Volume</label>
+                    <input
+                      type="number"
+                      name="annualExportVolume"
+                      className="tp-input"
+                      value={formData.annualExportVolume}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Supply Consistency</label>
+                    <select
+                      name="supplyConsistency"
+                      className="tp-input tp-select"
+                      value={formData.supplyConsistency}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select</option>
+                      <option value="YEAR_ROUND">Year-round</option>
+                      <option value="SEASONAL">Seasonal</option>
+                      <option value="SPOT">Spot Orders</option>
+                    </select>
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Avg Lead Time (days)</label>
+                    <input
+                      type="number"
+                      name="avgLeadTime"
+                      className="tp-input"
+                      value={formData.avgLeadTime}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Primary Port</label>
+                    <input
+                      name="primaryPort"
+                      className="tp-input"
+                      value={formData.primaryPort}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Preferred Shipping Terms</label>
+                    <input
+                      name="preferredShippingTerms"
+                      className="tp-input"
+                      value={formData.preferredShippingTerms}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Export Markets</label>
+                    <input
+                      name="exportMarkets"
+                      className="tp-input"
+                      placeholder="e.g. UK, UAE"
+                      value={formData.exportMarkets}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  <div className="tp-form-group">
+                    <label>Export License Status</label>
+                    <select
+                      name="exportLicenseStatus"
+                      className="tp-input tp-select"
+                      value={formData.exportLicenseStatus}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select</option>
+                      <option value="ACTIVE">Active</option>
+                      <option value="EXPIRED">Expired</option>
+                      <option value="PENDING">Pending</option>
+                    </select>
                   </div>
 
                   {/* <div className="tp-form-group">
