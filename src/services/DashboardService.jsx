@@ -439,12 +439,12 @@ export const DashboardCorridorNews = async (params = {}) => {
 
 /* ➕ Create Trade Observation */
 export const CreateTradeObservation = async (data) => {
-  return Api.post("/api/observation/trade-observation", data);
+  return Api.post("app/api/observation/trade-observation", data);
 };
 
 /* 📄 Get All Trade Observations */
 export const GetTradeObservations = async (params = {}) => {
-  return Api.get("/api/observation/trade-observation", {
+  return Api.get("app/api/observation/trade-observation", {
     params: cleanParams(params),
   });
 };
