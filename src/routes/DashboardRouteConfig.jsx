@@ -38,42 +38,42 @@ const localTradeManagement = lazy(
 );
 export const DASHBOARD_ROUTES = [
   {
-    label: " Corridor Intelligence Dashboard",
+    label: " Corridor Intelligence",
     path: "/overview",
     component: Overview,
   },
   {
-    label: "Corridor Product Intelligence",
+    label: "Product Intelligence",
     path: "/product",
     component: DashboardProduct,
   },
   {
-    label: "Exporter Reliability Intelligence",
+    label: "Supplier Intelligence",
     path: "/suppliers",
     component: Suppliers,
   },
   {
-    label: "Corridor FX-Rates",
+    label: "FX Rates",
     path: "/fx-rates",
     component: FXRates,
   },
   {
-    label: "Corridor Shipping Cost",
+    label: "Shipping Rates",
     path: "/shipping-history",
     component: ShippingHistory,
   },
   {
-    label: "Corridor Duty Snapshot",
+    label: "Duty Rates",
     path: "/duty-snapshot",
     component: DutySnapshot,
   },
   {
-    label: "Corridor Trade History",
+    label: "Trade History",
     path: "/trade-history",
     component: TradeHistory,
   },
   {
-    label: "Corridor Trade News",
+    label: "Trade News",
     path: "/trade-news",
     component: TradeNews,
   },

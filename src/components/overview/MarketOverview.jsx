@@ -284,7 +284,7 @@ const { convert, isFxReady } = useCurrency();
 
         {fxFilterOpen && (
           <UniversalFilter
-            showCorridor
+           
             showTimeRange
             defaultValues={fxFilters}
             onChange={(filters) => {
@@ -298,7 +298,7 @@ const { convert, isFxReady } = useCurrency();
 
         {shipFilterOpen && (
           <UniversalFilter
-            showCorridor
+            
             showTimeRange
             defaultValues={shipFilters}
             onChange={(filters) => {

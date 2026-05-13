@@ -300,7 +300,7 @@ const Suppliers = () => {
       <div className="tp-dashboard-container tp-grid-stack">
         <header>
           <h1 className="tp-section-title">
-            Exporter Reliability <span>Intelligence</span>
+            Supplier <span>Intelligence</span>
           </h1>
 
           <div className="tp-overview-sub-row">
@@ -611,7 +611,7 @@ const Suppliers = () => {
           <UniversalFilter
             {...(!isCompanyView
               ? {
-                  showCorridor: true,
+              
                   showTimeRange: true,
                   showPartner: true,
                   showProduct: true,

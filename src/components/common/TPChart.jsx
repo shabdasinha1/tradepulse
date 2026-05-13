@@ -242,7 +242,7 @@ left: parseInt(styles.getPropertyValue("--chart-margin-left")),
       </TradePulseCard>
       {filterOpen && (
         <UniversalFilter
-          showCorridor
+      
           showProduct
           showTimeRange
           defaultValues={{

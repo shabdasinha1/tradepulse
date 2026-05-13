@@ -189,7 +189,7 @@ const DutySnapshot = () => {
         {/* HEADER */}
         <header>
           <h1 className="tp-section-title">
-            Duty <span>Snapshot</span>
+            Duty <span>Rates</span>
           </h1>
 
           <div className="tp-overview-sub-row">
@@ -198,12 +198,12 @@ const DutySnapshot = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              <div className="tp-corridor-pill">
+              {/* <div className="tp-corridor-pill">
                 <span>Active Corridor :</span>
                 <span className="tp-country-truncate" title={corridor}>
                   {shortCorridor || "Selected Corridor"}
                 </span>
-              </div>
+              </div> */}
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
@@ -290,7 +290,7 @@ const DutySnapshot = () => {
       {/* TABLE FILTER */}
       {tableFilterOpen && (
         <UniversalFilter
-          showCorridor
+         
           showTimeRange
           defaultValues={filters}
           onChange={(values) => {

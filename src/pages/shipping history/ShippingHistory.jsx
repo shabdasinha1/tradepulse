@@ -192,7 +192,7 @@ const ShippingHistory = () => {
         {/* HEADER */}
         <header>
           <h1 className="tp-section-title">
-            Corridor <span>Shipping Cost </span>
+            Shipping<span> Rates </span>
           </h1>
 
           <div className="tp-overview-sub-row">
@@ -202,12 +202,12 @@ const ShippingHistory = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              <div className="tp-corridor-pill">
+              {/* <div className="tp-corridor-pill">
                 <span>Active Corridor :</span>
                 <span className="tp-country-truncate" title={corridor}>
                   {shortCorridor || "Selected Corridor"}
                 </span>
-              </div>
+              </div> */}
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
@@ -285,7 +285,7 @@ const ShippingHistory = () => {
 
       {tableFilterOpen && (
         <UniversalFilter
-          showCorridor
+     
           showProduct
           showTimeRange
           showRiskLevel

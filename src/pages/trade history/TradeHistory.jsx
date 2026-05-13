@@ -218,12 +218,12 @@ const TradeHistory = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              <div className="tp-corridor-pill">
+              {/* <div className="tp-corridor-pill">
                 <span>Active Corridor :</span>
                 <span className="tp-country-truncate" title={corridor}>
                   {shortCorridor || "Selected Corridor"}
                 </span>
-              </div>
+              </div> */}
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
@@ -321,7 +321,7 @@ const TradeHistory = () => {
       {/* TABLE FILTER */}
       {tableFilterOpen && (
         <UniversalFilter
-          showCorridor
+
           showTimeRange
           defaultValues={filters}
           onChange={(values) => {

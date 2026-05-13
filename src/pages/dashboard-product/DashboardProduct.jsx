@@ -330,7 +330,7 @@ const DashboardProduct = () => {
       <div className="tp-dashboard-container tp-grid-stack">
         <header>
           <h1 className="tp-section-title">
-            Corridor Product <span>Intelligence</span>
+            Product <span>Intelligence</span>
           </h1>
 
           <div className="tp-overview-sub-row">
@@ -339,7 +339,7 @@ const DashboardProduct = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              <div className="tp-corridor-pill">
+              {/* <div className="tp-corridor-pill">
                 <span className="tp-country">Active Corridor :</span>
                 <span
                   className="tp-country tp-country-truncate"
@@ -347,7 +347,7 @@ const DashboardProduct = () => {
                 >
                   {shortCorridor || "Selected Corridor"}
                 </span>
-              </div>
+              </div> */}
 
               <button
                 className="tp-btn-outline tp-overview-filter-btn"
@@ -497,7 +497,7 @@ const DashboardProduct = () => {
 
         {/* ================= INSIGHTS ================= */}
 
-        <div className="tp-grid tp-insight-grid">
+        {/* <div className="tp-grid tp-insight-grid">
           <div className="tp-card">
             <p className="tp-muted">Most Imported Product ({corridor})</p>
 
@@ -520,14 +520,14 @@ const DashboardProduct = () => {
               <EmptyState message="No volatility data found" />
             )}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
 
       {tableFilterOpen && (
         <UniversalFilter
-          showCorridor
+      
           showProduct
           showTimeRange
           showRiskLevel

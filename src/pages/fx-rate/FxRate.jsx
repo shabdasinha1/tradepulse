@@ -158,7 +158,7 @@ const FXRates = () => {
         {/* HEADER */}
         <header>
           <h1 className="tp-section-title">
-            Corridor <span>FX-Rates</span>
+            FX <span>Rates</span>
           </h1>
 
           <div className="tp-overview-sub-row">
@@ -277,7 +277,7 @@ const FXRates = () => {
 
       {tableFilterOpen && (
         <UniversalFilter
-          showCorridor
+        
           showProduct
           showTimeRange
           defaultValues={filters}
