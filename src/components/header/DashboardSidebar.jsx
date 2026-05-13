@@ -18,6 +18,7 @@ import {
 import { MdCurrencyExchange } from "react-icons/md";
 import { GiCargoShip } from "react-icons/gi";
 import { FaFileInvoiceDollar } from "react-icons/fa";
+import GlobalFilterPanel from "../global/GlobalFilterPanel.jsx";
 
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { MdOutlineInventory2 } from "react-icons/md";
@@ -67,6 +68,10 @@ import { GetCookie, RemoveCookie } from "../../utils/CookieManager.jsx";
 
 const DashboardSidebar = ({ open, setOpen }) => {
   const role = useSelector((state) => state.auth.role);
+
+const activeCorridor = useSelector(
+  (state) => state.corridor.corridor,
+);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
 
@@ -83,6 +88,7 @@ const DashboardSidebar = ({ open, setOpen }) => {
     return localStorage.getItem("tp_sidebar_collapsed") === "true";
   });
   const [initials, setInitials] = useState("");
+  const [showCorridorFilter, setShowCorridorFilter] = useState(false);
 
   const sidebarRef = useRef(null);
   const profileRef = useRef(null);
@@ -228,6 +234,20 @@ const DashboardSidebar = ({ open, setOpen }) => {
               </button>
             )}
           </div>
+          {!collapsed && (
+  <div className="tp-active-corridor-card">
+    <span className="tp-active-corridor-label">
+      Active Corridor
+    </span>
+
+   <button
+  className="tp-active-corridor-value"
+  onClick={() => setShowCorridorFilter(true)}
+>
+{activeCorridor || "No Corridor Selected"}
+</button>
+  </div>
+)}
           {/* ✅ ADMIN BADGE (MOBILE/TABLET) */}
 {role === "ADMIN" && (
   <div className="tp-admin-badge-sidebar">
@@ -273,6 +293,15 @@ const DashboardSidebar = ({ open, setOpen }) => {
           </nav>
         </div>
       </aside>
+      {showCorridorFilter && (
+  <GlobalFilterPanel
+    title="Active Corridor"
+    onClose={() => setShowCorridorFilter(false)}
+    showProduct={false}
+    showStartDate={false}
+    showEndDate={false}
+  />
+)}
     </>
   );
 };

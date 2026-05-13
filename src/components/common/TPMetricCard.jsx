@@ -110,7 +110,7 @@ const TPMetricCard = ({
                   </div>
                 )}
                 <div className="tp-shipping-row">
-                  <span className="tp-ship-price">
+                  <span className="tp-ship-price tp-font-data">
                     {shippingData?.value ? `${shippingData?.value}` : "--"}
                   </span>
                 </div>
@@ -121,7 +121,7 @@ const TPMetricCard = ({
                   <span className="tp-demand-year">
                     {demandData.current?.currentYear}
                   </span>
-                  <span className="tp-demand-value">
+                  <span className="tp-demand-value tp-font-data">
                     {Number(
                       demandData.current?.currentValue || 0
                     ).toLocaleString()}
@@ -132,7 +132,7 @@ const TPMetricCard = ({
                   <span className="tp-demand-year">
                     {demandData.previous?.previousYear}
                   </span>
-                  <span className="tp-demand-value">
+                  <span className="tp-demand-value tp-font-data">
                     {Number(
                       demandData.previous?.previousValue || 0
                     ).toLocaleString()}
@@ -149,18 +149,18 @@ const TPMetricCard = ({
                     <div key={index} className="tp-fx-row tp-card">
                       <span className="tp-fx-pair">{item.pair}</span>
                       <span className="tp-fx-value-wraper">
-                        <span className="tp-fx-value">
+                        <span className="tp-fx-value tp-font-data">
                           {item.value}
                         </span>
                         {item.changePercent !== null && item.changePercent !== undefined && (
                           <span
-                            className={
-                              isUp
-                                ? "tp-text-up"
-                                : isDown
-                                  ? "tp-text-down"
-                                  : "tp-text-neutral"
-                            }
+                            className={`tp-font-data ${
+  isUp
+    ? "tp-text-up"
+    : isDown
+      ? "tp-text-down"
+      : "tp-text-neutral"
+}`}
                           >
                             {item.changePercent > 0
                               ? `+${item.changePercent}%`
@@ -174,7 +174,7 @@ const TPMetricCard = ({
               </div>
             ) : (
               <>
-                <span className="tp-metric-value">{value}</span>
+               <span className="tp-metric-value tp-font-data">{value}</span>
                 {unit && <span className="tp-metric-unit">{unit}</span>}
               </>
             )}
@@ -193,7 +193,7 @@ const TPMetricCard = ({
                 className={`${isStringTrend
                   ? `tp-risk-badge tp-risk-${capitalize(trend) === "Down" ? "high" : "low"}`
                   : ""
-                  } ${trendClass}`}
+                  } ${trendClass} tp-font-data`}
               >
                 {isStringTrend
                   ? `${capitalize(trend)} Trend`

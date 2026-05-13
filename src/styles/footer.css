@@ -51,8 +51,13 @@
 
 .tp-footer-desc {
   font-size: var(--fs-body);
-  line-height: 1.6;
+
+  line-height: var(--lh-body);
+
+  letter-spacing: var(--tracking-normal);
+
   color: var(--text-secondary);
+
   margin-top: var(--space-sm);
 }
 
@@ -76,9 +81,19 @@
 /* Title */
 .tp-footer-title {
   font-size: var(--fs-label);
-  font-weight: var(--fw-semibold);
-  letter-spacing: 0.3px;
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-primary);
+
   margin-bottom: 6px;
 }
 
@@ -90,7 +105,11 @@
   text-align: left;
   cursor: pointer;
 
-  font-size: var(--fs-label);
+ font-family: var(--font-main);
+
+letter-spacing: var(--tracking-normal);
+
+line-height: var(--lh-compact);
   color: var(--text-secondary);
 
   transition:
@@ -132,6 +151,17 @@
 /* Copyright */
 .tp-footer-copy {
   font-size: var(--fs-caption);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-muted);
 }
 
@@ -142,8 +172,20 @@
 }
 
 .tp-footer-socials a {
-  font-size: var(--fs-caption);
+    font-size: var(--fs-caption);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
+
   position: relative;
 
   transition:
@@ -188,7 +230,9 @@
 
   font-size: var(--fs-caption);
   color: var(--text-muted);
+  line-height: var(--lh-tight);
 
+  letter-spacing: var(--tracking-normal);
   border-top: 1px solid var(--border-soft);
 
   /* background:
@@ -256,7 +300,16 @@
 }
 
 .tp-footer-dev {
-  font-size: var(--fs-caption);
+ font-size: var(--fs-caption);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-muted);
   text-decoration: none;
   transition: color var(--transition-fast);
@@ -268,12 +321,24 @@
 
 .tp-dashboard-footer-dev {
   font-size: var(--fs-caption);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-muted);
 }
 
 .tp-dashboard-footer-link {
   color: var(--text-muted);
   text-decoration: none;
+    letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
   transition: color var(--transition-fast),
               transform var(--transition-fast);
 }

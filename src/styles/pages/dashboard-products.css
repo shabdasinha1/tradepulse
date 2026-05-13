@@ -8,6 +8,14 @@ header .tp-section-title {
 
 .tp-overview-text {
   font-size: var(--fs-xl);
+
+  font-family: var(--font-data);
+
+  font-weight: var(--fw-metric);
+
+  letter-spacing: var(--metric-letter-spacing);
+
+  line-height: var(--lh-tight);
 }
 
 /* ======================================
@@ -52,6 +60,10 @@ header .tp-section-title {
   border-bottom: 1px solid var(--border-soft);
   font-size: var(--fs-body);
 
+line-height: var(--lh-compact);
+
+letter-spacing: var(--tracking-normal);
+
   min-width: 830px; /* enables horizontal scroll */
 }
 
@@ -60,8 +72,18 @@ header .tp-section-title {
 ====================================== */
 
 .product-head {
-  font-size: var(--fs-body);
-  font-weight: var(--fw-semibold);
+   font-size: var(--fs-label);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
 
   padding: 10px;
@@ -162,8 +184,16 @@ header .tp-section-title {
 }
 
 .tp-table-title {
-  font-weight: var(--fw-semibold);
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-primary);
+
   margin: 0;
 }
 
@@ -245,11 +275,21 @@ header .tp-section-title {
 /* ======================================
    FORM ELEMENTS
 ====================================== */
-
 .tp-form-group label {
-  font-size: var(--fs-body);
-  font-weight: var(--fw-regular);
+  font-size: var(--fs-label);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   margin-bottom: 4px;
+
   display: block;
 }
 
@@ -257,8 +297,13 @@ header .tp-section-title {
 .tp-select__single-value,
 .tp-select__placeholder,
 .tp-select__input-container {
-  font-size: 13px;
-  font-weight: 300;
+  font-size: var(--fs-caption);
+
+  font-weight: var(--fw-regular);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-compact);
 }
 
 /* Date picker */

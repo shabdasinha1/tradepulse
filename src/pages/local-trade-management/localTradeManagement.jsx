@@ -191,14 +191,14 @@ const LocalTradeManagement = () => {
                       {item.product_name}
                     </span>
 
-                    <span>{item.hs_code}</span>
+                    <span className="tp-font-data">{item.hs_code}</span>
 
                     <span>
                       {item.origin_country_iso3} →{" "}
                       {item.destination_country_iso3}
                     </span>
 
-                    <span>{item.price_quoted}</span>
+                    <span className="tp-font-data">{item.price_quoted}</span>
 
                     <span>
                       <span
@@ -226,7 +226,7 @@ const LocalTradeManagement = () => {
                       </span>
                     </span>
 
-                    <span>{item.confidence_score}</span>
+                    <span className="tp-font-data">{item.confidence_score}</span>
                   </div>
                 ))
               )}
@@ -270,7 +270,7 @@ const LocalTradeManagement = () => {
     <label>HS Code</label>
     <input
       name="hs_code"
-      className="tp-input"
+      className="tp-input tp-font-data"
       placeholder="e.g. 7214"
       value={formData.hs_code}
       onChange={handleChange}
@@ -294,7 +294,7 @@ const LocalTradeManagement = () => {
     <label>Origin Country</label>
     <input
       name="origin_country_iso3"
-      className="tp-input"
+      className="tp-input tp-font-data"
       placeholder="ISO3 (e.g. IND, USA)"
       value={formData.origin_country_iso3}
       onChange={handleChange}
@@ -306,7 +306,7 @@ const LocalTradeManagement = () => {
     <label>Destination Country</label>
     <input
       name="destination_country_iso3"
-      className="tp-input"
+      className="tp-input tp-font-data"
       placeholder="ISO3 (e.g. ARE, UK)"
       value={formData.destination_country_iso3}
       onChange={handleChange}
@@ -319,7 +319,7 @@ const LocalTradeManagement = () => {
     <input
       name="price_quoted"
       type="number"
-      className="tp-input"
+      className="tp-input tp-font-data"
       placeholder="e.g. 520 (USD/ton)"
       value={formData.price_quoted}
       onChange={handleChange}
@@ -396,7 +396,7 @@ const LocalTradeManagement = () => {
       name="confidence_score"
       type="number"
       step="0.01"
-      className="tp-input"
+      className="tp-input tp-font-data"
       placeholder="0 to 1 (e.g. 0.85)"
       value={formData.confidence_score}
       onChange={handleChange}
@@ -421,7 +421,7 @@ const LocalTradeManagement = () => {
     <input
       name="volume_estimate"
       type="number"
-      className="tp-input"
+      className="tp-input tp-font-data"
       placeholder="e.g. 100 (tons)"
       value={formData.volume_estimate}
       onChange={handleChange}

@@ -29,11 +29,20 @@
 /* Preference rows (Email alerts, etc.) */
 .settings-row {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   padding: var(--space-md) 0;
+
   border-bottom: 1px solid var(--border-soft);
+
   gap: var(--space-md);
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
 }
 
 .settings-row:last-child {
@@ -103,15 +112,32 @@
 /* HEADER STYLE */
 .tp-data-source-table-wrapper .tp-table-head {
   padding: 12px 16px;
-  font-size: var(--fs-caption);
+
+  font-size: var(--fs-intel-label);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-intel);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
-  font-weight: var(--fw-medium);
 }
 
 /* ROW STYLE */
 .tp-data-source-table-wrapper .tp-table-row {
   padding: 12px 16px;
+
   font-size: var(--fs-body);
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
+
   border-bottom: 1px solid var(--border-soft);
 }
 
@@ -133,9 +159,19 @@
 /* Status pill center fix */
 .tp-data-source-pill {
   width: max-content !important;
-  margin: 0 auto;
-}
 
+  margin: 0 auto;
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+}
 /* ===============================
    RESPONSIVE
 ================================ */

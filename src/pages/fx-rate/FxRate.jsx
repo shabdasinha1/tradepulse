@@ -238,7 +238,7 @@ const FXRates = () => {
 
                       <span className="text-center">{row.type}</span>
 
-                      <span className="text-center">
+                      <span className="text-center tp-font-data">
                         {typeof row.rate === "number" ? row.rate.toFixed(4) : "-"}
                       </span>
 
@@ -246,7 +246,7 @@ const FXRates = () => {
                         {formatDate(row.date)}
                       </span>
 
-                      <span className="text-center">
+                      <span className="text-center tp-font-data">
                         {row.volatility !== null ? `${row.volatility}%` : "-"}
                       </span>
 

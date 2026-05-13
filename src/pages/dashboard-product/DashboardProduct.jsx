@@ -270,7 +270,7 @@ const DashboardProduct = () => {
             {item.categoryHs2} - {item.productCategory}
           </span>
 
-          <span className="tp-muted text-center">
+          <span className="tp-muted text-center tp-font-data">
             {currencySymbol || ""}
             {Number(item.avgExportPrice).toFixed(2)}
           </span>
@@ -386,7 +386,7 @@ const DashboardProduct = () => {
                 <p className="tp-muted">Active Products Count ({corridor})</p>
                 {productData?.productOverview?.activeProducts ? (
                   <h3 className="tp-overview-text">
-                    <span className="tp-overview-text">
+                    <span className="tp-overview-text tp-font-data">
                       {productData.productOverview.activeProducts}
                     </span>
                   </h3>

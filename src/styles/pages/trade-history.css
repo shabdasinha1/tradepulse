@@ -32,13 +32,22 @@
 }
 .tp-custom-tooltip {
   max-width: min(500px, 90vw);
+
   margin-left: 15px;
-  white-space: normal; /* allow wrapping */
-  word-break: break-word; /* break long words */
-  overflow-wrap: anywhere; /* extra safety */
+
+  white-space: normal;
+
+  word-break: break-word;
+
+  overflow-wrap: anywhere;
 
   padding: 8px 10px;
-  font-size: 12px;
+
+  font-size: var(--fs-caption);
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
 }
 /* RESPONSIVE */
 @media (max-width: 768px) {

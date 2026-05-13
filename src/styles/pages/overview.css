@@ -43,8 +43,14 @@
 
 .tp-overview-hero-title {
   font-size: var(--fs-heading-lg);
-  /* larger than default */
-  line-height: 1.1;
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  line-height: var(--lh-tight);
+
+  letter-spacing: var(--tracking-tight);
 }
 
 .tp-overview-hero-title span {
@@ -125,8 +131,12 @@
 
 .tp-news-title {
   font-size: var(--fs-body);
+
   font-weight: var(--fw-medium);
-  line-height: 1.4;
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
 }
 
 .tp-news-time {
@@ -158,7 +168,15 @@
 }
 
 .tp-news-source {
-  font-weight: 500;
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
 }
 
 .tp-news-date {
@@ -242,7 +260,14 @@
 
 .tp-kpi-card-highliter {
   font-size: var(--fs-label);
-  font-weight: var(--fw-semibold);
+
+  font-family: var(--font-data);
+
+  font-weight: var(--fw-metric);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
 }
 
 .tp-rate-header {
@@ -253,7 +278,17 @@
 
 .tp-rate-symbol {
   font-size: var(--fs-label);
-  font-weight: var(--fw-semibold);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
 }
 
@@ -388,7 +423,16 @@
 
 .tp-ship-route {
   font-size: var(--fs-label);
-  font-weight: var(--fw-semibold);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  line-height: var(--lh-tight);
+
+  text-transform: var(--text-transform-intel);
 }
 
 .tp-ship-port {
@@ -409,9 +453,15 @@
 }
 
 .tp-ship-price {
-  /* font-size: var(--fs-heading-sm); */
   font-size: var(--fs-xl);
-  font-weight: var(--fw-semibold);
+
+  font-family: var(--font-data);
+
+  font-weight: var(--fw-metric);
+
+  letter-spacing: var(--metric-letter-spacing);
+
+  line-height: var(--lh-tight);
 }
 
 .tp-ship-change {
@@ -471,16 +521,31 @@
 /* Category */
 .tp-duty-title {
   font-size: var(--fs-label);
-  font-weight: var(--fw-medium);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
 }
 
 /* Rate */
 .tp-duty-rate {
-  /* font-size: var(--fs-heading-sm); */
   font-size: var(--fs-xl);
-  font-weight: var(--fw-semibold);
-  line-height: 1.2;
+
+  font-family: var(--font-data);
+
+  font-weight: var(--fw-metric);
+
+  letter-spacing: var(--metric-letter-spacing);
+
+  line-height: var(--lh-tight);
 }
 
 /* Context note */
@@ -565,7 +630,16 @@
 
 .tp-margin-value {
   margin: 6px 0 10px 0;
+
   font-size: var(--fs-xl);
+
+  font-family: var(--font-data);
+
+  font-weight: var(--fw-metric);
+
+  letter-spacing: var(--metric-letter-spacing);
+
+  line-height: var(--lh-tight);
 }
 
 /* ======================================

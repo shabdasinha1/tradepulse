@@ -54,17 +54,17 @@ const SupplierModal = ({ data, onClose }) => {
           {/* ===== METRICS ===== */}
           <div className="tp-modal-metrics">
             <div className="tp-modal-metric">
-              <span className="tp-modal-metric-value">
+              <span className="tp-modal-metric-value tp-font-data">
                 {data.reliabilityScore}
               </span>
               <span className="tp-modal-metric-label">Reliability</span>
             </div>
             <div className="tp-modal-metric">
-              <span className="tp-modal-metric-value">{data.shipments}</span>
+              <span className="tp-modal-metric-value tp-font-data">{data.shipments}</span>
               <span className="tp-modal-metric-label">Shipments</span>
             </div>
             <div className="tp-modal-metric">
-              <span className="tp-modal-metric-value">
+              <span className="tp-modal-metric-value tp-font-data">
                 {data.productDiversity}
               </span>
               <span className="tp-modal-metric-label">Products</span>
@@ -468,7 +468,7 @@ const Suppliers = () => {
 
                           <span className="text-center">
                             <span
-                              className={`tp-pill ${
+                              className={`tp-pill tp-font-data ${
                                 s.reliabilityScore < 30
                                   ? "tp-pill-danger"
                                   : s.reliabilityScore < 50
@@ -486,10 +486,10 @@ const Suppliers = () => {
                             </span>
                           </span>
 
-                          <span className="text-center">
+                          <span className="text-center tp-font-data">
                             {s.productDiversity}
                           </span>
-                          <span className="text-center">{s.shipments}</span>
+                          <span className="text-center tp-font-data">{s.shipments}</span>
 
                           <span className="text-center">
                             <button
@@ -523,7 +523,7 @@ const Suppliers = () => {
 
                           <span className="text-center">
                             <span
-                              className={`tp-pill ${
+                              className={`tp-pill tp-font-data${
                                 c.reliability_score < 0.5
                                   ? "tp-pill-danger"
                                   : c.reliability_score < 0.8
@@ -590,7 +590,7 @@ const Suppliers = () => {
                             positionStrategy="fixed"
                             globalCloseEvents={{ scroll: true }}
                           />
-                          <span className="text-center">{c.product_count}</span>
+                          <span className="text-center tp-font-data">{c.product_count}</span>
                         </div>
                       );
                     })}

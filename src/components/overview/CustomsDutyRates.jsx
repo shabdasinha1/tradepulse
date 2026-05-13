@@ -45,7 +45,7 @@ const CustomsDutyRates = () => {
                 <div key={item.hsCode} className="tp-duty-card">
                   <span className="tp-duty-title">{item.category}</span>
 
-                  <strong className="tp-duty-rate tp-text-neutral">
+                  <strong className="tp-duty-rate tp-font-data tp-text-neutral">
                     {item.range}
                   </strong>
 

@@ -54,9 +54,21 @@
 /* META */
 .tp-news-row-meta {
   display: flex;
+
   gap: var(--space-lg);
+
   font-size: var(--fs-caption);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-muted);
+
   align-items: center;
 }
 .tp-trade-news-date{
@@ -75,9 +87,19 @@
 
 .tp-news-row-right .tp-badge {
   font-size: var(--fs-xs);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   white-space: nowrap;
 }
-
 /* ===============================
    BADGE COLORS (OPTIONAL)
 ================================ */

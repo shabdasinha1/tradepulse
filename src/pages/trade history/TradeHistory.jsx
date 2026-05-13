@@ -179,16 +179,16 @@ const TradeHistory = () => {
             </span>
           </span>
 
-          <span className="text-center">
+          <span className="text-center tp-font-data">
             {currencySymbol || ""}
             {Number(item.tradeValue || 0).toLocaleString()}
           </span>
 
-          <span className="text-center">
+          <span className="text-center tp-font-data">
             {item.quantity !== null ? item.quantity : "-"}
           </span>
 
-          <span className="text-center">
+          <span className="text-center tp-font-data">
             {item.netWeight !== null ? item.netWeight : "-"} {item.unit}
           </span>
 

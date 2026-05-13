@@ -160,12 +160,12 @@ const ShippingHistory = () => {
 
           <span className="text-center">{formatDate(item.date)}</span>
 
-       <span className="text-center">
+       <span className="text-center tp-font-data">
   {currencySymbol || ""}
   {convert(item.value, item.unit || "USD").toFixed(2)}
 </span>
           <span
-            className={`text-center ${
+            className={`text-center tp-font-data ${
               item.changePercent > 0
                 ? "tp-text-up"
                 : item.changePercent < 0

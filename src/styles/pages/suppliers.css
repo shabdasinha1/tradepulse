@@ -98,8 +98,18 @@
 ================================ */
 
 .tp-table-head {
-  font-size: var(--fs-body);
-  font-weight: var(--fw-semibold);
+   font-size: var(--fs-label);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-soft);
   position: sticky;
@@ -116,8 +126,14 @@
 
 .tp-table-row {
   padding: var(--space-md) 0;
+
   border-bottom: 1px solid var(--border-soft);
+
   font-size: var(--fs-body);
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
 }
 
 /* ===============================
@@ -128,12 +144,26 @@
   max-width: 70%;
 }
 .supplier-name strong {
-  font-weight: var(--fw-semibold);
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
 }
 
 .supplier-link {
   font-size: var(--fs-label);
+
+  font-family: var(--font-data);
+
   font-weight: var(--fw-medium);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
+
   color: var(--clr-primary);
 }
 
@@ -217,8 +247,17 @@
 }
 
 .tp-supplier-modal-header h2 {
-  font-size: 18px;
-  font-weight: var(--fw-semibold);
+  margin: 0;
+
+  font-size: var(--fs-lg);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
 }
 
 .tp-supplier-modal-body {
@@ -303,7 +342,13 @@
 
 .tp-modal-sub {
   margin-top: 4px;
+
   font-size: var(--fs-caption);
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
+
   color: var(--text-secondary);
 }
 
@@ -342,12 +387,31 @@
 
 .tp-modal-metric-value {
   display: block;
+
   font-size: var(--fs-xl);
-  font-weight: var(--fw-semibold);
+
+  font-family: var(--font-data);
+
+  font-weight: var(--fw-metric);
+
+  letter-spacing: var(--metric-letter-spacing);
+
+  line-height: var(--lh-tight);
 }
 
 .tp-modal-metric-label {
-  font-size: var(--fs-caption);
+  font-size: var(--fs-intel-label);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-intel);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-muted);
 }
 
@@ -375,7 +439,17 @@
 
 .tp-modal-section-title {
   font-size: var(--fs-label);
-  font-weight: var(--fw-semibold);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  letter-spacing: var(--tracking-wide);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   margin-bottom: var(--space-sm);
 }
 
@@ -394,6 +468,10 @@
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   font-size: var(--fs-caption);
+
+line-height: var(--lh-compact);
+
+letter-spacing: var(--tracking-normal);
   transition: var(--transition-fast);
 }
 

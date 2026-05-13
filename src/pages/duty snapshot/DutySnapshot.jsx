@@ -163,18 +163,18 @@ const DutySnapshot = () => {
             {item.date ? formatDate(item.date) : "-"}
           </span>
 
-          <span className="text-center">
+          <span className="text-center tp-font-data">
             {item.minTariff !== null ? `${item.minTariff}%` : "-"}
           </span>
 
-          <span className="text-center">
+          <span className="text-center tp-font-data">
             {item.maxTariff !== null ? `${item.maxTariff}%` : "-"}
           </span>
 
-          <span className="text-center">
+          <span className="text-center tp-font-data">
             {item.avgTariff !== null ? `${item.avgTariff}%` : "-"}
           </span>
-          <span className="text-center">{item.range || "-"}</span>
+          <span className="text-center tp-font-data">{item.range || "-"}</span>
         </div>
       );
     });

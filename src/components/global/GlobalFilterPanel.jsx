@@ -32,7 +32,18 @@ import { queryKeys } from "../../utils/queryKeys";
 import { useToast } from "../common/toast/ToastProvider";
 
 
-function GlobalFilterPanel({ onClose }) {
+function GlobalFilterPanel({
+  onClose,
+
+  title = "Global Filters",
+
+  showRegion = true,
+  showCountry = true,
+  showCorridor = true,
+  showProduct = true,
+  showStartDate = true,
+  showEndDate = true,
+}) {
   const modalRef = useRef(null);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -473,7 +484,7 @@ function GlobalFilterPanel({ onClose }) {
       >
         {/* HEADER */}
         <div className="tp-filter-header">
-          <h3>Global Filters</h3>
+         <h3>{title}</h3>
 
           <button
             className="tp-filter-close"
@@ -486,6 +497,7 @@ function GlobalFilterPanel({ onClose }) {
 
         {/* BODY */}
         <div className="tp-filter-body">
+          {showRegion && (
           <div className="tp-form-group">
             <label>Region<span className="tp-required-star">*</span></label>
 
@@ -532,6 +544,8 @@ function GlobalFilterPanel({ onClose }) {
               isSearchable
             />
           </div>
+          )}
+          {showCountry && (
           <div className="tp-form-group">
             <label>Country<span className="tp-required-star">*</span></label>
             <Select
@@ -592,7 +606,8 @@ function GlobalFilterPanel({ onClose }) {
               isSearchable
             />
           </div>
-
+          )}
+          {showCorridor && (
           <div className="tp-form-group">
             <label>Corridor<span className="tp-required-star">*</span></label>
 
@@ -637,7 +652,8 @@ function GlobalFilterPanel({ onClose }) {
               isSearchable
             />
           </div>
-
+          )}
+          {showProduct && (
           <div className="tp-form-group">
             <label>Product</label>
 
@@ -672,7 +688,8 @@ function GlobalFilterPanel({ onClose }) {
               isClearable
             />
           </div>
-
+          )}
+          {showStartDate && (
           <div className="tp-form-group">
             <label>Start Date</label>
             <input
@@ -682,7 +699,8 @@ function GlobalFilterPanel({ onClose }) {
               onChange={(e) => setLocalStartDate(e.target.value)}
             />
           </div>
-
+)}
+{showEndDate && (
           <div className="tp-form-group">
             <label>End Date</label>
             <input
@@ -692,6 +710,7 @@ function GlobalFilterPanel({ onClose }) {
               onChange={(e) => setLocalEndDate(e.target.value)}
             />
           </div>
+)}
         </div>
 
         {/* FOOTER */}

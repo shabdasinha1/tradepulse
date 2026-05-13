@@ -3,9 +3,16 @@
 ================================ */
 .tp-fx-header {
   display: flex;
+
   align-items: center;
+
   justify-content: space-between;
+
   width: 100%;
+
+  line-height: var(--lh-tight);
+
+  letter-spacing: var(--tracking-normal);
 }
 
 /* ===============================

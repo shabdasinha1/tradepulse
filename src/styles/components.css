@@ -159,9 +159,15 @@
 
 .tp-logo-text {
   font-size: var(--fs-heading-sm);
-  font-weight: var(--fw-semibold);
-}
 
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  letter-spacing: var(--tracking-normal);
+
+  line-height: var(--lh-tight);
+}
 .tp-logo-img {
   width: 28px;
   height: 28px;
@@ -194,10 +200,16 @@
 /* Section headings */
 .tp-section-title {
   font-size: var(--fs-xl);
-  /* font-size: var(--fs-3xl); */
+
   font-family: var(--font-heading);
+
+  font-weight: var(--fw-bold);
+
+  line-height: var(--lh-tight);
+
+  letter-spacing: var(--heading-letter-spacing);
+
   margin-bottom: var(--space-xs);
-  letter-spacing: -0.03em;
 }
 .tp-section-title span {
   color: var(--clr-primary);
@@ -229,8 +241,17 @@
   /* width: 100%; */
   padding: 4px 10px;
   border-radius: 999px;
-  font-size: var(--fs-label);
-  font-weight: var(--fw-medium);
+  font-size: var(--fs-intel-label);
+
+font-family: var(--font-intel);
+
+font-weight: var(--fw-label);
+
+letter-spacing: var(--tracking-wide);
+
+text-transform: var(--text-transform-intel);
+
+line-height: var(--lh-tight);
 
   display: inline-flex;
   align-items: center;
@@ -505,10 +526,20 @@ input::placeholder {
   width: 50%;
 }
 .tp-metric-title {
-  font-size: var(--fs-label);
+  font-size: var(--fs-intel-label);
+
+  font-family: var(--font-intel);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--intel-letter-spacing);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-secondary);
 }
-
 .tp-metric-icon {
   color: var(--text-muted);
   display: flex;
@@ -524,10 +555,15 @@ input::placeholder {
   outline: none;
 }
 .tp-metric-value {
-  /* font-size: clamp(var(--fs-xl), 2.5vw, var(--fs-3xl)); */
-  font-size: var(--fs-xl);
-  font-weight: var(--fw-semibold);
-  line-height: 1.1;
+  font-size: var(--fs-kpi-value);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-metric);
+
+  line-height: var(--lh-tight);
+
+  letter-spacing: var(--metric-letter-spacing);
 }
 
 .tp-metric-unit {
@@ -1080,4 +1116,8 @@ select {
 }
 .tp-required-star{
   color: red;
+}
+
+.tp-font-data {
+   font-family: var(--font-data);
 }

@@ -197,7 +197,7 @@ const { convert, isFxReady } = useCurrency();
                           {r.rate}
                         </strong>
                         <span
-                          className={`tp-rate-change ${r.trend === "UP"
+                          className={`tp-rate-change tp-font-data ${r.trend === "UP"
                               ? "tp-text-up"
                               : r.trend === "DOWN"
                                 ? "tp-text-down"
@@ -258,13 +258,13 @@ const { convert, isFxReady } = useCurrency();
                   <div className="tp-ship-footer">
               
 
-<strong className="tp-kpi-card-highliter">
+<strong className="tp-kpi-card-highliter tp-font-data">
   {currencySymbol} {convert(s.cost, s.currency).toFixed(0)}
 </strong>
           
 
                     <span
-                      className={`tp-ship-change ${s.changePercent !== 0
+                      className={`tp-ship-change tp-font-data ${s.changePercent !== 0
                           ? s.changePercent > 0
                             ? "tp-text-up"
                             : "tp-text-down"

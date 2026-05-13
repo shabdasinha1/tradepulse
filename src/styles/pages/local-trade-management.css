@@ -49,9 +49,16 @@
 /* Header */
 .tp-modal-header {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   margin-bottom: var(--space-md);
+
+  line-height: var(--lh-tight);
+
+  letter-spacing: var(--tracking-normal);
 }
 
 /* Body */
@@ -96,9 +103,13 @@
 
 .tp-modal-title-group {
   display: flex;
-  flex-direction: column;
-}
 
+  flex-direction: column;
+
+  line-height: var(--lh-tight);
+
+  letter-spacing: var(--tracking-normal);
+}
 /* Close button */
 .tp-filter-close {
   font-size: var(--fs-lg);
@@ -145,15 +156,33 @@
 }
 
 .tp-table-head {
-  font-size: var(--fs-caption);
+  font-size: var(--fs-intel-label);
+
+  font-family: var(--font-heading);
+
+  font-weight: var(--fw-label);
+
+  letter-spacing: var(--tracking-intel);
+
+  text-transform: var(--text-transform-intel);
+
+  line-height: var(--lh-tight);
+
   color: var(--text-muted);
+
   padding-bottom: var(--space-sm);
+
   border-bottom: 1px solid var(--border-soft);
 }
 
 .tp-table-row {
   padding: var(--space-sm) 0;
+
   border-bottom: 1px solid var(--border-soft);
+
+  line-height: var(--lh-compact);
+
+  letter-spacing: var(--tracking-normal);
 }
 
 .tp-table-row:hover {

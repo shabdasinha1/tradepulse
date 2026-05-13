@@ -619,7 +619,7 @@ const SuppliersManagement = () => {
                             {/* Reliability */}
                             <span>
                               <span
-                                className={`tp-pill ${supplier.reliabilityScore < 0.3
+                                className={`tp-pill tp-font-data ${supplier.reliabilityScore < 0.3
                                     ? "tp-pill-danger"
                                     : supplier.reliabilityScore < 0.5
                                       ? "tp-pill-warning"
@@ -643,13 +643,13 @@ const SuppliersManagement = () => {
                             </span>
 
                             {/* Sanctions Score */}
-                            <span>{supplier.sanctionsScore ?? 0}</span>
+                            <span className="tp-font-data">{supplier.sanctionsScore ?? 0}</span>
 
                             {/* Sanctions Source */}
                             <span>{supplier.sanctionsSource}</span>
 
                             {/* LEI */}
-                            <span>{supplier.leiCode || "-"}</span>
+                            <span className="tp-font-data">{supplier.leiCode || "-"}</span>
 
                             {/* ACTIONS */}
                             <span>
@@ -851,7 +851,7 @@ const SuppliersManagement = () => {
                     <input
                       type="text"
                       name="hsCodes"
-                      className="tp-input"
+                      className="tp-input tp-font-data"
                       placeholder="Enter HS codes separated by commas (e.g. 1801, 0901)"
                       value={formData.hsCodes.join(",")}
                       onChange={(e) =>
@@ -867,7 +867,7 @@ const SuppliersManagement = () => {
                     <input
                       type="number"
                       name="yearEstablished"
-                      className="tp-input"
+                      className="tp-input tp-font-data"
                       placeholder="e.g. 2005"
                       value={formData.yearEstablished}
                       onChange={handleChange}
@@ -911,7 +911,7 @@ const SuppliersManagement = () => {
                     <input
                       type="number"
                       name="exportPricePerTonne"
-                      className="tp-input"
+                      className="tp-input tp-font-data"
                       value={formData.exportPricePerTonne}
                       onChange={handleChange}
                     />
@@ -938,7 +938,7 @@ const SuppliersManagement = () => {
                     <input
                       type="number"
                       name="annualExportVolume"
-                      className="tp-input"
+                      className="tp-input tp-font-data"
                       value={formData.annualExportVolume}
                       onChange={handleChange}
                     />
@@ -964,7 +964,7 @@ const SuppliersManagement = () => {
                     <input
                       type="number"
                       name="avgLeadTime"
-                      className="tp-input"
+                      className="tp-input tp-font-data"
                       value={formData.avgLeadTime}
                       onChange={handleChange}
                     />
