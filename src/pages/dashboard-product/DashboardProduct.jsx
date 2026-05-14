@@ -22,7 +22,7 @@ import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
-
+import ProductDetailPage from "./ProductDetailPage";
 /* ===============================
    SKELETON COMPONENT
 ================================ */
@@ -56,6 +56,7 @@ const DashboardProduct = () => {
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
   const [error, setError] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
@@ -260,12 +261,13 @@ const DashboardProduct = () => {
       const isLast = products.length === index + 1;
 
       return (
-        <div
-          ref={isLast ? lastProductRef : null}
-          // className="product-row"
-          className="tp-table-row tp-table-suppliers"
-          key={item.product || index}
-        >
+       <div
+  ref={isLast ? lastProductRef : null}
+  className="tp-table-row tp-table-suppliers"
+  key={item.product || index}
+  onClick={() => setSelectedProduct(item)}
+  style={{ cursor: "pointer" }}
+>
           <span>
             {item.categoryHs2} - {item.productCategory}
           </span>
@@ -324,6 +326,15 @@ const DashboardProduct = () => {
   /* ===============================
      UI
   =============================== */
+
+  if (selectedProduct) {
+  return (
+    <ProductDetailPage
+      product={selectedProduct}
+      onBack={() => setSelectedProduct(null)}
+    />
+  );
+}
 
   return (
     <section className="tp-section">
