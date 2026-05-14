@@ -250,12 +250,13 @@ function GlobalFilterPanel({
     const [reporter, partner] = c.label.split("↔").map((s) => s.trim());
 
     return {
-      value: c.partnerCode,
-      label: `${reporter} - ${partner}`,
-      partnerName: partner,
-      partnerRegion: c.partnerRegion, // ✅ IMPORTANT
-      original: c,
-    };
+  value: c.partnerCode,
+  label: `${reporter} - ${partner}`,
+  partnerName: partner,
+  partnerRegion: c.partnerRegion,
+  partnerAlpha3: c.partnerIso3 ,
+  original: c,
+};
   })
   .sort((a, b) => {
     const aIndex = priorityCountries.indexOf(a.partnerName);
@@ -640,13 +641,22 @@ function GlobalFilterPanel({
                 setLocalCorridor(partner);
                 setLocalCorridorLabel(corridorLabel);
 
-                const partnerCountry = corridorLabel.split("↔")[1]?.trim();
-                setLocalPartnerCountry(partnerCountry);
+                const partnerCountry = opt?.partnerName || "";
 
-                // ✅ NEW: set partner region in redux
-                if (opt?.partnerRegion) {
-                  dispatch(setPartnerRegion(opt.partnerRegion));
-                }
+setLocalPartnerCountry(partnerCountry);
+
+// ✅ update partner country + region immediately
+dispatch(
+  setPartnerCountry({
+    name: partnerCountry,
+   alpha3: opt?.partnerAlpha3 || "",
+    region: opt?.partnerRegion || "",
+  })
+);
+
+if (opt?.partnerRegion) {
+  dispatch(setPartnerRegion(opt.partnerRegion));
+}
               }}
               placeholder="Select Corridor"
               isSearchable

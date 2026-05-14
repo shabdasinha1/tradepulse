@@ -17,7 +17,24 @@ export const queryKeys = {
     partnerCode,
     isInitialLoad,
   ],
-
+companySuppliers: ({
+  search,
+  tradeflow,
+  reporterCode,
+  partnerCode,
+  partnerRegion,
+  partnerCountryCode,
+  productId,
+}) => [
+  "companySuppliers",
+  search,
+  tradeflow,
+  reporterCode,
+  partnerCode,
+  partnerRegion,
+  partnerCountryCode,
+  productId,
+],
   feedback: (page, limit) => ["feedback", page, limit],
 
   marginImpact: (budget, baseCurrency, quoteCurrency) => [

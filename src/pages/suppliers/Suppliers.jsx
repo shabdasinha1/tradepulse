@@ -4,16 +4,16 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
 import {
-  DashboardSuppliers,
+
   DashboardCompanySuppliers,
 } from "../../services/DashboardService.jsx";
-import { GetApiErrorMessage } from "../../utils/ErrorHandler";
+
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
 import UniversalFilter from "../../components/common/UniversalFilter";
-import useUniversalFilters from "../../hooks/useUniversalFilters";
+
 import { CiFilter } from "react-icons/ci";
 import { useAppToast } from "../../components/common/toast/toast.js";
 import { Tooltip } from "react-tooltip";
@@ -107,59 +107,38 @@ const SupplierModal = ({ data, onClose }) => {
   );
 };
 
-/* ==========================================================
-          SKELTON FOR SUPPLIERS
- ==========================================================*/
 
-const SupplierRowSkeleton = React.memo(() => {
-  return (
-    <div className="tp-table-row tp-table-suppliers skeleton">
-      <div className="skeleton skeleton-text" />
-      <div className="skeleton skeleton-text" />
-      <div className="skeleton skeleton-pill" />
-      <div className="skeleton skeleton-pill" />
-      <div className="skeleton skeleton-text" />
-    </div>
-  );
-});
 
 const Suppliers = () => {
   const toast = useAppToast();
-  const [isCompanyView, setIsCompanyView] = useState(false);
-  const [companySuppliers, setCompanySuppliers] = useState([]);
+  const [isCompanyView] = useState(true);
+
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const hasMounted = useRef(false);
-  const hasFetchedInitially = useRef(false);
+  const [searchInput, setSearchInput] = useState("");
+
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState(null);
-  const [activeProduct, setActiveProduct] = useState(null);
-  const [tooltipPos, setTooltipPos] = useState("top");
 
-  const {
-    tradeflow,
-    reporterCode,
-    startDate,
-    endDate,
-    corridor,
-    partnerCode,
-    region,
-    partnerRegion,
-  } = useSelector((state) => state.corridor);
-  const skeletonRows = useMemo(
-    () =>
-      [...Array(5)].map((_, i) => (
-        <SupplierRowSkeleton key={`skeleton-${i}`} />
-      )),
-    [],
-  );
+const {
+  tradeflow,
+  reporterCode,
+  startDate,
+  endDate,
+  corridor,
+  partnerCode,
+  region,
+  partnerRegion,
+  partnerCountryCode,
+  productId,
+} = useSelector((state) => state.corridor);
+
 
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
   const observer = useRef(null);
+
 
   const handleHeaderScroll = () => {
     if (bodyRef.current) {
@@ -176,68 +155,89 @@ const Suppliers = () => {
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
   }, [corridor]);
-  /* ===============================
-     FETCH SUPPLIERS USING REACT QUERY
-  =============================== */
 
   const {
-    data: supplierPages,
+    data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: queryKeys.suppliers({
-      partnerRegion,
-      tradeflow,
-      partnerCode,
-      reporterCode,
-      isInitialLoad,
-    }),
-    queryFn: async ({ pageParam = 1, queryKey }) => {
-      const [
-        _,
-        partnerRegion,
-        tradeflow,
-        reporterCode,
-        partnerCode,
-        isInitialLoad,
-      ] = queryKey;
+   queryKey: queryKeys.companySuppliers({
+  search,
+  // tradeflow,
+  // reporterCode,
+  // partnerCode,
+  partnerRegion,
+  partnerCountryCode,
+  productId,
+}),
 
-      let params = {
-        page: pageParam,
-        limit: LIMIT,
-        originRegion: partnerRegion,
-      };
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await DashboardCompanySuppliers({
+  page: pageParam,
+  limit: LIMIT,
 
-      if (!isInitialLoad) {
-        params = {
-          ...params,
-          tradeflow,
-          partnerCode,
-          reporterCode,
-        };
-      }
+  search,
 
-      // console.log("FINAL API PARAMS:", params); 
+  country: partnerCountryCode,
+  hsCode: productId,
+  region: partnerRegion,
 
-      const res = await DashboardSuppliers(params);
-      return res?.data?.suppliers || [];
+  // tradeflow,
+  // reporterCode,
+  // partnerCode,
+});
+
+      return res?.data || {};
     },
-    getNextPageParam: (lastPage, pages) =>
-      lastPage.length === LIMIT ? pages.length + 1 : undefined,
 
-    enabled: !!partnerRegion && !!tradeflow,
+    getNextPageParam: (lastPage, pages) => {
+      const total = lastPage?.total || 0;
+      const loaded = pages.flatMap((p) => p.suppliers || []).length;
 
-    refetchOnMount: false,
+      return loaded < total ? pages.length + 1 : undefined;
+    },
+
     refetchOnWindowFocus: false,
-
-    keepPreviousData: false, // ✅ ADD THIS
   });
 
-  const suppliers = useMemo(() => {
-    return supplierPages?.pages?.flat() || [];
-  }, [supplierPages]);
+  const companySuppliers = useMemo(() => {
+    return data?.pages?.flatMap((p) => p.suppliers || []) || [];
+  }, [data]);
+
+
+
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, []);
+
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "VERIFIED":
+        return "tp-pill-success";
+      case "PARTIAL":
+        return "tp-pill-warning";
+      case "UNVERIFIED":
+        return "tp-pill-danger";
+      default:
+        return "tp-pill-primary";
+    }
+  };
+
   const lastSupplierRef = React.useCallback(
     (node) => {
       if (isFetchingNextPage) return;
@@ -254,47 +254,7 @@ const Suppliers = () => {
     },
     [isFetchingNextPage, hasNextPage, fetchNextPage],
   );
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === "Escape") setIsModalOpen(false);
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
-  const getStatusClass = (status) => {
-    switch (status) {
-      case "VERIFIED":
-        return "tp-pill-success";
-      case "PARTIAL":
-        return "tp-pill-warning";
-      case "UNVERIFIED":
-        return "tp-pill-danger";
-      default:
-        return "tp-pill-primary";
-    }
-  };
-  const handleViewClick = async (iso3, countryName, searchValue = "") => {
-    try {
-      const res = await DashboardCompanySuppliers({
-        page: 1,
-        limit: 20,
-        country: iso3,
-        search: searchValue,
-      });
 
-      const data = res?.data?.suppliers || [];
-
-      if (!data.length) {
-        toast.warning(`No supplier data available for ${countryName}`);
-        return;
-      }
-
-      setCompanySuppliers(data);
-      setIsCompanyView(true);
-    } catch (err) {
-      console.error("Error:", err);
-    }
-  };
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -309,15 +269,7 @@ const Suppliers = () => {
             </p>
 
             <div className="tp-filter-btn-wrapper">
-              {!isCompanyView && (
-                <button
-                  className="tp-btn-outline tp-overview-filter-btn"
-                  onClick={() => setFilterOpen(true)}
-                >
-                  <FiSliders />
-                  Global Filters
-                </button>
-              )}
+                          
             </div>
           </div>
         </header>
@@ -332,14 +284,7 @@ const Suppliers = () => {
               <div
                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
               >
-                {isCompanyView && (
-                  <button
-                    className="tp-btn-outline tp-btn-sm"
-                    onClick={() => setIsCompanyView(false)}
-                  >
-                    ← Back
-                  </button>
-                )}
+
                 <h3 className="tp-card-title">Supplier Directory</h3>
               </div>
 
@@ -350,32 +295,24 @@ const Suppliers = () => {
                     type="text"
                     placeholder="Search company..."
                     className="tp-input"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
                   />
 
                   <button
                     className="tp-btn-outline tp-btn-sm"
-                    onClick={() => {
-                      if (selectedCountry) {
-                        handleViewClick(
-                          selectedCountry.iso3,
-                          selectedCountry.name,
-                          search,
-                        );
-                      }
-                    }}
+                    onClick={() => { }}
                   >
                     Search
                   </button>
 
                   {/* ✅ ADD THIS FILTER BUTTON */}
-                  <button
+                  {/* <button
                     className="tp-btn-outline tp-btn-sm"
                     onClick={() => setTableFilterOpen(true)}
                   >
                     <CiFilter />
-                  </button>
+                  </button> */}
                 </div>
               ) : (
                 <button
@@ -397,30 +334,18 @@ const Suppliers = () => {
               onScroll={handleHeaderScroll}
             >
               <div className="tp-table-head tp-table-suppliers-dashboard">
-                {!isCompanyView ? (
-                  <>
-                    <span>Country Name</span>
 
-                    <span className="text-center">Region</span>
-                    <span className="text-center">Activity</span>
-                    <span className="text-center">Reliability</span>
-                    <span className="text-center">Tag</span>
-                    <span className="text-center">Product Diversity</span>
-                    <span className="text-center">Shipments</span>
-                    <span className="text-center">Action</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Company Name</span>
-                    <span className="text-center">Country</span>
-                    <span className="text-center">Region</span>
-                    <span className="text-center">Sector</span>
-                    <span className="text-center">Reliability</span>
-                    <span className="text-center">Status</span>
-                    <span className="text-center">Products</span>
-                    <span className="text-center">Product Count</span>
-                  </>
-                )}
+                <>
+                  <span>Company Name</span>
+                  <span className="text-center">Country</span>
+                  <span className="text-center">Region</span>
+                  <span className="text-center">Sector</span>
+                  <span className="text-center">Reliability</span>
+                  <span className="text-center">Status</span>
+                  <span className="text-center">Products</span>
+                  <span className="text-center">Product Count</span>
+                </>
+
               </div>
             </div>
 
@@ -431,173 +356,105 @@ const Suppliers = () => {
               onScroll={handleBodyScroll}
             >
               <div className="tp-table">
-                {isLoading && skeletonRows}
+                {isLoading && (
+                  <div className="tp-table-loader">
+                    Loading suppliers...
+                  </div>
+                )}
 
-                {!isCompanyView
-                  ? suppliers.map((s, i) => {
-                      const isLast = suppliers.length === i + 1;
 
-                      return (
-                        <div
-                          key={i}
-                          ref={isLast ? lastSupplierRef : null}
-                          className="tp-table-row tp-table-suppliers-dashboard"
-                          style={{ cursor: "default" }}
-                        >
-                          <div className="supplier-name">{s.name}</div>
+               {companySuppliers.map((c, i) => {
+  const product = c.products?.join(", ") || "-";
+  const isLong = product.length > 50;
 
-                          <span className="tp-muted text-center">
-                            {s.region}
-                          </span>
+  return (
+    <div
+      key={c.id || i}
+      ref={companySuppliers.length === i + 1 ? lastSupplierRef : null}
+      className="tp-table-row tp-table-suppliers-dashboard"
+    >
+      {/* Company Name */}
+      <div className="supplier-name">
+        <strong>{c.company_name || "-"}</strong>
+      </div>
 
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill ${
-                                s.activityLevel === "Very High"
-                                  ? "tp-pill-success"
-                                  : s.activityLevel === "High"
-                                    ? "tp-pill-primary"
-                                    : s.activityLevel === "Medium"
-                                      ? "tp-pill-warning"
-                                      : "tp-pill-danger"
-                              }`}
-                            >
-                              {s.activityLevel}
-                            </span>
-                          </span>
+      {/* Country */}
+      <span className="text-center">
+        {c.country_name || "-"}
+        <div className="tp-country-code">
+          {c.country_iso3 || "-"}
+        </div>
+      </span>
 
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill tp-font-data ${
-                                s.reliabilityScore < 30
-                                  ? "tp-pill-danger"
-                                  : s.reliabilityScore < 50
-                                    ? "tp-pill-warning"
-                                    : "tp-pill-success"
-                              }`}
-                            >
-                              {s.reliabilityScore}
-                            </span>
-                          </span>
+      {/* Region */}
+      <span className="text-center">
+        {c.region || "-"}
+      </span>
 
-                          <span className="text-center">
-                            <span className="tp-pill tp-pill-primary">
-                              {s.tag}
-                            </span>
-                          </span>
+      {/* Sector */}
+      <span className="text-center">
+        {c.sector || "-"}
+      </span>
 
-                          <span className="text-center tp-font-data">
-                            {s.productDiversity}
-                          </span>
-                          <span className="text-center tp-font-data">{s.shipments}</span>
+      {/* Reliability */}
+      <span className="text-center">
+        <span
+          className={`tp-pill tp-font-data ${
+            c.reliability_score < 0.5
+              ? "tp-pill-danger"
+              : c.reliability_score < 0.8
+              ? "tp-pill-warning"
+              : "tp-pill-success"
+          }`}
+        >
+          {c.reliability_score ?? "-"}
+        </span>
+      </span>
 
-                          <span className="text-center">
-                            <button
-                              className="tp-btn-outline tp-btn-sm"
-                              onClick={() => {
-                                setSelectedCountry({
-                                  iso3: s.iso_3,
-                                  name: s.name,
-                                });
-                                handleViewClick(s.iso_3, s.name);
-                              }}
-                            >
-                              View
-                            </button>
-                          </span>
-                        </div>
-                      );
-                    })
-                  : companySuppliers.map((c, i) => {
-                      const product = c.products?.[0] || "-";
-                      const isLong = product.length > 50;
-                      return (
-                        <div
-                          key={i}
-                          className="tp-table-row tp-table-suppliers-dashboard"
-                        >
-                          <div className="supplier-name">{c.company_name}</div>
-                          <span className="text-center">{c.country_name}</span>
-                          <span className="text-center">{c.region}</span>
-                          <span className="text-center">{c.sector}</span>
+      {/* Verification Status */}
+      <span className="text-center">
+        <span
+          className={`tp-pill ${getStatusClass(
+            c.verification_status
+          )}`}
+        >
+          {c.verification_status || "-"}
+        </span>
+      </span>
 
-                          <span className="text-center">
-                            <span
-                              className={`tp-pill tp-font-data${
-                                c.reliability_score < 0.5
-                                  ? "tp-pill-danger"
-                                  : c.reliability_score < 0.8
-                                    ? "tp-pill-warning"
-                                    : "tp-pill-success"
-                              }`}
-                            >
-                              {c.reliability_score}
-                            </span>
-                          </span>
+      {/* Products */}
+      <span
+        className="text-center tp-product-cell"
+        data-tooltip-id={isLong ? "my-tooltip" : undefined}
+        data-tooltip-content={isLong ? product : undefined}
+      >
+        {isLong ? product.slice(0, 50) + "..." : product}
+      </span>
 
-                          <span className="text-center">
-                            <span className="tp-pill tp-pill-primary">
-                              {c.verification_status}
-                            </span>
-                          </span>
-                          {/* <div
-                          className="tp-product-cell-wrapper"
-                          onClick={(e) => {
-                            if (window.innerWidth > 768) return;
-                            e.stopPropagation();
+      {/* Tooltip */}
+      <Tooltip
+        id="my-tooltip"
+        className="tp-custom-tooltip"
+        place="top"
+        positionStrategy="fixed"
+        globalCloseEvents={{ scroll: true }}
+      />
 
-                            const rect =
-                              e.currentTarget.getBoundingClientRect();
-                            const spaceBelow = window.innerHeight - rect.bottom;
+      {/* Product Count */}
+      <span className="text-center tp-font-data">
+        {c.product_count || 0}
+      </span>
+    </div>
+  );
+})}
+                {isFetchingNextPage && (
+                  <div className="tp-table-loader">
+                    Loading more suppliers...
+                  </div>
+                )}
 
-                            if (spaceBelow < 120) {
-                              setTooltipPos("top");
-                            } else {
-                              setTooltipPos("bottom");
-                            }
-
-                            setActiveProduct(activeProduct === i ? null : i);
-                          }}
-                        >
-                          <span
-                            className="text-center tp-product-cell"
-                            title={c.products?.[0] || "-"} // desktop hover
-                          >
-                            {c.products?.[0]
-                              ? c.products[0].length > 50
-                                ? `${c.products[0].slice(0, 50)}...`
-                                : c.products[0]
-                              : "-"}
-                          </span>
-
-                          {activeProduct === i && window.innerWidth <= 768 && (
-                            <div className={`tp-product-tooltip ${tooltipPos}`}>
-                              {c.products?.[0] || "-"}
-                            </div>
-                          )}
-                        </div> */}
-                          <span
-                            className="text-center tp-product-cell"
-                            data-tooltip-id={isLong ? "my-tooltip" : undefined}
-                            data-tooltip-content={isLong ? product : undefined}
-                          >
-                            {isLong ? product.slice(0, 50) + "..." : product}
-                          </span>
-                          <Tooltip
-                            id="my-tooltip"
-                            className="tp-custom-tooltip"
-                            place="top"
-                            positionStrategy="fixed"
-                            globalCloseEvents={{ scroll: true }}
-                          />
-                          <span className="text-center tp-font-data">{c.product_count}</span>
-                        </div>
-                      );
-                    })}
-
-                {isFetchingNextPage && skeletonRows}
               </div>
-              {!isLoading && suppliers.length === 0 && (
+              {!isLoading && companySuppliers.length === 0 && (
                 <EmptyState message="No suppliers found" />
               )}
             </div>
@@ -609,29 +466,14 @@ const Suppliers = () => {
       {tableFilterOpen && (
         <span className="tp-supplier-universal-filter-wrapper">
           <UniversalFilter
-            {...(!isCompanyView
-              ? {
-              
-                  showTimeRange: true,
-                  showPartner: true,
-                  showProduct: true,
-                }
-              : {
-                  showProduct: true, // ✅ ONLY THIS IN COMPANY VIEW
-                })}
+            showProduct={true}
             onClose={() => setTableFilterOpen(false)}
             onChange={(filters) => {
               console.log("FILTERS:", filters);
 
-              if (!isCompanyView) {
-                if (!filters.partnerCode) {
-                  setIsInitialLoad(true);
-                } else {
-                  setIsInitialLoad(false);
-                }
-              }
 
-              // (optional: later you can pass product filter to API here)
+
+
 
               setTableFilterOpen(false);
             }}

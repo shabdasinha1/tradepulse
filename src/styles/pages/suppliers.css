@@ -79,20 +79,25 @@
 .tp-table-suppliers-dashboard {
   display: grid;
   grid-template-columns:
-    2fr /* name */
-    1fr /* region */
-    1fr /* activity */
-    1fr /* reliability */
-    1fr /* tag */
-    2fr /* product diversity */
-    1fr /* shipments */
-    1fr; /* action */
+    2fr
+    1fr
+    1fr
+    1fr
+    1fr
+    1fr
+    2fr
+    1fr;
 
   align-items: center;
   gap: var(--space-md);
-  min-width: 1000px;
+  min-width: 1100px;
 }
 
+.tp-country-code {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
 /* ===============================
    HEADER
 ================================ */
