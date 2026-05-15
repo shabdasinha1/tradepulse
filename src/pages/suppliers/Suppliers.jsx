@@ -17,6 +17,7 @@ import UniversalFilter from "../../components/common/UniversalFilter";
 import { CiFilter } from "react-icons/ci";
 import { useAppToast } from "../../components/common/toast/toast.js";
 import { Tooltip } from "react-tooltip";
+import SupplierDetailPage from "./SupplierDetailPage";
 
 const LIMIT = 20;
 /* ==========================================================
@@ -120,7 +121,13 @@ const Suppliers = () => {
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
+const handleBackToSuppliers = () => {
+  setSelectedSupplier(null);
+};
 
+const handleSupplierClick = (supplier) => {
+  setSelectedSupplier(supplier);
+};
 const {
   tradeflow,
   reporterCode,
@@ -255,6 +262,15 @@ const {
     [isFetchingNextPage, hasNextPage, fetchNextPage],
   );
 
+  if (selectedSupplier) {
+  return (
+    <SupplierDetailPage
+      supplier={selectedSupplier}
+      onBack={handleBackToSuppliers}
+    />
+  );
+}
+
   return (
     <section className="tp-section tp-section--dashboard">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -368,11 +384,12 @@ const {
   const isLong = product.length > 50;
 
   return (
-    <div
-      key={c.id || i}
-      ref={companySuppliers.length === i + 1 ? lastSupplierRef : null}
-      className="tp-table-row tp-table-suppliers-dashboard"
-    >
+   <div
+  key={c.id || i}
+  ref={companySuppliers.length === i + 1 ? lastSupplierRef : null}
+  className="tp-table-row tp-table-suppliers-dashboard tp-clickable-row"
+  onClick={() => handleSupplierClick(c)}
+>
       {/* Company Name */}
       <div className="supplier-name">
         <strong>{c.company_name || "-"}</strong>

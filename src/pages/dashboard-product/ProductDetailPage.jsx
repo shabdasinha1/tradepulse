@@ -1,213 +1,201 @@
 import React from "react";
-import { FiArrowLeft } from "react-icons/fi";
-import TPChart from "../../components/common/TPChart";
+
 
 const ProductDetailPage = ({ product, onBack }) => {
-    const historicalPriceData = [
-  { year: "2021", price: 1000 },
-  { year: "2022", price: 1280 },
-  { year: "2023", price: 1450 },
-  { year: "2024", price: 1880 },
-  { year: "2025", price: 2200 },
-];
-
-const importDemandData = [
-  { month: "May 25", demand: 40 },
-  { month: "Jun", demand: 44 },
-  { month: "Jul", demand: 47 },
-  { month: "Aug", demand: 49 },
-  { month: "Sep", demand: 52 },
-  { month: "Oct", demand: 56 },
-  { month: "Nov", demand: 60 },
-  { month: "Dec", demand: 65 },
-  { month: "Jan 26", demand: 70 },
-  { month: "Feb", demand: 74 },
-  { month: "Mar", demand: 78 },
-  { month: "Apr 26", demand: 82 },
-];
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
 
-        {/* Header */}
-        <div className="tp-product-detail-header">
+        {/* =========================================
+            TOP BAR
+        ========================================= */}
+
+        <div className="tp-product-detail-topbar">
 
           <button
             className="tp-btn-outline"
             onClick={onBack}
           >
-            <FiArrowLeft />
-            Back
+            ← All Products
           </button>
 
-          <div>
-            <h1 className="tp-section-title">
-              Product <span>Details</span>
-            </h1>
-
-            <p className="tp-section-sub">
-              {product?.categoryHs2} - {product?.productCategory}
-            </p>
-          </div>
         </div>
 
-       {/* ======================================
-   PRODUCT HERO SECTION
-====================================== */}
+        {/* =========================================
+            FILTER ROW
+        ========================================= */}
 
-<div className="tp-product-hero">
+        <div className="tp-product-detail-filter-row">
 
-  <div className="tp-product-hero-top">
+          <input
+            type="text"
+            placeholder="Search HS code or product name"
+            className="tp-input tp-product-search"
+          />
 
-    <div className="tp-product-hero-filters">
+          <select className="tp-select tp-product-select">
+            <option>Agriculture</option>
+          </select>
 
-      <input
-        type="text"
-        placeholder="Search HS code or product name"
-        className="tp-input tp-product-search"
-      />
+          <select className="tp-select tp-product-select">
+            <option>Sort: Demand ↓</option>
+          </select>
 
-      <select className="tp-input tp-select tp-product-filter">
-        <option>Agriculture</option>
-      </select>
+        </div>
 
-      <select className="tp-input tp-select tp-product-filter">
-        <option>Sort: Demand ↓</option>
-      </select>
+        {/* =========================================
+            HERO SECTION
+        ========================================= */}
 
-    </div>
+        <div className="tp-product-detail-hero">
 
-    <div className="tp-product-hero-actions">
+          {/* LEFT */}
+          <div className="tp-product-detail-left">
 
-      <button className="tp-btn-outline">
-        Watchlist
-      </button>
+            <div className="tp-product-title-row">
 
-      <button className="tp-btn-outline">
-        Export Report
-      </button>
+              <h1 className="tp-product-detail-title">
+                {product?.productCategory || "COCOA BEANS"}
+              </h1>
 
-      <button className="tp-product-ai-btn">
-        Ask AI
-      </button>
+              <span className="tp-product-hs">
+                HS {product?.categoryHs2 || "1801"}
+              </span>
 
-    </div>
+              <span className="tp-product-volatility-pill">
+                MED VOLATILITY
+              </span>
 
+            </div>
+
+            {/* PRICE */}
+            <div className="tp-product-price-row">
+
+              <span className="tp-product-price tp-font-data">
+                £2,847
+              </span>
+
+              <span className="tp-product-unit">
+                /tonne
+              </span>
+
+            </div>
+
+            {/* METRICS */}
+            <div className="tp-product-growth-row">
+
+              <div className="tp-product-growth-pill">
+                7d ↑ +2.1%
+              </div>
+
+              <div className="tp-product-growth-pill">
+                30d ↑ +4.8%
+              </div>
+
+              <div className="tp-product-growth-pill">
+                YoY ↑ +18.3%
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* RIGHT */}
+          <div className="tp-product-detail-actions">
+
+            <button className="tp-btn-outline">
+              Watchlist
+            </button>
+
+            <button className="tp-btn-primary">
+              Export Report
+            </button>
+
+            <button className="tp-btn-warning">
+              Ask AI
+            </button>
+
+          </div>
+
+        </div>
+
+        {/* =========================================
+    AI PRODUCT SUMMARY
+========================================= */}
+
+<div className="tp-product-ai-summary-card">
+
+  <div className="tp-product-section-label">
+    • AI PRODUCT INTELLIGENCE SUMMARY
   </div>
 
+  <p className="tp-product-ai-summary-text">
 
-  <div className="tp-product-heading-wrap">
+    Cocoa prices on the UK-Nigeria corridor have risen
 
-    <div className="tp-product-heading-row">
+    <strong> 18.3% over the past year</strong>,
 
-      <h2 className="tp-product-title">
-        COCOA BEANS
-      </h2>
+    well above the 10-year average annual appreciation
+    of 8.4%.
 
-      <span className="tp-product-hs">
-        HS 1801
-      </span>
+    The current price of £2,847/tonne sits in the
 
-      <span className="tp-product-risk">
-        MED VOLATILITY
-      </span>
+    <strong> top 22% of its 10-year range.</strong>
 
-    </div>
+    Consider accelerating orders before Q3 or negotiating
+    forward contracts now.
 
-   
-    <div className="tp-product-price-wrap">
+  </p>
 
-      <h1 className="tp-product-price">
-        £2,847
-      </h1>
+  <div className="tp-product-ai-summary-footer">
 
-      <span className="tp-product-unit">
-        /tonne
-      </span>
+    <div className="tp-product-ai-source">
 
-    </div>
-
-   
-    <div className="tp-product-trends">
-
-      <div className="tp-product-trend tp-product-trend-up">
-        7d ↑ +2.1%
-      </div>
-
-      <div className="tp-product-trend tp-product-trend-up">
-        30d ↑ +4.8%
-      </div>
-
-      <div className="tp-product-trend tp-product-trend-up">
-        YoY ↑ +18.3%
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div className="tp-product-ai-summary">
-
-    <div className="tp-product-ai-header">
-      • AI PRODUCT INTELLIGENCE SUMMARY
-    </div>
-
-    <p className="tp-product-ai-text">
-      Cocoa prices on the UK-Nigeria corridor have risen
-      <strong> 18.3% over the past year</strong>, well above the
-      10-year average annual appreciation of 8.4%.
-      The current price of £2,847/tonne sits in the
-      <strong> top 22% of its 10-year range.</strong>
-      Consider accelerating orders before Q3 or negotiating
-      forward contracts now.
-    </p>
-
-    <div className="tp-product-ai-footer">
-      <span className="tp-product-ai-dot" />
+      <span className="tp-product-ai-dot"></span>
 
       <span>
         Source: UN Comtrade 2016–2026 · 847 trade records
       </span>
+
     </div>
 
   </div>
-
 </div>
 
-{/* ======================================
-   HISTORICAL PRICE TREND
-====================================== */}
+{/* =========================================
+    HISTORICAL PRICE TREND
+========================================= */}
 
-<div className="tp-product-chart-section">
+<div className="tp-product-trend-section">
 
-  <div className="tp-product-chart-label">
+  <div className="tp-product-section-label">
     • HISTORICAL PRICE TREND
   </div>
 
-  <div className="tp-product-chart-card">
+  <div className="tp-product-trend-card">
 
-    <div className="tp-product-chart-topbar">
+    {/* TOP */}
+    <div className="tp-product-trend-top">
 
-      <p className="tp-product-chart-subtitle">
+      <div className="tp-product-trend-title">
         Cocoa · UK-Nigeria · Export Price (£/tonne)
-      </p>
+      </div>
 
-      <div className="tp-product-chart-tabs">
+      <div className="tp-product-trend-filter-group">
 
-        <button className="tp-product-chart-tab">
+        <button className="tp-product-trend-filter">
           1yr
         </button>
 
-        <button className="tp-product-chart-tab">
+        <button className="tp-product-trend-filter">
           3yr
         </button>
 
-        <button className="tp-product-chart-tab active">
+        <button className="tp-product-trend-filter active">
           5yr
         </button>
 
-        <button className="tp-product-chart-tab">
+        <button className="tp-product-trend-filter">
           10yr
         </button>
 
@@ -215,301 +203,434 @@ const importDemandData = [
 
     </div>
 
-    <div className="tp-product-chart-price">
-      £2,847 ← current
+    {/* GRAPH */}
+    <div className="tp-product-trend-chart">
+
+      {/* HORIZONTAL LINES */}
+      <div className="tp-product-grid-line line-1"></div>
+      <div className="tp-product-grid-line line-2"></div>
+      <div className="tp-product-grid-line line-3"></div>
+      <div className="tp-product-grid-line line-4"></div>
+
+      {/* VERTICAL MARKERS */}
+      <div className="tp-product-vertical-line left"></div>
+      <div className="tp-product-vertical-line middle"></div>
+      <div className="tp-product-vertical-line right"></div>
+
+      {/* SVG CURVE */}
+      <svg
+        className="tp-product-chart-svg"
+        viewBox="0 0 1200 400"
+        preserveAspectRatio="none"
+      >
+
+        {/* GLOW */}
+        <path
+          d="
+          M 40 290
+          C 160 290, 180 250, 300 250
+          S 460 220, 580 190
+          S 760 180, 900 120
+          S 1040 110, 1160 70
+          "
+          className="tp-product-chart-glow"
+        />
+
+        {/* MAIN LINE */}
+        <path
+          d="
+          M 40 290
+          C 160 290, 180 250, 300 250
+          S 460 220, 580 190
+          S 760 180, 900 120
+          S 1040 110, 1160 70
+          "
+          className="tp-product-chart-line"
+        />
+
+        {/* LAST POINT */}
+        <circle
+          cx="1160"
+          cy="70"
+          r="10"
+          className="tp-product-chart-point"
+        />
+
+      </svg>
+
+      {/* CURRENT LABEL */}
+      <div className="tp-product-current-label">
+        £2,847 ← current
+      </div>
+
+      {/* YEAR LABELS */}
+      <div className="tp-product-chart-years">
+
+        <span>2021</span>
+        <span>2022</span>
+        <span>2023</span>
+        <span>2024</span>
+        <span>2025</span>
+
+      </div>
+
+      {/* EVENT LABELS */}
+      <div className="tp-product-chart-events">
+
+        <span>COVID Supply Shock</span>
+
+        <span>AfCFTA Phase 1</span>
+
+      </div>
+
     </div>
 
-    <TPChart
-      title=""
-      type="line"
-      data={historicalPriceData}
-      xKey="year"
-      series={[
-        {
-          key: "price",
-          label: "Export Price",
-        },
-      ]}
-    />
-
   </div>
-
 </div>
 
-{/* ======================================
-   IMPORT DEMAND TREND
-====================================== */}
+{/* =========================================
+    IMPORT DEMAND TREND
+========================================= */}
 
-<div className="tp-product-chart-section">
+<div className="tp-product-demand-section">
 
-  <div className="tp-product-chart-label">
+  <div className="tp-product-section-label">
     • IMPORT DEMAND TREND — ROLLING 12 MONTHS
   </div>
 
-  <div className="tp-product-chart-card">
+  <div className="tp-product-demand-card">
 
-    <p className="tp-product-chart-subtitle">
+    {/* TITLE */}
+    <div className="tp-product-demand-title">
       UK Import Demand · Cocoa · Monthly Volume Index
-    </p>
+    </div>
 
-    <TPChart
-      title=""
-      type="area"
-      data={importDemandData}
-      xKey="month"
-      series={[
-        {
-          key: "demand",
-          label: "Demand Index",
-        },
-      ]}
-    />
+    {/* CHART */}
+    <div className="tp-product-demand-chart">
+
+      {/* GRID LINES */}
+      <div className="tp-product-demand-grid line-1"></div>
+      <div className="tp-product-demand-grid line-2"></div>
+
+      {/* SVG */}
+      <svg
+        className="tp-product-demand-svg"
+        viewBox="0 0 1200 320"
+        preserveAspectRatio="none"
+      >
+
+        {/* AREA */}
+        <path
+          d="
+          M 40 210
+          C 140 210, 160 190, 260 190
+          S 380 180, 500 170
+          S 660 160, 780 145
+          S 940 130, 1160 115
+          L 1160 320
+          L 40 320
+          Z
+          "
+          className="tp-product-demand-area"
+        />
+
+        {/* LINE */}
+        <path
+          d="
+          M 40 210
+          C 140 210, 160 190, 260 190
+          S 380 180, 500 170
+          S 660 160, 780 145
+          S 940 130, 1160 115
+          "
+          className="tp-product-demand-line"
+        />
+
+      </svg>
+
+      {/* MONTH LABELS */}
+      <div className="tp-product-demand-labels">
+
+        <span>May '25</span>
+        <span>Jun</span>
+        <span>Jul</span>
+        <span>Aug</span>
+        <span>Sep</span>
+        <span>Oct</span>
+        <span>Nov</span>
+        <span>Dec</span>
+        <span>Jan '26</span>
+        <span>Feb</span>
+        <span>Mar</span>
+        <span>Apr '26</span>
+
+      </div>
+
+    </div>
 
   </div>
-
 </div>
 
-{/* ======================================
-   TOP SUPPLYING COUNTRIES
-====================================== */}
+{/* =========================================
+    TOP SUPPLYING COUNTRIES
+========================================= */}
 
-<div className="tp-product-detail-section">
+<div className="tp-product-country-section">
 
-  <div className="tp-product-chart-label">
+  <div className="tp-product-section-label">
     • TOP SUPPLYING COUNTRIES
   </div>
 
-  <div className="tp-product-supply-table">
+  <div className="tp-product-country-table-wrapper">
 
-    {/* Header */}
-    <div className="tp-product-supply-head">
+    <div className="tp-product-country-table">
 
-      <span>COUNTRY</span>
-      <span>TRADE VOLUME</span>
-      <span>AVG PRICE</span>
-      <span>TREND</span>
-      <span>RELIABILITY</span>
+      {/* HEADER */}
+      <div className="tp-product-country-head">
 
-    </div>
+        <span>COUNTRY</span>
+        <span>TRADE VOLUME</span>
+        <span>AVG PRICE</span>
+        <span>TREND</span>
+        <span>RELIABILITY</span>
 
-    {/* Rows */}
+      </div>
 
-    <div className="tp-product-supply-row">
+      {/* ROW */}
+      <div className="tp-product-country-row">
 
-      <span className="tp-product-country">
-        Nigeria
-      </span>
+        <strong>Nigeria</strong>
 
-      <span className="tp-font-data">
-        1,847 t
-      </span>
+        <span className="tp-font-data">
+          1,847 t
+        </span>
 
-      <span className="tp-font-data tp-muted">
-        £2,847/t
-      </span>
+        <span className="tp-font-data">
+          £2,847 / t
+        </span>
 
-      <span className="tp-text-up tp-font-data">
-        ↑ +18.3%
-      </span>
+        <span className="tp-product-country-trend positive">
+          ↑ +18.3%
+        </span>
 
-      <span>
-        <span className="tp-pill tp-pill-success">
+        <span className="tp-product-country-pill high">
           HIGH
         </span>
-      </span>
 
-    </div>
+      </div>
 
-    <div className="tp-product-supply-row">
+      {/* ROW */}
+      <div className="tp-product-country-row">
 
-      <span className="tp-product-country">
-        Ghana
-      </span>
+        <strong>Ghana</strong>
 
-      <span className="tp-font-data">
-        920 t
-      </span>
+        <span className="tp-font-data">
+          920 t
+        </span>
 
-      <span className="tp-font-data tp-muted">
-        £2,810/t
-      </span>
+        <span className="tp-font-data">
+          £2,810 / t
+        </span>
 
-      <span className="tp-text-up tp-font-data">
-        ↑ +14.1%
-      </span>
+        <span className="tp-product-country-trend positive">
+          ↑ +14.1%
+        </span>
 
-      <span>
-        <span className="tp-pill tp-pill-success">
+        <span className="tp-product-country-pill high">
           HIGH
         </span>
-      </span>
 
-    </div>
+      </div>
 
-    <div className="tp-product-supply-row">
+      {/* ROW */}
+      <div className="tp-product-country-row">
 
-      <span className="tp-product-country">
-        Ivory Coast
-      </span>
+        <strong>Ivory Coast</strong>
 
-      <span className="tp-font-data">
-        640 t
-      </span>
+        <span className="tp-font-data">
+          640 t
+        </span>
 
-      <span className="tp-font-data tp-muted">
-        £2,790/t
-      </span>
+        <span className="tp-font-data">
+          £2,790 / t
+        </span>
 
-      <span className="tp-font-data tp-product-warning">
-        ↑ +7.2%
-      </span>
+        <span className="tp-product-country-trend warning">
+          ↑ +7.2%
+        </span>
 
-      <span>
-        <span className="tp-pill tp-pill-warning">
+        <span className="tp-product-country-pill medium">
           MEDIUM
         </span>
-      </span>
+
+      </div>
 
     </div>
-
   </div>
-
 </div>
 
-{/* ======================================
-   RELATED NEWS
-====================================== */}
+{/* =========================================
+    RELATED NEWS
+========================================= */}
 
-<div className="tp-product-detail-section">
+<div className="tp-product-news-section">
 
-  <div className="tp-product-chart-label">
+  <div className="tp-product-section-label">
     • RELATED NEWS
   </div>
 
   <div className="tp-product-news-list">
 
-    {/* News Item */}
+    {/* NEWS CARD */}
     <div className="tp-product-news-card">
 
-      <div>
-        <h4 className="tp-product-news-title">
+      <div className="tp-product-news-content">
+
+        <h3>
           Ivory Coast harvest downgrade projected —
           sustained cocoa price pressure through H2 2026
-        </h4>
+        </h3>
 
-        <p className="tp-product-news-meta">
+        <p>
           World Bank Commodities · Yesterday
         </p>
+
       </div>
 
-      <span className="tp-product-news-badge tp-product-news-impact">
+      <div className="tp-product-news-tag warning">
         PRICE IMPACT
-      </span>
+      </div>
 
     </div>
 
-    {/* News Item */}
+    {/* NEWS CARD */}
     <div className="tp-product-news-card">
 
-      <div>
-        <h4 className="tp-product-news-title">
-          Ghana government announces export incentive programme —
-          new supply competition for UK buyers
-        </h4>
+      <div className="tp-product-news-content">
 
-        <p className="tp-product-news-meta">
+        <h3>
+          Ghana government announces export incentive
+          programme — new supply competition for UK buyers
+        </h3>
+
+        <p>
           Ghana Trade Authority · 2 days ago
         </p>
+
       </div>
 
-      <span className="tp-product-news-badge tp-product-news-opportunity">
+      <div className="tp-product-news-tag success">
         OPPORTUNITY
-      </span>
+      </div>
 
     </div>
 
-    {/* News Item */}
+    {/* NEWS CARD */}
     <div className="tp-product-news-card">
 
-      <div>
-        <h4 className="tp-product-news-title">
-          Nigerian cocoa farmers report improved yields in Ondo State —
-          potential supply increase Q3
-        </h4>
+      <div className="tp-product-news-content">
 
-        <p className="tp-product-news-meta">
+        <h3>
+          Nigerian cocoa farmers report improved yields in
+          Ondo State — potential supply increase Q3
+        </h3>
+
+        <p>
           Nigeria Agricultural Agency · 4 days ago
         </p>
+
       </div>
 
-      <span className="tp-product-news-badge tp-product-news-context">
+      <div className="tp-product-news-tag primary">
         CONTEXT
-      </span>
+      </div>
 
     </div>
 
   </div>
-
 </div>
 
-{/* ======================================
-   RELATED SUPPLIERS
-====================================== */}
+{/* =========================================
+    RELATED SUPPLIERS
+========================================= */}
 
-<div className="tp-product-detail-section">
+<div className="tp-product-related-supplier-section">
 
-  <div className="tp-product-chart-label">
+  <div className="tp-product-section-label">
     • RELATED SUPPLIERS
   </div>
 
-  <div className="tp-product-supplier-list">
+  <div className="tp-product-related-supplier-list">
 
-    <div className="tp-product-supplier-card">
-      <span className="tp-product-supplier-score">
+    {/* SUPPLIER */}
+    <div className="tp-product-related-supplier-card">
+
+      <div className="tp-product-related-score success">
         82
-      </span>
+      </div>
 
       <span>
         Adunola Farms Ltd · Nigeria
       </span>
+
     </div>
 
-    <div className="tp-product-supplier-card">
-      <span className="tp-product-supplier-score">
+    {/* SUPPLIER */}
+    <div className="tp-product-related-supplier-card">
+
+      <div className="tp-product-related-score success">
         91
-      </span>
+      </div>
 
       <span>
         Ghana Cocoa Board Export · Ghana
       </span>
+
     </div>
 
-    <div className="tp-product-supplier-card">
-      <span className="tp-product-supplier-score tp-product-supplier-score-warning">
+    {/* SUPPLIER */}
+    <div className="tp-product-related-supplier-card">
+
+      <div className="tp-product-related-score warning">
         67
-      </span>
+      </div>
 
       <span>
         Senegal Groundnut Co. · Senegal
       </span>
+
     </div>
 
   </div>
-
 </div>
 
-{/* ======================================
-   FOOTER INFO
-====================================== */}
+{/* =========================================
+    FOOTER BAR
+========================================= */}
 
 <div className="tp-product-footer-bar">
 
-  <span className="tp-product-ai-dot" />
+  <div className="tp-product-footer-content">
 
-  <span>
-    UN Comtrade 2016–2026 · 847 trade records ·
-    Last updated: 04 Apr 2026
-  </span>
+    <span className="tp-product-footer-dot"></span>
+
+    <span>
+      UN Comtrade 2016–2026
+    </span>
+
+    <span>·</span>
+
+    <span>
+      847 trade records
+    </span>
+
+    <span>·</span>
+
+    <span>
+      Last updated: 04 Apr 2026
+    </span>
+
+  </div>
 
 </div>
 

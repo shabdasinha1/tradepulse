@@ -18,6 +18,7 @@
     "jwt-decode": "^4.0.0",
     "libphonenumber-js": "^1.12.34",
     "lodash.throttle": "^4.1.1",
+    "lucide-react": "^1.16.0",
     "papaparse": "^5.5.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

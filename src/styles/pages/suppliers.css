@@ -625,3 +625,12 @@ letter-spacing: var(--tracking-normal);
     grid-template-columns: 1fr;
   }
 }
+
+.tp-clickable-row {
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.tp-clickable-row:hover {
+  background: var(--bg-card-hover);
+}
