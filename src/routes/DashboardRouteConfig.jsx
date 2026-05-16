@@ -5,6 +5,7 @@ import { lazy } from "react";
 ================================ */
 
 const Overview = lazy(() => import("../pages/overview/Overview.jsx"));
+const NewOverview = lazy(() => import("../pages/overview/NewOverview.jsx"));
 const Commodities = lazy(() => import("../pages/commodities/Commodities.jsx"));
 const Watchlist = lazy(() => import("../pages/watchlist/Watchlist.jsx"));
 const DashboardProduct = lazy(
@@ -36,7 +37,14 @@ const TradeNews = lazy(() => import("../pages/trade-news/TradeNews.jsx"));
 const localTradeManagement = lazy(
   () => import("../pages/local-trade-management/localTradeManagement.jsx"),
 );
+
+
 export const DASHBOARD_ROUTES = [
+  {
+    label: " New Corridor Intelligence",
+    path: "/new-overview",
+    component: NewOverview,
+  },
   {
     label: " Corridor Intelligence",
     path: "/overview",
