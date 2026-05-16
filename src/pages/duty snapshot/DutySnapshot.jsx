@@ -12,6 +12,7 @@ import PageDisclaimer from "../../components/common/PageDisclaimer";
 import EmptyState from "../../components/common/EmptyState";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
+import TPChart from "../../components/common/TPChart";
 
 /* ===============================
    SKELETON
@@ -218,6 +219,122 @@ const DutySnapshot = () => {
 
         {/* DISCLAIMER */}
         <PageDisclaimer />
+
+{/* =========================================
+    HISTORICAL DUTY RATE TREND
+========================================= */}
+
+<div className="tp-duty-trend-section">
+
+  <div className="tp-supplier-analysis-label">
+    • HISTORICAL DUTY RATE TREND
+  </div>
+
+  <div className="tp-duty-trend-card">
+
+    {/* TOP */}
+    <div className="tp-duty-trend-top">
+
+      <div>
+
+        <div className="tp-duty-trend-title">
+          UK Tariff Rates — Agricultural Imports
+        </div>
+
+        <div className="tp-duty-trend-subtitle">
+          HS01–24 · Average tariff % by year
+        </div>
+
+      </div>
+
+      <div className="tp-duty-trend-filter-group">
+
+        <button className="tp-duty-trend-filter">
+          3yr
+        </button>
+
+        <button className="tp-duty-trend-filter active">
+          5yr
+        </button>
+
+        <button className="tp-duty-trend-filter">
+          10yr
+        </button>
+
+      </div>
+
+    </div>
+
+    {/* CHART */}
+    <div className="tp-duty-chart-main">
+
+      <TPChart
+        title=""
+        type="bar"
+        xKey="year"
+        data={[
+          { year: "2020", duty: 1.2 },
+          { year: "2021", duty: 1.4 },
+          { year: "2022", duty: 1.3 },
+          { year: "2023", duty: 1.6 },
+          { year: "2024", duty: 1.5 },
+          { year: "2025", duty: 1.8 },
+          { year: "2026", duty: 6.2 },
+        ]}
+        series={[
+          {
+            key: "duty",
+            label: "Avg Duty %",
+          },
+        ]}
+      />
+
+    </div>
+
+    {/* FOOTER */}
+    <div className="tp-duty-trend-footer">
+
+      <div className="tp-duty-stat">
+
+        <span className="tp-duty-stat-label">
+          Current Avg Duty
+        </span>
+
+        <span className="tp-duty-stat-value">
+          6.2%
+        </span>
+
+      </div>
+
+      <div className="tp-duty-stat">
+
+        <span className="tp-duty-stat-label">
+          YoY Change
+        </span>
+
+        <span className="tp-duty-stat-value tp-text-up">
+          +2.8%
+        </span>
+
+      </div>
+
+      <div className="tp-duty-stat">
+
+        <span className="tp-duty-stat-label">
+          Risk Outlook
+        </span>
+
+        <span className="tp-duty-stat-value">
+          Moderate
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
         {/* ERROR */}
         {error && (

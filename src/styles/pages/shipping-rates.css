@@ -1,88 +1,8 @@
-/* ===============================
-   FX HEADER
-================================ */
-.tp-fx-header {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  width: 100%;
-
-  line-height: var(--lh-tight);
-
-  letter-spacing: var(--tracking-normal);
-}
-
-/* ===============================
-   TABLE WRAPPER
-================================ */
-.tp-table-wrapper-fx {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-/* ===============================
-   FX TABLE GRID
-================================ */
-.tp-table-fx-dashboard {
-  display: grid;
-  grid-template-columns:
-    1.5fr
-    1fr
-    1fr
-    1.5fr
-    1fr
-    1fr;
-
-  align-items: center;
-  gap: var(--space-md);
-  min-width: 900px;
-}
-
-/* ===============================
-   FILTER WRAPPER (FIX BLOCK ISSUE)
-================================ */
-.tp-fx-universal-filter-wrapper {
-  position: fixed;
-  inset: 0;
-  z-index: 999;
-}
-
-/* Fix react-select inside modal */
-.tp-fx-universal-filter-wrapper .tp-select__menu {
-  position: relative !important;
-  top: auto !important;
-  transform: none !important;
-}
-.tp-table-body-scroll {
-  min-height: 300px;
-}
-
-/* ===============================
-   RESPONSIVE
-================================ */
-
-@media (max-width: 768px) {
-  .tp-table-fx-dashboard {
-    min-width: 800px;
-  }
-}
-
-@media (max-width: 480px) {
-  .tp-table-fx-dashboard {
-    min-width: 700px;
-  }
-}
-
-
 /* =========================================
-   FX TREND SECTION
+   FREIGHT TREND SECTION
 ========================================= */
 
-.tp-fx-trend-section {
+.tp-freight-trend-section {
   display: flex;
   flex-direction: column;
 
@@ -95,7 +15,7 @@
    CARD
 ========================================= */
 
-.tp-fx-trend-card {
+.tp-freight-trend-card {
   position: relative;
 
   display: flex;
@@ -118,7 +38,7 @@
   min-width: 0;
 }
 
-.tp-fx-trend-card::before {
+.tp-freight-trend-card::before {
   content: "";
 
   position: absolute;
@@ -128,7 +48,7 @@
   background:
     radial-gradient(
       circle at top left,
-      rgba(59, 92, 255, 0.08),
+      rgba(139, 92, 246, 0.08),
       transparent 40%
     );
 
@@ -139,7 +59,7 @@
    TOP
 ========================================= */
 
-.tp-fx-trend-top {
+.tp-freight-trend-top {
   position: relative;
 
   z-index: 1;
@@ -153,7 +73,7 @@
   flex-wrap: wrap;
 }
 
-.tp-fx-trend-title {
+.tp-freight-trend-title {
   color: var(--text-primary);
 
   font-size: clamp(18px, 1.5vw, 24px);
@@ -167,7 +87,7 @@
   line-height: var(--lh-tight);
 }
 
-.tp-fx-trend-subtitle {
+.tp-freight-trend-subtitle {
   margin-top: 4px;
 
   color: var(--text-muted);
@@ -183,7 +103,7 @@
    FILTERS
 ========================================= */
 
-.tp-fx-trend-filter-group {
+.tp-freight-trend-filter-group {
   display: flex;
   align-items: center;
 
@@ -192,7 +112,7 @@
   flex-wrap: wrap;
 }
 
-.tp-fx-trend-filter {
+.tp-freight-trend-filter {
   height: 34px;
 
   padding:
@@ -219,32 +139,32 @@
     color var(--transition-fast);
 }
 
-.tp-fx-trend-filter:hover {
-  background: var(--clr-primary-soft);
+.tp-freight-trend-filter:hover {
+  background: rgba(139, 92, 246, 0.08);
 
-  border-color: rgba(59, 92, 255, 0.2);
+  border-color: rgba(139, 92, 246, 0.18);
 
-  color: var(--clr-primary);
+  color: #b89cff;
 }
 
-.tp-fx-trend-filter.active {
-  background: var(--clr-primary-soft);
+.tp-freight-trend-filter.active {
+  background: rgba(139, 92, 246, 0.12);
 
-  border-color: rgba(59, 92, 255, 0.28);
+  border-color: rgba(139, 92, 246, 0.28);
 
-  color: var(--clr-primary);
+  color: #c4b5fd;
 
   font-weight: var(--fw-semibold);
 
   box-shadow:
-    0 0 18px rgba(59, 92, 255, 0.12);
+    0 0 18px rgba(139, 92, 246, 0.12);
 }
 
 /* =========================================
    CHART
 ========================================= */
 
-.tp-fx-chart-main {
+.tp-freight-chart-main {
   position: relative;
 
   z-index: 1;
@@ -252,7 +172,7 @@
   width: 100%;
 }
 
-.tp-fx-chart-main .tp-card {
+.tp-freight-chart-main .tp-card {
   padding: 0;
 
   background: transparent;
@@ -262,11 +182,11 @@
   box-shadow: none;
 }
 
-.tp-fx-chart-main .tp-chart-header {
+.tp-freight-chart-main .tp-chart-header {
   display: none;
 }
 
-.tp-fx-chart-main .tp-chart-wrapper {
+.tp-freight-chart-main .tp-chart-wrapper {
   height: clamp(320px, 36vw, 460px);
 }
 
@@ -274,7 +194,7 @@
    FOOTER
 ========================================= */
 
-.tp-fx-trend-footer {
+.tp-freight-trend-footer {
   position: relative;
 
   z-index: 1;
@@ -291,14 +211,14 @@
   border-top: 1px solid var(--border-soft);
 }
 
-.tp-fx-stat {
+.tp-freight-stat {
   display: flex;
   flex-direction: column;
 
   gap: 4px;
 }
 
-.tp-fx-stat-label {
+.tp-freight-stat-label {
   color: var(--text-muted);
 
   font-size: var(--fs-intel-label);
@@ -312,7 +232,7 @@
   text-transform: uppercase;
 }
 
-.tp-fx-stat-value {
+.tp-freight-stat-value {
   color: var(--text-primary);
 
   font-size: var(--fs-lg);
@@ -330,52 +250,52 @@
 
 @media (max-width: 768px) {
 
-  .tp-fx-trend-card {
+  .tp-freight-trend-card {
     padding: var(--space-lg);
   }
 
-  .tp-fx-trend-top {
+  .tp-freight-trend-top {
     flex-direction: column;
 
     align-items: flex-start;
   }
 
-  .tp-fx-chart-main .tp-chart-wrapper {
+  .tp-freight-chart-main .tp-chart-wrapper {
     height: 320px;
   }
 
-  .tp-fx-trend-footer {
+  .tp-freight-trend-footer {
     gap: var(--space-lg);
   }
 }
 
 @media (max-width: 480px) {
 
-  .tp-fx-trend-card {
+  .tp-freight-trend-card {
     padding: var(--space-md);
   }
 
-  .tp-fx-trend-title {
+  .tp-freight-trend-title {
     font-size: var(--fs-xl);
   }
 
-  .tp-fx-trend-subtitle {
+  .tp-freight-trend-subtitle {
     font-size: var(--fs-xs);
   }
 
-  .tp-fx-trend-filter-group {
+  .tp-freight-trend-filter-group {
     width: 100%;
   }
 
-  .tp-fx-trend-filter {
+  .tp-freight-trend-filter {
     flex: 1;
   }
 
-  .tp-fx-chart-main .tp-chart-wrapper {
+  .tp-freight-chart-main .tp-chart-wrapper {
     height: 260px;
   }
 
-  .tp-fx-trend-footer {
+  .tp-freight-trend-footer {
     display: grid;
 
     grid-template-columns: repeat(2, 1fr);

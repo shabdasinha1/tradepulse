@@ -11,6 +11,7 @@ import UniversalFilter from "../../components/common/UniversalFilter";
 import { FXRatesData } from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
+import TPChart from "../../components/common/TPChart.jsx";
 
 const LIMIT = 20;
 
@@ -182,6 +183,125 @@ const FXRates = () => {
         <span className="tp-product-disclaimer">
           <PageDisclaimer />
         </span>
+
+         {/* =========================================
+    HISTORICAL FX TREND
+========================================= */}
+
+<div className="tp-fx-trend-section">
+
+  <div className="tp-supplier-analysis-label">
+    • HISTORICAL FX TREND
+  </div>
+
+  <div className="tp-fx-trend-card">
+
+    {/* TOP */}
+    <div className="tp-fx-trend-top">
+
+      <div>
+
+        <div className="tp-fx-trend-title">
+          GBP/NGN Exchange Rate — Historical
+        </div>
+
+        <div className="tp-fx-trend-subtitle">
+          NGN per £1 · Corridor FX intelligence
+        </div>
+
+      </div>
+
+      <div className="tp-fx-trend-filter-group">
+
+        <button className="tp-fx-trend-filter">
+          1yr
+        </button>
+
+        <button className="tp-fx-trend-filter">
+          3yr
+        </button>
+
+        <button className="tp-fx-trend-filter active">
+          5yr
+        </button>
+
+        <button className="tp-fx-trend-filter">
+          10yr
+        </button>
+
+      </div>
+
+    </div>
+
+    {/* CHART */}
+    <div className="tp-fx-chart-main">
+
+      <TPChart
+        title=""
+        type="line"
+        xKey="year"
+        data={[
+          { year: "2021", rate: 420 },
+          { year: "2022", rate: 610 },
+          { year: "2023", rate: 910 },
+          { year: "2024", rate: 1420 },
+          { year: "2025", rate: 1780 },
+          { year: "2026", rate: 1982 },
+        ]}
+        series={[
+          {
+            key: "rate",
+            label: "FX Rate",
+          },
+        ]}
+      />
+
+    </div>
+
+    {/* FOOTER */}
+    <div className="tp-fx-trend-footer">
+
+      <div className="tp-fx-stat">
+
+        <span className="tp-fx-stat-label">
+          Current Rate
+        </span>
+
+        <span className="tp-fx-stat-value">
+          1,982 NGN/£
+        </span>
+
+      </div>
+
+      <div className="tp-fx-stat">
+
+        <span className="tp-fx-stat-label">
+          Volatility
+        </span>
+
+        <span className="tp-fx-stat-value tp-text-down">
+          High
+        </span>
+
+      </div>
+
+      <div className="tp-fx-stat">
+
+        <span className="tp-fx-stat-label">
+          5Y Change
+        </span>
+
+        <span className="tp-fx-stat-value tp-text-down">
+          +372%
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
         {/* CARD */}
         <TradePulseCard

@@ -13,6 +13,7 @@ import { CiFilter } from "react-icons/ci";
 import UniversalFilter from "../../components/common/UniversalFilter";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import useCurrency from "../../hooks/useCurrency";
+import TPChart from "../../components/common/TPChart";
 
 /* ===============================
    SKELETON
@@ -222,6 +223,126 @@ const ShippingHistory = () => {
 
         {/* DISCLAIMER */}
         <PageDisclaimer />
+
+        {/* =========================================
+    HISTORICAL FREIGHT RATE TREND
+========================================= */}
+
+<div className="tp-freight-trend-section">
+
+  <div className="tp-supplier-analysis-label">
+    • HISTORICAL FREIGHT RATE TREND
+  </div>
+
+  <div className="tp-freight-trend-card">
+
+    {/* TOP */}
+    <div className="tp-freight-trend-top">
+
+      <div>
+
+        <div className="tp-freight-trend-title">
+          West Africa → UK · Spot Rate
+        </div>
+
+        <div className="tp-freight-trend-subtitle">
+          Freightos Baltic Index · $ / TEU
+        </div>
+
+      </div>
+
+      <div className="tp-freight-trend-filter-group">
+
+        <button className="tp-freight-trend-filter">
+          1yr
+        </button>
+
+        <button className="tp-freight-trend-filter active">
+          3yr
+        </button>
+
+        <button className="tp-freight-trend-filter">
+          5yr
+        </button>
+
+      </div>
+
+    </div>
+
+    {/* CHART */}
+    <div className="tp-freight-chart-main">
+
+      <TPChart
+        title=""
+        type="line"
+        xKey="period"
+        data={[
+          { period: "Apr '23", rate: 980 },
+          { period: "Jul '23", rate: 1180 },
+          { period: "Oct '23", rate: 3120 },
+          { period: "Jan '24", rate: 2780 },
+          { period: "Apr '24", rate: 2440 },
+          { period: "Jul '24", rate: 2180 },
+          { period: "Oct '24", rate: 2360 },
+          { period: "Jan '25", rate: 2580 },
+          { period: "Apr '25", rate: 2720 },
+          { period: "Jul '25", rate: 3090 },
+          { period: "Oct '25", rate: 3240 },
+        ]}
+        series={[
+          {
+            key: "rate",
+            label: "Freight Rate",
+          },
+        ]}
+      />
+
+    </div>
+
+    {/* FOOTER */}
+    <div className="tp-freight-trend-footer">
+
+      <div className="tp-freight-stat">
+
+        <span className="tp-freight-stat-label">
+          Current Rate
+        </span>
+
+        <span className="tp-freight-stat-value">
+          $2,840 / TEU
+        </span>
+
+      </div>
+
+      <div className="tp-freight-stat">
+
+        <span className="tp-freight-stat-label">
+          Market Trend
+        </span>
+
+        <span className="tp-freight-stat-value tp-text-up">
+          Recovering
+        </span>
+
+      </div>
+
+      <div className="tp-freight-stat">
+
+        <span className="tp-freight-stat-label">
+          Volatility
+        </span>
+
+        <span className="tp-freight-stat-value">
+          Medium
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
         {/* TABLE */}
         <div className="tp-card">
