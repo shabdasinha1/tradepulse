@@ -118,7 +118,7 @@ const Suppliers = () => {
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
-  const [selectedSupplier, setSelectedSupplier] = useState(true);
+  const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
 const handleBackToSuppliers = () => {
