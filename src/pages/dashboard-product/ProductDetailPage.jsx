@@ -1,4 +1,5 @@
 import React from "react";
+import TPChart from "../../components/common/TPChart";
 
 
 const ProductDetailPage = ({ product, onBack }) => {
@@ -21,27 +22,7 @@ const ProductDetailPage = ({ product, onBack }) => {
 
         </div>
 
-        {/* =========================================
-            FILTER ROW
-        ========================================= */}
-
-        <div className="tp-product-detail-filter-row">
-
-          <input
-            type="text"
-            placeholder="Search HS code or product name"
-            className="tp-input tp-product-search"
-          />
-
-          <select className="tp-select tp-product-select">
-            <option>Agriculture</option>
-          </select>
-
-          <select className="tp-select tp-product-select">
-            <option>Sort: Demand ↓</option>
-          </select>
-
-        </div>
+        
 
         {/* =========================================
             HERO SECTION
@@ -123,7 +104,7 @@ const ProductDetailPage = ({ product, onBack }) => {
     AI PRODUCT SUMMARY
 ========================================= */}
 
-<div className="tp-product-ai-summary-card">
+{/* <div className="tp-product-ai-summary-card">
 
   <div className="tp-product-section-label">
     • AI PRODUCT INTELLIGENCE SUMMARY
@@ -160,7 +141,7 @@ const ProductDetailPage = ({ product, onBack }) => {
     </div>
 
   </div>
-</div>
+</div> */}
 
 {/* =========================================
     HISTORICAL PRICE TREND
@@ -177,8 +158,16 @@ const ProductDetailPage = ({ product, onBack }) => {
     {/* TOP */}
     <div className="tp-product-trend-top">
 
-      <div className="tp-product-trend-title">
-        Cocoa · UK-Nigeria · Export Price (£/tonne)
+      <div>
+
+        <div className="tp-product-trend-title">
+          Cocoa · UK-Nigeria · Export Price
+        </div>
+
+        <div className="tp-product-trend-subtitle">
+          Historical export pricing intelligence (£/tonne)
+        </div>
+
       </div>
 
       <div className="tp-product-trend-filter-group">
@@ -203,89 +192,74 @@ const ProductDetailPage = ({ product, onBack }) => {
 
     </div>
 
-    {/* GRAPH */}
-    <div className="tp-product-trend-chart">
+    {/* CHART */}
+    <div className="tp-product-trend-chart-wrapper">
 
-      {/* HORIZONTAL LINES */}
-      <div className="tp-product-grid-line line-1"></div>
-      <div className="tp-product-grid-line line-2"></div>
-      <div className="tp-product-grid-line line-3"></div>
-      <div className="tp-product-grid-line line-4"></div>
+      <TPChart
+        title=""
+        type="line"
+        xKey="year"
+        data={[
+          { year: "2021", price: 1480 },
+          { year: "2022", price: 1710 },
+          { year: "2023", price: 1940 },
+          { year: "2024", price: 2210 },
+          { year: "2025", price: 2590 },
+          { year: "2026", price: 2847 },
+        ]}
+        series={[
+          {
+            key: "price",
+            label: "Export Price",
+          },
+        ]}
+      />
 
-      {/* VERTICAL MARKERS */}
-      <div className="tp-product-vertical-line left"></div>
-      <div className="tp-product-vertical-line middle"></div>
-      <div className="tp-product-vertical-line right"></div>
+    </div>
 
-      {/* SVG CURVE */}
-      <svg
-        className="tp-product-chart-svg"
-        viewBox="0 0 1200 400"
-        preserveAspectRatio="none"
-      >
+    {/* FOOTER */}
+    <div className="tp-product-trend-footer">
 
-        {/* GLOW */}
-        <path
-          d="
-          M 40 290
-          C 160 290, 180 250, 300 250
-          S 460 220, 580 190
-          S 760 180, 900 120
-          S 1040 110, 1160 70
-          "
-          className="tp-product-chart-glow"
-        />
+      <div className="tp-product-trend-stat">
 
-        {/* MAIN LINE */}
-        <path
-          d="
-          M 40 290
-          C 160 290, 180 250, 300 250
-          S 460 220, 580 190
-          S 760 180, 900 120
-          S 1040 110, 1160 70
-          "
-          className="tp-product-chart-line"
-        />
+        <span className="tp-product-trend-stat-label">
+          CAGR
+        </span>
 
-        {/* LAST POINT */}
-        <circle
-          cx="1160"
-          cy="70"
-          r="10"
-          className="tp-product-chart-point"
-        />
-
-      </svg>
-
-      {/* CURRENT LABEL */}
-      <div className="tp-product-current-label">
-        £2,847 ← current
-      </div>
-
-      {/* YEAR LABELS */}
-      <div className="tp-product-chart-years">
-
-        <span>2021</span>
-        <span>2022</span>
-        <span>2023</span>
-        <span>2024</span>
-        <span>2025</span>
+        <span className="tp-product-trend-stat-value tp-text-up">
+          +13.8%
+        </span>
 
       </div>
 
-      {/* EVENT LABELS */}
-      <div className="tp-product-chart-events">
+      <div className="tp-product-trend-stat">
 
-        <span>COVID Supply Shock</span>
+        <span className="tp-product-trend-stat-label">
+          Volatility
+        </span>
 
-        <span>AfCFTA Phase 1</span>
+        <span className="tp-product-trend-stat-value">
+          Medium
+        </span>
+
+      </div>
+
+      <div className="tp-product-trend-stat">
+
+        <span className="tp-product-trend-stat-label">
+          Peak
+        </span>
+
+        <span className="tp-product-trend-stat-value">
+          £2,847
+        </span>
 
       </div>
 
     </div>
 
   </div>
+
 </div>
 
 {/* =========================================
@@ -300,75 +274,101 @@ const ProductDetailPage = ({ product, onBack }) => {
 
   <div className="tp-product-demand-card">
 
-    {/* TITLE */}
-    <div className="tp-product-demand-title">
-      UK Import Demand · Cocoa · Monthly Volume Index
+    {/* TOP */}
+    <div className="tp-product-demand-top">
+
+      <div>
+
+        <div className="tp-product-demand-title">
+          UK Import Demand · Cocoa
+        </div>
+
+        <div className="tp-product-demand-subtitle">
+          Monthly volume demand index intelligence
+        </div>
+
+      </div>
+
+      <div className="tp-product-demand-pill">
+        +14.2% YoY
+      </div>
+
     </div>
 
     {/* CHART */}
-    <div className="tp-product-demand-chart">
+    <div className="tp-product-demand-chart-wrapper">
 
-      {/* GRID LINES */}
-      <div className="tp-product-demand-grid line-1"></div>
-      <div className="tp-product-demand-grid line-2"></div>
+      <TPChart
+        title=""
+        type="area"
+        xKey="month"
+        data={[
+          { month: "May", demand: 820 },
+          { month: "Jun", demand: 860 },
+          { month: "Jul", demand: 910 },
+          { month: "Aug", demand: 980 },
+          { month: "Sep", demand: 1040 },
+          { month: "Oct", demand: 1130 },
+          { month: "Nov", demand: 1190 },
+          { month: "Dec", demand: 1280 },
+          { month: "Jan", demand: 1360 },
+          { month: "Feb", demand: 1490 },
+          { month: "Mar", demand: 1580 },
+          { month: "Apr", demand: 1670 },
+        ]}
+        series={[
+          {
+            key: "demand",
+            label: "Demand Index",
+          },
+        ]}
+      />
 
-      {/* SVG */}
-      <svg
-        className="tp-product-demand-svg"
-        viewBox="0 0 1200 320"
-        preserveAspectRatio="none"
-      >
+    </div>
 
-        {/* AREA */}
-        <path
-          d="
-          M 40 210
-          C 140 210, 160 190, 260 190
-          S 380 180, 500 170
-          S 660 160, 780 145
-          S 940 130, 1160 115
-          L 1160 320
-          L 40 320
-          Z
-          "
-          className="tp-product-demand-area"
-        />
+    {/* FOOTER */}
+    <div className="tp-product-demand-footer">
 
-        {/* LINE */}
-        <path
-          d="
-          M 40 210
-          C 140 210, 160 190, 260 190
-          S 380 180, 500 170
-          S 660 160, 780 145
-          S 940 130, 1160 115
-          "
-          className="tp-product-demand-line"
-        />
+      <div className="tp-product-demand-stat">
 
-      </svg>
+        <span className="tp-product-demand-stat-label">
+          Current Demand
+        </span>
 
-      {/* MONTH LABELS */}
-      <div className="tp-product-demand-labels">
+        <span className="tp-product-demand-stat-value">
+          1,670
+        </span>
 
-        <span>May '25</span>
-        <span>Jun</span>
-        <span>Jul</span>
-        <span>Aug</span>
-        <span>Sep</span>
-        <span>Oct</span>
-        <span>Nov</span>
-        <span>Dec</span>
-        <span>Jan '26</span>
-        <span>Feb</span>
-        <span>Mar</span>
-        <span>Apr '26</span>
+      </div>
+
+      <div className="tp-product-demand-stat">
+
+        <span className="tp-product-demand-stat-label">
+          Growth Trend
+        </span>
+
+        <span className="tp-product-demand-stat-value tp-text-up">
+          Accelerating
+        </span>
+
+      </div>
+
+      <div className="tp-product-demand-stat">
+
+        <span className="tp-product-demand-stat-label">
+          Market Signal
+        </span>
+
+        <span className="tp-product-demand-stat-value">
+          Strong
+        </span>
 
       </div>
 
     </div>
 
   </div>
+
 </div>
 
 {/* =========================================

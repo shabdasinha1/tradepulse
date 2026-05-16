@@ -1,4 +1,5 @@
 import React from "react";
+import TPChart from "../../components/common/TPChart";
 
 
 const SupplierDetailPage = ({ supplier, onBack }) => {
@@ -327,45 +328,108 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
 
   <div className="tp-shipment-trend-card">
 
-    <div className="tp-shipment-chart-title">
-      {supplier?.company_name} · Shipment Frequency by Quarter
-    </div>
+    {/* TOP */}
+    <div className="tp-shipment-trend-top">
 
-    <div className="tp-shipment-chart-wrapper">
+      <div>
 
-      {[
-        58, 66, 62, 72,
-        64, 78, 60, 70,
-        74, 82, 68, 78,
-        84, 92, 80, 94,
-      ].map((height, index) => (
-        <div
-          className="tp-shipment-bar-group"
-          key={index}
-        >
-          <div
-            className="tp-shipment-bar"
-            style={{ height: `${height}%` }}
-          />
+        <div className="tp-shipment-chart-title">
+          {supplier?.company_name} · Shipment Frequency
         </div>
-      ))}
+
+        <div className="tp-shipment-chart-subtitle">
+          Quarterly shipment activity intelligence
+        </div>
+
+      </div>
+
+      <div className="tp-shipment-trend-pill">
+        +18.4% YoY
+      </div>
 
     </div>
 
-    {/* YEAR LABELS */}
-    <div className="tp-shipment-chart-labels">
+    {/* CHART */}
+    <div className="tp-shipment-chart-main">
 
-      <span>Q1 '22</span>
+      <TPChart
+        title=""
+        type="bar"
+        xKey="quarter"
+        data={[
+          { quarter: "Q1 '22", shipments: 58 },
+          { quarter: "Q2 '22", shipments: 66 },
+          { quarter: "Q3 '22", shipments: 62 },
+          { quarter: "Q4 '22", shipments: 72 },
 
-      <span>Q1 '23</span>
+          { quarter: "Q1 '23", shipments: 64 },
+          { quarter: "Q2 '23", shipments: 78 },
+          { quarter: "Q3 '23", shipments: 60 },
+          { quarter: "Q4 '23", shipments: 70 },
 
-      <span>Q1 '24</span>
+          { quarter: "Q1 '24", shipments: 74 },
+          { quarter: "Q2 '24", shipments: 82 },
+          { quarter: "Q3 '24", shipments: 68 },
+          { quarter: "Q4 '24", shipments: 78 },
 
-      <span>Q1 '25</span>
+          { quarter: "Q1 '25", shipments: 84 },
+          { quarter: "Q2 '25", shipments: 92 },
+          { quarter: "Q3 '25", shipments: 80 },
+          { quarter: "Q4 '25", shipments: 94 },
+        ]}
+        series={[
+          {
+            key: "shipments",
+            label: "Shipments",
+          },
+        ]}
+      />
+
+    </div>
+
+    {/* FOOTER */}
+    <div className="tp-shipment-trend-footer">
+
+      <div className="tp-shipment-stat">
+
+        <span className="tp-shipment-stat-label">
+          Total Shipments
+        </span>
+
+        <span className="tp-shipment-stat-value">
+          1,103
+        </span>
+
+      </div>
+
+      <div className="tp-shipment-stat">
+
+        <span className="tp-shipment-stat-label">
+          Avg / Quarter
+        </span>
+
+        <span className="tp-shipment-stat-value">
+          68
+        </span>
+
+      </div>
+
+      <div className="tp-shipment-stat">
+
+        <span className="tp-shipment-stat-label">
+          Trend
+        </span>
+
+        <span className="tp-shipment-stat-value tp-text-up">
+          Increasing
+        </span>
+
+      </div>
 
     </div>
 
   </div>
+
 </div>
 
 {/* =========================================
