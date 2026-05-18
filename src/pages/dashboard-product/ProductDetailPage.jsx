@@ -1,8 +1,105 @@
 import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSelector, shallowEqual } from "react-redux";
+
 import TPChart from "../../components/common/TPChart";
 
+import {
+  DashboardExportPriceTrend,
+  DashboardImportDemandTrend,
+} from "../../services/DashboardService";
+
+import { queryKeys } from "../../utils/queryKeys";
 
 const ProductDetailPage = ({ product, onBack }) => {
+
+  const {
+  reporterCode,
+  partnerCode,
+  corridor,
+  currencySymbol,
+} = useSelector(
+  (state) => state.corridor,
+  shallowEqual,
+);
+
+const currency = currencySymbol || "£";
+
+  const productName =
+    product?.productCategory || "N/A";
+
+  const hsCode =
+    product?.categoryHs2 || "N/A";
+
+    const selectedHsCode =
+  product?.selectedHsCode || "";
+ 
+
+  const avgPrice =
+    product?.avgExportPrice || 0;
+
+  const volatility =
+    product?.volatilityRisk || "LOW";
+
+  const demandTrend =
+    product?.importDemandTrend || "N/A";
+
+  const exportActivity =
+    product?.exportActivityLevel || "N/A";
+
+
+    const {
+  data: exportTrendData,
+  isLoading: exportTrendLoading,
+} = useQuery({
+  queryKey: queryKeys.productExportPriceTrend(
+    reporterCode,
+    partnerCode,
+    hsCode,
+  ),
+
+  queryFn: () =>
+    DashboardExportPriceTrend({
+      reporter: reporterCode,
+      partner: partnerCode,
+      product: selectedHsCode,
+    }),
+
+  enabled: !!selectedHsCode,
+});
+
+const historicalTrendData =
+  exportTrendData?.data?.map((item) => ({
+    year: new Date(item?.date).getFullYear(),
+    price: Number(item?.price || 0),
+  })) || [];
+
+  const {
+  data: importDemandTrendData,
+  isLoading: importDemandTrendLoading,
+} = useQuery({
+  queryKey: queryKeys.productImportDemandTrend(
+    reporterCode,
+    partnerCode,
+    selectedHsCode,
+  ),
+
+  queryFn: () =>
+    DashboardImportDemandTrend({
+      reporter: reporterCode,
+      partner: partnerCode,
+      product: selectedHsCode,
+    }),
+
+  enabled: !!selectedHsCode,
+});
+
+const demandTrendChartData =
+  importDemandTrendData?.data?.map((item) => ({
+    month: item?.date,
+    demand: Number(item?.demand || 0),
+  })) || [];
+
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -36,15 +133,15 @@ const ProductDetailPage = ({ product, onBack }) => {
             <div className="tp-product-title-row">
 
               <h1 className="tp-product-detail-title">
-                {product?.productCategory || "COCOA BEANS"}
+               {productName}
               </h1>
 
               <span className="tp-product-hs">
-                HS {product?.categoryHs2 || "1801"}
+            {selectedHsCode}
               </span>
 
               <span className="tp-product-volatility-pill">
-                MED VOLATILITY
+                {volatility}
               </span>
 
             </div>
@@ -53,8 +150,9 @@ const ProductDetailPage = ({ product, onBack }) => {
             <div className="tp-product-price-row">
 
               <span className="tp-product-price tp-font-data">
-                £2,847
-              </span>
+  {currency}
+  {Number(avgPrice).toLocaleString()}
+</span>
 
               <span className="tp-product-unit">
                 /tonne
@@ -161,7 +259,7 @@ const ProductDetailPage = ({ product, onBack }) => {
       <div>
 
         <div className="tp-product-trend-title">
-          Cocoa · UK-Nigeria · Export Price
+          {productName} · {corridor} · Export Price
         </div>
 
         <div className="tp-product-trend-subtitle">
@@ -199,14 +297,7 @@ const ProductDetailPage = ({ product, onBack }) => {
         title=""
         type="line"
         xKey="year"
-        data={[
-          { year: "2021", price: 1480 },
-          { year: "2022", price: 1710 },
-          { year: "2023", price: 1940 },
-          { year: "2024", price: 2210 },
-          { year: "2025", price: 2590 },
-          { year: "2026", price: 2847 },
-        ]}
+       data={historicalTrendData}
         series={[
           {
             key: "price",
@@ -239,7 +330,7 @@ const ProductDetailPage = ({ product, onBack }) => {
         </span>
 
         <span className="tp-product-trend-stat-value">
-          Medium
+         {volatility}
         </span>
 
       </div>
@@ -302,20 +393,7 @@ const ProductDetailPage = ({ product, onBack }) => {
         title=""
         type="area"
         xKey="month"
-        data={[
-          { month: "May", demand: 820 },
-          { month: "Jun", demand: 860 },
-          { month: "Jul", demand: 910 },
-          { month: "Aug", demand: 980 },
-          { month: "Sep", demand: 1040 },
-          { month: "Oct", demand: 1130 },
-          { month: "Nov", demand: 1190 },
-          { month: "Dec", demand: 1280 },
-          { month: "Jan", demand: 1360 },
-          { month: "Feb", demand: 1490 },
-          { month: "Mar", demand: 1580 },
-          { month: "Apr", demand: 1670 },
-        ]}
+       data={demandTrendChartData}
         series={[
           {
             key: "demand",

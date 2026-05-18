@@ -261,11 +261,17 @@ const DashboardProduct = () => {
       const isLast = products.length === index + 1;
 
       return (
-       <div
+      <div
   ref={isLast ? lastProductRef : null}
   className="tp-table-row tp-table-suppliers"
   key={item.product || index}
-  onClick={() => setSelectedProduct(item)}
+  onClick={() =>
+    setSelectedProduct({
+      ...item,
+      selectedHsCode: item?.hsCode,
+     
+    })
+  }
   style={{ cursor: "pointer" }}
 >
           <span>

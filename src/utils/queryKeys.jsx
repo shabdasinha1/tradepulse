@@ -72,6 +72,27 @@ companySuppliers: ({
     endDate,
   ],
 
+  productExportPriceTrend: (
+  reporter,
+  partner,
+  product,
+) => [
+  "productExportPriceTrend",
+  reporter,
+  partner,
+  product,
+],
+productImportDemandTrend: (
+  reporter,
+  partner,
+  product,
+) => [
+  "productImportDemandTrend",
+  reporter,
+  partner,
+  product,
+],
+
   importDemandTrend: (reporter, partner, product, startDate, endDate) => [
     "importDemandTrend",
     reporter,
