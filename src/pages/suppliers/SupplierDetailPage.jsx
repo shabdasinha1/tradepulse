@@ -1,8 +1,72 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import TPChart from "../../components/common/TPChart";
+
+import {
+  DashboardSupplierIntelligence,
+  DashboardSupplierKeyFacts,
+  DashboardSupplierExportHistory,
+} from "../../services/DashboardService";
 
 
 const SupplierDetailPage = ({ supplier, onBack }) => {
+
+  const supplierId = supplier?.id;
+
+const [supplierIntelligence, setSupplierIntelligence] = useState(null);
+const [supplierKeyFacts, setSupplierKeyFacts] = useState(null);
+const [supplierExportHistory, setSupplierExportHistory] = useState([]);
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+  if (!supplierId) return;
+
+  const fetchSupplierIntelligence = async () => {
+    try {
+      setLoading(true);
+const [
+  intelligenceRes,
+  keyFactsRes,
+  exportHistoryRes,
+] = await Promise.all([
+  DashboardSupplierIntelligence(supplierId),
+  DashboardSupplierKeyFacts(supplierId),
+  DashboardSupplierExportHistory(supplierId),
+]);
+
+setSupplierIntelligence(
+  intelligenceRes?.data|| null
+);
+
+setSupplierKeyFacts(
+  keyFactsRes?.data || null
+);
+setSupplierExportHistory(
+  exportHistoryRes?.data|| []
+);
+    } catch (err) {
+      console.error("Supplier intelligence error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSupplierIntelligence();
+}, [supplierId]);
+
+const intelligence = supplierIntelligence;
+const keyFacts = supplierKeyFacts;
+const exportHistory = supplierExportHistory;
+
+if (loading) {
+  return (
+    <div className="tp-section">
+      <div className="tp-dashboard-container">
+        Loading supplier intelligence...
+      </div>
+    </div>
+  );
+}
+
   return (
     <section className="tp-section">
       <div className="tp-dashboard-container tp-grid-stack">
@@ -17,7 +81,7 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
             <div className="tp-supplier-score-ring">
               <div className="tp-supplier-score-inner">
                 <span className="tp-supplier-score-value tp-font-data">
-                  {Math.round((supplier?.reliability_score || 0) * 100)}
+                 {intelligence?.reliability_score || 0}
                 </span>
 
                 <span className="tp-supplier-score-label">
@@ -32,13 +96,13 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
               <div className="tp-supplier-detail-top-row">
 
                 <h1 className="tp-supplier-detail-title">
-                  {supplier?.company_name}
+                  {intelligence?.company_name || supplier?.company_name}
                 </h1>
 
                 <div className="tp-supplier-detail-tags">
 
                   <span className="tp-pill tp-pill-success">
-                    VERIFIED
+                   {intelligence?.verification_status || "UNKNOWN"}
                   </span>
 
                   <span className="tp-pill tp-pill-primary">
@@ -49,9 +113,10 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
               </div>
 
               <p className="tp-supplier-detail-sub">
-                {supplier?.country_name || "Nigeria"} ·{" "}
-                {supplier?.sector || "Agriculture"} · 9 years in business ·
-                1,103 shipments
+          {intelligence?.country_name || "-"} ·{" "}
+{intelligence?.sector || "-"} ·{" "}
+{intelligence?.years_in_business || 0} years in business ·{" "}
+{intelligence?.product_count || 0} products
               </p>
 
             </div>
@@ -84,15 +149,18 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
           <div className="tp-ai-assessment-label">
             • AI SUPPLIER ASSESSMENT
           </div>
+<p className="tp-ai-assessment-text">
+  {intelligence?.company_name} operates in{" "}
+  {intelligence?.country_name} within the{" "}
+  {intelligence?.sector} sector.
 
-          <p className="tp-ai-assessment-text">
-            {supplier?.company_name} has maintained consistent export
-            activity for 9 years with 1,103 logged shipments and no
-            sanctions flags. Verification is complete. Reliability
-            score of{" "}
-            {Math.round((supplier?.reliability_score || 0) * 100)}
-            reflects strong operational consistency.
-          </p>
+  Current reliability score is{" "}
+  {intelligence?.reliability_score || 0}/100 with{" "}
+  {intelligence?.verification_status} verification status.
+
+  Supplier currently handles{" "}
+  {intelligence?.product_count || 0} export product categories.
+</p>
 
           <div className="tp-ai-assessment-footer">
 
@@ -104,13 +172,13 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
               </span>
 
               <span className="tp-ai-risk-value">
-                LOW
+              {intelligence?.sanctions?.sanctions_flag ? "HIGH" : "LOW"}
               </span>
             </div>
 
-            <span className="tp-ai-date">
+            {/* <span className="tp-ai-date">
               Last admin-verified: 01 Mar 2026
-            </span>
+            </span> */}
 
           </div>
         </div>
@@ -130,101 +198,30 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
 
     <div className="tp-verification-list">
 
-      {/* ITEM */}
-      <div className="tp-verification-item">
-        <div className="tp-verification-icon success">
-          ✓
-        </div>
-
-        <div className="tp-verification-content">
-          <h4>Pricing Consistency</h4>
-
-          <p>
-            Within 8% of market benchmark for cocoa exports —
-            no anomalies detected
-          </p>
-        </div>
+  {intelligence?.verification_flags?.map((flag, index) => (
+    <div
+      className="tp-verification-item"
+      key={index}
+    >
+      <div
+        className={`tp-verification-icon ${
+          flag.status === "verified"
+            ? "success"
+            : "warning"
+        }`}
+      >
+        {flag.status === "verified" ? "✓" : "!"}
       </div>
 
-      {/* ITEM */}
-      <div className="tp-verification-item">
-        <div className="tp-verification-icon success">
-          ✓
-        </div>
+      <div className="tp-verification-content">
+        <h4>{flag.title}</h4>
 
-        <div className="tp-verification-content">
-          <h4>Description Consistency</h4>
-
-          <p>
-            Export descriptions match company registry
-            documentation
-          </p>
-        </div>
+        <p>{flag.description}</p>
       </div>
-
-      {/* ITEM */}
-      <div className="tp-verification-item">
-        <div className="tp-verification-icon success">
-          ✓
-        </div>
-
-        <div className="tp-verification-content">
-          <h4>Years in Business</h4>
-
-          <p>
-            9 years trading history — above 5-year minimum threshold
-          </p>
-        </div>
-      </div>
-
-      {/* ITEM */}
-      <div className="tp-verification-item">
-        <div className="tp-verification-icon success">
-          ✓
-        </div>
-
-        <div className="tp-verification-content">
-          <h4>Registration Match</h4>
-
-          <p>
-            RC-428-7733 confirmed against CAC Nigeria registry
-          </p>
-        </div>
-      </div>
-
-      {/* WARNING */}
-      <div className="tp-verification-item">
-        <div className="tp-verification-icon warning">
-          !
-        </div>
-
-        <div className="tp-verification-content">
-          <h4>Certificate Availability</h4>
-
-          <p>
-            NAFDAC cert expires 14 May 2026 (43 days).
-            Renewal in progress per supplier portal.
-          </p>
-        </div>
-      </div>
-
-      {/* ITEM */}
-      <div className="tp-verification-item">
-        <div className="tp-verification-icon success">
-          ✓
-        </div>
-
-        <div className="tp-verification-content">
-          <h4>Shipping Anomalies</h4>
-
-          <p>
-            No unexplained shipment gaps or routing anomalies
-            detected in 12-month window
-          </p>
-        </div>
-      </div>
-
     </div>
+  ))}
+
+</div>
   </div>
 
   {/* RIGHT CARD */}
@@ -236,83 +233,73 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
 
     <div className="tp-score-breakdown-list">
 
-      {/* ROW */}
-      <div className="tp-score-breakdown-item">
+  {[
+    {
+      label: "Verification Completeness",
+      value:
+        intelligence?.reliability_breakdown
+          ?.verificationCompleteness,
+    },
 
-        <div className="tp-score-breakdown-top">
-          <span>Verification Completeness</span>
+    {
+      label: "Activity Level",
+      value:
+        intelligence?.reliability_breakdown
+          ?.activityLevel,
+    },
 
-          <span className="tp-score-value success">
-            72/100
-          </span>
-        </div>
+    {
+      label: "Flag Count Score",
+      value:
+        intelligence?.reliability_breakdown
+          ?.flagCountScore,
+    },
 
-        <div className="tp-score-progress">
-          <div
-            className="tp-score-progress-fill success"
-            style={{ width: "72%" }}
-          />
-        </div>
+    {
+      label: "Supplier Confidence",
+      value:
+        intelligence?.reliability_breakdown
+          ?.supplierConfidence,
+    },
+  ].map((item, index) => (
+    <div
+      className="tp-score-breakdown-item"
+      key={index}
+    >
+      <div className="tp-score-breakdown-top">
+        <span>{item.label}</span>
+
+        <span
+          className={`tp-score-value ${
+            item.value >= 80
+              ? "success"
+              : item.value >= 50
+              ? "warning"
+              : "danger"
+          }`}
+        >
+          {item.value || 0}/100
+        </span>
       </div>
 
-      {/* ROW */}
-      <div className="tp-score-breakdown-item">
-
-        <div className="tp-score-breakdown-top">
-          <span>Shipment History</span>
-
-          <span className="tp-score-value success">
-            94/100
-          </span>
-        </div>
-
-        <div className="tp-score-progress">
-          <div
-            className="tp-score-progress-fill success"
-            style={{ width: "94%" }}
-          />
-        </div>
+      <div className="tp-score-progress">
+        <div
+          className={`tp-score-progress-fill ${
+            item.value >= 80
+              ? "success"
+              : item.value >= 50
+              ? "warning"
+              : "danger"
+          }`}
+          style={{
+            width: `${item.value || 0}%`,
+          }}
+        />
       </div>
-
-      {/* ROW */}
-      <div className="tp-score-breakdown-item">
-
-        <div className="tp-score-breakdown-top">
-          <span>Activity Level</span>
-
-          <span className="tp-score-value success">
-            88/100
-          </span>
-        </div>
-
-        <div className="tp-score-progress">
-          <div
-            className="tp-score-progress-fill success"
-            style={{ width: "88%" }}
-          />
-        </div>
-      </div>
-
-      {/* WARNING */}
-      <div className="tp-score-breakdown-item">
-
-        <div className="tp-score-breakdown-top">
-          <span>Flag Count Score</span>
-
-          <span className="tp-score-value warning">
-            61/100
-          </span>
-        </div>
-
-        <div className="tp-score-progress">
-          <div
-            className="tp-score-progress-fill warning"
-            style={{ width: "61%" }}
-          />
-        </div>
-      </div>
-
     </div>
+  ))}
+
+</div>
   </div>
 </div>
 
@@ -459,29 +446,38 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
       </div>
 
       {/* ROW */}
-      <div className="tp-product-history-row">
+     {exportHistory?.map((item, index) => (
+  <div
+    className="tp-product-history-row"
+    key={index}
+  >
+    <span className="tp-font-data">
+      {item?.hs_code || "-"}
+    </span>
 
-        <span className="tp-font-data">
-          1801
-        </span>
+    <strong>
+      {item?.product || "-"}
+    </strong>
 
-        <strong>
-          Cocoa Beans
-        </strong>
+    <span className="tp-font-data">
+      {item?.estimated_volume_tons || 0} t
+    </span>
 
-        <span className="tp-font-data">
-          1,847 t
-        </span>
+    <span className="tp-font-data">
+      Active
+    </span>
 
-        <span className="tp-font-data">
-          2024–2026
-        </span>
+    <span className="tp-font-data">
+      {item?.price_range || "-"}
+    </span>
+  </div>
+))}
 
-        <span className="tp-font-data">
-          £2,690–£2,847
-        </span>
-
-      </div>
+{exportHistory?.length === 0 && (
+  <div className="tp-product-history-row">
+    <span>No export history found</span>
+  </div>
+)}
 
       {/* ROW */}
       <div className="tp-product-history-row">
@@ -552,7 +548,7 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
         <span>Country</span>
         <span>Export Products</span>
         <span>Certifications</span>
-        <span>NAFDAC Expiry</span>
+       <span>Expiry Status</span>
         <span>Last Shipment</span>
         <span>Avg Lead Time</span>
 
@@ -561,35 +557,35 @@ const SupplierDetailPage = ({ supplier, onBack }) => {
       {/* RIGHT */}
       <div className="tp-key-facts-column value">
 
-        <span className="tp-font-data">
-          RC-428-7733
-        </span>
+  <span className="tp-font-data">
+    {keyFacts?.registration_number || "N/A"}
+  </span>
 
-        <span className="tp-font-data">
-          Nigeria
-        </span>
+  <span className="tp-font-data">
+    {keyFacts?.country || "-"}
+  </span>
 
-        <span className="tp-font-data">
-          Cocoa, Palm Oil, Sesame
-        </span>
+  <span className="tp-font-data">
+    {keyFacts?.export_products?.join(", ") || "-"}
+  </span>
 
-        <span className="tp-font-data">
-          NAFDAC
-        </span>
+  <span className="tp-font-data">
+    {keyFacts?.certifications || "-"}
+  </span>
 
-        <span className="tp-font-data">
-          14 May 2026 (43 days)
-        </span>
+  <span className="tp-font-data">
+    N/A
+  </span>
 
-        <span className="tp-font-data">
-          22 Mar 2026
-        </span>
+  <span className="tp-font-data">
+    {keyFacts?.last_shipment || "-"}
+  </span>
 
-        <span className="tp-font-data">
-          14–18 days
-        </span>
+  <span className="tp-font-data">
+    {keyFacts?.avg_lead_time || "-"}
+  </span>
 
-      </div>
+</div>
 
     </div>
   </div>

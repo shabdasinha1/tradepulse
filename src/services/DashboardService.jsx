@@ -242,6 +242,27 @@ export const DashboardCompanySuppliers = async (params = {}) => {
   });
 };
 
+
+/* ===============================
+   SUPPLIER DETAIL APIs
+================================ */
+
+/* 📄 Supplier Intelligence Profile */
+export const DashboardSupplierIntelligence = async (id) => {
+  return Api.get(`/app/api/company/intelligence/${id}`);
+};
+
+/* 📌 Supplier Key Facts */
+export const DashboardSupplierKeyFacts = async (id) => {
+  return Api.get(`/app/api/company/key-facts/${id}`);
+};
+
+/* 📦 Supplier Export History */
+export const DashboardSupplierExportHistory = async (id) => {
+  return Api.get(`/app/api/company/export-history/${id}`);
+};
+
+
 /* ===============================
    DASHBOARD FEEDBACK
 ================================ */
