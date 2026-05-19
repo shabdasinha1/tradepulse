@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import TPChart from "../../components/common/TPChart";
 
 import {
@@ -7,57 +8,89 @@ import {
   DashboardSupplierExportHistory,
 } from "../../services/DashboardService";
 
+import { queryKeys } from "../../utils/queryKeys";
+
 
 const SupplierDetailPage = ({ supplier, onBack }) => {
 
   const supplierId = supplier?.id;
 
-const [supplierIntelligence, setSupplierIntelligence] = useState(null);
-const [supplierKeyFacts, setSupplierKeyFacts] = useState(null);
-const [supplierExportHistory, setSupplierExportHistory] = useState([]);
-const [loading, setLoading] = useState(false);
 
-useEffect(() => {
-  if (!supplierId) return;
+/* ===============================
+   SUPPLIER INTELLIGENCE
+================================ */
 
-  const fetchSupplierIntelligence = async () => {
-    try {
-      setLoading(true);
-const [
-  intelligenceRes,
-  keyFactsRes,
-  exportHistoryRes,
-] = await Promise.all([
-  DashboardSupplierIntelligence(supplierId),
-  DashboardSupplierKeyFacts(supplierId),
-  DashboardSupplierExportHistory(supplierId),
-]);
+const {
+  data: supplierIntelligence,
+  isLoading: intelligenceLoading,
+} = useQuery({
+  queryKey: queryKeys.supplierIntelligence(
+    supplierId,
+  ),
 
-setSupplierIntelligence(
-  intelligenceRes?.data|| null
-);
+  queryFn: async () => {
+    const res =
+      await DashboardSupplierIntelligence(
+        supplierId,
+      );
 
-setSupplierKeyFacts(
-  keyFactsRes?.data || null
-);
-setSupplierExportHistory(
-  exportHistoryRes?.data|| []
-);
-    } catch (err) {
-      console.error("Supplier intelligence error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return res?.data || null;
+  },
 
-  fetchSupplierIntelligence();
-}, [supplierId]);
+  enabled: !!supplierId,
+});
+
+/* ===============================
+   SUPPLIER KEY FACTS
+================================ */
+
+const {
+  data: supplierKeyFacts,
+} = useQuery({
+  queryKey: queryKeys.supplierKeyFacts(
+    supplierId,
+  ),
+
+  queryFn: async () => {
+    const res =
+      await DashboardSupplierKeyFacts(
+        supplierId,
+      );
+
+    return res?.data || null;
+  },
+
+  enabled: !!supplierId,
+});
+
+/* ===============================
+   SUPPLIER EXPORT HISTORY
+================================ */
+
+const {
+  data: supplierExportHistory,
+} = useQuery({
+  queryKey: queryKeys.supplierExportHistory(
+    supplierId,
+  ),
+
+  queryFn: async () => {
+    const res =
+      await DashboardSupplierExportHistory(
+        supplierId,
+      );
+
+    return res?.data || [];
+  },
+
+  enabled: !!supplierId,
+});
 
 const intelligence = supplierIntelligence;
 const keyFacts = supplierKeyFacts;
 const exportHistory = supplierExportHistory;
 
-if (loading) {
+if (intelligenceLoading) {
   return (
     <div className="tp-section">
       <div className="tp-dashboard-container">

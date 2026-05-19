@@ -244,13 +244,37 @@ const DashboardProduct = () => {
     [isFetchingNextPage, hasNextPage, fetchNextPage],
   );
 
-  const products = useMemo(() => {
-    const rawProducts = productPages?.pages?.flat() || [];
+ const products = useMemo(() => {
+  const rawProducts = productPages?.pages?.flat() || [];
 
-    return rawProducts.filter(
-      (item) => item?.categoryHs2 && item?.productCategory, // both must exist
-    );
-  }, [productPages]);
+  // first filter valid records
+  const validProducts = rawProducts.filter(
+    (item) => item?.categoryHs2 && item?.productCategory,
+  );
+
+  // keep only latest record for each product category
+  const latestProductsMap = {};
+
+  validProducts.forEach((item) => {
+    const key = item.productCategory;
+
+    if (!latestProductsMap[key]) {
+      latestProductsMap[key] = item;
+    } else {
+      const existingDate = new Date(
+        latestProductsMap[key].latestDataDate,
+      );
+
+      const currentDate = new Date(item.latestDataDate);
+
+      if (currentDate > existingDate) {
+        latestProductsMap[key] = item;
+      }
+    }
+  });
+
+  return Object.values(latestProductsMap);
+}, [productPages]);
 
   /* ===============================
      PRODUCT ROWS

@@ -35,6 +35,21 @@ companySuppliers: ({
   partnerCountryCode,
   productId,
 ],
+
+supplierIntelligence: (supplierId) => [
+  "supplierIntelligence",
+  supplierId,
+],
+
+supplierKeyFacts: (supplierId) => [
+  "supplierKeyFacts",
+  supplierId,
+],
+
+supplierExportHistory: (supplierId) => [
+  "supplierExportHistory",
+  supplierId,
+],
   feedback: (page, limit) => ["feedback", page, limit],
 
   marginImpact: (budget, baseCurrency, quoteCurrency) => [
@@ -91,6 +106,14 @@ productImportDemandTrend: (
   reporter,
   partner,
   product,
+],
+productSuppliers: (
+  partnerCode,
+  hsCode,
+) => [
+  "product-suppliers",
+  partnerCode,
+  hsCode,
 ],
 
   importDemandTrend: (reporter, partner, product, startDate, endDate) => [

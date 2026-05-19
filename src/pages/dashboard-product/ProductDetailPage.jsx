@@ -7,6 +7,7 @@ import TPChart from "../../components/common/TPChart";
 import {
   DashboardExportPriceTrend,
   DashboardImportDemandTrend,
+  DashboardCompanySuppliers
 } from "../../services/DashboardService";
 
 import { queryKeys } from "../../utils/queryKeys";
@@ -18,6 +19,9 @@ const ProductDetailPage = ({ product, onBack }) => {
   partnerCode,
   corridor,
   currencySymbol,
+  partnerCountryCode,
+  partnerRegion
+
 } = useSelector(
   (state) => state.corridor,
   shallowEqual,
@@ -99,6 +103,32 @@ const demandTrendChartData =
     month: item?.date,
     demand: Number(item?.demand || 0),
   })) || [];
+
+  const {
+  data: supplierData,
+  isLoading: supplierLoading,
+} = useQuery({
+  queryKey: queryKeys.productSuppliers(
+    partnerCode,
+    selectedHsCode,
+  ),
+
+  queryFn: () =>
+    DashboardCompanySuppliers({
+      page: 1,
+      limit: 20,
+      country:  partnerCountryCode,
+      hsCode: selectedHsCode,
+      region: partnerRegion,
+    }),
+
+  enabled: !!selectedHsCode && !!partnerCode,
+});
+
+const suppliers =
+  supplierData?.suppliers ||
+  supplierData?.data?.suppliers ||
+  [];
 
   return (
     <section className="tp-section">
@@ -551,7 +581,7 @@ const demandTrendChartData =
     RELATED NEWS
 ========================================= */}
 
-<div className="tp-product-news-section">
+{/* <div className="tp-product-news-section">
 
   <div className="tp-product-section-label">
     • RELATED NEWS
@@ -559,7 +589,7 @@ const demandTrendChartData =
 
   <div className="tp-product-news-list">
 
-    {/* NEWS CARD */}
+   
     <div className="tp-product-news-card">
 
       <div className="tp-product-news-content">
@@ -581,7 +611,7 @@ const demandTrendChartData =
 
     </div>
 
-    {/* NEWS CARD */}
+    
     <div className="tp-product-news-card">
 
       <div className="tp-product-news-content">
@@ -603,7 +633,7 @@ const demandTrendChartData =
 
     </div>
 
-    {/* NEWS CARD */}
+   
     <div className="tp-product-news-card">
 
       <div className="tp-product-news-content">
@@ -626,7 +656,7 @@ const demandTrendChartData =
     </div>
 
   </div>
-</div>
+</div> */}
 
 {/* =========================================
     RELATED SUPPLIERS
@@ -640,44 +670,45 @@ const demandTrendChartData =
 
   <div className="tp-product-related-supplier-list">
 
-    {/* SUPPLIER */}
-    <div className="tp-product-related-supplier-card">
+ {supplierLoading ? (
+  <div className="tp-product-related-supplier-card">
+    Loading suppliers...
+  </div>
+) : suppliers?.length > 0 ? (
+  suppliers.map((supplier) => {
+    const reliabilityScore = Math.round(
+      Number(supplier?.reliability_score || 0) * 100,
+    );
 
-      <div className="tp-product-related-score success">
-        82
+    return (
+      <div
+        key={supplier?.id}
+        className="tp-product-related-supplier-card"
+      >
+        <div
+          className={`tp-product-related-score ${
+            reliabilityScore >= 80
+              ? "success"
+              : reliabilityScore >= 60
+              ? "warning"
+              : "danger"
+          }`}
+        >
+          {reliabilityScore}
+        </div>
+
+        <span>
+          {supplier?.company_name} ·{" "}
+          {supplier?.country_name}
+        </span>
       </div>
-
-      <span>
-        Adunola Farms Ltd · Nigeria
-      </span>
-
-    </div>
-
-    {/* SUPPLIER */}
-    <div className="tp-product-related-supplier-card">
-
-      <div className="tp-product-related-score success">
-        91
-      </div>
-
-      <span>
-        Ghana Cocoa Board Export · Ghana
-      </span>
-
-    </div>
-
-    {/* SUPPLIER */}
-    <div className="tp-product-related-supplier-card">
-
-      <div className="tp-product-related-score warning">
-        67
-      </div>
-
-      <span>
-        Senegal Groundnut Co. · Senegal
-      </span>
-
-    </div>
+    );
+  })
+) : (
+  <div className="tp-product-related-supplier-card">
+    No suppliers found
+  </div>
+)}
 
   </div>
 </div>
