@@ -254,12 +254,19 @@ const alertTypeOptions = [
       onChange && onChange(filters);
     }, 300);
   };
+const handleOverlayClick = (e) => {
+  // ✅ Ignore react-select portal clicks
+  if (
+    e.target.closest(".tp-select__menu") ||
+    e.target.closest(".tp-select__option")
+  ) {
+    return;
+  }
 
-  const handleOverlayClick = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
-      handleClose();
-    }
-  };
+  if (modalRef.current && !modalRef.current.contains(e.target)) {
+    handleClose();
+  }
+};
 
   /* ===============================
      LOCK BODY SCROLL
@@ -322,6 +329,14 @@ const alertTypeOptions = [
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -363,6 +378,14 @@ const alertTypeOptions = [
                 <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -406,6 +429,14 @@ const alertTypeOptions = [
                 <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -452,6 +483,14 @@ const alertTypeOptions = [
                 <AsyncCreatableSelect
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -500,6 +539,14 @@ const alertTypeOptions = [
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -561,6 +608,14 @@ const alertTypeOptions = [
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -584,6 +639,14 @@ const alertTypeOptions = [
                 <Select
                   className="tp-select tp-filter-control"
                   classNamePrefix="tp-select"
+                  menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
@@ -607,6 +670,14 @@ const alertTypeOptions = [
     <Select
       className="tp-select tp-filter-control"
       classNamePrefix="tp-select"
+      menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
       components={{
         DropdownIndicator: () => null,
         IndicatorSeparator: () => null,
@@ -628,6 +699,14 @@ const alertTypeOptions = [
     <Select
       className="tp-select tp-filter-control"
       classNamePrefix="tp-select"
+      menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
       components={{
         DropdownIndicator: () => null,
         IndicatorSeparator: () => null,

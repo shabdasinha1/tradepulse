@@ -326,8 +326,16 @@ function GlobalFilterPanel({
     setTimeout(() => onClose(), 300);
   };
 
-  const handleOverlayClick = (e) => {
-    if (modalRef.current && !modalRef.current.contains(e.target)) {
+ const handleOverlayClick = (e) => {
+  // ✅ Ignore react-select portal clicks
+  if (
+    e.target.closest(".tp-select__menu") ||
+    e.target.closest(".tp-select__option")
+  ) {
+    return;
+  }
+
+  if (modalRef.current && !modalRef.current.contains(e.target)) {
       if (!localRegion || !localCountry || !localCorridor) {
         // alert("Please complete required filters");
         addToast("Please complete required filters", "error");
@@ -505,6 +513,14 @@ function GlobalFilterPanel({
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
+              menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -552,6 +568,14 @@ function GlobalFilterPanel({
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
+              menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
               isLoading={isFetching}
               loadingMessage={() => "Loading countries..."}
               noOptionsMessage={() =>
@@ -615,6 +639,14 @@ function GlobalFilterPanel({
             <Select
               className="tp-select"
               classNamePrefix="tp-select"
+              menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
@@ -670,6 +702,14 @@ if (opt?.partnerRegion) {
             <AsyncCreatableSelect
               className="tp-select"
               classNamePrefix="tp-select"
+              menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
               components={{
                 DropdownIndicator: () => null,
                 IndicatorSeparator: () => null,
