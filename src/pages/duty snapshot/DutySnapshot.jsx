@@ -1,10 +1,13 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useSelector, shallowEqual } from "react-redux";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery,useQuery } from "@tanstack/react-query";
 import { FiSliders } from "react-icons/fi";
 import { CiFilter } from "react-icons/ci";
 
-import { DutySnapshotData } from "../../services/DashboardService";
+import {
+  DutySnapshotData,
+  DutyRateGraph,
+} from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
@@ -144,6 +147,47 @@ const DutySnapshot = () => {
   }, [pages]);
 
   /* ===============================
+   DUTY GRAPH QUERY
+================================ */
+
+const { data: dutyGraphData } = useQuery({
+  queryKey: [
+    "dutyRateGraph",
+    reporterCode,
+    filters.startDate,
+    filters.endDate,
+  ],
+
+  queryFn: async () => {
+    try {
+      const res = await DutyRateGraph({
+        reporterCode,
+        periodType: "custom",
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      });
+
+      return res?.data || {};
+    } catch (err) {
+      console.error(err);
+      return {};
+    }
+  },
+
+  enabled: !!reporterCode,
+});
+
+/* ===============================
+   DUTY GRAPH DATA
+================================ */
+
+const dutyTrendData = useMemo(() => {
+  return (dutyGraphData?.history || []).map((item) => ({
+    period: item.period,
+    duty: item.avgDuty,
+  }));
+}, [dutyGraphData]);
+  /* ===============================
      ROW RENDER
   =============================== */
   const tableRows = useMemo(() => {
@@ -232,62 +276,36 @@ const DutySnapshot = () => {
 
   <div className="tp-duty-trend-card">
 
-    {/* TOP */}
-    <div className="tp-duty-trend-top">
-
-      <div>
-
-        <div className="tp-duty-trend-title">
-          UK Tariff Rates — Agricultural Imports
-        </div>
-
-        <div className="tp-duty-trend-subtitle">
-          HS01–24 · Average tariff % by year
-        </div>
-
-      </div>
-
-      <div className="tp-duty-trend-filter-group">
-
-        <button className="tp-duty-trend-filter">
-          3yr
-        </button>
-
-        <button className="tp-duty-trend-filter active">
-          5yr
-        </button>
-
-        <button className="tp-duty-trend-filter">
-          10yr
-        </button>
-
-      </div>
-
-    </div>
-
+ 
     {/* CHART */}
     <div className="tp-duty-chart-main">
 
       <TPChart
-        title=""
-        type="bar"
-        xKey="year"
-        data={[
-          { year: "2020", duty: 1.2 },
-          { year: "2021", duty: 1.4 },
-          { year: "2022", duty: 1.3 },
-          { year: "2023", duty: 1.6 },
-          { year: "2024", duty: 1.5 },
-          { year: "2025", duty: 1.8 },
-          { year: "2026", duty: 6.2 },
-        ]}
-        series={[
-          {
-            key: "duty",
-            label: "Avg Duty %",
-          },
-        ]}
-      />
+  title="Duty Rate Trend"
+  type="bar"
+  xKey="period"
+  data={dutyTrendData}
+  filterConfig={{
+    showProduct: false,
+    showTimeRange: true,
+  }}
+  activeFilters={{
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  }}
+  onFilterChange={(values) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...values,
+    }));
+  }}
+  series={[
+    {
+      key: "duty",
+      label: "Avg Duty %",
+    },
+  ]}
+/>
 
     </div>
 
@@ -301,7 +319,7 @@ const DutySnapshot = () => {
         </span>
 
         <span className="tp-duty-stat-value">
-          6.2%
+        {dutyGraphData?.currentAvgDuty || 0}%
         </span>
 
       </div>
@@ -313,7 +331,7 @@ const DutySnapshot = () => {
         </span>
 
         <span className="tp-duty-stat-value tp-text-up">
-          +2.8%
+        {dutyGraphData?.yoyChange || "-"}
         </span>
 
       </div>
@@ -325,7 +343,7 @@ const DutySnapshot = () => {
         </span>
 
         <span className="tp-duty-stat-value">
-          Moderate
+         {dutyGraphData?.riskOutlook || "-"}
         </span>
 
       </div>

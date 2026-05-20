@@ -458,6 +458,17 @@ export const DutySnapshotData = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+
+/* ===============================
+   DUTY RATE GRAPH
+================================ */
+
+export const DutyRateGraph = async (params = {}) => {
+  return Api.get("/app/api/duty/tariff-rate-graph", {
+    params: cleanParams(params),
+  });
+};
+
 /* ===============================
    TRADE HISTORY
 ================================ */

@@ -214,9 +214,14 @@
 }
 
 .tp-duty-chart-main .tp-chart-header {
-  display: none;
-}
+  display: flex;
 
+  align-items: center;
+
+  justify-content: space-between;
+
+  margin-bottom: var(--space-md);
+}
 .tp-duty-chart-main .tp-chart-wrapper {
   height: clamp(320px, 36vw, 440px);
 }

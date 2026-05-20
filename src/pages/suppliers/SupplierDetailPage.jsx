@@ -340,7 +340,7 @@ if (intelligenceLoading) {
     HISTORICAL SHIPMENT TREND
 ========================================= */}
 
-<div className="tp-shipment-trend-section">
+{/* <div className="tp-shipment-trend-section">
 
   <div className="tp-supplier-analysis-label">
     • HISTORICAL SHIPMENT TREND
@@ -348,7 +348,7 @@ if (intelligenceLoading) {
 
   <div className="tp-shipment-trend-card">
 
-    {/* TOP */}
+   
     <div className="tp-shipment-trend-top">
 
       <div>
@@ -369,7 +369,7 @@ if (intelligenceLoading) {
 
     </div>
 
-    {/* CHART */}
+    
     <div className="tp-shipment-chart-main">
 
       <TPChart
@@ -407,7 +407,7 @@ if (intelligenceLoading) {
 
     </div>
 
-    {/* FOOTER */}
+
     <div className="tp-shipment-trend-footer">
 
       <div className="tp-shipment-stat">
@@ -450,7 +450,7 @@ if (intelligenceLoading) {
 
   </div>
 
-</div>
+</div> */}
 
 {/* =========================================
     PRODUCT EXPORT HISTORY
