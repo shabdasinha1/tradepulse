@@ -7,7 +7,8 @@ import TPChart from "../../components/common/TPChart";
 import {
   DashboardExportPriceTrend,
   DashboardImportDemandTrend,
-  DashboardCompanySuppliers
+  DashboardCompanySuppliers,
+  DashboardSuppliers
 } from "../../services/DashboardService";
 
 import { queryKeys } from "../../utils/queryKeys";
@@ -20,7 +21,8 @@ const ProductDetailPage = ({ product, onBack }) => {
   corridor,
   currencySymbol,
   partnerCountryCode,
-  partnerRegion
+  partnerRegion,
+  region
 
 } = useSelector(
   (state) => state.corridor,
@@ -129,6 +131,38 @@ const suppliers =
   supplierData?.suppliers ||
   supplierData?.data?.suppliers ||
   [];
+
+  const {
+  data: topSupplyingCountriesData,
+  isLoading: topSupplyingCountriesLoading,
+} = useQuery({
+  queryKey: queryKeys.topSupplyingCountries(
+    reporterCode,
+    partnerCode,
+    selectedHsCode,
+    "EXPORT",
+    region,
+  ),
+
+  queryFn: () =>
+    DashboardSuppliers({
+      page: 1,
+      limit: 10,
+      tradeFlow: "EXPORT",
+      originRegion: region,
+      partnerCode,
+      hsCode: selectedHsCode,
+      reporterCode,
+    }),
+
+  enabled:
+    !!selectedHsCode &&
+    !!partnerCode &&
+    !!reporterCode,
+});
+
+const topSupplyingCountries =
+  topSupplyingCountriesData?.data?.suppliers || [];
 
   return (
     <section className="tp-section">
@@ -504,74 +538,67 @@ const suppliers =
 
       </div>
 
-      {/* ROW */}
-      <div className="tp-product-country-row">
+      {topSupplyingCountriesLoading ? (
+  <div className="tp-product-country-row">
+    <span>Loading...</span>
+  </div>
+) : topSupplyingCountries?.length > 0 ? (
+  topSupplyingCountries.map((country, index) => (
+    <div
+      key={`${country?.name}-${index}`}
+      className="tp-product-country-row"
+    >
+      <strong>
+        {country?.name || "N/A"}
+      </strong>
 
-        <strong>Nigeria</strong>
+      <span className="tp-font-data">
+        {Number(country?.totalTrade || 0).toLocaleString()}
+      </span>
 
-        <span className="tp-font-data">
-          1,847 t
-        </span>
+      <span className="tp-font-data">
+        {currency}
+        {Number(country?.avgPrice || 0).toLocaleString()} / t
+      </span>
 
-        <span className="tp-font-data">
-          £2,847 / t
-        </span>
+      <span
+        className={`tp-product-country-trend ${
+          Number(
+            String(country?.trend || "0")
+              .replace("%", "")
+              .replace("+", ""),
+          ) >= 0
+            ? "positive"
+            : "warning"
+        }`}
+      >
+        {Number(
+          String(country?.trend || "0")
+            .replace("%", ""),
+        ) >= 0
+          ? "↑"
+          : "↓"}{" "}
+        {country?.trend || "0%"}
+      </span>
 
-        <span className="tp-product-country-trend positive">
-          ↑ +18.3%
-        </span>
-
-        <span className="tp-product-country-pill high">
-          HIGH
-        </span>
-
-      </div>
-
-      {/* ROW */}
-      <div className="tp-product-country-row">
-
-        <strong>Ghana</strong>
-
-        <span className="tp-font-data">
-          920 t
-        </span>
-
-        <span className="tp-font-data">
-          £2,810 / t
-        </span>
-
-        <span className="tp-product-country-trend positive">
-          ↑ +14.1%
-        </span>
-
-        <span className="tp-product-country-pill high">
-          HIGH
-        </span>
-
-      </div>
-
-      {/* ROW */}
-      <div className="tp-product-country-row">
-
-        <strong>Ivory Coast</strong>
-
-        <span className="tp-font-data">
-          640 t
-        </span>
-
-        <span className="tp-font-data">
-          £2,790 / t
-        </span>
-
-        <span className="tp-product-country-trend warning">
-          ↑ +7.2%
-        </span>
-
-        <span className="tp-product-country-pill medium">
-          MEDIUM
-        </span>
-
-      </div>
+      <span
+        className={`tp-product-country-pill ${
+          country?.reliability === "HIGH"
+            ? "high"
+            : country?.reliability === "MEDIUM"
+            ? "medium"
+            : "low"
+        }`}
+      >
+        {country?.reliability || "LOW"}
+      </span>
+    </div>
+  ))
+) : (
+  <div className="tp-product-country-row">
+    <span>No supplying countries found</span>
+  </div>
+)}
 
     </div>
   </div>

@@ -25,7 +25,11 @@ const TPChart = ({
   xKey = "month",
   series = [],
   onFilterChange,
-  activeFilters
+  activeFilters,
+  filterConfig = {
+    showProduct: true,
+    showTimeRange: true,
+  },
 }) => {
   const { currencySymbol } = useSelector((state) => state.corridor);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -222,7 +226,11 @@ left: parseInt(styles.getPropertyValue("--chart-margin-left")),
       <TradePulseCard
         header={
           <div className="tp-chart-header tp-chart-filter-header">
-            <h4 className="tp-section-title">{title}</h4>
+           {title ? (
+  <h4 className="tp-section-title">{title}</h4>
+) : (
+  <div />
+)}
             <button
               className="tp-btn-outline tp-overview-filter-btn tp-margin-bottom"
               onClick={() => setFilterOpen(true)}
@@ -242,15 +250,14 @@ left: parseInt(styles.getPropertyValue("--chart-margin-left")),
       </TradePulseCard>
       {filterOpen && (
         <UniversalFilter
-      
-          showProduct
-          showTimeRange
-          defaultValues={{
-            partnerCode: activeFilters?.partnerCode || "",
-            product: activeFilters?.product || "",
-            startDate: activeFilters?.startDate || "",
-            endDate: activeFilters?.endDate || "",
-          }}
+  showProduct={filterConfig.showProduct}
+  showTimeRange={filterConfig.showTimeRange}
+  defaultValues={{
+    partnerCode: activeFilters?.partnerCode || "",
+    product: activeFilters?.product || "",
+    startDate: activeFilters?.startDate || "",
+    endDate: activeFilters?.endDate || "",
+  }}
           onChange={(filters) => {
             onFilterChange?.(filters); // send filters to parent
             setFilterOpen(false); // close modal

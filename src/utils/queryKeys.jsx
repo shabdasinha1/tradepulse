@@ -115,6 +115,20 @@ productSuppliers: (
   partnerCode,
   hsCode,
 ],
+topSupplyingCountries: (
+  reporterCode,
+  partnerCode,
+  hsCode,
+  tradeFlow,
+  originRegion,
+) => [
+  "topSupplyingCountries",
+  reporterCode,
+  partnerCode,
+  hsCode,
+  tradeFlow,
+  originRegion,
+],
 
   importDemandTrend: (reporter, partner, product, startDate, endDate) => [
     "importDemandTrend",

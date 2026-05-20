@@ -1,9 +1,12 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useSelector, shallowEqual } from "react-redux";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { FiSliders } from "react-icons/fi";
 
-import { ShippingHistoryData } from "../../services/DashboardService";
+import {
+  ShippingHistoryData,
+  ShippingRateGraph,
+} from "../../services/DashboardService";
 import { GetApiErrorMessage } from "../../utils/ErrorHandler";
 
 import GlobalFilterPanel from "../../components/global/GlobalFilterPanel";
@@ -184,6 +187,54 @@ const ShippingHistory = () => {
     });
   }, [rows, lastRowRef, currencySymbol, convert,isFxReady]);
 
+
+  /* ===============================
+   SHIPPING GRAPH QUERY
+================================ */
+
+const { data: shippingGraphData } = useQuery({
+  queryKey: [
+    "shippingRateGraph",
+    reporterCode,
+    filters.partnerCode,
+    filters.startDate,
+    filters.endDate,
+  ],
+
+  queryFn: async () => {
+    try {
+      const res = await ShippingRateGraph({
+        reporterCode,
+        partnerCode: filters.partnerCode,
+        periodType: "custom",
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      });
+
+      return res?.data?.history || [];
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  },
+
+  enabled:
+    !!reporterCode &&
+    !!filters.partnerCode 
+});
+
+/* ===============================
+   GRAPH DATA
+================================ */
+
+const shippingTrendData = useMemo(() => {
+  return (shippingGraphData || []).map((item) => ({
+    period: item.period,
+    rate: item.rate,
+    shipmentCount: item.shipmentCount,
+  }));
+}, [shippingGraphData]);
+
   /* ===============================
      UI
   =============================== */
@@ -236,66 +287,37 @@ const ShippingHistory = () => {
 
   <div className="tp-freight-trend-card">
 
-    {/* TOP */}
-    <div className="tp-freight-trend-top">
-
-      <div>
-
-        <div className="tp-freight-trend-title">
-          West Africa → UK · Spot Rate
-        </div>
-
-        <div className="tp-freight-trend-subtitle">
-          Freightos Baltic Index · $ / TEU
-        </div>
-
-      </div>
-
-      <div className="tp-freight-trend-filter-group">
-
-        <button className="tp-freight-trend-filter">
-          1yr
-        </button>
-
-        <button className="tp-freight-trend-filter active">
-          3yr
-        </button>
-
-        <button className="tp-freight-trend-filter">
-          5yr
-        </button>
-
-      </div>
-
-    </div>
+  
 
     {/* CHART */}
     <div className="tp-freight-chart-main">
 
-      <TPChart
-        title=""
-        type="line"
-        xKey="period"
-        data={[
-          { period: "Apr '23", rate: 980 },
-          { period: "Jul '23", rate: 1180 },
-          { period: "Oct '23", rate: 3120 },
-          { period: "Jan '24", rate: 2780 },
-          { period: "Apr '24", rate: 2440 },
-          { period: "Jul '24", rate: 2180 },
-          { period: "Oct '24", rate: 2360 },
-          { period: "Jan '25", rate: 2580 },
-          { period: "Apr '25", rate: 2720 },
-          { period: "Jul '25", rate: 3090 },
-          { period: "Oct '25", rate: 3240 },
-        ]}
-        series={[
-          {
-            key: "rate",
-            label: "Freight Rate",
-          },
-        ]}
-      />
+     <TPChart
+ title="Freight Rate Trend"
+  type="line"
+  xKey="period"
+  data={shippingTrendData}
+  filterConfig={{
+    showProduct: false,
+    showTimeRange: true,
+  }}
+  activeFilters={{
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  }}
+  onFilterChange={(values) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...values,
+    }));
+  }}
+  series={[
+    {
+      key: "rate",
+      label: "Freight Rate",
+    },
+  ]}
+/>
 
     </div>
 

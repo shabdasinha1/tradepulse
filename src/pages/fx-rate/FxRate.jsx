@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import TradePulseCard from "../../components/common/TradePulseCard.jsx";
 import { FiSliders } from "react-icons/fi";
 import { CiFilter } from "react-icons/ci";
@@ -8,7 +8,10 @@ import GlobalFilterPanel from "../../components/global/GlobalFilterPanel.jsx";
 import PageDisclaimer from "../../components/common/PageDisclaimer.jsx";
 import EmptyState from "../../components/common/EmptyState";
 import UniversalFilter from "../../components/common/UniversalFilter";
-import { FXRatesData } from "../../services/DashboardService.jsx";
+import {
+  FXRatesData,
+  FXGraph,
+} from "../../services/DashboardService.jsx";
 import { queryKeys } from "../../utils/queryKeys";
 import useUniversalFilters from "../../hooks/useUniversalFilters";
 import TPChart from "../../components/common/TPChart.jsx";
@@ -87,6 +90,52 @@ const FXRates = () => {
     Array.isArray(p?.data) ? p.data : []
   );
 }, [data]);
+
+/* ===============================
+   FX GRAPH QUERY
+================================ */
+
+const { data: fxGraphData } = useQuery({
+  queryKey: [
+    "fxGraph",
+    reporterCode,
+    filters.partnerCode,
+    filters.startDate,
+    filters.endDate,
+  ],
+
+  queryFn: async () => {
+    try {
+      const res = await FXGraph({
+        reporterCode,
+        partnerCode: filters.partnerCode,
+        periodType: "custom",
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      });
+
+      return res?.data || {};
+    } catch (err) {
+      console.error(err);
+      return {};
+    }
+  },
+
+  enabled:
+    !!reporterCode &&
+    !!filters.partnerCode,
+});
+/* ===============================
+   FX GRAPH DATA
+================================ */
+
+const fxTrendData = useMemo(() => {
+  return (fxGraphData?.history || []).map((item) => ({
+    period: item.period,
+    rate: item.rate,
+  }));
+}, [fxGraphData]);
+
   /* ===============================
      INFINITE SCROLL
   =============================== */
@@ -196,58 +245,30 @@ const FXRates = () => {
 
   <div className="tp-fx-trend-card">
 
-    {/* TOP */}
-    <div className="tp-fx-trend-top">
 
-      <div>
-
-        <div className="tp-fx-trend-title">
-          GBP/NGN Exchange Rate — Historical
-        </div>
-
-        <div className="tp-fx-trend-subtitle">
-          NGN per £1 · Corridor FX intelligence
-        </div>
-
-      </div>
-
-      <div className="tp-fx-trend-filter-group">
-
-        <button className="tp-fx-trend-filter">
-          1yr
-        </button>
-
-        <button className="tp-fx-trend-filter">
-          3yr
-        </button>
-
-        <button className="tp-fx-trend-filter active">
-          5yr
-        </button>
-
-        <button className="tp-fx-trend-filter">
-          10yr
-        </button>
-
-      </div>
-
-    </div>
 
     {/* CHART */}
     <div className="tp-fx-chart-main">
 
       <TPChart
-        title=""
-        type="line"
-        xKey="year"
-        data={[
-          { year: "2021", rate: 420 },
-          { year: "2022", rate: 610 },
-          { year: "2023", rate: 910 },
-          { year: "2024", rate: 1420 },
-          { year: "2025", rate: 1780 },
-          { year: "2026", rate: 1982 },
-        ]}
+  title="FX Rate Trend"
+  type="line"
+  xKey="period"
+  data={fxTrendData}
+  filterConfig={{
+    showProduct: false,
+    showTimeRange: true,
+  }}
+  activeFilters={{
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+  }}
+  onFilterChange={(values) => {
+    setFilters((prev) => ({
+      ...prev,
+      ...values,
+    }));
+  }}
         series={[
           {
             key: "rate",
@@ -268,7 +289,7 @@ const FXRates = () => {
         </span>
 
         <span className="tp-fx-stat-value">
-          1,982 NGN/£
+         {fxGraphData?.currentRate || 0} NGN/£
         </span>
 
       </div>
@@ -280,7 +301,7 @@ const FXRates = () => {
         </span>
 
         <span className="tp-fx-stat-value tp-text-down">
-          High
+        {fxGraphData?.volatility || "-"}
         </span>
 
       </div>
@@ -292,7 +313,7 @@ const FXRates = () => {
         </span>
 
         <span className="tp-fx-stat-value tp-text-down">
-          +372%
+         {fxGraphData?.change || "-"}
         </span>
 
       </div>

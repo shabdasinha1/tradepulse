@@ -420,6 +420,17 @@ export const FXRatesData = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+
+/* ===============================
+   FX GRAPH
+================================ */
+
+export const FXGraph = async (params = {}) => {
+  return Api.get("/app/api/exchange/graph", {
+    params: cleanParams(params),
+  });
+};
+
 /* ===============================
    SHIPPING HISTORY
 ================================ */
@@ -428,6 +439,17 @@ export const ShippingHistoryData = async (params = {}) => {
     params: cleanParams(params),
   });
 };
+
+/* ===============================
+   SHIPPING RATE GRAPH
+================================ */
+
+export const ShippingRateGraph = async (params = {}) => {
+  return Api.get("/app/api/shipping/shipping-rate-graph", {
+    params: cleanParams(params),
+  });
+};
+
 /* ===============================
    DUTY SNAPSHOT
 ================================ */
