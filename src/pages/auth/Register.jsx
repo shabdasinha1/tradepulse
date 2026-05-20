@@ -154,7 +154,7 @@ const Register = () => {
                     value={form.first_name}
                     onChange={handleChange}
                     className="tp-input"
-                    placeholder="John"
+                    placeholder="Enter First Name"
                   />
                 </div>
 
@@ -167,7 +167,7 @@ const Register = () => {
                     value={form.last_name}
                     onChange={handleChange}
                     className="tp-input"
-                    placeholder="Doe"
+                    placeholder="Enter Last Name"
                   />
                 </div>
 
@@ -180,7 +180,7 @@ const Register = () => {
                     value={form.email}
                     onChange={handleChange}
                     className="tp-input"
-                    placeholder="you@example.com"
+                    placeholder="Enter Email"
                   />
                 </div>
 
@@ -192,7 +192,15 @@ const Register = () => {
                   <label>Country Code</label>
                   <Select
                     classNamePrefix="tp-input"
-                    placeholder="Select country code"
+                    menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
+                    placeholder="Select Country Code"
                     options={countriesList.map((c) => ({
                       label: `${c.value} ${c.dialCode}`, // 🔥 ISO + Dial Code
                       value: c.value,
@@ -234,7 +242,7 @@ const Register = () => {
                     value={form.mobile}
                     onChange={handleChange}
                     className="tp-input"
-                    placeholder="9876543210"
+                    placeholder="Enter Mobile Number"
                   />
                 </div>
 
@@ -247,7 +255,7 @@ const Register = () => {
                     value={form.company_name}
                     onChange={handleChange}
                     className="tp-input"
-                    placeholder="Your Company"
+                    placeholder="Enter Company Name"
                   />
                 </div>
 
@@ -256,6 +264,14 @@ const Register = () => {
                   <label>Business Type</label>
                   <Select
                     classNamePrefix="tp-input"
+                    menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                     name="business_type"
                     options={businessTypeOptions}
                     value={
@@ -281,6 +297,14 @@ const Register = () => {
                   <label>Country</label>
                   <Select
                     classNamePrefix="tp-input"
+                    menuPortalTarget={document.body}
+menuPosition="fixed"
+styles={{
+  menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+  }),
+}}
                     options={countriesList}
                     getOptionLabel={(option) => option.label} // 🔥 full country name
                     getOptionValue={(option) => option.value} // ISO

@@ -40,15 +40,15 @@ const localTradeManagement = lazy(
 
 
 export const DASHBOARD_ROUTES = [
-  {
-    label: " New Corridor Intelligence",
-    path: "/new-overview",
-    component: NewOverview,
-  },
+  // {
+  //   label: " New Corridor Intelligence",
+  //   path: "/new-overview",
+  //   component: NewOverview,
+  // },
   {
     label: " Corridor Intelligence",
     path: "/overview",
-    component: Overview,
+    component: NewOverview,
   },
   {
     label: "Product Intelligence",

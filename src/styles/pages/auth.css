@@ -45,8 +45,15 @@
 ================================ */
 
 .tp-auth-card {
-  max-width: 520px;
+  width: 100%;
+  max-width: 500px;
   margin-left: auto;
+}
+
+.tp-auth-form {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
 }
 
 /* ===============================
@@ -108,7 +115,8 @@
 ================================ */
 
 .tp-auth-btn {
-  margin-top: var(--space-sm);
+  width: 80%;
+  margin: var(--space-sm) auto 0;
 }
 
 /* ===============================
