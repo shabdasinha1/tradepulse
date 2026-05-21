@@ -1,40 +1,165 @@
-import React from "react";
+import React, { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { useSelector, shallowEqual } from "react-redux";
+
+import {
+  DashboardProductOverview,
+  DashboardCorridorNews,
+} from "../../services/DashboardService";
+
+import { queryKeys } from "../../utils/queryKeys";
+import EmptyState from "../../components/common/EmptyState";
 
 function NewOverview() {
+  const navigate = useNavigate();
 
+   const {
+  reporterCode,
+  partnerCode,
+  productId,
+  corridor,
+  startDate,
+  endDate,
+  countryCode,
+  partnerCountryCode,
+} = useSelector((state) => state.corridor, shallowEqual);
+
+    const globalParams = useMemo(
+    () => ({
+      reporter: reporterCode,
+      partner: partnerCode,
+      product: productId || undefined,
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    }),
+    [reporterCode, partnerCode, productId, startDate, endDate],
+  );
+
+    const { data: overviewData, isLoading: overviewLoading } = useQuery({
+    queryKey: queryKeys.productOverview(globalParams),
+
+    queryFn: () => DashboardProductOverview(globalParams),
+
+    enabled: !!partnerCode,
+
+    staleTime: 1000 * 60 * 5,
+  });
+
+  
+
+    const overview = overviewData?.data || {};
+
+      const {
+    data: newsData,
+    isLoading: newsLoading,
+  } = useInfiniteQuery({
+    queryKey: [
+      "corridorNewsPreview",
+      countryCode,
+      partnerCountryCode,
+    ],
+
+    queryFn: async ({ pageParam = 0 }) => {
+      const params = {
+        importer: countryCode,
+        exporter: partnerCountryCode,
+        page: pageParam,
+        size: 5,
+      };
+
+      const res = await DashboardCorridorNews(params);
+
+      return {
+        country: res?.countryNews,
+        corridor: res?.corridorNews,
+      };
+    },
+
+    enabled: !!countryCode && !!partnerCountryCode,
+
+    getNextPageParam: () => undefined,
+  });
+
+    const formatDate = (date) =>
+    new Date(date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+
+      const news = useMemo(() => {
+    if (!newsData?.pages) return [];
+
+    const merged = [];
+
+    newsData.pages.forEach((page) => {
+      const countryList = page?.country?.content || [];
+      const corridorList = page?.corridor?.content || [];
+
+      const maxLength = Math.max(
+        countryList.length,
+        corridorList.length,
+      );
+
+      for (let i = 0; i < maxLength; i++) {
+        if (countryList[i]) merged.push(countryList[i]);
+        if (corridorList[i]) merged.push(corridorList[i]);
+      }
+    });
+
+    return merged.slice(0, 5);
+  }, [newsData]);
   const metricCards = [
     {
       label: "ACTIVE PRODUCTS",
-      value: "24",
-      sub: "In UK ↔ Nigeria corridor",
+      value: overview?.activeProducts || "--",
+      sub: `In ${corridor || "Selected"} corridor`,
       variant: "primary",
     },
 
     {
       label: "FASTEST GROWING DEMAND",
-      value: "SESAME",
-      sub: "HS 1207",
-      badge: "+18% YOY",
+      value:
+        overview?.fastestGrowingProduct?.split(",")[0] || "--",
+
+      sub:
+        overview?.fastestGrowingProduct?.split(",")[1] || "No HS Code",
+
+      badge: "DEMAND",
+
       variant: "warning",
     },
 
     {
       label: "HIGHEST PRICE VOLATILITY",
-      value: "COCOA",
-      sub: "HS 1801",
+
+      value:
+        overview?.topValueProduct?.split(",")[0] || "--",
+
+      sub:
+        overview?.topValueProduct?.split(",")[1] || "No HS Code",
+
       badge: "HIGH VOL",
+
       variant: "gold",
     },
 
     {
       label: "HIGHEST RISK FLAG",
-      value: "PALM OIL",
-      sub: "HS 1511",
-      badge: "2 FLAGS",
+
+      value:
+        overview?.lowestValueProduct?.split(",")[0] || "--",
+
+      sub:
+        overview?.lowestValueProduct?.split(",")[1] || "No HS Code",
+
+      badge: "RISK",
+
       variant: "danger",
     },
   ];
-
   return (
     <section className="tp-section">
 
@@ -48,7 +173,31 @@ function NewOverview() {
         {/* GRID */}
         <div className="tp-overview-metric-grid">
 
-          {metricCards.map((item, index) => (
+          {overviewLoading ? (
+  [...Array(4)].map((_, index) => (
+    <div
+      key={index}
+      className="tp-overview-metric-card primary"
+    >
+      <div className="tp-overview-metric-top">
+        <div className="tp-overview-metric-heading">
+          Loading...
+        </div>
+      </div>
+
+      <div className="tp-overview-metric-value">
+        --
+      </div>
+
+      <div className="tp-overview-metric-bottom">
+        <span className="tp-overview-metric-sub">
+          Fetching data
+        </span>
+      </div>
+    </div>
+  ))
+) : (
+  metricCards.map((item, index) => (
             <div
               key={index}
               className={`tp-overview-metric-card ${item.variant}`}
@@ -64,9 +213,9 @@ function NewOverview() {
               </div>
 
               {/* VALUE */}
-              <div className="tp-overview-metric-value">
-                {item.value}
-              </div>
+             <div className="tp-overview-metric-value">
+  {item.value || <EmptyState message="No Data" />}
+</div>
 
               {/* BOTTOM */}
               <div className="tp-overview-metric-bottom">
@@ -84,7 +233,8 @@ function NewOverview() {
               </div>
 
             </div>
-          ))}
+         ))
+)}
 
         </div>
 
@@ -101,127 +251,72 @@ function NewOverview() {
       • CORRIDOR NEWS INTELLIGENCE
     </div>
 
-    <button className="tp-btn-outline tp-corridor-news-view-btn">
-      View all
-    </button>
+ <button
+  className="tp-btn-outline tp-corridor-news-view-btn"
+  onClick={() => navigate("/trade-news")}
+>
+  View all
+</button>
 
   </div>
 
   {/* LIST */}
-  <div className="tp-corridor-news-list">
+ <div className="tp-corridor-news-list">
 
-    {/* CARD */}
-    <div className="tp-corridor-news-card">
+  {newsLoading ? (
+    [...Array(5)].map((_, index) => (
+      <div
+        key={index}
+        className="tp-corridor-news-card"
+      >
+        <div className="tp-corridor-news-content">
+          <h3>Loading news...</h3>
+          <p>Please wait</p>
+        </div>
+      </div>
+    ))
+  ) : news.length === 0 ? (
 
-      <div className="tp-corridor-news-content">
+    <EmptyState message="No corridor news found" />
 
-        <h3>
-          Nigerian port congestion alerts at Apapa —
-          estimated 2–3 week shipment delays
-        </h3>
+  ) : (
 
-        <p>
-          Reuters Africa · 2 hrs ago
-        </p>
+    news.map((item, index) => (
+      <div
+        key={index}
+        className="tp-corridor-news-card"
+      >
+
+        <div className="tp-corridor-news-content">
+
+          <h3>
+            {item.title}
+          </h3>
+
+          <p>
+            {item.source} · {formatDate(item.publishedAt)}
+          </p>
+
+        </div>
+
+        <div
+          className={`tp-corridor-news-tag ${
+            item.alertType === "RISK_ALERT"
+              ? "warning"
+              : item.alertType === "OPPORTUNITY"
+                ? "success"
+                : "primary"
+          }`}
+        >
+          {(item.alertType || "CONTEXT")
+            .replaceAll("_", " ")}
+        </div>
 
       </div>
+    ))
+  )}
 
-      <div className="tp-corridor-news-tag warning">
-        RISK ALERT
-      </div>
-
-    </div>
-
-    {/* CARD */}
-    <div className="tp-corridor-news-card">
-
-      <div className="tp-corridor-news-content">
-
-        <h3>
-          Sesame prices down 6% WoW —
-          current price in lowest 20% of 5-year range
-        </h3>
-
-        <p>
-          UN Comtrade · Today
-        </p>
-
-      </div>
-
-      <div className="tp-corridor-news-tag success">
-        OPPORTUNITY
-      </div>
-
-    </div>
-
-    {/* CARD */}
-    <div className="tp-corridor-news-card">
-
-      <div className="tp-corridor-news-content">
-
-        <h3>
-          Ivory Coast harvest downgrade projected —
-          sustained cocoa price pressure through H2 2026
-        </h3>
-
-        <p>
-          World Bank Commodities · Yesterday
-        </p>
-
-      </div>
-
-      <div className="tp-corridor-news-tag primary">
-        PRICE IMPACT
-      </div>
-
-    </div>
-
-    {/* CARD */}
-    <div className="tp-corridor-news-card">
-
-      <div className="tp-corridor-news-content">
-
-        <h3>
-          Ghana government announces export incentive
-          programme for cocoa farmers —
-          new supply competition
-        </h3>
-
-        <p>
-          Ghana Trade Authority · 2 days ago
-        </p>
-
-      </div>
-
-      <div className="tp-corridor-news-tag success">
-        OPPORTUNITY
-      </div>
-
-    </div>
-
-    {/* CARD */}
-    <div className="tp-corridor-news-card">
-
-      <div className="tp-corridor-news-content">
-
-        <h3>
-          AfCFTA Phase 2 implementation update —
-          new preferential tariff schedules published
-        </h3>
-
-        <p>
-          WTO Tariff API · 3 days ago
-        </p>
-
-      </div>
-
-      <div className="tp-corridor-news-tag primary">
-        CONTEXT
-      </div>
-
-    </div>
-
-  </div>
+</div>
 
 </div>
 
@@ -552,7 +647,7 @@ function NewOverview() {
     DATA SOURCES
 ========================================= */}
 
-<div className="tp-overview-source-bar">
+{/* <div className="tp-overview-source-bar">
 
   <span className="tp-overview-source-dot"></span>
 
@@ -578,7 +673,7 @@ function NewOverview() {
     FX · 04 Apr 2026 07:01 UTC
   </span>
 
-</div>
+</div> */}
 
       </div>
 

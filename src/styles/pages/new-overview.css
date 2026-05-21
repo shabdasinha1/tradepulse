@@ -47,7 +47,7 @@
   flex-direction: column;
   justify-content: space-between;
 
-  gap: var(--space-md);
+  gap: 10px;
 
   min-height: 135px;
 
@@ -146,17 +146,19 @@
 
   color: var(--text-primary);
 
-  font-size: clamp(32px, 3.4vw, 52px);
+  font-size: clamp(18px, 1.9vw, 32px);
 
   font-family: var(--font-heading);
 
   font-weight: var(--fw-metric);
 
-  letter-spacing: var(--metric-letter-spacing);
+  letter-spacing: -0.03em;
 
-  line-height: 0.95;
+  line-height: 1.05;
 
   word-break: break-word;
+
+  overflow-wrap: anywhere;
 }
 
 .tp-overview-metric-card.primary .tp-overview-metric-value {
@@ -195,11 +197,15 @@
 .tp-overview-metric-sub {
   color: var(--text-secondary);
 
-  font-size: var(--fs-body);
+  font-size: 13px;
 
   font-family: var(--font-data);
 
-  line-height: var(--lh-body);
+  line-height: 1.45;
+
+  opacity: 0.82;
+
+  max-width: 90%;
 }
 
 .tp-overview-metric-badge {
@@ -364,7 +370,7 @@
   align-items: center;
   justify-content: space-between;
 
-  gap: var(--space-md);
+ gap: 12px;
 
   padding:
     var(--space-md)
@@ -425,41 +431,41 @@
 }
 
 .tp-corridor-news-content h3 {
-  margin: 0 0 var(--space-xs);
+  margin: 0 0 6px;
 
   color: var(--text-primary);
 
- font-size: clamp(15px, 1.15vw, 20px);
+  font-size: clamp(13px, 0.95vw, 18px);
 
   font-family: var(--font-heading);
 
-  font-weight: var(--fw-bold);
+  font-weight: 600;
 
-  line-height: 1.35;
+  line-height: 1.28;
 
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: -0.02em;
 
   word-break: break-word;
 }
-
 .tp-corridor-news-content p {
   margin: 0;
 
   color: var(--text-muted);
 
-  font-size: var(--fs-caption);
+  font-size: 12px;
 
   font-family: var(--font-data);
 
-  line-height: var(--lh-body);
+  line-height: 1.4;
 
-  letter-spacing: var(--tracking-normal);
+  letter-spacing: 0.02em;
+
+  opacity: 0.78;
 }
 
 /* =========================================
    TAG
 ========================================= */
-
 .tp-corridor-news-tag {
   position: relative;
 
@@ -471,23 +477,21 @@
   align-items: center;
   justify-content: center;
 
-  min-width: 132px;
+  min-width: 118px;
 
-  min-height: 34px;
+  min-height: 30px;
 
-  padding:
-    0
-    14px;
+  padding: 0 12px;
 
   border-radius: var(--radius-sm);
 
-  font-size: 10px;
+  font-size: 9px;
 
   font-family: var(--font-intel);
 
-  font-weight: var(--fw-bold);
+  font-weight: 700;
 
-  letter-spacing: 0.16em;
+  letter-spacing: 0.14em;
 
   text-transform: uppercase;
 
@@ -634,7 +638,7 @@
   display: flex;
   flex-direction: column;
 
-  gap: var(--space-md);
+  gap: 12px;
 
   min-height: 130px;
 
@@ -699,26 +703,31 @@
 
   color: var(--text-primary);
 
-  font-size: clamp(18px, 1.2vw, 24px);
+  font-size: clamp(14px, 0.95vw, 20px);
 
   font-family: var(--font-heading);
 
-  font-weight: var(--fw-bold);
+  font-weight: 600;
 
-  line-height: var(--lh-tight);
+  line-height: 1.15;
 
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: -0.02em;
 }
 
 .tp-overview-mini-meta {
   display: inline-block;
 
- margin-top: 4px;
+  margin-top: 2px;
+
   color: var(--text-muted);
 
-  font-size: var(--fs-body);
+  font-size: 12px;
 
   font-family: var(--font-data);
+
+  opacity: 0.78;
+
+  letter-spacing: 0.02em;
 }
 
 /* =========================================
@@ -743,15 +752,15 @@
 .tp-overview-mini-score {
   color: var(--text-primary);
 
- font-size: clamp(28px, 2.5vw, 44px);
+  font-size: clamp(20px, 1.8vw, 34px);
 
   font-family: var(--font-heading);
 
-  font-weight: var(--fw-metric);
+  font-weight: 700;
 
-  line-height: 0.95;
+  line-height: 1;
 
-  letter-spacing: var(--metric-letter-spacing);
+  letter-spacing: -0.03em;
 }
 
 .tp-overview-mini-price span,
@@ -768,15 +777,15 @@
 }
 
 .tp-overview-mini-change {
-  margin-top: var(--space-md);
+  margin-top: 10px;
 
-  font-size: var(--fs-lg);
+  font-size: 13px;
 
   font-family: var(--font-data);
 
-  font-weight: var(--fw-bold);
+  font-weight: 600;
 
-  letter-spacing: var(--tracking-normal);
+  letter-spacing: 0.01em;
 }
 
 .tp-overview-mini-change.up {
@@ -788,15 +797,15 @@
 }
 
 .tp-overview-mini-alert {
-  margin-top: var(--space-md);
+  margin-top: 10px;
 
   color: var(--clr-warning);
 
-  font-size: var(--fs-lg);
+  font-size: 13px;
 
   font-family: var(--font-data);
 
-  font-weight: var(--fw-bold);
+  font-weight: 600;
 }
 
 /* =========================================
