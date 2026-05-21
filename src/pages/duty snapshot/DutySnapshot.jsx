@@ -37,11 +37,31 @@ const DutySnapshot = () => {
     shallowEqual,
   );
 
-  const { filters, setFilters } = useUniversalFilters({
-    partnerCode: "",
-    startDate: "",
-    endDate: "",
-  });
+  /* ===============================
+   GRAPH FILTERS
+================================ */
+
+const {
+  filters: graphFilters,
+  setFilters: setGraphFilters,
+} = useUniversalFilters({
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
+
+/* ===============================
+   TABLE FILTERS
+================================ */
+
+const {
+  filters: tableFilters,
+  setFilters: setTableFilters,
+} = useUniversalFilters({
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
 
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
@@ -89,17 +109,17 @@ const DutySnapshot = () => {
     queryKey: [
       "dutySnapshot",
       reporterCode,
-      filters.partnerCode,
-      filters.startDate,
-      filters.endDate,
+      tableFilters.partnerCode,
+tableFilters.startDate,
+tableFilters.endDate,
     ],
     queryFn: async ({ pageParam = 1 }) => {
       try {
         const res = await DutySnapshotData({
           reporterCode,
-          partnerCode: filters.partnerCode,
-          startDate: filters.startDate,
-          endDate: filters.endDate,
+          // partnerCode: filters.partnerCode,
+          startDate: tableFilters.startDate,
+endDate: tableFilters.endDate,
           page: pageParam,
           limit: 20,
         });
@@ -113,7 +133,7 @@ const DutySnapshot = () => {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length < 20 ? undefined : pages.length + 1;
     },
-    enabled: !!reporterCode && !!filters.partnerCode,
+    enabled: !!reporterCode
   });
 
   /* ===============================
@@ -154,8 +174,8 @@ const { data: dutyGraphData } = useQuery({
   queryKey: [
     "dutyRateGraph",
     reporterCode,
-    filters.startDate,
-    filters.endDate,
+    graphFilters.startDate,
+graphFilters.endDate,
   ],
 
   queryFn: async () => {
@@ -163,8 +183,8 @@ const { data: dutyGraphData } = useQuery({
       const res = await DutyRateGraph({
         reporterCode,
         periodType: "custom",
-        startDate: filters.startDate,
-        endDate: filters.endDate,
+        startDate: graphFilters.startDate,
+endDate: graphFilters.endDate,
       });
 
       return res?.data || {};
@@ -289,16 +309,16 @@ const dutyTrendData = useMemo(() => {
     showProduct: false,
     showTimeRange: true,
   }}
-  activeFilters={{
-    startDate: filters.startDate,
-    endDate: filters.endDate,
-  }}
-  onFilterChange={(values) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...values,
-    }));
-  }}
+ activeFilters={{
+  startDate: graphFilters.startDate,
+  endDate: graphFilters.endDate,
+}}
+ onFilterChange={(values) => {
+  setGraphFilters((prev) => ({
+    ...prev,
+    ...values,
+  }));
+}}
   series={[
     {
       key: "duty",
@@ -427,11 +447,15 @@ const dutyTrendData = useMemo(() => {
         <UniversalFilter
          
           showTimeRange
-          defaultValues={filters}
-          onChange={(values) => {
-            setFilters((prev) => ({ ...prev, ...values }));
-            setTableFilterOpen(false);
-          }}
+        defaultValues={tableFilters}
+        onChange={(values) => {
+  setTableFilters((prev) => ({
+    ...prev,
+    ...values,
+  }));
+
+  setTableFilterOpen(false);
+}}
         />
       )}
     </section>

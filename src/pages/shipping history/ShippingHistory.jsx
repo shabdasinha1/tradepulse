@@ -36,11 +36,31 @@ const ShippingHistory = () => {
   );
 
   const { convert,isFxReady } = useCurrency();
-  const { filters, setFilters } = useUniversalFilters({
-    partnerCode: "",
-    startDate: "",
-    endDate: "",
-  });
+/* ===============================
+   GRAPH FILTERS
+================================ */
+
+const {
+  filters: graphFilters,
+  setFilters: setGraphFilters,
+} = useUniversalFilters({
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
+
+/* ===============================
+   TABLE FILTERS
+================================ */
+
+const {
+  filters: tableFilters,
+  setFilters: setTableFilters,
+} = useUniversalFilters({
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
 
   const shortCorridor = useMemo(() => {
     return corridor?.includes(",") ? corridor.split(",")[0] + "..." : corridor;
@@ -84,17 +104,17 @@ const ShippingHistory = () => {
     queryKey: [
       "shippingHistory",
       reporterCode,
-      filters.partnerCode,
-      filters.startDate,
-      filters.endDate,
+     tableFilters.partnerCode,
+tableFilters.startDate,
+tableFilters.endDate,
     ],
     queryFn: async ({ pageParam = 1 }) => {
       try {
         const res = await ShippingHistoryData({
           reporterCode,
-          partnerCode: filters.partnerCode,
-          startDate: filters.startDate,
-          endDate: filters.endDate,
+       partnerCode: tableFilters.partnerCode,
+startDate: tableFilters.startDate,
+endDate: tableFilters.endDate,
           page: pageParam,
           limit: 10,
         });
@@ -107,7 +127,7 @@ const ShippingHistory = () => {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.length < 10 ? undefined : pages.length + 1;
     },
-    enabled: isFxReady && !!reporterCode && !!filters.partnerCode,
+    enabled: isFxReady && !!reporterCode && !!tableFilters.partnerCode,
   });
 
   /* ===============================
@@ -196,19 +216,19 @@ const { data: shippingGraphData } = useQuery({
   queryKey: [
     "shippingRateGraph",
     reporterCode,
-    filters.partnerCode,
-    filters.startDate,
-    filters.endDate,
+   graphFilters.partnerCode,
+graphFilters.startDate,
+graphFilters.endDate,
   ],
 
   queryFn: async () => {
     try {
       const res = await ShippingRateGraph({
         reporterCode,
-        partnerCode: filters.partnerCode,
         periodType: "custom",
-        startDate: filters.startDate,
-        endDate: filters.endDate,
+        partnerCode: graphFilters.partnerCode,
+startDate: graphFilters.startDate,
+endDate: graphFilters.endDate,
       });
 
       return res?.data?.history || [];
@@ -220,7 +240,7 @@ const { data: shippingGraphData } = useQuery({
 
   enabled:
     !!reporterCode &&
-    !!filters.partnerCode 
+     !!graphFilters.partnerCode
 });
 
 /* ===============================
@@ -301,16 +321,16 @@ const shippingTrendData = useMemo(() => {
     showProduct: false,
     showTimeRange: true,
   }}
-  activeFilters={{
-    startDate: filters.startDate,
-    endDate: filters.endDate,
-  }}
-  onFilterChange={(values) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...values,
-    }));
-  }}
+ activeFilters={{
+  startDate: graphFilters.startDate,
+  endDate: graphFilters.endDate,
+}}
+ onFilterChange={(values) => {
+  setGraphFilters((prev) => ({
+    ...prev,
+    ...values,
+  }));
+}}
   series={[
     {
       key: "rate",
@@ -427,16 +447,20 @@ const shippingTrendData = useMemo(() => {
       {filterOpen && <GlobalFilterPanel onClose={() => setFilterOpen(false)} />}
 
       {tableFilterOpen && (
-        <UniversalFilter
-     
-          showProduct
-          showTimeRange
-          showRiskLevel
-          onChange={(values) => {
-            setFilters((prev) => ({ ...prev, ...values }));
-            setTableFilterOpen(false);
-          }}
-        />
+       <UniversalFilter
+  defaultValues={tableFilters}
+  showProduct
+  showTimeRange
+  showRiskLevel
+  onChange={(values) => {
+    setTableFilters((prev) => ({
+      ...prev,
+      ...values,
+    }));
+
+    setTableFilterOpen(false);
+  }}
+/>
       )}
     </section>
   );

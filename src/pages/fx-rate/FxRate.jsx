@@ -37,13 +37,32 @@ const FXRates = () => {
   const [filterOpen, setFilterOpen] = useState(false);
   const [tableFilterOpen, setTableFilterOpen] = useState(false);
 
-  const { filters, setFilters, updateFilter, resetFilters } =
-    useUniversalFilters({
-      partnerCode: "",
-      product: "",
-      startDate: "",
-      endDate: "",
-    });
+  /* ===============================
+   GRAPH FILTERS
+================================ */
+
+const {
+  filters: graphFilters,
+  setFilters: setGraphFilters,
+} = useUniversalFilters({
+  partnerCode: "",
+  startDate: "",
+  endDate: "",
+});
+
+/* ===============================
+   TABLE FILTERS
+================================ */
+
+const {
+  filters: tableFilters,
+  setFilters: setTableFilters,
+} = useUniversalFilters({
+  partnerCode: "",
+  product: "",
+  startDate: "",
+  endDate: "",
+});
   const headerRef = useRef(null);
   const bodyRef = useRef(null);
   const observer = useRef(null);
@@ -55,18 +74,18 @@ const FXRates = () => {
     useInfiniteQuery({
       queryKey: queryKeys.fxRates(
         reporterCode,
-        filters.partnerCode,
-        filters.startDate,
-        filters.endDate,
+   tableFilters.partnerCode,
+tableFilters.startDate,
+tableFilters.endDate,
       ),
       queryFn: async ({ pageParam = 1 }) => {
         const res = await FXRatesData({
           page: pageParam,
           limit: LIMIT,
           reporterCode: reporterCode, 
-          partnerCode: filters.partnerCode,
-          startDate: filters.startDate,
-          endDate: filters.endDate,
+          partnerCode: tableFilters.partnerCode,
+startDate: tableFilters.startDate,
+endDate: tableFilters.endDate,
         });
         return res;
       },
@@ -99,19 +118,19 @@ const { data: fxGraphData } = useQuery({
   queryKey: [
     "fxGraph",
     reporterCode,
-    filters.partnerCode,
-    filters.startDate,
-    filters.endDate,
+    graphFilters.partnerCode,
+graphFilters.startDate,
+graphFilters.endDate,
   ],
 
   queryFn: async () => {
     try {
       const res = await FXGraph({
         reporterCode,
-        partnerCode: filters.partnerCode,
+      partnerCode: graphFilters.partnerCode,
         periodType: "custom",
-        startDate: filters.startDate,
-        endDate: filters.endDate,
+      startDate: graphFilters.startDate,
+endDate: graphFilters.endDate,
       });
 
       return res?.data || {};
@@ -123,7 +142,7 @@ const { data: fxGraphData } = useQuery({
 
   enabled:
     !!reporterCode &&
-    !!filters.partnerCode,
+    !!graphFilters.partnerCode,
 });
 /* ===============================
    FX GRAPH DATA
@@ -260,15 +279,15 @@ const fxTrendData = useMemo(() => {
     showTimeRange: true,
   }}
   activeFilters={{
-    startDate: filters.startDate,
-    endDate: filters.endDate,
-  }}
-  onFilterChange={(values) => {
-    setFilters((prev) => ({
-      ...prev,
-      ...values,
-    }));
-  }}
+  startDate: graphFilters.startDate,
+  endDate: graphFilters.endDate,
+}}
+ onFilterChange={(values) => {
+  setGraphFilters((prev) => ({
+    ...prev,
+    ...values,
+  }));
+}}
         series={[
           {
             key: "rate",
@@ -421,9 +440,12 @@ const fxTrendData = useMemo(() => {
         
           showProduct
           showTimeRange
-          defaultValues={filters}
+        defaultValues={tableFilters}
           onChange={(values) => {
-            setFilters((prev) => ({ ...prev, ...values }));
+           setTableFilters((prev) => ({
+  ...prev,
+  ...values,
+}));
             setTableFilterOpen(false);
           }}
         />

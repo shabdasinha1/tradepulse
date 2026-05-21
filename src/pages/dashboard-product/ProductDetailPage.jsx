@@ -66,9 +66,9 @@ const currency = currencySymbol || "£";
 
   queryFn: () =>
     DashboardExportPriceTrend({
-      reporter: reporterCode,
-      partner: partnerCode,
-      product: selectedHsCode,
+      reporterCode: reporterCode,
+      partnerCode: partnerCode,
+      hsCode: selectedHsCode,
     }),
 
   enabled: !!selectedHsCode,
@@ -92,9 +92,9 @@ const historicalTrendData =
 
   queryFn: () =>
     DashboardImportDemandTrend({
-      reporter: reporterCode,
-      partner: partnerCode,
-      product: selectedHsCode,
+      reporterCode: reporterCode,
+      partnerCode: partnerCode,
+      hsCode: selectedHsCode,
     }),
 
   enabled: !!selectedHsCode,
