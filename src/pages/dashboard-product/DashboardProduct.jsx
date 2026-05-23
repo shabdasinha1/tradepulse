@@ -23,6 +23,10 @@ import useUniversalFilters from "../../hooks/useUniversalFilters";
 import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
 import ProductDetailPage from "./ProductDetailPage";
+import {
+  saveRecentProduct,
+  initializeRecentProducts,
+} from "../../utils/recentProducts";
 /* ===============================
    SKELETON COMPONENT
 ================================ */
@@ -276,6 +280,8 @@ const DashboardProduct = () => {
   return Object.values(latestProductsMap);
 }, [productPages]);
 
+
+
   /* ===============================
      PRODUCT ROWS
   =============================== */
@@ -289,13 +295,16 @@ const DashboardProduct = () => {
   ref={isLast ? lastProductRef : null}
   className="tp-table-row tp-table-suppliers"
   key={item.product || index}
-  onClick={() =>
-    setSelectedProduct({
-      ...item,
-      selectedHsCode: item?.hsCode,
-     
-    })
-  }
+  onClick={() => {
+  const selected = {
+    ...item,
+    selectedHsCode: item?.hsCode,
+  };
+
+  saveRecentProduct(selected);
+
+  setSelectedProduct(selected);
+}}
   style={{ cursor: "pointer" }}
 >
           <span>

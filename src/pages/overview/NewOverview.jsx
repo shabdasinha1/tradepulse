@@ -1,18 +1,31 @@
-import React, { useMemo } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { useSelector, shallowEqual } from "react-redux";
 
+
+
 import {
   DashboardProductOverview,
   DashboardCorridorNews,
+  DashboardAllProductList,
 } from "../../services/DashboardService";
+
+import {
+  getRecentProducts,
+  initializeRecentProducts
+} from "../../utils/recentProducts";
 
 import { queryKeys } from "../../utils/queryKeys";
 import EmptyState from "../../components/common/EmptyState";
 
 function NewOverview() {
   const navigate = useNavigate();
+
 
    const {
   reporterCode,
@@ -24,6 +37,8 @@ function NewOverview() {
   countryCode,
   partnerCountryCode,
 } = useSelector((state) => state.corridor, shallowEqual);
+
+const [recentProducts, setRecentProducts] = useState([]);
 
     const globalParams = useMemo(
     () => ({
@@ -160,6 +175,56 @@ function NewOverview() {
       variant: "danger",
     },
   ];
+
+  const { data: initialProductsData } = useQuery({
+  queryKey: [
+    "initialRecentProducts",
+    reporterCode,
+    partnerCode,
+  ],
+
+  queryFn: async () => {
+    const res = await DashboardAllProductList({
+      reporter: reporterCode,
+      partner: partnerCode,
+      limit: 3,
+      page: 1,
+    });
+
+    return res?.data?.data || [];
+  },
+
+  enabled: !!reporterCode && !!partnerCode,
+
+  staleTime: 1000 * 60 * 10,
+});
+
+useEffect(() => {
+  if (!initialProductsData?.length) return;
+
+  const formattedProducts = initialProductsData.map(
+    (item) => ({
+      productCategory: item.productCategory,
+      categoryHs2: item.categoryHs2,
+      avgExportPrice: item.avgExportPrice,
+      volatilityRisk: item.volatilityRisk,
+      importDemandTrend: item.importDemandTrend,
+      exportActivityLevel: item.exportActivityLevel,
+      selectedHsCode: item.hsCode,
+    })
+  );
+
+  initializeRecentProducts(formattedProducts);
+
+  const recent = getRecentProducts();
+
+  setRecentProducts(recent);
+}, [initialProductsData]);
+  useEffect(() => {
+  const recent = getRecentProducts();
+  setRecentProducts(recent);
+}, []);
+
   return (
     <section className="tp-section">
 
@@ -338,38 +403,42 @@ function NewOverview() {
   {/* GRID */}
   <div className="tp-overview-card-grid">
 
-    {/* CARD */}
-    <div className="tp-overview-mini-card">
-
+    {recentProducts.length === 0 ? (
+  <EmptyState message="No recently viewed products" />
+) : (
+  recentProducts.map((item, index) => (
+    <div
+      key={index}
+      className="tp-overview-mini-card"
+    >
       <div className="tp-overview-mini-top">
-
         <div>
-
           <h3 className="tp-overview-mini-title">
-            Cocoa Beans
+            {item.productCategory}
           </h3>
 
           <span className="tp-overview-mini-meta">
-            HS 1801
+            {item.selectedHsCode}
           </span>
-
         </div>
-
       </div>
 
       <div className="tp-overview-mini-main">
-
         <div>
-
           <div className="tp-overview-mini-price">
-            £2,847
+            £{Number(item.avgExportPrice || 0).toLocaleString()}
             <span>/t</span>
           </div>
 
-          <div className="tp-overview-mini-change up">
-            ↑ +2.1% 7d
+          <div
+            className={`tp-overview-mini-change ${
+              item.volatilityRisk === "HIGH"
+                ? "down"
+                : "up"
+            }`}
+          >
+            {item.importDemandTrend}
           </div>
-
         </div>
 
         <svg
@@ -379,104 +448,17 @@ function NewOverview() {
         >
           <path
             d="M0 42 L18 34 L32 37 L48 28 L68 20 L86 21 L104 15 L120 10"
-            className="tp-overview-line up"
+            className={`tp-overview-line ${
+              item.volatilityRisk === "HIGH"
+                ? "down"
+                : "up"
+            }`}
           />
         </svg>
-
       </div>
-
     </div>
-
-    {/* CARD */}
-    <div className="tp-overview-mini-card">
-
-      <div className="tp-overview-mini-top">
-
-        <div>
-
-          <h3 className="tp-overview-mini-title">
-            Adunola Farms
-          </h3>
-
-        </div>
-
-        <div className="tp-overview-status-tag warning">
-          PARTIAL
-        </div>
-
-      </div>
-
-      <div className="tp-overview-mini-main">
-
-        <div>
-
-          <div className="tp-overview-mini-score">
-            82
-            <span>/100</span>
-          </div>
-
-          <div className="tp-overview-mini-alert">
-            NAFDAC expiry 43d
-          </div>
-
-        </div>
-
-        <div className="tp-overview-status-tag success">
-          VERIFIED
-        </div>
-
-      </div>
-
-    </div>
-
-    {/* CARD */}
-    <div className="tp-overview-mini-card">
-
-      <div className="tp-overview-mini-top">
-
-        <div>
-
-          <h3 className="tp-overview-mini-title">
-            Sesame Seeds
-          </h3>
-
-          <span className="tp-overview-mini-meta">
-            HS 1207
-          </span>
-
-        </div>
-
-      </div>
-
-      <div className="tp-overview-mini-main">
-
-        <div>
-
-          <div className="tp-overview-mini-price">
-            £1,240
-            <span>/t</span>
-          </div>
-
-          <div className="tp-overview-mini-change down">
-            ↓ -6.0% 7d
-          </div>
-
-        </div>
-
-        <svg
-          className="tp-overview-mini-chart"
-          viewBox="0 0 120 50"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0 12 L18 16 L32 14 L48 20 L68 24 L86 31 L104 36 L120 38"
-            className="tp-overview-line down"
-          />
-        </svg>
-
-      </div>
-
-    </div>
+  ))
+)}
 
   </div>
 
