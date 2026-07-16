@@ -231,7 +231,7 @@ startDate: graphFilters.startDate,
 endDate: graphFilters.endDate,
       });
 
-      return res?.data?.history || [];
+      return res || {};
     } catch (err) {
       console.error(err);
       return [];
@@ -248,12 +248,21 @@ endDate: graphFilters.endDate,
 ================================ */
 
 const shippingTrendData = useMemo(() => {
-  return (shippingGraphData || []).map((item) => ({
+  return (shippingGraphData?.data?.history || []).map((item) => ({
     period: item.period,
     rate: item.rate,
     shipmentCount: item.shipmentCount,
   }));
 }, [shippingGraphData]);
+
+const currentRate =
+  shippingGraphData?.data?.currentRate ?? 0;
+
+const marketTrend =
+  shippingGraphData?.data?.marketTrend ?? "N/A";
+
+const shippingVolatility =
+  shippingGraphData?.data?.volatility ?? "N/A";
 
   /* ===============================
      UI
@@ -350,9 +359,10 @@ const shippingTrendData = useMemo(() => {
           Current Rate
         </span>
 
-        <span className="tp-freight-stat-value">
-          $2,840 / TEU
-        </span>
+       <span className="tp-freight-stat-value tp-font-data">
+  {currencySymbol || ""}
+  {Number(currentRate).toLocaleString()} / TEU
+</span>
 
       </div>
 
@@ -362,9 +372,17 @@ const shippingTrendData = useMemo(() => {
           Market Trend
         </span>
 
-        <span className="tp-freight-stat-value tp-text-up">
-          Recovering
-        </span>
+       <span
+  className={`tp-freight-stat-value ${
+    marketTrend === "Increasing"
+      ? "tp-text-up"
+      : marketTrend === "Decreasing"
+      ? "tp-text-down"
+      : "tp-text-neutral"
+  }`}
+>
+  {marketTrend}
+</span>
 
       </div>
 
@@ -374,9 +392,9 @@ const shippingTrendData = useMemo(() => {
           Volatility
         </span>
 
-        <span className="tp-freight-stat-value">
-          Medium
-        </span>
+     <span className="tp-freight-stat-value">
+  {shippingVolatility}
+</span>
 
       </div>
 

@@ -87,15 +87,28 @@ supplierExportHistory: (supplierId) => [
     endDate,
   ],
 
-  productExportPriceTrend: (
-  reporter,
-  partner,
-  product,
+//   productExportPriceTrend: (
+//   reporter,
+//   partner,
+//   product,
+// ) => [
+//   "productExportPriceTrend",
+//   reporter,
+//   partner,
+//   product,
+// ],
+
+productExportPriceTrend: (
+  reporterCode,
+  partnerCode,
+  hsCode,
+  selectedRange,
 ) => [
   "productExportPriceTrend",
-  reporter,
-  partner,
-  product,
+  reporterCode,
+  partnerCode,
+  hsCode,
+  selectedRange,
 ],
 productImportDemandTrend: (
   reporter,

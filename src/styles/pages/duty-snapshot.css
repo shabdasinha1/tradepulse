@@ -1,12 +1,31 @@
 /* DUTY TABLE ROW */
+/* DUTY TABLE ROW */
 .tp-duty-row {
   display: grid;
+
   grid-template-columns:
-    2fr 1fr 1fr 1fr 1fr 1fr;
+    140px   /* HS Code */
+    260px   /* Measure Type */
+    120px   /* Period */
+    100px   /* Duty Rate */
+    120px   /* Duty Amount */
+    90px    /* Currency */
+    200px   /* Geographical Area */
+    70px    /* VAT */
+    70px    /* Quota */
+    120px   /* Valid From */
+    120px   /* Valid To */
+    100px;  /* Source */
+
   gap: var(--space-md);
   align-items: center;
 
-  min-width: 800px; /* balanced for responsiveness */
+  min-width: 1510px;
+}
+/* Measure Type */
+.tp-duty-row span:nth-child(2) {
+  white-space: normal;
+  word-break: break-word;
 }
 
 /* WRAPPER FIX (prevents outer scroll bug) */
@@ -18,13 +37,13 @@
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .tp-duty-row {
-    min-width: 700px;
+    min-width: 1510px;
   }
 }
 
 @media (max-width: 480px) {
   .tp-duty-row {
-    min-width: 620px;
+    min-width: 1510px;
   }
 }
 

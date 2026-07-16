@@ -168,7 +168,7 @@ const [recentProducts, setRecentProducts] = useState([]);
         overview?.lowestValueProduct?.split(",")[0] || "--",
 
       sub:
-        overview?.lowestValueProduct?.split(",")[1] || "No HS Code",
+        overview?.lowestValueProduct?.split(",")[1] || "",
 
       badge: "RISK",
 

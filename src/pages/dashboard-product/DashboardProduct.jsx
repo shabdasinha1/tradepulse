@@ -312,9 +312,10 @@ const DashboardProduct = () => {
           </span>
 
           <span className="tp-muted text-center tp-font-data">
-            {currencySymbol || ""}
-            {Number(item.avgExportPrice).toFixed(2)}
-          </span>
+  {currencySymbol || ""}
+  {Number(item.avgExportPrice).toFixed(2)}
+  {item.quantityUnit ? `/${item.quantityUnit}` : ""}
+</span>
 
           <span className="text-center">
             <span className="tp-pill tp-pill-primary">
@@ -458,10 +459,10 @@ const DashboardProduct = () => {
 
               <div className="tp-card">
                 <p className="tp-muted">Highest Price Volatility</p>
-                {productData?.productOverview?.topValueProduct ? (
+                {productData?.productHighlights?.highestVolatilityProduct ? (
                   <h3 className="tp-text-up tp-overview-text">
                     {
-                      productData?.productOverview?.topValueProduct?.split(
+                      productData?.productHighlights?.highestVolatilityProduct?.split(
                         ",",
                       )[0]
                     }

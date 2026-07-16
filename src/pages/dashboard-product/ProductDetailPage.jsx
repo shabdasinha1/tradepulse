@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSelector, shallowEqual } from "react-redux";
 
@@ -14,6 +14,8 @@ import {
 import { queryKeys } from "../../utils/queryKeys";
 
 const ProductDetailPage = ({ product, onBack }) => {
+
+  const [selectedRange, setSelectedRange] = useState(5);
 
   const {
   reporterCode,
@@ -41,8 +43,11 @@ const currency = currencySymbol || "£";
   product?.selectedHsCode || "";
  
 
-  const avgPrice =
-    product?.avgExportPrice || 0;
+const latestPrice =
+  product?.latestPrice ?? product?.avgExportPrice ?? 0;
+
+    const quantityUnit =
+  product?.quantityUnit || "tonne";
 
   const volatility =
     product?.volatilityRisk || "LOW";
@@ -53,6 +58,21 @@ const currency = currencySymbol || "£";
   const exportActivity =
     product?.exportActivityLevel || "N/A";
 
+    const yoyChange = Number(product?.yoyChange || 0);
+
+    const getDateRange = (years) => {
+  const endDate = new Date();
+
+  const startDate = new Date();
+  startDate.setFullYear(endDate.getFullYear() - years);
+
+  return {
+    startDate: startDate.toISOString().split("T")[0],
+    endDate: endDate.toISOString().split("T")[0],
+  };
+};
+
+const { startDate, endDate } = getDateRange(selectedRange);
 
     const {
   data: exportTrendData,
@@ -61,24 +81,77 @@ const currency = currencySymbol || "£";
   queryKey: queryKeys.productExportPriceTrend(
     reporterCode,
     partnerCode,
-    hsCode,
+     selectedHsCode,
+    selectedRange
   ),
 
   queryFn: () =>
     DashboardExportPriceTrend({
-      reporterCode: reporterCode,
-      partnerCode: partnerCode,
-      hsCode: selectedHsCode,
-    }),
+  reporterCode,
+  partnerCode,
+  hsCode: selectedHsCode,
+  startDate,
+  endDate,
+}),
 
   enabled: !!selectedHsCode,
 });
 
-const historicalTrendData =
-  exportTrendData?.data?.map((item) => ({
-    year: new Date(item?.date).getFullYear(),
-    price: Number(item?.price || 0),
-  })) || [];
+// const historicalTrendData =
+//   exportTrendData?.data?.map((item) => ({
+//     year: new Date(item?.date).getFullYear(),
+//     price: Number(item?.price || 0),
+//   })) || [];
+const historicalTrendData = useMemo(() => {
+  const apiData = exportTrendData?.data?.data || [];
+
+  // 1 Year -> keep backend monthly data as-is
+  if (selectedRange === 1) {
+    return apiData.map((item) => {
+      const date = new Date(item.date);
+
+      return {
+        xLabel: date.toLocaleDateString("en-US", {
+          month: "short",
+        }),
+        price: Number(item.price || 0),
+      };
+    });
+  }
+
+  // 3 / 5 / 10 Years -> Fill missing years with zero
+  const currentYear = new Date().getFullYear();
+  const startYear = currentYear - selectedRange + 1;
+
+  // Backend data lookup
+  const yearMap = {};
+
+  apiData.forEach((item) => {
+    const year = new Date(item.date).getFullYear();
+
+    yearMap[year] = Number(item.price || 0);
+  });
+
+  // Build complete timeline
+  const result = [];
+
+  for (let year = startYear; year <= currentYear; year++) {
+    result.push({
+      xLabel: String(year),
+      price: yearMap[year] ?? 0,
+    });
+  }
+
+  return result;
+}, [exportTrendData, selectedRange]);
+
+const noHistoricalData =
+  !exportTrendLoading &&
+  (!exportTrendData?.data?.data ||
+    exportTrendData.data.data.length === 0);
+
+    const peakPrice =
+  exportTrendData?.data?.stats?.peak ?? 0;
 
   const {
   data: importDemandTrendData,
@@ -213,31 +286,35 @@ const topSupplyingCountries =
             {/* PRICE */}
             <div className="tp-product-price-row">
 
-              <span className="tp-product-price tp-font-data">
+           <span className="tp-product-price tp-font-data">
   {currency}
-  {Number(avgPrice).toLocaleString()}
+  {Number(latestPrice).toLocaleString()}
 </span>
 
-              <span className="tp-product-unit">
-                /tonne
-              </span>
+<span className="tp-product-unit">
+  /{quantityUnit}
+</span>
 
             </div>
 
             {/* METRICS */}
             <div className="tp-product-growth-row">
 
-              <div className="tp-product-growth-pill">
+              {/* <div className="tp-product-growth-pill">
                 7d ↑ +2.1%
               </div>
 
               <div className="tp-product-growth-pill">
                 30d ↑ +4.8%
-              </div>
+              </div> */}
 
-              <div className="tp-product-growth-pill">
-                YoY ↑ +18.3%
-              </div>
+              <div
+  className={`tp-product-growth-pill ${
+    yoyChange >= 0 ? "tp-text-up" : "tp-text-down"
+  }`}
+>
+  YoY {yoyChange >= 0 ? "↑" : "↓"} {Math.abs(yoyChange).toFixed(2)}%
+</div>
 
             </div>
 
@@ -326,29 +403,24 @@ const topSupplyingCountries =
           {productName} · {corridor} · Export Price
         </div>
 
-        <div className="tp-product-trend-subtitle">
-          Historical export pricing intelligence (£/tonne)
-        </div>
+      <div className="tp-product-trend-subtitle">
+  Historical export pricing intelligence ({currency}/{quantityUnit})
+</div>
 
       </div>
 
       <div className="tp-product-trend-filter-group">
-
-        <button className="tp-product-trend-filter">
-          1yr
-        </button>
-
-        <button className="tp-product-trend-filter">
-          3yr
-        </button>
-
-        <button className="tp-product-trend-filter active">
-          5yr
-        </button>
-
-        <button className="tp-product-trend-filter">
-          10yr
-        </button>
+{[1, 3, 5, 10].map((year) => (
+  <button
+    key={year}
+    className={`tp-product-trend-filter ${
+      selectedRange === year ? "active" : ""
+    }`}
+    onClick={() => setSelectedRange(year)}
+  >
+    {year}yr
+  </button>
+))}
 
       </div>
 
@@ -357,24 +429,37 @@ const topSupplyingCountries =
     {/* CHART */}
     <div className="tp-product-trend-chart-wrapper">
 
-      <TPChart
-        title=""
-        type="line"
-        xKey="year"
-       data={historicalTrendData}
-        series={[
-          {
-            key: "price",
-            label: "Export Price",
-          },
-        ]}
-      />
+       {noHistoricalData ? (
+    <div className="tp-chart-empty-state">
+      <div className="tp-chart-empty-icon">📈</div>
+
+      <h4>No historical data available</h4>
+
+      <p>
+        We couldn't find any export price records for the selected time
+        period. Try selecting another range.
+      </p>
+    </div>
+  ) : (
+    <TPChart
+      title=""
+      type="line"
+      xKey="xLabel"
+      data={historicalTrendData}
+      series={[
+        {
+          key: "price",
+          label: "Export Price",
+        },
+      ]}
+    />
+  )}
 
     </div>
 
     {/* FOOTER */}
     <div className="tp-product-trend-footer">
-
+{/* 
       <div className="tp-product-trend-stat">
 
         <span className="tp-product-trend-stat-label">
@@ -385,7 +470,7 @@ const topSupplyingCountries =
           +13.8%
         </span>
 
-      </div>
+      </div> */}
 
       <div className="tp-product-trend-stat">
 
@@ -405,9 +490,10 @@ const topSupplyingCountries =
           Peak
         </span>
 
-        <span className="tp-product-trend-stat-value">
-          £2,847
-        </span>
+       <span className="tp-product-trend-stat-value tp-font-data">
+  {currency}
+  {Number(peakPrice).toLocaleString()}
+</span>
 
       </div>
 
@@ -435,7 +521,7 @@ const topSupplyingCountries =
       <div>
 
         <div className="tp-product-demand-title">
-          UK Import Demand · Cocoa
+          UK Import Demand · {productName}
         </div>
 
         <div className="tp-product-demand-subtitle">

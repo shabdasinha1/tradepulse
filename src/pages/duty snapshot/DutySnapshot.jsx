@@ -123,7 +123,7 @@ endDate: tableFilters.endDate,
           page: pageParam,
           limit: 20,
         });
-
+console.log("Trade History V2 Response:", res.data);
         return res?.data || [];
       } catch (err) {
         setError(GetApiErrorMessage(err));
@@ -186,8 +186,9 @@ graphFilters.endDate,
         startDate: graphFilters.startDate,
 endDate: graphFilters.endDate,
       });
+console.log("Duty Rate Graph V2 Response:", res.data);
 
-      return res?.data || {};
+     return res.data;
     } catch (err) {
       console.error(err);
       return {};
@@ -204,7 +205,10 @@ endDate: graphFilters.endDate,
 const dutyTrendData = useMemo(() => {
   return (dutyGraphData?.history || []).map((item) => ({
     period: item.period,
-    duty: item.avgDuty,
+    duty: Number(item.avgDuty || 0),
+    maxDuty: Number(item.maxDuty || 0),
+    minDuty: Number(item.minDuty || 0),
+    totalRecords: Number(item.totalRecords || 0),
   }));
 }, [dutyGraphData]);
   /* ===============================
@@ -215,32 +219,69 @@ const dutyTrendData = useMemo(() => {
       const isLast = rows.length === index + 1;
 
       return (
-        <div
-          key={item.hsCode + index}
-          ref={isLast ? lastRowRef : null}
-          className="tp-table-row tp-duty-row"
-        >
-          <span>
-            {item.hsCode} - {item.category}
-          </span>
+        
+  <div
+    key={item.id}
+    ref={isLast ? lastRowRef : null}
+    className="tp-table-row tp-duty-row"
+  >
+    {/* HS Code */}
+    <span>{item.hsCode || "-"}</span>
 
-          <span className="text-center">
-            {item.date ? formatDate(item.date) : "-"}
-          </span>
+    {/* Measure Type */}
+    <span>{item.measureType || "-"}</span>
 
-          <span className="text-center tp-font-data">
-            {item.minTariff !== null ? `${item.minTariff}%` : "-"}
-          </span>
+    {/* Period */}
+    <span className="text-center">
+      {item.periodDate ? formatDate(item.periodDate) : "-"}
+    </span>
 
-          <span className="text-center tp-font-data">
-            {item.maxTariff !== null ? `${item.maxTariff}%` : "-"}
-          </span>
+    {/* Duty Rate */}
+    <span className="text-center tp-font-data">
+      {item.dutyRate != null ? `${item.dutyRate}%` : "-"}
+    </span>
 
-          <span className="text-center tp-font-data">
-            {item.avgTariff !== null ? `${item.avgTariff}%` : "-"}
-          </span>
-          <span className="text-center tp-font-data">{item.range || "-"}</span>
-        </div>
+    {/* Duty Amount */}
+    <span className="text-center tp-font-data">
+      {item.dutyAmount ?? "-"}
+    </span>
+
+    {/* Currency */}
+    <span className="text-center">
+      {item.currency || "-"}
+    </span>
+
+    {/* Geographical Area */}
+    <span className="text-center">
+      {item.geographicalArea || "-"}
+    </span>
+
+    {/* VAT */}
+    <span className="text-center">
+      {item.vat ? "Yes" : "No"}
+    </span>
+
+    {/* Quota */}
+    <span className="text-center">
+      {item.quota ? "Yes" : "No"}
+    </span>
+
+    {/* Valid From */}
+    <span className="text-center">
+      {item.validFrom ? formatDate(item.validFrom) : "-"}
+    </span>
+
+    {/* Valid To */}
+    <span className="text-center">
+      {item.validTo ? formatDate(item.validTo) : "-"}
+    </span>
+
+    {/* Source */}
+    <span className="text-center">
+      {item.source || "-"}
+    </span>
+  </div>
+
       );
     });
   }, [rows, lastRowRef]);
@@ -338,9 +379,9 @@ const dutyTrendData = useMemo(() => {
           Current Avg Duty
         </span>
 
-        <span className="tp-duty-stat-value">
-        {dutyGraphData?.currentAvgDuty || 0}%
-        </span>
+       <span className="tp-duty-stat-value tp-font-data">
+  {Number(dutyGraphData?.currentAvgDuty || 0).toFixed(2)}%
+</span>
 
       </div>
 
@@ -350,9 +391,15 @@ const dutyTrendData = useMemo(() => {
           YoY Change
         </span>
 
-        <span className="tp-duty-stat-value tp-text-up">
-        {dutyGraphData?.yoyChange || "-"}
-        </span>
+    <span
+  className={`tp-duty-stat-value ${
+    String(dutyGraphData?.yoyChange || "").startsWith("-")
+      ? "tp-text-down"
+      : "tp-text-up"
+  }`}
+>
+  {dutyGraphData?.yoyChange || "-"}
+</span>
 
       </div>
 
@@ -362,9 +409,17 @@ const dutyTrendData = useMemo(() => {
           Risk Outlook
         </span>
 
-        <span className="tp-duty-stat-value">
-         {dutyGraphData?.riskOutlook || "-"}
-        </span>
+     <span
+  className={`tp-duty-stat-value ${
+    dutyGraphData?.riskOutlook === "High"
+      ? "tp-text-down"
+      : dutyGraphData?.riskOutlook === "Medium"
+      ? "tp-text-neutral"
+      : "tp-text-up"
+  }`}
+>
+  {dutyGraphData?.riskOutlook || "-"}
+</span>
 
       </div>
 
@@ -403,12 +458,18 @@ const dutyTrendData = useMemo(() => {
               onScroll={handleHeaderScroll}
             >
               <div className="tp-table-head tp-duty-row">
-                <span>Product</span>
-                <span className="text-center">Date</span>
-                <span className="text-center">Min Tariff</span>
-                <span className="text-center">Max Tariff</span>
-                <span className="text-center">Avg Tariff</span>
-                <span className="text-center">Range</span>
+               <span>HS Code</span>
+<span>Measure Type</span>
+<span className="text-center">Period</span>
+<span className="text-center">Duty Rate</span>
+<span className="text-center">Duty Amount</span>
+<span className="text-center">Currency</span>
+<span className="text-center">Geographical Area</span>
+<span className="text-center">VAT</span>
+<span className="text-center">Quota</span>
+<span className="text-center">Valid From</span>
+<span className="text-center">Valid To</span>
+<span className="text-center">Source</span>
               </div>
             </div>
 
@@ -428,7 +489,7 @@ const dutyTrendData = useMemo(() => {
                 {(isLoading || isFetchingNextPage) &&
                   [...Array(5)].map((_, i) => (
                     <div className="tp-table-row tp-duty-row" key={i}>
-                      {[...Array(6)].map((_, j) => (
+                      {[...Array(12)].map((_, j) => (
                         <Skeleton key={j} className="sk-table-cell" />
                       ))}
                     </div>

@@ -454,7 +454,7 @@ export const ShippingRateGraph = async (params = {}) => {
    DUTY SNAPSHOT
 ================================ */
 export const DutySnapshotData = async (params = {}) => {
-  return Api.get("/app/api/duty/history", {
+  return Api.get("/app/api/trade/history_v2", {
     params: cleanParams(params),
   });
 };
@@ -464,7 +464,7 @@ export const DutySnapshotData = async (params = {}) => {
 ================================ */
 
 export const DutyRateGraph = async (params = {}) => {
-  return Api.get("/app/api/duty/tariff-rate-graph", {
+  return Api.get("/app/api/duty/rate-graph-v2", {
     params: cleanParams(params),
   });
 };
